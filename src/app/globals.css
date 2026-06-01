@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --hent-primary: #0d6b72;
+}
+
+/* Smooth scrolling within the main panel */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove default outline and use brand ring */
+:focus-visible {
+  outline: 2px solid var(--hent-primary);
+  outline-offset: 2px;
+}
+
+/* Tremor table row hover */
+.tremor-TableRow-root:hover {
+  background-color: #f9fafb;
+}
