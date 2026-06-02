@@ -1,400 +1,651 @@
 "use client";
-import { useState } from "react";
-import { BarChart, BarList, DonutChart } from "@tremor/react";
+import { useState, useMemo } from "react";
+import { usePathname } from "next/navigation";
+import {
+  BarChart, Bar,
+  AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from "recharts";
 import { Download, FileText } from "lucide-react";
-import HENTNav from "@/components/HENTNav";
+import HENTNav, { getActiveLabel } from "@/components/HENTNav";
+import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { founders } from "@/data/founders";
+import { filterVentures } from "@/lib/filter";
+import { founders, PROGRAM_EVENTS_LIST } from "@/data/founders";
+import { labVentures } from "@/data/ventureLabs";
+
+// ─── palette ─────────────────────────────────────────────────────────────────
+const NAVY    = "#002147"; // footer only
+const RED     = "#D4264A";
+const PRIMARY = "#2F6FED";
+const TEAL    = "#14B8A6";
+const PURPLE  = "#7C3AED";
+const GREEN   = "#22C55E";
+const INDIGO  = "#6366F1";
+const ORANGE  = "#EA580C";
+const SKY     = "#0EA5E9";
+const EMERALD = "#10B981";
+const AMBER   = "#F59E0B";
+const VIOLET  = "#8B5CF6";
+
+const BAR_COLORS = [PRIMARY, TEAL, ORANGE, PURPLE, AMBER, GREEN, INDIGO, "#EC4899", SKY, EMERALD];
 
 // ─── constants ────────────────────────────────────────────────────────────────
-const NAVY  = "#002147";
-const RED   = "#D4264A";
-const BLUE  = "#1d4ed8";
-const CYAN  = "#0891b2";
+const PACE    = 5 / 12;
+const TARGETS = { ventures: 400, jobs: 2_000, funds: 5_000_000 } as const;
+const ACTUALS = { ventures: 31,  jobs: 291,   funds: 485_000   } as const;
+const MONTHS  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const ALL_SECTORS = [
+  "Digital Health","Medical Devices","Diagnostics","Health Logistics",
+  "Pharma & Biotech","Mental Health","Maternal & Child Health",
+  "Health Financing","Community Health","Health Data & AI",
+] as const;
 
-const COHORTS = [2022, 2023, 2024, 2025, 2026] as const;
-
-function fmt$(n: number) {
+// ─── helpers ─────────────────────────────────────────────────────────────────
+function sg(stage: string): "Expose" | "Build" | "Scale" {
+  if (stage === "Ideation" || stage === "Validation") return "Expose";
+  if (stage === "Prototype/MVP" || stage === "Early Growth") return "Build";
+  return "Scale";
+}
+function paceColor(a: number, t: number): string {
+  const r = a / t;
+  return r >= PACE * 0.9 ? EMERALD : r >= PACE * 0.5 ? AMBER : RED;
+}
+function fmt$(n: number): string {
   return n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `$${Math.round(n / 1e3)}K` : `$${n}`;
 }
 
+// ─── static module-level derivations ─────────────────────────────────────────
+const MCF_IDS = new Set(
+  founders.filter(f => f.isMCFScholar).map(f => parseInt(f.ventureId.slice(1)))
+);
+const STALLED_IDS = new Set(
+  ALL_VENTURES.filter(v => v.status === "Stalled").map(v => v.id)
+);
+
+const femCount    = founders.filter(f => f.gender === "Female").length;
+const mcfFounders = founders.filter(f => f.isMCFScholar).length;
+const mcfFemCount = founders.filter(f => f.isMCFScholar && f.gender === "Female").length;
+const pwdCount    = founders.filter(f => f.isPWD).length;
+const refCount    = founders.filter(f => f.isRefugee).length;
+const mcfVentures = ALL_VENTURES.filter(v => MCF_IDS.has(v.id));
+const mcfFunding  = mcfVentures.reduce((s, v) => s + v.funding, 0);
+const avgLabScore = Math.round(labVentures.reduce((s, v) => s + v.score, 0) / labVentures.length);
+const totalFunding = ALL_VENTURES.reduce((s, v) => s + v.funding, 0);
+
+const engData = MONTHS.map((month, i) => ({
+  month,
+  Founders: founders.filter(f => f.interventionMonth === i + 1).length,
+}));
+const qJobs = [
+  { Q: "Q1", Jobs: ALL_VENTURES.slice(0,  24).reduce((s, v) => s + v.jobs6m, 0) },
+  { Q: "Q2", Jobs: ALL_VENTURES.slice(24, 48).reduce((s, v) => s + v.jobs6m, 0) },
+  { Q: "Q3", Jobs: ALL_VENTURES.slice(48, 72).reduce((s, v) => s + v.jobs6m, 0) },
+  { Q: "Q4", Jobs: ALL_VENTURES.slice(72).reduce((s, v)     => s + v.jobs6m, 0) },
+];
+const evData = PROGRAM_EVENTS_LIST
+  .map(ev => ({ name: ev, value: founders.filter(f => f.events.includes(ev)).length }))
+  .sort((a, b) => b.value - a.value);
+
 // ─── sub-components ───────────────────────────────────────────────────────────
 
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
+// Custom donut using inline SVG fill — bypasses Tremor JIT class issue
+function CustomDonut({
+  data, colors, label,
+  valueFormatter = (v: number) => `${v}`,
+  className = "",
+}: {
+  data: { name: string; value: number }[];
+  colors: string[];
+  label?: string;
+  valueFormatter?: (v: number) => string;
+  className?: string;
+}) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  if (!total) return null;
+  const CX = 80, CY = 80, OR = 70, IR = 43;
+  let theta = -Math.PI / 2;
+  const slices = data.map((d, i) => {
+    const sweep = (d.value / total) * 2 * Math.PI;
+    const t0 = theta, t1 = theta + sweep;
+    theta = t1;
+    const lg = sweep > Math.PI ? 1 : 0;
+    const path = [
+      `M ${CX + OR * Math.cos(t0)} ${CY + OR * Math.sin(t0)}`,
+      `A ${OR} ${OR} 0 ${lg} 1 ${CX + OR * Math.cos(t1)} ${CY + OR * Math.sin(t1)}`,
+      `L ${CX + IR * Math.cos(t1)} ${CY + IR * Math.sin(t1)}`,
+      `A ${IR} ${IR} 0 ${lg} 0 ${CX + IR * Math.cos(t0)} ${CY + IR * Math.sin(t0)}`,
+      "Z",
+    ].join(" ");
+    return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
+  });
   return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <div className="w-1 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: NAVY }} />
-      <div>
-        <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">{title}</p>
-        {sub && <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>}
-      </div>
+    <div className={`flex items-center justify-center ${className}`}>
+      <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
+        {slices.map((s, i) => (
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
+            <title>{s.name}: {valueFormatter(s.value)}</title>
+          </path>
+        ))}
+        {label && (
+          <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
+            fill="#111827" fontSize="20" fontWeight="900"
+            fontFamily="ui-sans-serif,system-ui,sans-serif">
+            {label}
+          </text>
+        )}
+      </svg>
     </div>
   );
 }
 
-function ChartCard({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+// Custom multi-colour bar list — one colour per row
+function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
+  const max = data[0]?.value ?? 1;
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <div className="px-4 py-2.5" style={{ backgroundColor: NAVY }}>
-        <p className="text-[11px] font-bold text-white uppercase tracking-widest">{title}</p>
-        {sub && <p className="text-[10px] text-blue-200/50 mt-0.5">{sub}</p>}
-      </div>
-      <div className="p-4">{children}</div>
+    <div className="space-y-2">
+      {data.map((row, i) => {
+        const col = colors[i % colors.length];
+        return (
+          <div key={row.name} className="flex items-center gap-2.5">
+            <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
+            <div className="flex-1 h-[18px] rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+              <div className="h-full rounded-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            </div>
+            <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function StatCard({ label, value, sub, color = NAVY }: {
-  label: string; value: string | number; sub?: string; color?: string;
+function ChartCard({ title, sub, accent = PRIMARY, children }: {
+  title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="px-5 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-      <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">{label}</p>
-      <p className="text-2xl font-bold text-white tabular-nums leading-none">{value}</p>
-      {sub && <p className="text-[10px] text-blue-200/30 mt-2">{sub}</p>}
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+      <div className="px-5 py-3.5 border-b border-gray-100 flex items-start gap-2.5 flex-shrink-0">
+        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: accent }} />
+        <div>
+          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em] leading-none">{title}</p>
+          {sub && <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{sub}</p>}
+        </div>
+      </div>
+      <div className="p-5 min-h-0">{children}</div>
     </div>
   );
 }
 
-function RBar({ value, total, color = BLUE }: { value: number; total: number; color?: string }) {
+// Pace bar designed for light tinted backgrounds
+function LightPaceBar({ a, t, clr }: { a: number; t: number; clr: string }) {
   return (
-    <div className="h-1.5 bg-gray-100 rounded-full mt-2">
-      <div className="h-full rounded-full" style={{ width: `${total > 0 ? (value / total) * 100 : 0}%`, backgroundColor: color }} />
+    <div className="h-1 rounded-full relative mt-2.5 mb-0.5" style={{ backgroundColor: clr + "25" }}>
+      <div className="h-full rounded-full"
+        style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
+      <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: clr + "70" }} />
     </div>
   );
 }
 
-function ProfileCard({ label, value, pct, total, color }: {
-  label: string; value: number; pct: number; total: number; color: string;
+// Pace bar for white sidebar backgrounds
+function RBar({ v, total }: { v: number; total: number }) {
+  return (
+    <div className="h-1 bg-gray-100 rounded-full mt-2 mb-0.5">
+      <div className="h-full rounded-full bg-sky-500"
+        style={{ width: `${total > 0 ? (v / total) * 100 : 0}%` }} />
+    </div>
+  );
+}
+
+function SectionLabel({ label, color = PRIMARY }: { label: string; color?: string }) {
+  return (
+    <div className="px-4 py-2.5 flex items-center gap-2 border-b border-gray-100">
+      <div className="w-[3px] h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: color + "CC" }}>{label}</p>
+    </div>
+  );
+}
+
+function MCard({
+  label, big, denom, barType, bA, bT, bTotal,
+  chips, sub, gap, color = "#111827",
+}: {
+  label: string;
+  big: string | number;
+  denom?: string | number;
+  barType: "T" | "R" | "none";
+  bA?: number; bT?: number; bTotal?: number;
+  chips?: { label: string; color: string }[];
+  sub?: string;
+  gap?: string;
+  color?: string;
 }) {
   return (
-    <div className="bg-white rounded-lg p-4 shadow-sm">
-      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{label}</p>
-      <p className="text-3xl font-bold mt-1 tabular-nums" style={{ color }}>{pct}%</p>
-      <p className="text-xs text-gray-400 mt-0.5">{value.toLocaleString()} of {total.toLocaleString()}</p>
-      <RBar value={value} total={total} color={color} />
+    <div className="px-5 py-3.5 border-b border-gray-100 last:border-0">
+      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.12em] leading-none">{label}</p>
+      <div className="flex items-baseline gap-1 mt-2">
+        <span className="text-2xl font-black tabular-nums leading-none" style={{ color }}>{big}</span>
+        {denom !== undefined && (
+          <span className="text-sm font-normal text-gray-400">/ {denom}</span>
+        )}
+      </div>
+      {barType === "T" && bA !== undefined && bT !== undefined && (
+        <div className="h-1 bg-gray-200 rounded-full relative mt-2 mb-0.5">
+          <div className="h-full rounded-full"
+            style={{ width: `${Math.min((bA / bT) * 100, 100)}%`, backgroundColor: paceColor(bA, bT) }} />
+          <div className="absolute top-0 bottom-0 w-px bg-gray-400/40"
+            style={{ left: `${PACE * 100}%` }} />
+        </div>
+      )}
+      {barType === "R" && bA !== undefined && bTotal !== undefined && (
+        <RBar v={bA} total={bTotal} />
+      )}
+      {barType === "none" && <div className="h-2" />}
+      {sub  && !gap && <p className="text-[10px] text-gray-400">{sub}</p>}
+      {gap  && <p className="text-[10px] text-amber-500 italic">{gap}</p>}
+      {chips && chips.length > 0 && (
+        <div className="flex gap-1 flex-wrap mt-1.5">
+          {chips.map(c => (
+            <span key={c.label} className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+              style={{ backgroundColor: c.color + "22", color: c.color }}>
+              {c.label}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StackedHBar({ name, expose, build, scale, max }: {
+  name: string; expose: number; build: number; scale: number; max: number;
+}) {
+  const w = (v: number) => `${max > 0 ? (v / max) * 100 : 0}%`;
+  return (
+    <div className="flex items-center gap-2 mb-1.5">
+      <div className="w-32 text-[11px] text-gray-600 truncate text-right flex-shrink-0" title={name}>{name}</div>
+      <div className="flex-1 h-3 bg-gray-100 rounded-sm overflow-hidden flex">
+        {expose > 0 && <div style={{ width: w(expose), backgroundColor: SKY    }} title={`Expose: ${expose}`} />}
+        {build  > 0 && <div style={{ width: w(build),  backgroundColor: PRIMARY }} title={`Build: ${build}`} />}
+        {scale  > 0 && <div style={{ width: w(scale),  backgroundColor: INDIGO  }} title={`Scale: ${scale}`} />}
+      </div>
+      <div className="w-6 text-[11px] text-gray-400 text-right flex-shrink-0">{expose + build + scale}</div>
+    </div>
+  );
+}
+
+function DivBar({ name, mcf, nm, max }: { name: string; mcf: number; nm: number; max: number }) {
+  return (
+    <div className="flex items-center gap-1 mb-1.5">
+      <div className="w-20 text-[11px] text-gray-600 truncate text-right flex-shrink-0">{name}</div>
+      <div className="w-24 flex justify-end flex-shrink-0">
+        {mcf > 0 && (
+          <div className="h-3 rounded-l-sm"
+            style={{ width: `${(mcf / max) * 100}%`, backgroundColor: PRIMARY }}
+            title={`MCF: ${mcf}`} />
+        )}
+      </div>
+      <div className="w-px h-3 bg-gray-300 flex-shrink-0 mx-0.5" />
+      <div className="w-24 flex-shrink-0">
+        {nm > 0 && (
+          <div className="h-3 rounded-r-sm"
+            style={{ width: `${(nm / max) * 100}%`, backgroundColor: RED }}
+            title={`Non-MCF: ${nm}`} />
+        )}
+      </div>
+      <div className="w-6 text-[11px] text-gray-400 text-right flex-shrink-0">{mcf + nm}</div>
     </div>
   );
 }
 
 // ─── page ─────────────────────────────────────────────────────────────────────
-export default function VenturesPage() {
-  const [trendTab, setTrendTab] = useState<"jobs" | "capital" | "survival">("jobs");
+export default function HENTPortfolio() {
+  const pathname = usePathname();
+  const { filters } = useFilterStore();
+  const [stageFilter, setStageFilter] = useState<"All" | "Expose" | "Build" | "Scale">("All");
+  const [nationFilter, setNationFilter] = useState<"ALL" | "MCF" | "NON-MCF" | "FLAGGED">("ALL");
 
-  // ── stats ──
-  const femFounders  = founders.filter(f => f.gender === "Female").length;
-  const femPct       = Math.round((femFounders / founders.length) * 100);
-  const malePct      = 100 - femPct;
-  const alumniCount  = founders.filter(f => f.status === "Alumni").length;
-  const studentCount = founders.filter(f => f.status === "Student").length;
+  const fv = useMemo(() => {
+    const base = filterVentures(ALL_VENTURES, filters);
+    return base.filter(v => {
+      if (stageFilter !== "All" && sg(v.stage) !== stageFilter) return false;
+      if (nationFilter === "MCF"     && !MCF_IDS.has(v.id))     return false;
+      if (nationFilter === "NON-MCF" &&  MCF_IDS.has(v.id))     return false;
+      if (nationFilter === "FLAGGED" && !STALLED_IDS.has(v.id)) return false;
+      return true;
+    });
+  }, [filters, stageFilter, nationFilter]);
 
-  const femaleLed    = ALL_VENTURES.filter(v => v.teamGender === "Female");
-  const totalJobs    = ALL_VENTURES.reduce((s, v) => s + v.jobsTotal, 0);
-  const avgJobs      = Math.round(totalJobs / ALL_VENTURES.length);
-  const revenueCount = ALL_VENTURES.filter(v => v.revenue > 20).length;
-  const expansionCt  = ALL_VENTURES.filter(v => v.partnerships >= 5).length;
-  const formalCount  = ALL_VENTURES.filter(v => v.stageIndex >= 2).length;
-  const informalCount = ALL_VENTURES.length - formalCount;
+  const expN   = useMemo(() => fv.filter(v => sg(v.stage) === "Expose").length, [fv]);
+  const buildN = useMemo(() => fv.filter(v => sg(v.stage) === "Build").length,  [fv]);
+  const scaleN = useMemo(() => fv.filter(v => sg(v.stage) === "Scale").length,  [fv]);
 
-  // ── ventures per year ──
-  const venturesPerYear = COHORTS.map(year => ({
-    Year: String(year),
-    Ventures: ALL_VENTURES.filter(v => v.cohort === year).length,
-  }));
+  const secData = useMemo(() => {
+    const m: Record<string, number> = {};
+    fv.forEach(v => { m[v.sector] = (m[v.sector] || 0) + 1; });
+    return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [fv]);
 
-  // ── trend data ──
-  const jobsTrend = COHORTS.map(year => {
-    const cv = ALL_VENTURES.filter(v => v.cohort === year);
-    return {
-      Year: String(year),
-      "Male-led":   cv.filter(v => v.teamGender === "Male").reduce((s, v)   => s + v.jobsTotal, 0),
-      "Female-led": cv.filter(v => v.teamGender === "Female").reduce((s, v) => s + v.jobsTotal, 0),
-    };
-  });
+  const { ctryData, ctryMax } = useMemo(() => {
+    const m: Record<string, { mcf: number; nm: number }> = {};
+    fv.forEach(v => {
+      if (!m[v.country]) m[v.country] = { mcf: 0, nm: 0 };
+      if (MCF_IDS.has(v.id)) m[v.country].mcf++; else m[v.country].nm++;
+    });
+    const data = Object.entries(m)
+      .map(([name, { mcf, nm }]) => ({ name, mcf, nm, t: mcf + nm }))
+      .sort((a, b) => b.t - a.t).slice(0, 10);
+    return { ctryData: data, ctryMax: Math.max(...data.map(c => Math.max(c.mcf, c.nm)), 1) };
+  }, [fv]);
 
-  const capitalTrend = COHORTS.map(year => {
-    const cv = ALL_VENTURES.filter(v => v.cohort === year);
-    return {
-      Year: String(year),
-      "Male-led":   cv.filter(v => v.teamGender === "Male").reduce((s, v)   => s + v.funding, 0),
-      "Female-led": cv.filter(v => v.teamGender === "Female").reduce((s, v) => s + v.funding, 0),
-    };
-  });
+  const jobsCtryData = useMemo(() => {
+    const m: Record<string, number> = {};
+    fv.forEach(v => { m[v.country] = (m[v.country] || 0) + v.jobsTotal; });
+    return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10);
+  }, [fv]);
 
-  const survivalTrend = COHORTS.map(year => {
-    const cv    = ALL_VENTURES.filter(v => v.cohort === year);
-    const maleV = cv.filter(v => v.teamGender === "Male");
-    const femV  = cv.filter(v => v.teamGender === "Female");
-    return {
-      Year: String(year),
-      "Male-led":   maleV.length > 0 ? Math.round((maleV.filter(v => v.status === "Active").length / maleV.length) * 100) : 0,
-      "Female-led": femV.length  > 0 ? Math.round((femV.filter(v => v.status === "Active").length  / femV.length)  * 100) : 0,
-    };
-  });
+  const { ssData, ssMax, ssByStage } = useMemo(() => {
+    const byStage: Record<string, { Expose: number; Build: number; Scale: number }> = {};
+    ALL_SECTORS.forEach(s => { byStage[s] = { Expose: 0, Build: 0, Scale: 0 }; });
+    fv.forEach(v => { if (byStage[v.sector]) byStage[v.sector][sg(v.stage)]++; });
+    const data = ALL_SECTORS
+      .filter(s => byStage[s].Expose + byStage[s].Build + byStage[s].Scale > 0)
+      .sort((a, b) => (byStage[b].Expose + byStage[b].Build + byStage[b].Scale) - (byStage[a].Expose + byStage[a].Build + byStage[a].Scale));
+    const max = Math.max(...data.map(s => byStage[s].Expose + byStage[s].Build + byStage[s].Scale), 1);
+    return { ssData: data, ssMax: max, ssByStage: byStage };
+  }, [fv]);
 
-  const activeTrendData = trendTab === "jobs" ? jobsTrend : trendTab === "capital" ? capitalTrend : survivalTrend;
-  const trendFormatter  = trendTab === "jobs"    ? (v: number) => `${v} jobs`
-                        : trendTab === "capital" ? (v: number) => fmt$(v)
-                        :                         (v: number) => `${v}%`;
-
-  // ── jobs section ──
-  const jobsByGender = [
-    { name: "Male-led",   value: ALL_VENTURES.filter(v => v.teamGender === "Male").reduce((s, v)   => s + v.jobsTotal, 0) },
-    { name: "Female-led", value: ALL_VENTURES.filter(v => v.teamGender === "Female").reduce((s, v) => s + v.jobsTotal, 0) },
-    { name: "Mixed team", value: ALL_VENTURES.filter(v => v.teamGender === "Mixed").reduce((s, v)  => s + v.jobsTotal, 0) },
-  ];
-
-  const empTypes = ALL_VENTURES.reduce(
-    (acc, v) => {
-      const ft  = Math.round(v.jobsTotal * 0.55);
-      const pt  = Math.round(v.jobsTotal * 0.25);
-      const sea = Math.round(v.jobsTotal * 0.12);
-      const unc = v.jobsTotal - ft - pt - sea;
-      return { ft: acc.ft + ft, pt: acc.pt + pt, sea: acc.sea + sea, unc: acc.unc + unc };
-    },
-    { ft: 0, pt: 0, sea: 0, unc: 0 },
-  );
-  const empTypeData = [
-    { name: "Full-time",      value: empTypes.ft  },
-    { name: "Part-time",      value: empTypes.pt  },
-    { name: "Seasonal",       value: empTypes.sea },
-    { name: "Uncategorized",  value: empTypes.unc },
-  ];
-
-  // ── student vs alumni ──
-  const originData = [
-    { name: "Student Founders", value: studentCount },
-    { name: "Alumni Founders",  value: alumniCount  },
+  const genderData = [
+    { name: "Male",   value: founders.length - femCount },
+    { name: "Female", value: femCount },
   ];
 
   // ─── render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
-
-      {/* ── NAV ─────────────────────────────────────────────────────────── */}
       <HENTNav />
 
-      {/* ── TITLE + STATS HEADER ─────────────────────────────────────────── */}
+      {/* ── TITLE + KPI strip ──────────────────────────────────────────────── */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-6">
 
-          {/* Title row */}
           <div className="flex items-end justify-between py-4">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: NAVY }}>Ventures</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">
-                Entrepreneurship data · 2026 Cohort · {ALL_VENTURES.length} ventures tracked
-              </p>
+              <h1 className="text-xl font-bold" style={{ color: NAVY }}>{getActiveLabel(pathname)}</h1>
+              <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort · Updated 28 May 2026</p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs border border-gray-300 text-gray-600 px-3 py-1.5 rounded hover:border-gray-400 hover:text-gray-800 transition-colors">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <Download size={11} /> Export Data
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded font-medium text-white transition-colors"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-lg font-semibold text-white transition-colors shadow-sm"
                 style={{ backgroundColor: RED }}>
                 <FileText size={11} /> Custom Report
               </button>
             </div>
           </div>
 
-          {/* Stats tiles — 8 metrics */}
+          {/* KPI strip — 5 distinct tinted tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <div className="px-4 py-4" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Entrepreneurs</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{founders.length}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">Total founders</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Female Founders</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{femPct}%</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">{femFounders} of {founders.length}</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Total Ventures</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{ALL_VENTURES.length}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">Across all cohorts</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Female-Led</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{femaleLed.length}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">{Math.round((femaleLed.length / ALL_VENTURES.length) * 100)}% of portfolio</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Avg Jobs / Venture</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{avgJobs}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">{totalJobs.toLocaleString()} total jobs</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Revenue Growth</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{revenueCount}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">Enterprises with revenue</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Market Expansion</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{expansionCt}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">5+ active partnerships</p>
-              </div>
-              <div className="px-4 py-4 border-l border-white/10" style={{ backgroundColor: NAVY }}>
-                <p className="text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Alumni Ventures</p>
-                <p className="text-2xl font-bold text-white tabular-nums">{alumniCount}</p>
-                <p className="text-[10px] text-blue-200/30 mt-2">{Math.round((alumniCount / founders.length) * 100)}% of founders</p>
-              </div>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+              {([
+                { label: "Health Ventures", value: ACTUALS.ventures, denom: TARGETS.ventures,               sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#E0F2FE", clr: "#0369A1", pace: true,  a: ACTUALS.ventures, t: TARGETS.ventures  },
+                { label: "Jobs Created",    value: ACTUALS.jobs,     denom: TARGETS.jobs.toLocaleString(),   sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#ECFDF5", clr: "#059669", pace: true,  a: ACTUALS.jobs,     t: TARGETS.jobs      },
+                { label: "Funds Deployed",  value: fmt$(ACTUALS.funds), denom: fmt$(TARGETS.funds),          sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#F3E8FF", clr: "#7C3AED", pace: true,  a: ACTUALS.funds,    t: TARGETS.funds     },
+                { label: "Active Founders", value: 48,               denom: undefined,                      sub: `${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`,  bg: "#FFF7ED", clr: "#C2410C", pace: false },
+                { label: "Pace of Target",  value: "5.5%",           denom: undefined,                      sub: `Against ${Math.round(PACE * 100)}% expected`, bg: "#E6FFFA", clr: "#0D9488", pace: false },
+              ] as const).map(tile => (
+                <div key={tile.label} className="rounded-xl border px-5 py-4"
+                  style={{ backgroundColor: tile.bg, borderColor: tile.clr + "40" }}>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-tight mb-2"
+                    style={{ color: tile.clr + "B0" }}>{tile.label}</p>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-3xl font-black tabular-nums leading-none" style={{ color: tile.clr }}>{tile.value}</span>
+                    {tile.denom !== undefined && (
+                      <span className="text-sm font-normal" style={{ color: tile.clr + "70" }}>/ {tile.denom}</span>
+                    )}
+                  </div>
+                  {tile.pace && (
+                    <LightPaceBar a={tile.a!} t={tile.t!} clr={tile.clr} />
+                  )}
+                  {!tile.pace && <div className="mt-3" />}
+                  <p className="text-[9px] font-medium" style={{ color: tile.clr + "80" }}>{tile.sub}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </header>
 
-      {/* ── MAIN CONTENT ──────────────────────────────────────────────────── */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
+      {/* ── MAIN CONTENT ───────────────────────────────────────────────────── */}
+      <div className="max-w-[1400px] mx-auto px-6 py-5 space-y-5">
 
-        {/* ── SECTION 1: FOUNDER PROFILES ──────────────────────────────── */}
-        <section>
-          <SecHeader title="Founder Profiles" sub={`${founders.length} founders across all cohorts`} />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ProfileCard label="Female Founders" value={femFounders} pct={femPct} total={founders.length} color="#7c3aed" />
-            <ProfileCard label="Male Founders" value={founders.length - femFounders} pct={malePct} total={founders.length} color={BLUE} />
-            <ProfileCard label="Formally Registered" value={formalCount} pct={Math.round((formalCount / ALL_VENTURES.length) * 100)} total={ALL_VENTURES.length} color="#059669" />
-            <ProfileCard label="Informal Ventures" value={informalCount} pct={Math.round((informalCount / ALL_VENTURES.length) * 100)} total={ALL_VENTURES.length} color="#d97706" />
+        {/* Filter row */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Show:</span>
+            {(["All", "Expose", "Build", "Scale"] as const).map(s => (
+              <button key={s} onClick={() => setStageFilter(s)}
+                className="text-xs px-3 py-1.5 rounded font-medium transition-colors"
+                style={stageFilter === s
+                  ? { backgroundColor: PRIMARY, color: "white" }
+                  : { backgroundColor: "white", color: "#6b7280", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }}>
+                {s === "All" ? "All Stages" : s}
+              </button>
+            ))}
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Gender Composition" sub="Distribution of founders by gender">
-              <DonutChart
-                data={[
-                  { name: "Male Founders",   value: founders.length - femFounders },
-                  { name: "Female Founders", value: femFounders },
-                ]}
-                category="value"
-                index="name"
-                className="h-44"
-                colors={["blue", "violet"]}
-                label={`${founders.length}`}
-                valueFormatter={(v: number) => `${v} founders`}
-                showAnimation={false}
-              />
-            </ChartCard>
-
-            <ChartCard title="Student vs Alumni Founders" sub="Origin of founders by academic status">
-              <DonutChart
-                data={originData}
-                category="value"
-                index="name"
-                className="h-44"
-                colors={["cyan", "indigo"]}
-                label={`${founders.length}`}
-                valueFormatter={(v: number) => `${v} founders`}
-                showAnimation={false}
-              />
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* ── SECTION 2: VENTURES PER YEAR ─────────────────────────────── */}
-        <section>
-          <SecHeader title="Ventures Developed Per Year" sub="Number of new ventures by cohort year" />
-          <ChartCard title="Venture Pipeline by Cohort Year" sub="Total ventures launched per year">
-            <BarChart
-              data={venturesPerYear}
-              index="Year"
-              categories={["Ventures"]}
-              colors={["blue"]}
-              className="h-52"
-              valueFormatter={(v: number) => `${v} ventures`}
-              showLegend={false}
-              showAnimation={false}
-            />
-          </ChartCard>
-        </section>
-
-        {/* ── SECTION 3: ENTREPRENEURSHIP TRENDS ───────────────────────── */}
-        <section>
-          <SecHeader title="Entrepreneurship Trends" sub="Male-led vs female-led comparison by cohort" />
-
-          {/* Tab filters */}
-          <div className="flex gap-1 mb-4 bg-white rounded-lg shadow-sm px-1 py-1 w-fit">
-            {(["jobs", "capital", "survival"] as const).map(tab => {
-              const label = tab === "jobs" ? "Jobs Created" : tab === "capital" ? "Capital Secured" : "Survival Rate";
+          <div className="flex items-center gap-0.5 bg-white rounded-lg shadow-sm px-1 py-1">
+            {(["ALL", "MCF", "NON-MCF", "FLAGGED"] as const).map(n => {
+              const label = n === "ALL" ? "All Nations" : n === "MCF" ? "MCF Scholars" : n === "NON-MCF" ? "Non-MCF" : "Flagged";
+              const active = nationFilter === n;
               return (
-                <button key={tab} onClick={() => setTrendTab(tab)}
-                  className="text-xs px-4 py-1.5 rounded font-medium transition-colors"
-                  style={trendTab === tab
-                    ? { backgroundColor: NAVY, color: "white" }
-                    : { color: "#6b7280" }}
-                >
+                <button key={n} onClick={() => setNationFilter(n)}
+                  className="text-xs px-3 py-1 rounded font-medium transition-colors"
+                  style={active
+                    ? { color: RED, borderBottom: `2px solid ${RED}`, backgroundColor: "transparent" }
+                    : { color: "#9ca3af", borderBottom: "2px solid transparent" }}>
                   {label}
                 </button>
               );
             })}
           </div>
+        </div>
 
-          <ChartCard
-            title={trendTab === "jobs" ? "Jobs Created by Cohort" : trendTab === "capital" ? "Capital Secured by Cohort" : "Active Venture Survival Rate by Cohort"}
-            sub="Male-led (blue) vs Female-led (red) · comparison by cohort year"
-          >
-            <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block bg-blue-600" /> Male-led</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RED }} /> Female-led</span>
-            </div>
-            <BarChart
-              data={activeTrendData}
-              index="Year"
-              categories={["Male-led", "Female-led"]}
-              colors={["blue", "red"]}
-              className="h-52"
-              valueFormatter={trendFormatter}
-              showLegend={false}
-              showAnimation={false}
+        {/* Main grid: sidebar + charts */}
+        <div className="flex gap-5 items-start">
+
+          {/* ── SIDEBAR ─────────────────────────────────────────────────────── */}
+          <div className="w-64 flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+
+            <SectionLabel label="All Ventures" color={PRIMARY} />
+            <MCard label="Total Ventures" big={ACTUALS.ventures} denom={TARGETS.ventures}
+              barType="T" bA={ACTUALS.ventures} bT={TARGETS.ventures}
+              color={PRIMARY} sub="↗ 11% YoY"
+              chips={[
+                { label: `Exp ${expN}`,   color: SKY    },
+                { label: `Bld ${buildN}`, color: PRIMARY },
+                { label: `Scl ${scaleN}`, color: INDIGO  },
+              ]}
             />
-          </ChartCard>
-        </section>
+            <MCard label="Active Founders" big={48}
+              barType="none" color={ORANGE} sub="↗ 8% YoY"
+              chips={[
+                { label: `♀ ${Math.round((femCount / founders.length) * 100)}%`,                     color: PURPLE  },
+                { label: `♂ ${Math.round(((founders.length - femCount) / founders.length) * 100)}%`, color: SKY     },
+              ]}
+            />
+            <MCard label="Total Jobs Created" big={ACTUALS.jobs} denom={TARGETS.jobs.toLocaleString()}
+              barType="T" bA={ACTUALS.jobs} bT={TARGETS.jobs}
+              color={GREEN} sub="↗ 14% YoY"
+            />
 
-        {/* ── SECTION 4: JOBS ──────────────────────────────────────────── */}
-        <section>
-          <SecHeader title="Employment Impact" sub={`${totalJobs.toLocaleString()} total jobs across all ventures`} />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <SectionLabel label="MCF Scholars" color={PURPLE} />
+            <MCard label="MCF Scholar Ventures" big={mcfVentures.length} denom={ALL_VENTURES.length}
+              barType="R" bA={mcfVentures.length} bTotal={ALL_VENTURES.length}
+              color={PURPLE}
+              sub={`${Math.round((mcfVentures.length / ALL_VENTURES.length) * 100)}% of portfolio`}
+              chips={[
+                { label: `♀ ${Math.round((mcfFemCount / Math.max(mcfFounders, 1)) * 100)}%`, color: PURPLE },
+              ]}
+            />
+            <MCard label="MCF Funding Deployed" big={fmt$(mcfFunding)}
+              barType="R" bA={mcfFunding} bTotal={Math.max(ACTUALS.funds, 1)}
+              color={VIOLET}
+              sub={`${Math.round((mcfFunding / Math.max(ACTUALS.funds, 1)) * 100)}% of total deployed`}
+            />
 
-            <ChartCard title="Jobs Created by Gender of Founder" sub="Total jobs attributed to each founder group">
-              <BarList
-                data={jobsByGender}
-                color="blue"
-                valueFormatter={(v: number) => `${v.toLocaleString()} jobs`}
-                className="text-sm"
-              />
+            <SectionLabel label="The Cohort" color={TEAL} />
+            <MCard label="Female Founders" big={femCount} denom={founders.length}
+              barType="R" bA={femCount} bTotal={founders.length}
+              color="#BE185D"
+              sub={`${Math.round((femCount / founders.length) * 100)}% representation`}
+            />
+            <MCard label="PWD Founders" big={pwdCount}
+              barType="none" color={TEAL}
+              gap={pwdCount === 0 ? "Data not yet captured" : undefined}
+              sub={pwdCount > 0 ? `${Math.round((pwdCount / founders.length) * 100)}% representation` : undefined}
+            />
+            <MCard label="Refugee Founders" big={refCount}
+              barType="none" color={AMBER}
+              gap={refCount === 0 ? "Data not yet captured" : undefined}
+              sub={refCount > 0 ? `${Math.round((refCount / founders.length) * 100)}% representation` : undefined}
+            />
+            <MCard label="Venture Labs Cohort" big={labVentures.length} denom={ALL_VENTURES.length}
+              barType="R" bA={labVentures.length} bTotal={ALL_VENTURES.length}
+              color={EMERALD}
+              chips={[{ label: `Avg ${avgLabScore}`, color: EMERALD }]}
+            />
+
+            <div className="px-4 py-3">
+              <button className="w-full text-xs text-gray-400 border border-dashed border-gray-300 rounded py-2 hover:border-gray-400 hover:text-gray-600 transition-colors">
+                + Add Metric Card
+              </button>
+            </div>
+          </div>
+
+          {/* ── CHART GRID (2 × 4) ──────────────────────────────────────────── */}
+          <div className="flex-1 min-w-0 grid grid-cols-2 gap-4">
+
+            {/* Engagement Trend */}
+            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding · 2026" accent={SKY}>
+              <ResponsiveContainer width="100%" height={176}>
+                <AreaChart data={engData}>
+                  <defs>
+                    <linearGradient id="engGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor={SKY} stopOpacity={0.25} />
+                      <stop offset="95%" stopColor={SKY} stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Area type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2} fill="url(#engGrad)" dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Jobs by Employment Type" sub="Breakdown across full-time, part-time, seasonal and uncategorized">
-              <DonutChart
-                data={empTypeData}
-                category="value"
-                index="name"
-                className="h-52"
-                colors={["blue", "cyan", "indigo", "slate"]}
-                valueFormatter={(v: number) => `${v.toLocaleString()} jobs`}
-                showAnimation={false}
+            {/* Jobs Created */}
+            <ChartCard title="Jobs Created" sub="Quarterly breakdown · 2026" accent={EMERALD}>
+              <ResponsiveContainer width="100%" height={176}>
+                <BarChart data={qJobs} barCategoryGap="35%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="Q" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Bar dataKey="Jobs" fill={EMERALD} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            {/* Ventures by Sector */}
+            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures · current filter`} accent={PRIMARY}>
+              <ColorBarList data={secData} colors={BAR_COLORS} />
+            </ChartCard>
+
+            {/* Gender Distribution */}
+            <ChartCard title="Gender Distribution" sub={`${founders.length} founders`} accent={PURPLE}>
+              <CustomDonut
+                data={genderData}
+                colors={[SKY, PURPLE]}
+                className="h-44"
+                label={`${founders.length}`}
+                valueFormatter={(v: number) => `${v} founders`}
               />
+              <div className="flex justify-center gap-5 mt-2 text-[11px] text-gray-500">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SKY }} /> Male</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: PURPLE }} /> Female</span>
+              </div>
+            </ChartCard>
+
+            {/* Ventures by Country — MCF vs Non-MCF diverging */}
+            <ChartCard title="Ventures by Country" sub="MCF (blue) vs Non-MCF (red)" accent={PRIMARY}>
+              <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
+                <span className="flex items-center gap-1">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PRIMARY }} /> MCF
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RED }} /> Non-MCF
+                </span>
+              </div>
+              {ctryData.map(c => (
+                <DivBar key={c.name} name={c.name} mcf={c.mcf} nm={c.nm} max={ctryMax} />
+              ))}
+            </ChartCard>
+
+            {/* Jobs by Country */}
+            <ChartCard title="Jobs by Country" sub="Total jobs created per country" accent="#F43F5E">
+              <ColorBarList data={jobsCtryData} colors={BAR_COLORS} />
+            </ChartCard>
+
+            {/* Sector × Stage */}
+            <ChartCard title="Sector × Stage" sub="Expose · Build · Scale breakdown" accent={INDIGO}>
+              <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
+                {(["Expose","Build","Scale"] as const).map((l, i) => (
+                  <span key={l} className="flex items-center gap-1">
+                    <span className="w-3 h-2 rounded-sm inline-block"
+                      style={{ backgroundColor: [SKY, PRIMARY, INDIGO][i] }} />
+                    {l}
+                  </span>
+                ))}
+              </div>
+              <div className="space-y-0.5">
+                {ssData.map(s => (
+                  <StackedHBar key={s} name={s}
+                    expose={ssByStage[s].Expose}
+                    build={ssByStage[s].Build}
+                    scale={ssByStage[s].Scale}
+                    max={ssMax} />
+                ))}
+              </div>
+            </ChartCard>
+
+            {/* Programme Events Attendance */}
+            <ChartCard title="Programme Events Attendance" sub="Founders per event" accent={VIOLET}>
+              <ColorBarList data={evData} colors={BAR_COLORS} />
             </ChartCard>
 
           </div>
-        </section>
+        </div>
 
-        {/* ── FOOTER STRIP ──────────────────────────────────────────────── */}
-        <div className="rounded-lg overflow-hidden shadow-sm" style={{ backgroundColor: NAVY }}>
+        {/* ── FOOTER STRIP ────────────────────────────────────────────────── */}
+        <div className="rounded-xl overflow-hidden shadow-sm" style={{ backgroundColor: NAVY }}>
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/10">
-            {[
-              { value: `${femPct}%`,                               label: "Female Founders" },
-              { value: `${formalCount}`,                           label: "Formally Registered Ventures" },
-              { value: `${totalJobs.toLocaleString()}`,            label: "Total Jobs Created" },
-              { value: `${Math.round((alumniCount / founders.length) * 100)}%`, label: "Alumni-Founded" },
-            ].map(tile => (
+            {([
+              { value: fmt$(totalFunding),                                      label: "Total Funding Raised",    accent: "#4ADE80" },
+              { value: `${Math.round((femCount / founders.length) * 100)}%`,    label: "Female Founders",         accent: "#A78BFA" },
+              { value: `${avgLabScore}/100`,                                     label: "Venture Labs Avg Score",  accent: "#FCD34D" },
+              { value: `${PROGRAM_EVENTS_LIST.length}`,                          label: "Programme Events Hosted", accent: "#60A5FA" },
+            ] as const).map(tile => (
               <div key={tile.label} className="px-6 py-5 text-center">
-                <p className="text-2xl font-bold text-white tabular-nums">{tile.value}</p>
+                <p className="text-2xl font-bold tabular-nums" style={{ color: tile.accent }}>{tile.value}</p>
                 <p className="text-[11px] text-blue-200/50 mt-1 uppercase tracking-wider">{tile.label}</p>
               </div>
             ))}
           </div>
           <div className="px-6 py-3 border-t border-white/10 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-white uppercase tracking-widest">HENT · Ventures · 2026</p>
+            <p className="text-[11px] font-bold text-white uppercase tracking-widest">HENT · Catalyst for Change · 2026</p>
             <p className="text-[10px] text-blue-200/40">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>
