@@ -109,7 +109,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-3 mb-5">
       <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: ACCENT }} />
       <div>
-        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-[0.1em]">{title}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: ACCENT }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
       </div>
     </div>
@@ -121,11 +121,16 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-gray-100 flex items-start gap-2.5">
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: accent }} />
+      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
+        style={{
+          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          borderBottomColor: accent,
+        }}>
+        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
+          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
         <div>
-          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em] leading-none">{title}</p>
-          {sub && <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{sub}</p>}
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5">{children}</div>
@@ -218,13 +223,13 @@ function Stars({ score }: { score: number }) {
 
 // ─── KPI tile map (7 metrics) ─────────────────────────────────────────────────
 const KPI_TILES = [
-  { label: "Total Field Visits",      bg: "#E0F2FE", clr: "#0369A1" },
-  { label: "Total Participants",      bg: "#ECFDF5", clr: "#059669" },
-  { label: "Ventures Participating",  bg: "#E6FFFA", clr: "#0D9488" },
-  { label: "Organisations Visited",   bg: "#FFF7ED", clr: "#C2410C" },
-  { label: "Female Participants",     bg: "#F3E8FF", clr: "#7C3AED" },
-  { label: "Avg Attendance / Visit",  bg: "#FFFBEB", clr: "#B45309" },
-  { label: "Avg Completion Rate",     bg: "#EEF2FF", clr: "#4338CA" },
+  { label: "Total Field Visits",      bg: "#ECFDF5", clr: "#064E3B" },
+  { label: "Total Participants",      bg: "#D1FAE5", clr: "#065F46" },
+  { label: "Ventures Participating",  bg: "#CCFBF1", clr: "#115E59" },
+  { label: "Organisations Visited",   bg: "#F0FDFA", clr: "#134E4A" },
+  { label: "Female Participants",     bg: "#A7F3D0", clr: "#064E3B" },
+  { label: "Avg Attendance / Visit",  bg: "#99F6E4", clr: "#0F766E" },
+  { label: "Avg Completion Rate",     bg: "#ECFEFF", clr: "#164E63" },
 ] as const;
 
 // ─── page ─────────────────────────────────────────────────────────────────────
@@ -373,14 +378,14 @@ export default function FieldVisitsPage() {
 
           {/* KPI strip — 7 distinct tinted tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
               {KPI_TILES.map(({ label, bg, clr }, i) => (
                 <div key={label} className="rounded-xl border px-3 py-3.5"
-                  style={{ backgroundColor: bg, borderColor: clr + "40" }}>
+                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
                   <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-2"
-                    style={{ color: clr + "B0" }}>{label}</p>
-                  <p className="text-xl font-black tabular-nums leading-none" style={{ color: clr }}>{kpiValues[i].value}</p>
-                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: clr + "80" }}>{kpiValues[i].sub}</p>
+                    style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+                  <p className="text-xl font-black tabular-nums leading-none text-white">{kpiValues[i].value}</p>
+                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{kpiValues[i].sub}</p>
                 </div>
               ))}
             </div>
@@ -826,14 +831,15 @@ export default function FieldVisitsPage() {
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(tot.visits),               label: "Field Visits",             bg: "#E0F2FE", clr: "#0369A1" },
-              { value: tot.participants.toLocaleString(), label: "Total Participants",       bg: "#ECFDF5", clr: "#059669" },
-              { value: `${femalePct}%`,                  label: "Female Participation",     bg: "#F3E8FF", clr: "#7C3AED" },
-              { value: String(tot.partnerships),          label: "Partnerships Established", bg: "#FFFBEB", clr: "#B45309" },
+              { value: String(tot.visits),               label: "Field Visits",             bg: "#ECFDF5", clr: "#064E3B" },
+              { value: tot.participants.toLocaleString(), label: "Total Participants",       bg: "#D1FAE5", clr: "#065F46" },
+              { value: `${femalePct}%`,                  label: "Female Participation",     bg: "#CCFBF1", clr: "#115E59" },
+              { value: String(tot.partnerships),          label: "Partnerships Established", bg: "#F0FDFA", clr: "#134E4A" },
             ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center" style={{ backgroundColor: tile.bg }}>
-                <p className="text-2xl font-black tabular-nums" style={{ color: tile.clr }}>{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: tile.clr + "80" }}>{tile.label}</p>
+              <div key={tile.label} className="px-6 py-6 text-center"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
+                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
               </div>
             ))}
           </div>

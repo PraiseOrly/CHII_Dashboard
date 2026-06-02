@@ -186,7 +186,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-3 mb-5">
       <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: PRIMARY }} />
       <div>
-        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-[0.1em]">{title}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: PRIMARY }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
       </div>
     </div>
@@ -198,11 +198,16 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-gray-100 flex items-start gap-2.5">
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: accent }} />
+      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
+        style={{
+          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          borderBottomColor: accent,
+        }}>
+        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
+          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
         <div>
-          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em] leading-none">{title}</p>
-          {sub && <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{sub}</p>}
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5">{children}</div>
@@ -215,19 +220,22 @@ function ExecCard({ label, value, sub, color, note, icon: Icon, bg = "#ffffff" }
   note?: string; bg?: string; icon?: LucideIcon;
 }) {
   return (
-    <div className="rounded-xl border p-5 shadow-sm" style={{ backgroundColor: bg, borderColor: color + "35" }}>
+    <div className="rounded-xl border p-5 shadow-sm" style={{
+      background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${color}`,
+      borderColor: color,
+    }}>
       <div className="flex items-start justify-between mb-3">
-        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.12em] leading-none">{label}</p>
+        <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
         {Icon && (
           <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: color + "22" }}>
-            <Icon size={13} style={{ color }} />
+            style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
+            <Icon size={13} style={{ color: "rgba(255,255,255,0.88)" }} />
           </div>
         )}
       </div>
-      <p className="text-[2rem] font-black tabular-nums leading-none" style={{ color }}>{value}</p>
-      {sub  && <p className="text-[11px] text-gray-500 mt-1.5 font-medium">{sub}</p>}
-      {note && <p className="text-[10px] text-gray-500 mt-2 pt-2 border-t border-black/10">{note}</p>}
+      <p className="text-[2rem] font-black tabular-nums leading-none text-white">{value}</p>
+      {sub  && <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.68)" }}>{sub}</p>}
+      {note && <p className="text-[10px] mt-2 pt-2" style={{ color: "rgba(255,255,255,0.58)", borderTop: "1px solid rgba(255,255,255,0.18)" }}>{note}</p>}
     </div>
   );
 }
@@ -385,23 +393,23 @@ export default function ExecutiveDashboard() {
 
           {/* ── KPI STRIP — each tile has its own distinct colour tint ─── */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {([
-                { label: "Total Reach",      value: TOTAL_PART.toLocaleString(), sub: "Participants",    bg: "#E0F2FE", clr: "#0369A1" },
-                { label: "Active Ventures",  value: ALL_VENTURES.length,          sub: "In portfolio",   bg: "#F3E8FF", clr: "#7C3AED" },
-                { label: "Female Reach",     value: `${FEMALE_PCT}%`,             sub: `${TOTAL_FEM.toLocaleString()} people`, bg: "#FCE7F3", clr: "#BE185D" },
-                { label: "Programmes",       value: TOTAL_PROGS,                  sub: "Delivered",      bg: "#FFF7ED", clr: "#C2410C" },
-                { label: "Avg Satisfaction", value: `${AVG_SAT}/5`,               sub: "Rated progs",    bg: "#E6FFFA", clr: "#0D9488" },
-                { label: "Avg Completion",   value: `${AVG_COMP}%`,               sub: "Completion",     bg: "#ECFDF5", clr: "#059669" },
-                { label: "Partnerships",     value: TOTAL_PSHIP,                  sub: "Cross-sector",   bg: "#FFFBEB", clr: "#B45309" },
-                { label: "1-Yr Fellows",     value: mfGrad,                       sub: "Grad fellows",   bg: "#EEF2FF", clr: "#4338CA" },
+                { label: "Total Reach",      value: TOTAL_PART.toLocaleString(), sub: "Participants",    bg: "#BAE6FD", clr: "#075985" },
+                { label: "Active Ventures",  value: ALL_VENTURES.length,          sub: "In portfolio",   bg: "#DDD6FE", clr: "#5B21B6" },
+                { label: "Female Reach",     value: `${FEMALE_PCT}%`,             sub: `${TOTAL_FEM.toLocaleString()} people`, bg: "#FBCFE8", clr: "#9D174D" },
+                { label: "Programmes",       value: TOTAL_PROGS,                  sub: "Delivered",      bg: "#FED7AA", clr: "#9A3412" },
+                { label: "Avg Satisfaction", value: `${AVG_SAT}/5`,               sub: "Rated progs",    bg: "#99F6E4", clr: "#115E59" },
+                { label: "Avg Completion",   value: `${AVG_COMP}%`,               sub: "Completion",     bg: "#A7F3D0", clr: "#065F46" },
+                { label: "Partnerships",     value: TOTAL_PSHIP,                  sub: "Cross-sector",   bg: "#FDE68A", clr: "#92400E" },
+                { label: "1-Yr Fellows",     value: mfGrad,                       sub: "Grad fellows",   bg: "#C7D2FE", clr: "#3730A3" },
               ] as const).map(tile => (
                 <div key={tile.label} className="rounded-xl border px-3 py-3.5"
-                  style={{ backgroundColor: tile.bg, borderColor: tile.clr + "40" }}>
+                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}`, borderColor: tile.clr }}>
                   <p className="text-[8.5px] font-bold uppercase tracking-[0.12em] leading-tight mb-2"
-                    style={{ color: tile.clr + "B0" }}>{tile.label}</p>
-                  <p className="text-[1.3rem] font-black tabular-nums leading-none" style={{ color: tile.clr }}>{tile.value}</p>
-                  <p className="text-[9px] mt-1.5 font-medium" style={{ color: tile.clr + "80" }}>{tile.sub}</p>
+                    style={{ color: "rgba(255,255,255,0.68)" }}>{tile.label}</p>
+                  <p className="text-[1.3rem] font-black tabular-nums leading-none text-white">{tile.value}</p>
+                  <p className="text-[9px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{tile.sub}</p>
                 </div>
               ))}
             </div>
@@ -417,19 +425,19 @@ export default function ExecutiveDashboard() {
           <ExecCard label="Avg Programme Rating" value={`${AVG_SAT}/5`}
             sub="Quality, Usefulness, Accessibility, Relevance"
             note={`Masterclasses ${mcSat} · Field Visits ${fvSat} · Mentorships ${mfSat}`}
-            color={PRIMARY} icon={Award} bg="#E0F2FE" />
+            color={PRIMARY} icon={Award} bg="#BAE6FD" />
           <ExecCard label="Avg Completion Rate" value={`${AVG_COMP}%`}
             sub="Participants completing all sessions"
             note={`MC ${mcComp}% · FV ${fvComp}% · MF ${mfComp}%`}
-            color={TEAL} icon={Target} bg="#E6FFFA" />
+            color={TEAL} icon={Target} bg="#99F6E4" />
           <ExecCard label="Mentorship Fellows" value={mfFel.toLocaleString()}
             sub={`Across ${mentorshipPrograms.length} programmes · ${mfGrad} in 1-yr track`}
             note={`${Math.round(mfFem/mfFel*100)}% female · ${mentorshipPrograms.filter(p=>p.isFellowship).length} fellowships`}
-            color={PURPLE} icon={Users} bg="#F3E8FF" />
+            color={PURPLE} icon={Users} bg="#DDD6FE" />
           <ExecCard label="Funding Deployed" value={fmt$(TOTAL_FUNDING)}
             sub={`${ALL_VENTURES.length} ventures · ${TOTAL_JOBS.toLocaleString()} jobs created`}
             note={`Founder gender parity: ${FOUNDER_FEM}% female`}
-            color={GREEN} icon={TrendingUp} bg="#ECFDF5" />
+            color={GREEN} icon={TrendingUp} bg="#A7F3D0" />
         </div>
 
         {/* ── SECTION 1: PROGRAMME ACTIVITY ─── */}
@@ -743,17 +751,18 @@ export default function ExecutiveDashboard() {
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-gray-100">
             {([
-              { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",          bg: "#E0F2FE", clr: "#0369A1" },
-              { icon: Zap,        value: String(TOTAL_PROGS),          label: "Programmes Delivered",  bg: "#E6FFFA", clr: "#0D9488" },
-              { icon: Award,      value: `${AVG_SAT}/5`,               label: "Avg Satisfaction",      bg: "#F3E8FF", clr: "#7C3AED" },
-              { icon: Target,     value: `${AVG_COMP}%`,               label: "Avg Completion",        bg: "#ECFDF5", clr: "#059669" },
-              { icon: Handshake,  value: String(TOTAL_PSHIP),          label: "Partnerships",          bg: "#FFF7ED", clr: "#C2410C" },
-              { icon: TrendingUp, value: fmt$(TOTAL_FUNDING),          label: "Funding Deployed",      bg: "#F0FDF4", clr: "#166534" },
+              { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",          bg: "#BAE6FD", clr: "#075985" },
+              { icon: Zap,        value: String(TOTAL_PROGS),          label: "Programmes Delivered",  bg: "#99F6E4", clr: "#115E59" },
+              { icon: Award,      value: `${AVG_SAT}/5`,               label: "Avg Satisfaction",      bg: "#DDD6FE", clr: "#5B21B6" },
+              { icon: Target,     value: `${AVG_COMP}%`,               label: "Avg Completion",        bg: "#A7F3D0", clr: "#065F46" },
+              { icon: Handshake,  value: String(TOTAL_PSHIP),          label: "Partnerships",          bg: "#FED7AA", clr: "#9A3412" },
+              { icon: TrendingUp, value: fmt$(TOTAL_FUNDING),          label: "Funding Deployed",      bg: "#BBF7D0", clr: "#166534" },
             ] as const).map(({ icon: Icon, value, label, bg, clr }) => (
-              <div key={label} className="px-5 py-5 text-center" style={{ backgroundColor: bg }}>
-                <Icon size={15} className="mx-auto mb-2" style={{ color: clr + "90" }} />
-                <p className="text-2xl font-black tabular-nums" style={{ color: clr }}>{value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: clr + "80" }}>{label}</p>
+              <div key={label} className="px-5 py-5 text-center"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}` }}>
+                <Icon size={15} className="mx-auto mb-2" style={{ color: "rgba(255,255,255,0.72)" }} />
+                <p className="text-2xl font-black tabular-nums text-white">{value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</p>
               </div>
             ))}
           </div>

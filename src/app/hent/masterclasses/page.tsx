@@ -10,8 +10,12 @@ import {
 } from "@/data/masterclasses";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 
-const NAVY = "#002147";
-const RED  = "#D4264A";
+const NAVY   = "#002147";
+const RED    = "#D4264A";
+const ACCENT = "#2563EB"; // blue — masterclasses module identity
+const VIOLET_MC = "#7C3AED";
+const EMERALD_MC = "#10B981";
+const AMBER_MC = "#F59E0B";
 
 function ratingLabel(score: number): string {
   if (score >= 4.5) return "Very High";
@@ -27,25 +31,30 @@ const RATING_COLORS: Record<string, string> = {
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: NAVY }} />
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: ACCENT }} />
       <div>
-        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-[0.1em]">{title}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: ACCENT }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
       </div>
     </div>
   );
 }
 
-function ChartCard({ title, sub, children }: {
-  title: string; sub?: string; children: React.ReactNode;
+function ChartCard({ title, sub, accent = ACCENT, children }: {
+  title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-gray-100 flex items-start gap-2.5">
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: NAVY }} />
+      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
+        style={{
+          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          borderBottomColor: accent,
+        }}>
+        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
+          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
         <div>
-          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em] leading-none">{title}</p>
-          {sub && <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{sub}</p>}
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5">{children}</div>
@@ -243,21 +252,21 @@ export default function MasterclassesPage() {
 
           {/* 6 stat tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {[
-                { label: "Total Masterclasses",      value: tot.sessions,                                    sub: "Sessions delivered" },
-                { label: "Total Attendees",           value: tot.attendees.toLocaleString(),                  sub: "Across all sessions" },
-                { label: "Ventures Represented",      value: tot.ventures.toLocaleString(),                   sub: "Unique ventures" },
-                { label: "Female-Led Ventures",       value: tot.femaleVent,                                  sub: `${tot.ventures>0?Math.round((tot.femaleVent/tot.ventures)*100):0}% of attending` },
-                { label: "Avg Attendance / Session",  value: avgAtt,                                          sub: "Per masterclass" },
-                { label: "Avg Completion Rate",       value: `${tot.completion}%`,                            sub: "Participants completing" },
-              ].map((tile,i) => (
-                <div key={tile.label}
-                  className={i>0?"px-4 py-4 border-l border-white/10":"px-4 py-4"}
-                  style={{ backgroundColor: NAVY }}>
-                  <p className="text-[9px] font-bold text-blue-200/50 uppercase tracking-wider mb-2 leading-tight">{tile.label}</p>
-                  <p className="text-2xl font-bold text-white tabular-nums leading-none">{tile.value}</p>
-                  <p className="text-[9px] text-blue-200/30 mt-1.5">{tile.sub}</p>
+                { label: "Total Masterclasses",      value: tot.sessions,                                    sub: "Sessions delivered",     bg: "#EFF6FF", clr: "#1E40AF" },
+                { label: "Total Attendees",           value: tot.attendees.toLocaleString(),                  sub: "Across all sessions",    bg: "#F5F3FF", clr: "#4C1D95" },
+                { label: "Ventures Represented",      value: tot.ventures.toLocaleString(),                   sub: "Unique ventures",        bg: "#EEF2FF", clr: "#3730A3" },
+                { label: "Female-Led Ventures",       value: tot.femaleVent,                                  sub: `${tot.ventures>0?Math.round((tot.femaleVent/tot.ventures)*100):0}% of attending`, bg: "#FAF5FF", clr: "#6B21A8" },
+                { label: "Avg Attendance / Session",  value: avgAtt,                                          sub: "Per masterclass",        bg: "#E0F2FE", clr: "#0C4A6E" },
+                { label: "Avg Completion Rate",       value: `${tot.completion}%`,                            sub: "Participants completing", bg: "#ECFEFF", clr: "#155E75" },
+              ].map((tile) => (
+                <div key={tile.label} className="rounded-xl border px-4 py-4"
+                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}`, borderColor: tile.clr }}>
+                  <p className="text-[9px] font-bold uppercase tracking-wider mb-2 leading-tight"
+                    style={{ color: "rgba(255,255,255,0.68)" }}>{tile.label}</p>
+                  <p className="text-2xl font-bold tabular-nums leading-none text-white">{tile.value}</p>
+                  <p className="text-[9px] mt-1.5" style={{ color: "rgba(255,255,255,0.62)" }}>{tile.sub}</p>
                 </div>
               ))}
             </div>
@@ -341,7 +350,8 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Ratings by Gender of Attendees"
-              sub="Avg score per criterion — female-majority vs male-majority sessions">
+              sub="Avg score per criterion — female-majority vs male-majority sessions"
+              accent={VIOLET_MC}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
                 <span className="flex items-center gap-1"><span className="text-violet-600">♀</span> Female-majority sessions</span>
                 <span className="flex items-center gap-1"><span className="text-blue-600">♂</span> Male-majority sessions</span>
@@ -429,7 +439,8 @@ export default function MasterclassesPage() {
                 showLegend={false} showAnimation={false} />
             </ChartCard>
             <ChartCard title="Attendance by Gender per Year"
-              sub="Female vs male participants — yearly comparison">
+              sub="Female vs male participants — yearly comparison"
+              accent={VIOLET_MC}>
               <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
                 <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block bg-violet-500"/>Female</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block bg-sky-500"/>Male</span>
@@ -446,7 +457,8 @@ export default function MasterclassesPage() {
           <SecHeader title="Participation Growth Over Time"
             sub="Cumulative attendees across all masterclass sessions" />
           <ChartCard title="Cumulative Attendee Growth"
-            sub="Running total of participants — shows programme reach expansion">
+            sub="Running total of participants — shows programme reach expansion"
+            accent={EMERALD_MC}>
             <AreaChart data={growthData} index="Period" categories={["Cumulative Attendees"]}
               colors={["emerald"]} className="h-52"
               valueFormatter={(v:number)=>`${v} total attendees`}
@@ -460,7 +472,8 @@ export default function MasterclassesPage() {
             sub="Ranked by attendee feedback and session participation" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Top Performing Masterclasses"
-              sub="Ranked by average feedback score across all four rating criteria">
+              sub="Ranked by average feedback score across all four rating criteria"
+              accent={AMBER_MC}>
               <div className="space-y-3">
                 {topSessions.map((m,i) => (
                   <div key={m.id} className="flex items-start gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
@@ -523,7 +536,8 @@ export default function MasterclassesPage() {
           <SecHeader title="Session Completion Analytics"
             sub="Participation and completion rates across all masterclass sessions" />
           <ChartCard title="Completion Rate by Session"
-            sub="Percentage of registered attendees who completed each masterclass">
+            sub="Percentage of registered attendees who completed each masterclass"
+            accent={EMERALD_MC}>
             <BarChart
               data={[...filtered]
                 .sort((a,b) => a.date.localeCompare(b.date))
@@ -548,23 +562,24 @@ export default function MasterclassesPage() {
         </section>
 
         {/* FOOTER */}
-        <div className="rounded-lg overflow-hidden shadow-sm" style={{backgroundColor:NAVY}}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/10">
-            {[
-              {value:String(tot.sessions),            label:"Sessions Delivered"},
-              {value:tot.attendees.toLocaleString(),  label:"Total Attendees"},
-              {value:`${femalePct}%`,                 label:"Female Participation"},
-              {value:`${tot.completion}%`,            label:"Avg Completion Rate"},
-            ].map(tile => (
-              <div key={tile.label} className="px-6 py-5 text-center">
-                <p className="text-2xl font-bold text-white tabular-nums">{tile.value}</p>
-                <p className="text-[11px] text-blue-200/50 mt-1 uppercase tracking-wider">{tile.label}</p>
+        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+            {([
+              { value: String(tot.sessions),           label: "Sessions Delivered",   bg: "#EFF6FF", clr: "#1E40AF" },
+              { value: tot.attendees.toLocaleString(),  label: "Total Attendees",      bg: "#F5F3FF", clr: "#4C1D95" },
+              { value: `${femalePct}%`,                label: "Female Participation", bg: "#FAF5FF", clr: "#6B21A8" },
+              { value: `${tot.completion}%`,           label: "Avg Completion Rate",  bg: "#EEF2FF", clr: "#3730A3" },
+            ] as const).map(tile => (
+              <div key={tile.label} className="px-6 py-6 text-center"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
+                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
               </div>
             ))}
           </div>
-          <div className="px-6 py-3 border-t border-white/10 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-white uppercase tracking-widest">HENT · Masterclasses · 2023–2026</p>
-            <p className="text-[10px] text-blue-200/40">Last updated: 28 May 2026 EAT</p>
+          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT · Masterclasses · 2023–2026</p>
+            <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>
 

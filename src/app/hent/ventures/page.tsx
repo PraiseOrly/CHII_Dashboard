@@ -165,11 +165,16 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-      <div className="px-5 py-3.5 border-b border-gray-100 flex items-start gap-2.5 flex-shrink-0">
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: accent }} />
+      <div className="px-5 py-3.5 border-b flex items-start gap-2.5 flex-shrink-0"
+        style={{
+          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          borderBottomColor: accent,
+        }}>
+        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
+          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
         <div>
-          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em] leading-none">{title}</p>
-          {sub && <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{sub}</p>}
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5 min-h-0">{children}</div>
@@ -178,12 +183,12 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
 }
 
 // Pace bar designed for light tinted backgrounds
-function LightPaceBar({ a, t, clr }: { a: number; t: number; clr: string }) {
+function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }) {
   return (
-    <div className="h-1 rounded-full relative mt-2.5 mb-0.5" style={{ backgroundColor: clr + "25" }}>
+    <div className="h-1 rounded-full relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(255,255,255,0.22)" }}>
       <div className="h-full rounded-full"
         style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
-      <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: clr + "70" }} />
+      <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: "rgba(255,255,255,0.55)" }} />
     </div>
   );
 }
@@ -390,27 +395,27 @@ export default function HENTPortfolio() {
           <div className="pb-5">
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
               {([
-                { label: "Health Ventures", value: ACTUALS.ventures, denom: TARGETS.ventures,               sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#E0F2FE", clr: "#0369A1", pace: true,  a: ACTUALS.ventures, t: TARGETS.ventures  },
-                { label: "Jobs Created",    value: ACTUALS.jobs,     denom: TARGETS.jobs.toLocaleString(),   sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#ECFDF5", clr: "#059669", pace: true,  a: ACTUALS.jobs,     t: TARGETS.jobs      },
-                { label: "Funds Deployed",  value: fmt$(ACTUALS.funds), denom: fmt$(TARGETS.funds),          sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#F3E8FF", clr: "#7C3AED", pace: true,  a: ACTUALS.funds,    t: TARGETS.funds     },
-                { label: "Active Founders", value: 48,               denom: undefined,                      sub: `${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`,  bg: "#FFF7ED", clr: "#C2410C", pace: false },
-                { label: "Pace of Target",  value: "5.5%",           denom: undefined,                      sub: `Against ${Math.round(PACE * 100)}% expected`, bg: "#E6FFFA", clr: "#0D9488", pace: false },
+                { label: "Health Ventures", value: ACTUALS.ventures, denom: TARGETS.ventures,               sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#E0F2FE", clr: "#0C4A6E", pace: true,  a: ACTUALS.ventures, t: TARGETS.ventures  },
+                { label: "Jobs Created",    value: ACTUALS.jobs,     denom: TARGETS.jobs.toLocaleString(),   sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#F0FDF4", clr: "#14532D", pace: true,  a: ACTUALS.jobs,     t: TARGETS.jobs      },
+                { label: "Funds Deployed",  value: fmt$(ACTUALS.funds), denom: fmt$(TARGETS.funds),          sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#CFFAFE", clr: "#164E63", pace: true,  a: ACTUALS.funds,    t: TARGETS.funds     },
+                { label: "Active Founders", value: 48,               denom: undefined,                      sub: `${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`,  bg: "#ECFEFF", clr: "#155E75", pace: false },
+                { label: "Pace of Target",  value: "5.5%",           denom: undefined,                      sub: `Against ${Math.round(PACE * 100)}% expected`, bg: "#F0FDFA", clr: "#134E4A", pace: false },
               ] as const).map(tile => (
                 <div key={tile.label} className="rounded-xl border px-5 py-4"
-                  style={{ backgroundColor: tile.bg, borderColor: tile.clr + "40" }}>
+                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}`, borderColor: tile.clr }}>
                   <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-tight mb-2"
-                    style={{ color: tile.clr + "B0" }}>{tile.label}</p>
+                    style={{ color: "rgba(255,255,255,0.68)" }}>{tile.label}</p>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black tabular-nums leading-none" style={{ color: tile.clr }}>{tile.value}</span>
+                    <span className="text-3xl font-black tabular-nums leading-none text-white">{tile.value}</span>
                     {tile.denom !== undefined && (
-                      <span className="text-sm font-normal" style={{ color: tile.clr + "70" }}>/ {tile.denom}</span>
+                      <span className="text-sm font-normal" style={{ color: "rgba(255,255,255,0.52)" }}>/ {tile.denom}</span>
                     )}
                   </div>
                   {tile.pace && (
                     <LightPaceBar a={tile.a!} t={tile.t!} clr={tile.clr} />
                   )}
                   {!tile.pace && <div className="mt-3" />}
-                  <p className="text-[9px] font-medium" style={{ color: tile.clr + "80" }}>{tile.sub}</p>
+                  <p className="text-[9px] font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{tile.sub}</p>
                 </div>
               ))}
             </div>
@@ -633,14 +638,15 @@ export default function HENTPortfolio() {
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: fmt$(totalFunding),                                      label: "Total Funding Raised",    bg: "#ECFDF5", clr: "#059669" },
-              { value: `${Math.round((femCount / founders.length) * 100)}%`,    label: "Female Founders",         bg: "#F3E8FF", clr: "#7C3AED" },
-              { value: `${avgLabScore}/100`,                                     label: "Venture Labs Avg Score",  bg: "#FFFBEB", clr: "#B45309" },
-              { value: `${PROGRAM_EVENTS_LIST.length}`,                          label: "Programme Events Hosted", bg: "#E0F2FE", clr: "#0369A1" },
+              { value: fmt$(totalFunding),                                      label: "Total Funding Raised",    bg: "#F0FDF4", clr: "#14532D" },
+              { value: `${Math.round((femCount / founders.length) * 100)}%`,    label: "Female Founders",         bg: "#CFFAFE", clr: "#164E63" },
+              { value: `${avgLabScore}/100`,                                     label: "Venture Labs Avg Score",  bg: "#ECFEFF", clr: "#155E75" },
+              { value: `${PROGRAM_EVENTS_LIST.length}`,                          label: "Programme Events Hosted", bg: "#E0F2FE", clr: "#0C4A6E" },
             ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center" style={{ backgroundColor: tile.bg }}>
-                <p className="text-2xl font-black tabular-nums" style={{ color: tile.clr }}>{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: tile.clr + "80" }}>{tile.label}</p>
+              <div key={tile.label} className="px-6 py-6 text-center"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
+                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
               </div>
             ))}
           </div>

@@ -115,7 +115,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-3 mb-5">
       <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: ACCENT }} />
       <div>
-        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-[0.1em]">{title}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: ACCENT }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
       </div>
     </div>
@@ -127,11 +127,16 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-gray-100 flex items-start gap-2.5">
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: accent }} />
+      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
+        style={{
+          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          borderBottomColor: accent,
+        }}>
+        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
+          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
         <div>
-          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em] leading-none">{title}</p>
-          {sub && <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{sub}</p>}
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5">{children}</div>
@@ -224,14 +229,14 @@ function Stars({ score }: { score: number }) {
 
 // ─── KPI tile map (8 metrics) ─────────────────────────────────────────────────
 const KPI_TILES = [
-  { label: "Mentorship Programs",    bg: "#E0F2FE", clr: "#0369A1" },
-  { label: "Fellowship Programs",    bg: "#F3E8FF", clr: "#7C3AED" },
-  { label: "Total Fellows",          bg: "#ECFDF5", clr: "#059669" },
-  { label: "Mentor Engagements",     bg: "#FFF7ED", clr: "#C2410C" },
-  { label: "Ventures Involved",      bg: "#E6FFFA", clr: "#0D9488" },
-  { label: "1-Yr Fellowship Grads",  bg: "#FFFBEB", clr: "#B45309" },
-  { label: "Female Fellows",         bg: "#FFF1F2", clr: "#BE185D" },
-  { label: "Avg Completion Rate",    bg: "#EEF2FF", clr: "#4338CA" },
+  { label: "Mentorship Programs",   bg: "#F5F3FF", clr: "#4C1D95" },
+  { label: "Fellowship Programs",   bg: "#EDE9FE", clr: "#5B21B6" },
+  { label: "Total Fellows",         bg: "#FAF5FF", clr: "#6B21A8" },
+  { label: "Mentor Engagements",    bg: "#EEF2FF", clr: "#312E81" },
+  { label: "Ventures Involved",     bg: "#E9D5FF", clr: "#6B21A8" },
+  { label: "1-Yr Fellowship Grads", bg: "#DDD6FE", clr: "#4C1D95" },
+  { label: "Female Fellows",        bg: "#FCE7F3", clr: "#831843" },
+  { label: "Avg Completion Rate",   bg: "#C7D2FE", clr: "#312E81" },
 ] as const;
 
 const QUAL_THEMES: { text: string; area: MFQualArea; threshold: number }[] = [
@@ -399,14 +404,14 @@ export default function MentorshipPage() {
 
           {/* KPI strip — 8 distinct tinted tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
               {KPI_TILES.map(({ label, bg, clr }, i) => (
                 <div key={label} className="rounded-xl border px-3 py-3.5"
-                  style={{ backgroundColor: bg, borderColor: clr + "40" }}>
+                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
                   <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-2"
-                    style={{ color: clr + "B0" }}>{label}</p>
-                  <p className="text-xl font-black tabular-nums leading-none" style={{ color: clr }}>{kpiValues[i].value}</p>
-                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: clr + "80" }}>{kpiValues[i].sub}</p>
+                    style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+                  <p className="text-xl font-black tabular-nums leading-none text-white">{kpiValues[i].value}</p>
+                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{kpiValues[i].sub}</p>
                 </div>
               ))}
             </div>
@@ -945,14 +950,15 @@ export default function MentorshipPage() {
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", bg: "#E0F2FE", clr: "#0369A1" },
-              { value: tot.fellows.toLocaleString(),            label: "Total Fellows",        bg: "#F3E8FF", clr: "#7C3AED" },
-              { value: `${femalePct}%`,                         label: "Female Participation", bg: "#FFF1F2", clr: "#BE185D" },
-              { value: `${tot.completion}%`,                    label: "Avg Completion Rate",  bg: "#ECFDF5", clr: "#059669" },
+              { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", bg: "#F5F3FF", clr: "#4C1D95" },
+              { value: tot.fellows.toLocaleString(),            label: "Total Fellows",        bg: "#EDE9FE", clr: "#5B21B6" },
+              { value: `${femalePct}%`,                         label: "Female Participation", bg: "#FCE7F3", clr: "#831843" },
+              { value: `${tot.completion}%`,                    label: "Avg Completion Rate",  bg: "#EEF2FF", clr: "#312E81" },
             ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center" style={{ backgroundColor: tile.bg }}>
-                <p className="text-2xl font-black tabular-nums" style={{ color: tile.clr }}>{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: tile.clr + "80" }}>{tile.label}</p>
+              <div key={tile.label} className="px-6 py-6 text-center"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
+                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
               </div>
             ))}
           </div>
