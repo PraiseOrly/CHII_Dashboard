@@ -526,25 +526,25 @@ export default function HackathonsPage() {
         </section>
 
         {/* ── FOOTER STRIP ────────────────────────────────────────────────── */}
-        <div className="rounded-xl overflow-hidden shadow-sm" style={{ backgroundColor: NAVY }}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/10">
+        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(total.participants), label: "Total Participants",    accent: "#60A5FA" },
-              { value: `${femalePct}%`,            label: "Female Participation", accent: "#A78BFA" },
-              { value: String(total.startups),     label: "Startups Created",     accent: "#4ADE80" },
-              { value: String(total.partnerships), label: "Partnerships Secured", accent: "#FCD34D" },
+              { value: String(total.participants), label: "Total Participants",    bg: "#E0F2FE", clr: "#0369A1" },
+              { value: `${femalePct}%`,            label: "Female Participation", bg: "#F3E8FF", clr: "#7C3AED" },
+              { value: String(total.startups),     label: "Startups Created",     bg: "#ECFDF5", clr: "#059669" },
+              { value: String(total.partnerships), label: "Partnerships Secured", bg: "#FFFBEB", clr: "#B45309" },
             ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-5 text-center">
-                <p className="text-2xl font-bold tabular-nums" style={{ color: tile.accent }}>{tile.value}</p>
-                <p className="text-[11px] text-blue-200/50 mt-1 uppercase tracking-wider">{tile.label}</p>
+              <div key={tile.label} className="px-6 py-6 text-center" style={{ backgroundColor: tile.bg }}>
+                <p className="text-2xl font-black tabular-nums" style={{ color: tile.clr }}>{tile.value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: tile.clr + "80" }}>{tile.label}</p>
               </div>
             ))}
           </div>
-          <div className="px-6 py-3 border-t border-white/10 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-white uppercase tracking-widest">
+          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
               HENT · Hackathons · {YEARS[0]}–{YEARS[YEARS.length - 1]}
             </p>
-            <p className="text-[10px] text-blue-200/40">Last updated: 28 May 2026 EAT</p>
+            <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>
 

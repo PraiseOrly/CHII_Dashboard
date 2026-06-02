@@ -740,28 +740,28 @@ export default function ExecutiveDashboard() {
         </section>
 
         {/* ── FOOTER STRIP ──────────────────────────────────────────────────── */}
-        <div className="rounded-xl overflow-hidden shadow-sm" style={{ backgroundColor: NAVY }}>
-          <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-white/10">
+        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+          <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-gray-100">
             {([
-              { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",          accent: "#60A5FA" },
-              { icon: Zap,        value: String(TOTAL_PROGS),          label: "Programmes Delivered",  accent: "#34D399" },
-              { icon: Award,      value: `${AVG_SAT}/5`,               label: "Avg Satisfaction",      accent: "#A78BFA" },
-              { icon: Target,     value: `${AVG_COMP}%`,               label: "Avg Completion",        accent: "#FCD34D" },
-              { icon: Handshake,  value: String(TOTAL_PSHIP),          label: "Partnerships",          accent: "#FB923C" },
-              { icon: TrendingUp, value: fmt$(TOTAL_FUNDING),          label: "Funding Deployed",      accent: "#4ADE80" },
-            ] as const).map(({ icon: Icon, value, label, accent }) => (
-              <div key={label} className="px-5 py-5 text-center">
-                <Icon size={16} className="mx-auto mb-2" style={{ color: accent + "80" }} />
-                <p className="text-2xl font-black tabular-nums" style={{ color: accent }}>{value}</p>
-                <p className="text-[10px] text-blue-200/50 mt-1 uppercase tracking-wider">{label}</p>
+              { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",          bg: "#E0F2FE", clr: "#0369A1" },
+              { icon: Zap,        value: String(TOTAL_PROGS),          label: "Programmes Delivered",  bg: "#E6FFFA", clr: "#0D9488" },
+              { icon: Award,      value: `${AVG_SAT}/5`,               label: "Avg Satisfaction",      bg: "#F3E8FF", clr: "#7C3AED" },
+              { icon: Target,     value: `${AVG_COMP}%`,               label: "Avg Completion",        bg: "#ECFDF5", clr: "#059669" },
+              { icon: Handshake,  value: String(TOTAL_PSHIP),          label: "Partnerships",          bg: "#FFF7ED", clr: "#C2410C" },
+              { icon: TrendingUp, value: fmt$(TOTAL_FUNDING),          label: "Funding Deployed",      bg: "#F0FDF4", clr: "#166534" },
+            ] as const).map(({ icon: Icon, value, label, bg, clr }) => (
+              <div key={label} className="px-5 py-5 text-center" style={{ backgroundColor: bg }}>
+                <Icon size={15} className="mx-auto mb-2" style={{ color: clr + "90" }} />
+                <p className="text-2xl font-black tabular-nums" style={{ color: clr }}>{value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: clr + "80" }}>{label}</p>
               </div>
             ))}
           </div>
-          <div className="px-6 py-3 border-t border-white/10 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-white uppercase tracking-widest">
+          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
               CHII · HENT Executive Dashboard · 2020–2026
             </p>
-            <p className="text-[10px] text-blue-200/40">Last updated: 01 Jun 2026 EAT</p>
+            <p className="text-[10px] text-gray-400">Last updated: 01 Jun 2026 EAT</p>
           </div>
         </div>
 
