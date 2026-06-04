@@ -17,7 +17,6 @@ const HIGHLIGHTS = [
   { n: "4", text: "Recent impact reports" },
 ];
 
-
 function ChiiLogo({ size = 38 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,8 +55,8 @@ const FIELD_FOCUS: React.CSSProperties = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [loading, setLoading]       = useState(false);
-  const [portal, setPortal]         = useState("HENT");
+  const [loading, setLoading]           = useState(false);
+  const [portal, setPortal]             = useState("HENT");
   const [showPassword, setShowPassword] = useState(false);
   const [portalFocus, setPortalFocus]   = useState(false);
   const [emailFocus, setEmailFocus]     = useState(false);
@@ -70,13 +69,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-      <div className="w-full max-w-4xl flex flex-col-reverse md:flex-row rounded-lg overflow-hidden shadow-2xl">
+    /*
+     * Mobile: outer bg matches the form gradient so it feels full-screen and seamless.
+     * Desktop (sm+): slate-100 page bg with the card floating in the center.
+     */
+    <div
+      className="min-h-screen flex items-center justify-center sm:bg-slate-100 sm:p-4"
+      style={{ background: "linear-gradient(160deg, #0F1F3D 0%, #1B3F8B 100%)" }}
+    >
+      <div className="w-full sm:max-w-4xl flex flex-col md:flex-row sm:rounded-lg sm:overflow-hidden sm:shadow-2xl">
 
-        {/* ── Left panel — login form (DARK) ── */}
+        {/* ── Form panel — full-screen on mobile, left half on desktop ── */}
         <div
-          className="md:w-1/2 relative flex flex-col justify-center"
-          style={{ padding: "36px 48px", background: "linear-gradient(160deg, #0F1F3D 0%, #1B3F8B 100%)" }}
+          className="w-full md:w-1/2 relative flex flex-col justify-center px-6 py-10 md:px-12 md:py-9"
+          style={{ background: "linear-gradient(160deg, #0F1F3D 0%, #1B3F8B 100%)" }}
         >
           {/* Dot-grid texture */}
           <div className="absolute inset-0 pointer-events-none" style={{
@@ -90,9 +96,9 @@ export default function LoginPage() {
           <div className="absolute -bottom-12 -right-12 w-56 h-56 rounded-full pointer-events-none"
             style={{ background: "rgba(96,165,250,0.07)", filter: "blur(50px)" }} />
 
-          <div className="relative z-10 w-full">
+          <div className="relative z-10 w-full max-w-sm mx-auto">
 
-            {/* Logo row */}
+            {/* Logo + name */}
             <div className="flex items-center justify-center gap-3 mb-3">
               <ChiiLogo size={38} />
               <span style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", color: "white", textTransform: "uppercase", lineHeight: 1.5 }}>
@@ -218,20 +224,27 @@ export default function LoginPage() {
             <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: "18px" }}>
               © 2026 CHII · ALU
             </p>
+
+            {/* Partner logos — mobile only, shown at bottom of form */}
+            <div className="flex md:hidden items-center justify-between mt-6 pt-5"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+              <img src="/logos/alu.png"  alt="African Leadership University" style={{ height: "22px", width: "auto", objectFit: "contain" }} />
+              <img src="/logos/ahc.jpg"  alt="Africa Health Collaborative"   style={{ height: "22px", width: "auto", objectFit: "contain" }} />
+              <img src="/logos/mcf.png"  alt="Mastercard Foundation"         style={{ height: "22px", width: "auto", objectFit: "contain" }} />
+            </div>
+
           </div>
         </div>
 
-        {/* ── Right panel — brand (WHITE) ── */}
-        <div className="md:w-1/2 relative overflow-hidden flex flex-col bg-white" style={{ minHeight: "160px" }}>
+        {/* ── Brand panel — desktop only ── */}
+        <div className="hidden md:flex md:w-1/2 relative overflow-hidden flex-col bg-white">
 
           {/* Partner logo bar */}
           <div className="absolute z-10" style={{ top: "16px", left: "24px", right: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            {/* ALU — left */}
             <img src="/logos/alu.png" alt="African Leadership University" style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
-            {/* AHC + MCF — grouped right */}
             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
               <img src="/logos/ahc.jpg" alt="Africa Health Collaborative" style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
-              <img src="/logos/mcf.png" alt="Mastercard Foundation" style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
+              <img src="/logos/mcf.png" alt="Mastercard Foundation"       style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
             </div>
           </div>
 
@@ -243,14 +256,14 @@ export default function LoginPage() {
                 Health Innovation &amp; <em style={{ color: "#1B3F8B", fontStyle: "italic" }}>Impact.</em>
               </h1>
 
-              <p className="hidden md:block" style={{ fontSize: "14px", color: "#6B7280", lineHeight: 1.65, marginBottom: "28px" }}>
+              <p style={{ fontSize: "14px", color: "#6B7280", lineHeight: 1.65, marginBottom: "28px" }}>
                 CHII develops ethical and entrepreneurial health leaders through
                 mission-driven, experiential learning enabling young Africans to
                 access dignified work, build ventures, and drive lasting health
                 impact across the continent.
               </p>
 
-              <div className="hidden md:block">
+              <div>
                 {HIGHLIGHTS.map(({ n, text }, i) => (
                   <div key={n}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", paddingBottom: "11px" }}>
@@ -268,7 +281,7 @@ export default function LoginPage() {
 
             </div>
 
-            <p className="hidden md:block" style={{ color: "#9CA3AF", fontSize: "11px" }}>
+            <p style={{ color: "#9CA3AF", fontSize: "11px" }}>
               © 2026 African Leadership University
             </p>
           </div>
