@@ -263,12 +263,12 @@ export default function InternshipsPage() {
   const trendColors = trendTab === "students" ? [ROSE, SKY] : [VIOLET, GREEN];
 
   const kpiValues = [
-    { sub: `${YEARS[0]}â€“${YEARS[YEARS.length-1]}`, num: total.orgs,        fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${YEARS[0]} - ${YEARS[YEARS.length-1]}`, num: total.orgs,        fmt: (n: number) => String(Math.round(n)) },
     { sub: "Total placed",                           num: total.students,   fmt: (n: number) => String(Math.round(n)) },
     { sub: "Placement to hire",                      num: total.conversions,fmt: (n: number) => String(Math.round(n)) },
     { sub: "Unique countries",                        num: countries.length, fmt: (n: number) => String(Math.round(n)) },
     { sub: `${mentorPct}% of organisations`,          num: total.mentored,   fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Satisfaction (1â€“5)",                      num: avgSat,           fmt: (n: number) => `${n.toFixed(1)}/5`   },
+    { sub: "Satisfaction (1 - 5)",                      num: avgSat,           fmt: (n: number) => `${n.toFixed(1)}/5`   },
   ];
 
   return (
@@ -282,7 +282,7 @@ export default function InternshipsPage() {
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Internships</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Workplace placements Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {total.orgs} organisations Â· {total.students} students placed
+                Workplace placements  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {total.orgs} organisations  ·  {total.students} students placed
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -330,7 +330,7 @@ export default function InternshipsPage() {
                     <div className="h-full" style={{ width: `${(s.students / total.students) * 100}%`, backgroundColor: SECTOR_COLOR[s.sector] }} />
                   </div>
                   <div className="flex gap-3 mt-1.5 text-[10px] text-gray-400 tabular-nums">
-                    <span>{s.count} orgs Â· sat {s.avgSat}/5</span>
+                    <span>{s.count} orgs  ·  sat {s.avgSat}/5</span>
                     <span className="ml-auto font-semibold" style={{ color: SECTOR_COLOR[s.sector] }}>{s.convPct}% conv.</span>
                   </div>
                 </div>
@@ -481,7 +481,7 @@ export default function InternshipsPage() {
 
             <div className="space-y-4">
               <ChartCard title="Satisfaction by Sector"
-                sub="Average satisfaction score per sector (1â€“5)"
+                sub="Average satisfaction score per sector (1 - 5)"
                 accent={TEAL}>
                 <div className="space-y-3">
                   {satBySector.map((d, i) => (
@@ -502,7 +502,7 @@ export default function InternshipsPage() {
               </ChartCard>
 
               <ChartCard title="Conversion Rate by Sector"
-                sub="Employment conversion rate â€” placements resulting in a hire"
+                sub="Employment conversion rate  -  placements resulting in a hire"
                 accent={GREEN}>
                 <div className="space-y-3">
                   {convBySector.map((d, i) => (
@@ -529,7 +529,7 @@ export default function InternshipsPage() {
         {/* â”€â”€ SECTION 5: COHORT OUTCOMES (HEMP) â”€â”€â”€ */}
         <section>
           <SecHeader
-            title="Cohort Outcomes (Internal Â· SFH Â· WAG Â· KASHA)"
+            title="Cohort Outcomes (Internal  ·  SFH  ·  WAG  ·  KASHA)"
             sub="Internship participation + post-internship placement outcomes" />
 
           {(() => {
@@ -595,7 +595,7 @@ export default function InternshipsPage() {
                     label="Total interns"
                     num={total.students}
                     displayFmt={(n) => String(Math.round(n))}
-                    sub={`${YEARS[0]}â€“${YEARS[YEARS.length - 1]}`}
+                    sub={`${YEARS[0]} - ${YEARS[YEARS.length - 1]}`}
                     clr="#1E3A8A"
                   />
                   {(["Internal", "SFH", "WAG", "KASHA"] as const).map((c) => {
@@ -606,7 +606,7 @@ export default function InternshipsPage() {
                         label={`${c} interns`}
                         num={row.interns}
                         displayFmt={(n) => String(Math.round(n))}
-                        sub={`${row.share}% share Â· ${row.placementRate}% rate`}
+                        sub={`${row.share}% share  ·  ${row.placementRate}% rate`}
                         clr={COHORT_COLORS[c]}
                       />
                     );
@@ -713,7 +713,7 @@ export default function InternshipsPage() {
 
                   <ChartCard
                     title="Placement Conversion"
-                    sub={`Placement share across cohorts Â· Internship-to-placement rate: ${internshipToPlacementRate}%`}
+                    sub={`Placement share across cohorts  ·  Internship-to-placement rate: ${internshipToPlacementRate}%`}
                     accent="#065F46"
                   >
                     <ResponsiveContainer width="100%" height={220}>
@@ -816,7 +816,7 @@ export default function InternshipsPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP Â· Internships Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]}
+              HEMP  ·  Internships  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
           </div>

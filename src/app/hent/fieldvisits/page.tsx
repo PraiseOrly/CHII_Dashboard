@@ -14,7 +14,7 @@ import {
 // â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#002147"; // footer bg only
 const RED     = "#D4264A";
-const ACCENT  = "#059669"; // page identity â€” field visits = emerald/green
+const ACCENT  = "#059669"; // page identity  -  field visits = emerald/green
 const SKY     = "#0EA5E9";
 const VIOLET  = "#8B5CF6";
 const TEAL    = "#14B8A6";
@@ -177,7 +177,7 @@ function RatingBar({ label, visits, criterion }: {
   const lo  = visits.filter(v => v.scores[criterion] < 3.0).length;
   const tot = visits.length || 1;
   const avg = visits.length
-    ? (visits.reduce((s, v) => s + v.scores[criterion], 0) / visits.length).toFixed(1) : "â€”";
+    ? (visits.reduce((s, v) => s + v.scores[criterion], 0) / visits.length).toFixed(1) : " - ";
   const segs = [
     { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
     { key: "High",      count: hi, color: RATING_COLORS.High },
@@ -286,7 +286,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 
 // â”€â”€â”€ KPI tile map (7 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TILES = [
-  { label: "Total Field Visits",      clr: "#065F46" },  // emerald  â€” page identity
+  { label: "Total Field Visits",      clr: "#065F46" },  // emerald   -  page identity
   { label: "Total Participants",      clr: "#1E3A8A" },  // deep blue
   { label: "Ventures Participating",  clr: "#6D28D9" },  // violet
   { label: "Organisations Visited",   clr: "#0E7490" },  // cyan
@@ -383,7 +383,7 @@ export default function FieldVisitsPage() {
 
   const orgFreq: Record<string, { type: string; count: number; participants: number; avgScore: number; location: string }> = {};
   filtered.forEach(v => {
-    const base = v.organization.replace(/ â€” .*/, "");
+    const base = v.organization.replace(/  -  .*/, "");
     if (!orgFreq[base]) orgFreq[base] = { type: v.type, count: 0, participants: 0, avgScore: 0, location: `${v.city}, ${v.country}` };
     orgFreq[base].count++;
     orgFreq[base].participants += v.participants;
@@ -440,7 +440,7 @@ export default function FieldVisitsPage() {
             <div>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Field Visits</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Industry excursions Â· 2022â€“2026 Â· {fieldVisits.length} visits tracked
+                Industry excursions  ·  2022 - 2026  ·  {fieldVisits.length} visits tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -454,7 +454,7 @@ export default function FieldVisitsPage() {
             </div>
           </div>
 
-          {/* KPI strip â€” 7 distinct tinted tiles */}
+          {/* KPI strip  -  7 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
@@ -527,7 +527,7 @@ export default function FieldVisitsPage() {
             sub={`${filtered.length} visits rated across six experience dimensions`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Rating Distribution by Criterion"
-              sub="Very High Â· High Â· Moderate Â· Low â€” proportion of visits per level"
+              sub="Very High  ·  High  ·  Moderate  ·  Low  -  proportion of visits per level"
               accent={TEAL}>
               <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
                 {(["Very High","High","Moderate","Low"] as const).map(l => (
@@ -540,7 +540,7 @@ export default function FieldVisitsPage() {
             </ChartCard>
 
             <ChartCard title="Ratings by Gender of Participants"
-              sub="Average score per dimension â€” female vs male majority visits"
+              sub="Average score per dimension  -  female vs male majority visits"
               accent={VIOLET}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
                 <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET }}>F</span> Female-majority visits</span>
@@ -667,7 +667,7 @@ export default function FieldVisitsPage() {
                         </div>
                         <div className="text-right flex-shrink-0 ml-4">
                           <span className="text-sm font-bold" style={{ color: col }}>{data.visits} visit{data.visits !== 1 ? "s" : ""}</span>
-                          <span className="text-xs text-gray-400 ml-2">Â· {data.participants} participants</span>
+                          <span className="text-xs text-gray-400 ml-2"> ·  {data.participants} participants</span>
                         </div>
                       </div>
                       <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
@@ -811,7 +811,7 @@ export default function FieldVisitsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[11px] font-medium text-gray-800 truncate">{v.organization}</p>
-                      <p className="text-[10px] text-gray-400">{v.city} Â· {v.year}</p>
+                      <p className="text-[10px] text-gray-400">{v.city}  ·  {v.year}</p>
                     </div>
                     <div className="w-20 flex-shrink-0">
                       <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: EMERALD + "20" }}>
@@ -870,7 +870,7 @@ export default function FieldVisitsPage() {
             sub="Cumulative reach over time and completion rates across all field visits" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <ChartCard title="Cumulative Participant Reach"
-            sub="Running total across all visits â€” shows programme exposure growth"
+            sub="Running total across all visits  -  shows programme exposure growth"
             accent={EMERALD}>
             <ResponsiveContainer width="100%" height={208}>
               <AreaChart data={growthData}>
@@ -927,7 +927,7 @@ export default function FieldVisitsPage() {
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { icon: MapPin,    value: String(tot.visits),               label: "Field Visits",             clr: "#065F46" },  // emerald â€” page identity
+              { icon: MapPin,    value: String(tot.visits),               label: "Field Visits",             clr: "#065F46" },  // emerald  -  page identity
               { icon: Users,     value: tot.participants.toLocaleString(), label: "Total Participants",       clr: "#1E3A8A" },  // deep blue
               { icon: Star,      value: `${femalePct}%`,                  label: "Female Participation",     clr: "#9D174D" },  // rose
               { icon: Handshake, value: String(tot.partnerships),          label: "Partnerships Established", clr: "#C2410C" },  // orange
@@ -941,7 +941,7 @@ export default function FieldVisitsPage() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT Â· Field Visits Â· 2022â€“2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT  ·  Field Visits  ·  2022 - 2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>

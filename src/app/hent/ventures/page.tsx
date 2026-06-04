@@ -89,7 +89,7 @@ const evData = PROGRAM_EVENTS_LIST
 
 // â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Custom donut using inline SVG fill â€” bypasses Tremor JIT class issue
+// Custom donut using inline SVG fill  -  bypasses Tremor JIT class issue
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -139,7 +139,7 @@ function CustomDonut({
   );
 }
 
-// Custom multi-colour bar list â€” one colour per row
+// Custom multi-colour bar list  -  one colour per row
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -202,7 +202,7 @@ function useCountUp(target: number, duration = 750): number {
     function tick(now: number) {
       if (start === null) start = now;
       const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic â€” fast start, smooth landing
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic  -  fast start, smooth landing
       setVal(target * eased);
       if (p < 1) requestAnimationFrame(tick);
       else setVal(target);
@@ -432,7 +432,7 @@ export default function HENTPortfolio() {
           <div className="flex items-end justify-between py-4">
             <div>
               <h1 className="text-xl font-bold" style={{ color: NAVY }}>{getActiveLabel(pathname)}</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort Â· Updated 28 May 2026</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort  ·  Updated 28 May 2026</p>
             </div>
             <div className="flex gap-2 pb-0.5">
               <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
@@ -445,7 +445,7 @@ export default function HENTPortfolio() {
             </div>
           </div>
 
-          {/* KPI strip â€” 5 distinct tinted tiles */}
+          {/* KPI strip  -  5 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
               <KpiTile
@@ -473,7 +473,7 @@ export default function HENTPortfolio() {
                 label="Active Founders"
                 num={48}
                 displayFmt={n => String(Math.round(n))}
-                sub={`${Math.round((femCount / founders.length) * 100)}% female Â· ${founders.length} total`}
+                sub={`${Math.round((femCount / founders.length) * 100)}% female  ·  ${founders.length} total`}
                 clr="#155E75" pace={false} />
               <KpiTile
                 label="Pace of Target"
@@ -596,7 +596,7 @@ export default function HENTPortfolio() {
           <div className="flex-1 min-w-0 grid grid-cols-2 gap-4">
 
             {/* Engagement Trend */}
-            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding Â· 2026" accent={SKY}>
+            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding  ·  2026" accent={SKY}>
               <ResponsiveContainer width="100%" height={176}>
                 <AreaChart data={engData}>
                   <defs>
@@ -615,7 +615,7 @@ export default function HENTPortfolio() {
             </ChartCard>
 
             {/* Jobs Created */}
-            <ChartCard title="Jobs Created" sub="Quarterly breakdown Â· 2026" accent={EMERALD}>
+            <ChartCard title="Jobs Created" sub="Quarterly breakdown  ·  2026" accent={EMERALD}>
               <ResponsiveContainer width="100%" height={176}>
                 <BarChart data={qJobs} barCategoryGap="35%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
@@ -628,7 +628,7 @@ export default function HENTPortfolio() {
             </ChartCard>
 
             {/* Ventures by Sector */}
-            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures Â· current filter`} accent={PRIMARY}>
+            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures  ·  current filter`} accent={PRIMARY}>
               <ColorBarList data={secData} colors={BAR_COLORS} />
             </ChartCard>
 
@@ -647,7 +647,7 @@ export default function HENTPortfolio() {
               </div>
             </ChartCard>
 
-            {/* Ventures by Country â€” MCF vs Non-MCF diverging */}
+            {/* Ventures by Country  -  MCF vs Non-MCF diverging */}
             <ChartCard title="Ventures by Country" sub="MCF (blue) vs Non-MCF (red)" accent={PRIMARY}>
               <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
                 <span className="flex items-center gap-1">
@@ -668,7 +668,7 @@ export default function HENTPortfolio() {
             </ChartCard>
 
             {/* Sector Ã— Stage */}
-            <ChartCard title="Sector Ã— Stage" sub="Expose Â· Build Â· Scale breakdown" accent={INDIGO}>
+            <ChartCard title="Sector Ã— Stage" sub="Expose  ·  Build  ·  Scale breakdown" accent={INDIGO}>
               <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
                 {(["Expose","Build","Scale"] as const).map((l, i) => (
                   <span key={l} className="flex items-center gap-1">
@@ -714,7 +714,7 @@ export default function HENTPortfolio() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT . VENTURES Â· 2023 - 2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT . VENTURES  ·  2023 - 2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>

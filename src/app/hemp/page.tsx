@@ -356,7 +356,7 @@ export default function HEMPOverview() {
             <div>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                HEMP Programme Â· 2021â€“2026 Â· {totalStudents} students Â· {healthXSessions.length} HealthX sessions
+                HEMP Programme  ·  2021 - 2026  ·  {totalStudents} students  ·  {healthXSessions.length} HealthX sessions
               </p>
 
             </div>
@@ -392,20 +392,20 @@ export default function HEMPOverview() {
         {/* â”€â”€ HERO EXEC CARDS â”€â”€â”€ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <ExecCard label="HealthX Reach"          value={hxPart.toLocaleString()}
-            sub={`${healthXSessions.length} sessions Â· ${hxCompAvg}% avg completion`}
-            note={`Avg satisfaction ${hxSatAvg}/5 Â· ${hxPship} partnerships`}
+            sub={`${healthXSessions.length} sessions  ·  ${hxCompAvg}% avg completion`}
+            note={`Avg satisfaction ${hxSatAvg}/5  ·  ${hxPship} partnerships`}
             color={TEAL} icon={Zap} />
           <ExecCard label="Internship Impact"      value={`${intConversions} Conversions`}
-            sub={`${intStudents} placements Â· ${internships.length} organisations`}
-            note={`${Math.round(intConversions / intStudents * 100)}% conversion rate Â· sat ${intSatAvg}/5`}
+            sub={`${intStudents} placements  ·  ${internships.length} organisations`}
+            note={`${Math.round(intConversions / intStudents * 100)}% conversion rate  ·  sat ${intSatAvg}/5`}
             color={AMBER} icon={Briefcase} />
           <ExecCard label="Female Representation" value={`${FEMALE_PCT_ALL}%`}
             sub="Across all programme types"
-            note={`HealthX ${FEMALE_PCT_HX}% Â· Internships ${FEMALE_PCT_IN}% Â· Students ${FEMALE_PCT_ST}%`}
+            note={`HealthX ${FEMALE_PCT_HX}%  ·  Internships ${FEMALE_PCT_IN}%  ·  Students ${FEMALE_PCT_ST}%`}
             color={ROSE} icon={Users} />
           <ExecCard label="Graduate Outcomes"     value={`${employPct}%`}
-            sub={`Employed or entrepreneur Â· ${completed.length} graduates`}
-            note={`${ventures.length} ventures created Â· ${activeList.length} active students`}
+            sub={`Employed or entrepreneur  ·  ${completed.length} graduates`}
+            note={`${ventures.length} ventures created  ·  ${activeList.length} active students`}
             color={VIOLET} icon={TrendingUp} />
         </div>
 
@@ -416,7 +416,7 @@ export default function HEMPOverview() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Student Enrolment by Cohort"
-              sub="Cohort status â€” Completed Â· Active Â· Deferred"
+              sub="Cohort status  -  Completed  ·  Active  ·  Deferred"
               accent={VIOLET}>
               <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
                 {[["Completed", GREEN], ["Active", VIOLET], ["Deferred", AMBER]].map(([l, c]) => (
@@ -439,7 +439,7 @@ export default function HEMPOverview() {
             </ChartCard>
 
             <ChartCard title="Programme Reach by Year"
-              sub="HealthX participants and internship placements â€” year on year"
+              sub="HealthX participants and internship placements  -  year on year"
               accent={TEAL}>
               <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
                 {[["HealthX", TEAL], ["Internships", AMBER]].map(([l, c]) => (
@@ -478,7 +478,7 @@ export default function HEMPOverview() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <ChartCard title="Gender Representation by Programme"
-              sub="Female (rose) vs Male â€” per programme type"
+              sub="Female (rose) vs Male  -  per programme type"
               accent={ROSE}>
               <div className="flex items-center gap-5 text-[10px] text-gray-400 mb-5">
                 <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: ROSE }} /> Female</span>
@@ -505,7 +505,7 @@ export default function HEMPOverview() {
             </ChartCard>
 
             <ChartCard title="Student Track Distribution"
-              sub="Mission students by programme track Â· 2021â€“2026"
+              sub="Mission students by programme track  ·  2021 - 2026"
               accent={VIOLET}>
               <CustomDonut
                 data={trackCounts}
@@ -535,11 +535,11 @@ export default function HEMPOverview() {
         {/* â”€â”€ SECTION 3: PERFORMANCE â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Performance"
-            sub="HealthX satisfaction by session type and dimension â€” internship sector comparison" />
+            sub="HealthX satisfaction by session type and dimension  -  internship sector comparison" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="HealthX Satisfaction Heatmap â€” Type Ã— Dimension"
-              sub="Avg score Â· Teal â‰¥4.5 Â· Violet â‰¥4.0 Â· Amber â‰¥3.5 Â· Rose <3.5"
+            <ChartCard title="HealthX Satisfaction Heatmap  -  Type Ã— Dimension"
+              sub="Avg score  ·  Teal â‰¥4.5  ·  Violet â‰¥4.0  ·  Amber â‰¥3.5  ·  Rose <3.5"
               accent={TEAL}>
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
@@ -596,7 +596,7 @@ export default function HEMPOverview() {
 
             <div className="space-y-4">
               <ChartCard title="HealthX Avg Satisfaction by Type"
-                sub="Overall satisfaction rating (1â€“5) per session category"
+                sub="Overall satisfaction rating (1 - 5) per session category"
                 accent={VIOLET}>
                 <div className="space-y-3">
                   {hxSatByType.map(d => (
@@ -646,7 +646,7 @@ export default function HEMPOverview() {
         {/* â”€â”€ SECTION 4: OUTCOMES â”€â”€â”€ */}
         <section>
           <SecHeader title="Outcomes &amp; Impact"
-            sub={`${completed.length} graduates Â· ${ventures.length} ventures Â· ${intConversions} internship-to-hire conversions`} />
+            sub={`${completed.length} graduates  ·  ${ventures.length} ventures  ·  ${intConversions} internship-to-hire conversions`} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <ChartCard title="Graduate Employment Outcomes"
@@ -671,7 +671,7 @@ export default function HEMPOverview() {
             </ChartCard>
 
             <ChartCard title="Key Programme Outcomes"
-              sub="Cumulative impact across HEMP 2021â€“2026"
+              sub="Cumulative impact across HEMP 2021 - 2026"
               accent={VIOLET}>
               <div className="space-y-3 mt-1">
                 {([
@@ -713,7 +713,7 @@ export default function HEMPOverview() {
                         </span>
                         <span className="text-gray-400 tabular-nums">
                           <span className="font-bold text-gray-700">{row.count}</span>{" "}
-                          {row.label === "Mission Students" ? "cohorts" : "entries"} Â·{" "}
+                          {row.label === "Mission Students" ? "cohorts" : "entries"}  · {" "}
                           <span className="font-bold" style={{ color: row.color }}>{row.reach.toLocaleString()}</span> {row.unit}
                         </span>
                       </div>
@@ -750,7 +750,7 @@ export default function HEMPOverview() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HEMP Â· OVERVIEW Â· 2021â€“2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HEMP  ·  OVERVIEW  ·  2021 - 2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
           </div>
         </div>

@@ -51,7 +51,7 @@ const YEARS = Array.from(new Set(hackathons.map(h => h.year))).sort();
 
 // â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Custom SVG donut â€” inline fill bypasses Tremor/Tailwind JIT colour lookup
+// Custom SVG donut  -  inline fill bypasses Tremor/Tailwind JIT colour lookup
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -101,7 +101,7 @@ function CustomDonut({
   );
 }
 
-// Multi-colour bar list â€” one colour per row
+// Multi-colour bar list  -  one colour per row
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -239,7 +239,7 @@ function GenderMiniBar({ year, female, male, fPct }: { year: string; female: num
 
 // â”€â”€â”€ KPI tile colour map (10 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TILES = [
-  { label: "Total Hackathons",   clr: "#C2410C" },  // orange â€” identity
+  { label: "Total Hackathons",   clr: "#C2410C" },  // orange  -  identity
   { label: "Participants",       clr: "#1E3A8A" },  // blue
   { label: "Winning Teams",      clr: "#D97706" },  // bright amber
   { label: "Projects Developed", clr: "#5B21B6" },  // violet
@@ -327,7 +327,7 @@ export default function HackathonsPage() {
 
   // â”€â”€ KPI tile values (positionally aligned with KPI_TILES) â”€â”€
   const kpiValues = [
-    { sub: `${YEARS[0]}â€“${YEARS[YEARS.length - 1]}`, num: total.events,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${YEARS[0]} - ${YEARS[YEARS.length - 1]}`, num: total.events,       fmt: (n: number) => String(Math.round(n)) },
     { sub: "Across all events",                        num: total.participants, fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n) / 1000).toFixed(1)}k` : String(Math.round(n)) },
     { sub: "Total prize winners",                      num: total.winningTeams, fmt: (n: number) => String(Math.round(n)) },
     { sub: "Across all hackathons",                    num: total.projects,     fmt: (n: number) => String(Math.round(n)) },
@@ -348,7 +348,7 @@ export default function HackathonsPage() {
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Hackathons</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Innovation events Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {total.events} hackathons tracked
+                Innovation events  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {total.events} hackathons tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -362,7 +362,7 @@ export default function HackathonsPage() {
             </div>
           </div>
 
-          {/* KPI strip â€” 10 distinct tinted tiles */}
+          {/* KPI strip  -  10 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
@@ -384,7 +384,7 @@ export default function HackathonsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-            {/* Participant profile stats â€” stacked column */}
+            {/* Participant profile stats  -  stacked column */}
             <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
               {([
                 { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
@@ -473,7 +473,7 @@ export default function HackathonsPage() {
             </ChartCard>
 
             <ChartCard title="Participant Reach per Year"
-              sub="Total participants across all hackathons â€” year-on-year growth"
+              sub="Total participants across all hackathons  -  year-on-year growth"
               accent={TEAL}>
               <ResponsiveContainer width="100%" height={192}>
                 <AreaChart data={reachPerYear}>
@@ -535,7 +535,7 @@ export default function HackathonsPage() {
               : trendTab === "projects"    ? "Female-led vs male-led project teams"
               : trendTab === "winners"     ? "Female-led vs male-led winning teams"
               :                              "Female-founded vs male-founded startups"
-            } Â· by year`}
+            }  ·  by year`}
             accent={SKY}>
             <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
               <span className="flex items-center gap-1.5">
@@ -566,7 +566,7 @@ export default function HackathonsPage() {
         {/* â”€â”€ SECTION 4: PARTICIPATION & PROJECT CATEGORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Participation & Project Categories"
-            sub={`${total.participants.toLocaleString()} participants Â· ${total.projects} projects`} />
+            sub={`${total.participants.toLocaleString()} participants  ·  ${total.projects} projects`} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -640,7 +640,7 @@ export default function HackathonsPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HENT Â· Hackathons Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]}
+              HENT  ·  Hackathons  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>

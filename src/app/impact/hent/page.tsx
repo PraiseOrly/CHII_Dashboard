@@ -250,7 +250,7 @@ export default function HENTImpactPage() {
       ...fv.map((v) => v.country),
     ])).filter(Boolean);
 
-    // Programme volume by year â€” supports metric switching (participants / projects / startups)
+    // Programme volume by year  -  supports metric switching (participants / projects / startups)
     const volByYear = YEARS.map((y) => ({
       Year: String(y),
       Hackathons:    hackathons.filter((h) => h.year === y).reduce((s, h) => s + h.participants, 0),
@@ -316,7 +316,7 @@ export default function HENTImpactPage() {
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">HENT Impact Analytics</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Entrepreneurship Pillar Â· Ventures Â· Hackathons Â· Masterclasses Â· Field Visits Â· Mentorship & Fellowships Â· {D.countries.length} countries
+                Entrepreneurship Pillar  ·  Ventures  ·  Hackathons  ·  Masterclasses  ·  Field Visits  ·  Mentorship & Fellowships  ·  {D.countries.length} countries
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -353,7 +353,7 @@ export default function HENTImpactPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Stage Distribution"
-              sub={portfolioGender === "all" ? `${D.vc.length} ventures â€” all team types` : `${portfolioGender}-led ventures by stage`}
+              sub={portfolioGender === "all" ? `${D.vc.length} ventures  -  all team types` : `${portfolioGender}-led ventures by stage`}
               accent={VIOLET}
               headerRight={
                 <div className="flex flex-col items-end gap-1.5">
@@ -443,7 +443,7 @@ export default function HENTImpactPage() {
 
           <ChartCard
             title="HENT Programme Growth"
-            sub={growthMetric === "participants" ? "Participant reach by programme â€” 2022 to 2026"
+            sub={growthMetric === "participants" ? "Participant reach by programme  -  2022 to 2026"
               : growthMetric === "projects" ? "Hackathon projects built per year"
               : "Hackathon startups created per year"}
             accent={ORANGE}
@@ -628,7 +628,7 @@ export default function HENTImpactPage() {
 
         <footer className="border-t border-gray-200 pt-6 pb-10">
           <p className="text-[10px] text-gray-400">
-            HENT Impact Â· {yearFilter === "all" ? "2022â€“2026" : String(yearFilter)} Â· {D.vcAll.length} portfolio ventures Â· {fmt(D.totalPart)} programme participants
+            HENT Impact  ·  {yearFilter === "all" ? "2022 - 2026" : String(yearFilter)}  ·  {D.vcAll.length} portfolio ventures  ·  {fmt(D.totalPart)} programme participants
           </p>
         </footer>
       </div>

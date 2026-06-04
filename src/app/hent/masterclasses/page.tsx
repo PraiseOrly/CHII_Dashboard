@@ -26,7 +26,7 @@ const ORANGE_MC = "#EA580C";   // orange
 const TEAL      = "#0D9488";   // teal
 const ROSE      = "#E11D48";   // rose
 
-// Donut palettes â€” each set spans distinct hues across the colour wheel
+// Donut palettes  -  each set spans distinct hues across the colour wheel
 const AGE_COLORS    = [ACCENT, ORANGE_MC, "#16A34A", ROSE];                       // blue, orange, green, rose
 const REGION_COLORS = [TEAL, "#16A34A", ACCENT, VIOLET_MC, AMBER_MC];             // teal, green, blue, violet, amber
 const STAGE_COLORS  = [SKY, ORANGE_MC, VIOLET_MC];                                // sky, orange, violet
@@ -82,7 +82,7 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
   );
 }
 
-// Custom SVG donut â€” same as overview, guarantees hex fill colours
+// Custom SVG donut  -  same as overview, guarantees hex fill colours
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -192,7 +192,7 @@ function RatingBar({ label, sessions, criterion }: {
   const lo  = sessions.filter(s => s.scores[criterion] < 3.0).length;
   const tot = sessions.length || 1;
   const avg = sessions.length
-    ? (sessions.reduce((s, m) => s + m.scores[criterion], 0) / sessions.length).toFixed(1) : "â€”";
+    ? (sessions.reduce((s, m) => s + m.scores[criterion], 0) / sessions.length).toFixed(1) : " - ";
   const segs = [
     { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
     { key: "High",      count: hi, color: RATING_COLORS["High"] },
@@ -402,7 +402,7 @@ export default function MasterclassesPage() {
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Masterclasses</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Capacity-building sessions Â· 2023â€“2026 Â· {masterclasses.length} sessions tracked
+                Capacity-building sessions  ·  2023 - 2026  ·  {masterclasses.length} sessions tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -487,7 +487,7 @@ export default function MasterclassesPage() {
             sub={`${filtered.length} sessions rated across Quality, Usefulness, Accessibility, Relevance`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Rating Distribution by Criterion"
-              sub="Very High Â· High Â· Moderate Â· Low â€” proportion of sessions per rating level">
+              sub="Very High  ·  High  ·  Moderate  ·  Low  -  proportion of sessions per rating level">
               <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
                 {(["Very High", "High", "Moderate", "Low"] as const).map(l => (
                   <span key={l} className="flex items-center gap-1">
@@ -499,7 +499,7 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Ratings by Gender of Attendees"
-              sub="Avg score per criterion â€” female-majority vs male-majority sessions"
+              sub="Avg score per criterion  -  female-majority vs male-majority sessions"
               accent={VIOLET_MC}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
                 <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET_MC }}>â™€</span> Female-majority sessions</span>
@@ -629,7 +629,7 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Attendance by Gender per Year"
-              sub="Female vs male participants â€” yearly comparison"
+              sub="Female vs male participants  -  yearly comparison"
               accent={VIOLET_MC}>
               <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
                 <span className="flex items-center gap-1.5">
@@ -653,13 +653,13 @@ export default function MasterclassesPage() {
           </div>
         </section>
 
-        {/* SECTION 4+6: GROWTH + COMPLETION â€” same row */}
+        {/* SECTION 4+6: GROWTH + COMPLETION  -  same row */}
         <section>
           <SecHeader title="Growth &amp; Completion Analytics"
             sub="Cumulative reach and per-session completion rates across all masterclasses" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Cumulative Attendee Growth"
-              sub="Running total of participants â€” shows programme reach expansion"
+              sub="Running total of participants  -  shows programme reach expansion"
               accent={VIOLET_MC}>
               <ResponsiveContainer width="100%" height={180}>
                 <AreaChart data={growthData}>
@@ -790,7 +790,7 @@ export default function MasterclassesPage() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT Â· Masterclasses Â· 2023â€“2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT  ·  Masterclasses  ·  2023 - 2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>

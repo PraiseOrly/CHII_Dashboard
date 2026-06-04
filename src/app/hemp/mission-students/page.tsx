@@ -69,7 +69,7 @@ const MS = {
 } as const;
 
 
-// â”€â”€â”€ Program operation data (2021â€“2026) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€â”€ Program operation data (2021 - 2026) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const mentorData = [
   { year: 2021, mentors:  8, enrolled: 14, feedback: 11, feedbackPct: 79 },
   { year: 2022, mentors: 10, enrolled: 18, feedback: 15, feedbackPct: 83 },
@@ -145,7 +145,7 @@ const coursesChartData = curatorData.map(d => ({
 const SURVEY_ITEMS = [
   { label: "Mentorship feedback survey",                        status: "complete" as const, note: null },
   { label: "Student + guest faculty feedback survey",           status: "complete" as const, note: null },
-  { label: "Student feedback survey â€” mission curator",         status: "complete" as const, note: null },
+  { label: "Student feedback survey  -  mission curator",         status: "complete" as const, note: null },
   { label: "Event registration + 1-on-1 session data ownership",
     status: "warning" as const,
     note:   "Mission curator may not be tracking these resources consistently." },
@@ -260,7 +260,7 @@ export default function MissionStudentsPage() {
                 Mission Students
               </h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Mentorship Â· Guest Faculty Â· Mission Curator â€” three pillars of student support in HEMP
+                Mentorship  ·  Guest Faculty  ·  Mission Curator  -  three pillars of student support in HEMP
               </p>
             </div>
             <div className="flex gap-2">
@@ -274,7 +274,7 @@ export default function MissionStudentsPage() {
             </div>
           </div>
 
-          {/* â”€â”€ THREE HEADLINE KPIs â€” distinct stat card colours â”€â”€â”€ */}
+          {/* â”€â”€ THREE HEADLINE KPIs  -  distinct stat card colours â”€â”€â”€ */}
           <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
 
             <div className="rounded-lg border p-5 flex items-center gap-4"
@@ -308,7 +308,7 @@ export default function MissionStudentsPage() {
                   {Math.round(animCourses)}
                 </p>
                 <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  Across all cohorts Â· 2021â€“2026
+                  Across all cohorts  ·  2021 - 2026
                 </p>
               </div>
             </div>
@@ -326,7 +326,7 @@ export default function MissionStudentsPage() {
                   {Math.round(animRes)}
                 </p>
                 <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  Events Â· courses Â· 1-on-1 sessions
+                  Events  ·  courses  ·  1-on-1 sessions
                 </p>
               </div>
             </div>
@@ -338,20 +338,20 @@ export default function MissionStudentsPage() {
       {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
-        {/* â•â• SECTION A: MENTORSHIP â€” indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* â•â• SECTION A: MENTORSHIP  -  indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section>
           <SecHeader
             accent={INDIGO}
             title="Mentorship Program"
-            sub={`${totalMentors} mentors recruited Â· ${totalEnrolled} students enrolled Â· ${avgFeedbackPct}% avg feedback rate`}
+            sub={`${totalMentors} mentors recruited  ·  ${totalEnrolled} students enrolled  ·  ${avgFeedbackPct}% avg feedback rate`}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
-            {/* Mentorship activity bar chart â€” 3/5 cols */}
+            {/* Mentorship activity bar chart  -  3/5 cols */}
             <div className="lg:col-span-3">
               <Card accent={INDIGO} title="Mentorship Activity by Year"
-                sub="Mentors recruited Â· students enrolled Â· feedback collected per cohort year">
+                sub="Mentors recruited  ·  students enrolled  ·  feedback collected per cohort year">
                 <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
                   {[["Mentors", MS.MENTORS], ["Enrolled", MS.ENROLLED], ["Feedback", MS.FEEDBACK]].map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
@@ -375,7 +375,7 @@ export default function MissionStudentsPage() {
               </Card>
             </div>
 
-            {/* Mentorship indicators card â€” 2/5 cols */}
+            {/* Mentorship indicators card  -  2/5 cols */}
             <div className="lg:col-span-2">
               <Card accent={INDIGO_MID} title="Mentorship Program Indicators"
                 sub="Recruitment reach and programme engagement quality">
@@ -402,7 +402,7 @@ export default function MissionStudentsPage() {
                   style={{ backgroundColor: AMBER_BG, borderLeft: `2px solid ${AMBER}` }}>
                   <AlertTriangle size={11} className="flex-shrink-0 mt-0.5" style={{ color: AMBER }} />
                   <p className="text-[10px] font-medium leading-relaxed" style={{ color: AMBER_TEXT }}>
-                    Note: enrollment â‰  active participation â€” secondary source required.
+                    Note: enrollment â‰  active participation  -  secondary source required.
                   </p>
                 </div>
 
@@ -427,12 +427,12 @@ export default function MissionStudentsPage() {
           </div>
         </section>
 
-        {/* â•â• SECTION B: GUEST FACULTY â€” teal + sky identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* â•â• SECTION B: GUEST FACULTY  -  teal + sky identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section>
           <SecHeader
             accent={TEAL}
             title="Guest Faculty &amp; Sessions"
-            sub={`${totalSessions} lectures held Â· ${feedbackGPct}% feedback collected Â· ${disaggPct}% feedback disaggregated`}
+            sub={`${totalSessions} lectures held  ·  ${feedbackGPct}% feedback collected  ·  ${disaggPct}% feedback disaggregated`}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -447,10 +447,10 @@ export default function MissionStudentsPage() {
                 label="Lectures Held"
                 value={totalSessions}
                 valueColor={TEAL}
-                sub="Sessions delivered 2021â€“2026"
+                sub="Sessions delivered 2021 - 2026"
               />
 
-              {/* Feedback collected â€” sky */}
+              {/* Feedback collected  -  sky */}
               <div className="bg-white rounded border border-gray-100 shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Student Feedback Collected</p>
@@ -460,11 +460,11 @@ export default function MissionStudentsPage() {
                   <div className="h-full rounded-full" style={{ width: `${feedbackGPct}%`, backgroundColor: SKY }} />
                 </div>
                 <p className="text-[9px] text-gray-400 mt-1.5 tabular-nums">
-                  {totalFeedbackG} of {totalSessions} sessions Â· survey submitted
+                  {totalFeedbackG} of {totalSessions} sessions  ·  survey submitted
                 </p>
               </div>
 
-              {/* Feedback disaggregated â€” purple-medium */}
+              {/* Feedback disaggregated  -  purple-medium */}
               <div className="bg-white rounded border border-gray-100 shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Feedback Disaggregated</p>
@@ -478,16 +478,16 @@ export default function MissionStudentsPage() {
 
                 </div>
                 <p className="text-[9px] text-gray-400 mt-1.5 tabular-nums">
-                  {totalDisagg} of {totalSessions} sessions Â· by gender &amp; cohort
+                  {totalDisagg} of {totalSessions} sessions  ·  by gender &amp; cohort
                 </p>
               </div>
 
             </div>
 
-            {/* Guest faculty bar chart â€” 2/3 cols */}
+            {/* Guest faculty bar chart  -  2/3 cols */}
             <div className="lg:col-span-2">
               <Card accent={TEAL} title="Guest Faculty Sessions per Year"
-                sub="Sessions held Â· feedback collected Â· feedback disaggregated â€” annual comparison">
+                sub="Sessions held  ·  feedback collected  ·  feedback disaggregated  -  annual comparison">
                 <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
                   {[["Sessions", MS.FAC_SESSIONS], ["Feedback", MS.FAC_FEEDBACK], ["Disaggregated", MS.FAC_DISAGGREGATED]].map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
@@ -514,12 +514,12 @@ export default function MissionStudentsPage() {
           </div>
         </section>
 
-        {/* â•â• SECTION C: CURATOR RESOURCES â€” orange + green + amber identity â•â•â• */}
+        {/* â•â• SECTION C: CURATOR RESOURCES  -  orange + green + amber identity â•â•â• */}
         <section>
           <SecHeader
             accent={ORANGE}
             title="Mission Curator Resources"
-            sub={`${totalCareerEvt} career events Â· ${totalTraining} training courses Â· ${totalOneOnOne} one-on-one sessions`}
+            sub={`${totalCareerEvt} career events  ·  ${totalTraining} training courses  ·  ${totalOneOnOne} one-on-one sessions`}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -562,17 +562,17 @@ export default function MissionStudentsPage() {
                 <div className="rounded-full flex-shrink-0 mt-1"
                   style={{ backgroundColor: "#9CA3AF", width: "3px", minWidth: "3px", height: "36px" }} />
                 <p className="text-[10px] text-gray-400 leading-relaxed">
-                  Mission Curator records â€” event registration, feedback forms.
+                  Mission Curator records  -  event registration, feedback forms.
                 </p>
               </div>
 
             </div>
 
-            {/* Two charts â€” 2/3 cols */}
+            {/* Two charts  -  2/3 cols */}
             <div className="lg:col-span-2 space-y-4">
 
               <Card accent={ORANGE} title="Curator Resources Delivered per Year"
-                sub="Career events Â· training courses Â· 1-on-1 sessions â€” stacked by type">
+                sub="Career events  ·  training courses  ·  1-on-1 sessions  -  stacked by type">
                 <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
                   {[["Career Events", MS.CUR_CAREER], ["Training", MS.CUR_TRAIN], ["1-on-1", MS.CUR_ONEON1]].map(([l, c]) => (
 
@@ -597,7 +597,7 @@ export default function MissionStudentsPage() {
               </Card>
 
               <Card accent={GREEN} title="Courses Completed per Year"
-                sub="Canvas / Coursera module completions â€” cumulative annual total">
+                sub="Canvas / Coursera module completions  -  cumulative annual total">
                 <ResponsiveContainer width="100%" height={128}>
                   <AreaChart data={coursesChartData}>
                     <defs>
@@ -631,12 +631,12 @@ export default function MissionStudentsPage() {
           </div>
         </section>
 
-        {/* â•â• SECTION D: SURVEY STATUS â€” rose identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* â•â• SECTION D: SURVEY STATUS  -  rose identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section>
           <SecHeader
             accent={ROSE_900}
             title="Survey &amp; Data Status"
-            sub="Checklist of active feedback mechanisms â€” amber items require attention"
+            sub="Checklist of active feedback mechanisms  -  amber items require attention"
           />
 
           <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
@@ -694,7 +694,7 @@ export default function MissionStudentsPage() {
           </div>
         </section>
 
-        {/* â”€â”€ FOOTER STRIP â€” one tile per section, each its own hue â”€â”€â”€ */}
+        {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
@@ -713,7 +713,7 @@ export default function MissionStudentsPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP Â· Mission Students Â· 2021â€“2026
+              HEMP  ·  Mission Students  ·  2021 - 2026
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
           </div>

@@ -196,7 +196,7 @@ export default function HealthXPage() {
             <div>
               <h1 className="text-[1.55rem] font-black leading-none" style={{ color: NAVY }}>HealthX</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Field-based learning Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {visitsCompleted} sessions Â· {countries.length} countries
+                Field-based learning  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {visitsCompleted} sessions  ·  {countries.length} countries
               </p>
             </div>
             <div className="flex gap-2">
@@ -226,7 +226,7 @@ export default function HealthXPage() {
                   {Math.round(animVisits)}
                 </p>
                 <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {countries.length} countries
+                  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {countries.length} countries
                 </p>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function HealthXPage() {
                   {Math.round(animPart).toLocaleString()}
                 </p>
                 <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {femalePct}% female Â· {avgComp}% avg completion
+                  {femalePct}% female  ·  {avgComp}% avg completion
                 </p>
               </div>
             </div>
@@ -281,10 +281,10 @@ export default function HealthXPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
-            {/* Partnership pipeline funnel â€” 3 cols */}
+            {/* Partnership pipeline funnel  -  3 cols */}
             <div className="lg:col-span-3">
               <Card accent={TEAL_DEEP} title="Partnership Pipeline"
-                sub="Org progression from first visit to formal MOU â€” 2021â€“2026">
+                sub="Org progression from first visit to formal MOU  -  2021 - 2026">
 
                 <div className="space-y-3 py-1">
 
@@ -318,7 +318,7 @@ export default function HealthXPage() {
                       <div>
                         <p className="text-white text-[11px] font-bold">Student feedback collected</p>
                         <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
-                          Completion rate â‰¥ 90% â€” survey submitted
+                          Completion rate â‰¥ 90%  -  survey submitted
                         </p>
                       </div>
                       <p className="text-white text-2xl font-black tabular-nums">{feedbackCollected}</p>
@@ -341,7 +341,7 @@ export default function HealthXPage() {
                       <div>
                         <p className="text-white text-[11px] font-bold">MOU / Partnership signed</p>
                         <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
-                          Formal agreement Â· â‰¥ 2 partnerships per site
+                          Formal agreement  ·  â‰¥ 2 partnerships per site
                         </p>
                       </div>
                       <p className="text-white text-2xl font-black tabular-nums">{mouSigned}</p>
@@ -367,10 +367,10 @@ export default function HealthXPage() {
               </Card>
             </div>
 
-            {/* Student feedback bars â€” 2 cols */}
+            {/* Student feedback bars  -  2 cols */}
             <div className="lg:col-span-2">
               <Card accent={BLUE} title="Student Feedback"
-                sub="Positive response rate per experience dimension â€” field survey">
+                sub="Positive response rate per experience dimension  -  field survey">
 
                 <div className="space-y-5 py-1">
                   {feedbackBars.map(m => {
@@ -393,7 +393,7 @@ export default function HealthXPage() {
                 </div>
 
                 <p className="text-[10px] text-gray-400 mt-5 pt-4 border-t border-gray-100">
-                  Positive response rate â€” student survey. Score â‰¥ 4.5 / 5 classified as positive.
+                  Positive response rate  -  student survey. Score â‰¥ 4.5 / 5 classified as positive.
                 </p>
 
                 {/* Threshold legend */}
@@ -404,7 +404,7 @@ export default function HealthXPage() {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: AMBER }} />
-                    50â€“69%
+                    50 - 69%
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: ROSE }} />
@@ -443,12 +443,12 @@ export default function HealthXPage() {
         {/* â”€â”€ SECTION 2: VISITS BY ORG TYPE â”€â”€â”€ */}
         <section>
           <SecHeader title="Visits by Organisation Type"
-            sub="Count of HealthX sessions per host organisation category â€” absolute numbers" accent={BLUE} />
+            sub="Count of HealthX sessions per host organisation category  -  absolute numbers" accent={BLUE} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <Card accent={BLUE} title="Sessions by Organisation Type"
-              sub="Blue fill bars â€” absolute session counts per org category">
+              sub="Blue fill bars  -  absolute session counts per org category">
               <div className="space-y-4 py-1">
                 {orgTypeData.map(row => (
                   <div key={row.name} className="flex items-center gap-3">
@@ -467,7 +467,7 @@ export default function HealthXPage() {
                 ))}
               </div>
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                {visitsCompleted} total sessions Â· {countries.length} countries Â· values are session counts not percentages
+                {visitsCompleted} total sessions  ·  {countries.length} countries  ·  values are session counts not percentages
               </p>
             </Card>
 
@@ -491,7 +491,7 @@ export default function HealthXPage() {
                         <span className="tabular-nums text-gray-400">
                           <span className="font-bold" style={{ color: tealShades[i] }}>
                             {part.toLocaleString()}
-                          </span> students Â· {pct}%
+                          </span> students  ·  {pct}%
                         </span>
                       </div>
                       <div className="h-[10px] rounded-sm overflow-hidden" style={{ backgroundColor: tealShades[i] + "18" }}>
@@ -539,7 +539,7 @@ export default function HealthXPage() {
             </Card>
 
             <Card accent={BLUE} title="Student Reach per Year"
-              sub="Total students across HealthX sessions â€” year-on-year growth">
+              sub="Total students across HealthX sessions  -  year-on-year growth">
               <ResponsiveContainer width="100%" height={188}>
                 <AreaChart data={participantsPerYear}>
                   <defs>
@@ -564,11 +564,11 @@ export default function HealthXPage() {
         {/* â”€â”€ SECTION 4: PERFORMANCE & GEOGRAPHY â”€â”€â”€ */}
         <section>
           <SecHeader title="Satisfaction &amp; Geographic Reach"
-            sub="Score breakdown by session type Â· country coverage by participant volume" />
+            sub="Score breakdown by session type  ·  country coverage by participant volume" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <Card accent={TEAL_MID} title="Satisfaction Heatmap â€” Session Type Ã— Dimension"
-              sub="Avg score Â· Teal â‰¥4.5 Â· Blue â‰¥4.0 Â· Amber â‰¥3.5">
+            <Card accent={TEAL_MID} title="Satisfaction Heatmap  -  Session Type Ã— Dimension"
+              sub="Avg score  ·  Teal â‰¥4.5  ·  Blue â‰¥4.0  ·  Amber â‰¥3.5">
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
                   <thead>
@@ -654,7 +654,7 @@ export default function HealthXPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP Â· HealthX Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]}
+              HEMP  ·  HealthX  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
           </div>

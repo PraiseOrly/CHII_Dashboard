@@ -246,7 +246,7 @@ function ExecCard({ label, value, sub, color, note, icon: Icon, bg = "#ffffff" }
   );
 }
 
-// Custom multi-colour horizontal bar â€” replaces Tremor BarList
+// Custom multi-colour horizontal bar  -  replaces Tremor BarList
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -425,7 +425,7 @@ export default function ExecutiveDashboard() {
             <div>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                All programmes Â· 2022â€“2026 Â· {TOTAL_PROGS} programmes tracked Â· Updated June 2026
+                All programmes  ·  2022 - 2026  ·  {TOTAL_PROGS} programmes tracked  ·  Updated June 2026
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -462,18 +462,18 @@ export default function ExecutiveDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <ExecCard label="Avg Programme Rating" value={`${AVG_SAT}/5`}
             sub="Quality, Usefulness, Accessibility, Relevance"
-            note={`Masterclasses ${mcSat} Â· Field Visits ${fvSat} Â· Mentorships ${mfSat}`}
+            note={`Masterclasses ${mcSat}  ·  Field Visits ${fvSat}  ·  Mentorships ${mfSat}`}
             color={PRIMARY} icon={Award} bg="#BAE6FD" />
           <ExecCard label="Avg Completion Rate" value={`${AVG_COMP}%`}
             sub="Participants completing all sessions"
-            note={`MC ${mcComp}% Â· FV ${fvComp}% Â· MF ${mfComp}%`}
+            note={`MC ${mcComp}%  ·  FV ${fvComp}%  ·  MF ${mfComp}%`}
             color={TEAL} icon={Target} bg="#99F6E4" />
           <ExecCard label="Mentorship Fellows" value={mfFel.toLocaleString()}
-            sub={`Across ${mentorshipPrograms.length} programmes Â· ${mfGrad} in 1-yr track`}
-            note={`${Math.round(mfFem/mfFel*100)}% female Â· ${mentorshipPrograms.filter(p=>p.isFellowship).length} fellowships`}
+            sub={`Across ${mentorshipPrograms.length} programmes  ·  ${mfGrad} in 1-yr track`}
+            note={`${Math.round(mfFem/mfFel*100)}% female  ·  ${mentorshipPrograms.filter(p=>p.isFellowship).length} fellowships`}
             color={PURPLE} icon={Users} bg="#DDD6FE" />
           <ExecCard label="Funding Deployed" value={fmt$(TOTAL_FUNDING)}
-            sub={`${ALL_VENTURES.length} ventures Â· ${TOTAL_JOBS.toLocaleString()} jobs created`}
+            sub={`${ALL_VENTURES.length} ventures  ·  ${TOTAL_JOBS.toLocaleString()} jobs created`}
             note={`Founder gender parity: ${FOUNDER_FEM}% female`}
             color={GREEN} icon={TrendingUp} bg="#A7F3D0" />
         </div>
@@ -502,7 +502,7 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <ChartCard title="Participant Volume per Year"
-              sub="Total participants across all programme types â€” year by year"
+              sub="Total participants across all programme types  -  year by year"
               accent={TEAL}>
               <ChartLegend />
               <ResponsiveContainer width="100%" height={208}>
@@ -596,11 +596,11 @@ export default function ExecutiveDashboard() {
         {/* â”€â”€ SECTION 3: PROGRAMME PERFORMANCE â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Performance Analysis"
-            sub="Satisfaction scores across quality dimensions â€” compared across programme types" />
+            sub="Satisfaction scores across quality dimensions  -  compared across programme types" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Satisfaction Heatmap â€” Programme Ã— Dimension"
-              sub="Avg score per dimension Â· Teal â‰¥4.5 Â· Blue â‰¥4.0 Â· Amber â‰¥3.5 Â· Red <3.5"
+            <ChartCard title="Satisfaction Heatmap  -  Programme Ã— Dimension"
+              sub="Avg score per dimension  ·  Teal â‰¥4.5  ·  Blue â‰¥4.0  ·  Amber â‰¥3.5  ·  Red <3.5"
               accent={TEAL}>
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
@@ -657,7 +657,7 @@ export default function ExecutiveDashboard() {
 
             <div className="space-y-4">
               <ChartCard title="Avg Satisfaction by Programme"
-                sub="Overall satisfaction rating (1â€“5) across key rated programmes"
+                sub="Overall satisfaction rating (1 - 5) across key rated programmes"
                 accent={PRIMARY}>
                 <div className="space-y-3">
                   {satCompare.map(d => (
@@ -706,11 +706,11 @@ export default function ExecutiveDashboard() {
         {/* â”€â”€ SECTION 4: VENTURE ECOSYSTEM â”€â”€â”€ */}
         <section>
           <SecHeader title="Venture Ecosystem"
-            sub={`${ALL_VENTURES.length} ventures Â· ${TOTAL_JOBS.toLocaleString()} jobs created Â· ${fmt$(TOTAL_FUNDING)} deployed`} />
+            sub={`${ALL_VENTURES.length} ventures  ·  ${TOTAL_JOBS.toLocaleString()} jobs created  ·  ${fmt$(TOTAL_FUNDING)} deployed`} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <ChartCard title="Venture Stage Pipeline"
-              sub="Distribution across Expose Â· Build Â· Scale development stages"
+              sub="Distribution across Expose  ·  Build  ·  Scale development stages"
               accent={PRIMARY}>
               <CustomDonut
                 data={stageData}
@@ -770,7 +770,7 @@ export default function ExecutiveDashboard() {
                         {row.label}
                       </span>
                       <span className="text-gray-400 tabular-nums">
-                        <span className="font-bold text-gray-700">{row.count}</span> events Â·{" "}
+                        <span className="font-bold text-gray-700">{row.count}</span> events  · {" "}
                         <span className="font-bold" style={{ color: row.color }}>{row.reach.toLocaleString()}</span> participants
                       </span>
                     </div>
@@ -806,7 +806,7 @@ export default function ExecutiveDashboard() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HENT . OVERVIEW Â· 2023 - 2026
+              HENT . OVERVIEW  ·  2023 - 2026
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 01 Jun 2026 EAT</p>
           </div>
