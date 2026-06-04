@@ -4,120 +4,94 @@ import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, MapPin, Handshake, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
-import { healthXSessions, HX_TYPES } from "@/data/hemp/healthx";
+import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 
-// ─── Palette ─────────────────────────────────────────────────────────────────
-const NAVY   = "#002147";
-const TEAL   = "#0D9488";
-const VIOLET = "#7C3AED";
-const SKY    = "#0EA5E9";
-const AMBER  = "#F59E0B";
-const GREEN  = "#10B981";
-const ROSE   = "#F43F5E";
-const INDIGO = "#4338CA";
-const ORANGE = "#EA580C";
-const PURPLE = "#A855F7";
-
-const TYPE_COLOR: Record<string, string> = {
-  "Health Facility Visit": TEAL,
-  "Innovation Challenge":  VIOLET,
-  "Field Exposure":        SKY,
-  "Industry Tour":         AMBER,
-};
-const TYPE_HEX_LIST = [TEAL, VIOLET, SKY, AMBER];
-const COUNTRY_HEX   = [TEAL, VIOLET, ORANGE, SKY, AMBER, GREEN, ROSE, INDIGO, PURPLE, "#EC4899"];
+// ─── Color language ───────────────────────────────────────────────────────────
+// Primary: teal (partnership / field theme)
+// Supporting: blue
+// Warning: amber
+const TEAL        = "#0D9488";
+const TEAL_MID    = "#0A7D72";
+const TEAL_DEEP   = "#085E56";
+const BLUE        = "#2563EB";
+const BLUE_LIGHT  = "#3B82F6";
+const AMBER       = "#F59E0B";
+const NAVY        = "#002147";
+const GREEN       = "#10B981";
+const INDIGO      = "#4338CA";
+const ROSE        = "#F43F5E";
+const VIOLET      = "#7C3AED";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
-function heatColor(v: number): string {
-  if (v >= 4.5) return TEAL;
-  if (v >= 4.0) return VIOLET;
-  if (v >= 3.5) return AMBER;
-  return ROSE;
-}
 
-// ─── Aggregates ──────────────────────────────────────────────────────────────
-const total = {
-  sessions:     healthXSessions.length,
-  participants: healthXSessions.reduce((s, h) => s + h.participants, 0),
-  female:       healthXSessions.reduce((s, h) => s + h.femalePart,   0),
-  partnerships: healthXSessions.reduce((s, h) => s + h.partnerships, 0),
-};
-const femalePct = Math.round(total.female / total.participants * 100);
-const malePct   = 100 - femalePct;
-const avgComp   = Math.round(avg(healthXSessions.map(h => h.completionRate)));
-const avgSat    = parseFloat(avg(healthXSessions.map(h => avg(Object.values(h.scores)))).toFixed(1));
-const countries = Array.from(new Set(healthXSessions.map(h => h.country)));
+// ─── Module-level aggregates ─────────────────────────────────────────────────
+const hxPart      = healthXSessions.reduce((s, h) => s + h.participants, 0);
+const hxFem       = healthXSessions.reduce((s, h) => s + h.femalePart,   0);
+const totalPships = healthXSessions.reduce((s, h) => s + h.partnerships, 0);
+const femalePct   = Math.round(hxFem / hxPart * 100);
+const avgComp     = Math.round(avg(healthXSessions.map(h => h.completionRate)));
+const avgSat      = parseFloat(avg(healthXSessions.map(h => avg(Object.values(h.scores)))).toFixed(1));
+const countries   = Array.from(new Set(healthXSessions.map(h => h.country)));
+const YEARS       = Array.from(new Set(healthXSessions.map(h => h.year))).sort();
 
-const YEARS = Array.from(new Set(healthXSessions.map(h => h.year))).sort();
+// ── Partnership pipeline funnel ──
+const visitsCompleted    = healthXSessions.length;
+const feedbackCollected  = healthXSessions.filter(h => h.completionRate >= 90).length;
+const mouSigned          = healthXSessions.filter(
+  h => h.partnerships >= 2 && h.completionRate >= 93
+).length;
 
-// Per-type stats
-const typeStats = HX_TYPES.map(type => {
-  const sessions = healthXSessions.filter(h => h.type === type);
-  const part     = sessions.reduce((s, h) => s + h.participants, 0);
-  const fem      = sessions.reduce((s, h) => s + h.femalePart,   0);
-  return {
-    type,
-    count:    sessions.length,
-    part,
-    femPct:   part > 0 ? Math.round(fem / part * 100) : 0,
-    avgSat:   parseFloat(avg(sessions.map(h => avg(Object.values(h.scores)))).toFixed(1)),
-    avgComp:  Math.round(avg(sessions.map(h => h.completionRate))),
-    pship:    sessions.reduce((s, h) => s + h.partnerships, 0),
-  };
-});
+// ── Student feedback bars (positive response = score ≥ 4.5/5) ──
+const HIGH_SAT = 4.5;
+const feedbackBars = [
+  { label: "Quality of experience",  dim: "Learning Experience"  as const },
+  { label: "Relevance to career",    dim: "Practical Relevance"  as const },
+  { label: "Usefulness of exposure", dim: "Innovation Impact"    as const },
+].map(m => ({
+  label: m.label,
+  pct: Math.round(
+    healthXSessions.filter(h => h.scores[m.dim] >= HIGH_SAT).length
+    / healthXSessions.length * 100
+  ),
+}));
 
-// Annual charts
+// ── Visits by org type (absolute counts) ──
+const orgTypeData = ORG_TYPES.map(type => ({
+  name:  type,
+  value: healthXSessions.filter(h => h.orgType === type).length,
+})).sort((a, b) => b.value - a.value);
+const orgTypeMax = orgTypeData[0]?.value ?? 1;
+
+// ── Annual charts ──
 const sessionsPerYear = YEARS.map(yr => ({
   Year:     String(yr),
   Sessions: healthXSessions.filter(h => h.year === yr).length,
 }));
-
 const participantsPerYear = YEARS.map(yr => ({
   Year:         String(yr),
   Participants: healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
 }));
 
-// Trend data: participants by year (female vs male stacked)
-const trendFemale = YEARS.map(yr => {
-  const events = healthXSessions.filter(h => h.year === yr);
-  const fem    = events.reduce((s, h) => s + h.femalePart,                         0);
-  const tot    = events.reduce((s, h) => s + h.participants,                        0);
-  return { Year: String(yr), Female: fem, Male: tot - fem };
-});
+// ── Satisfaction heatmap (type × dimension) ──
+const HX_SESSION_TYPES = [
+  "Health Facility Visit",
+  "Innovation Challenge",
+  "Field Exposure",
+  "Industry Tour",
+] as const;
+const SCORE_DIMS = [
+  "Learning Experience",
+  "Practical Relevance",
+  "Accessibility",
+  "Innovation Impact",
+] as const;
 
-// Participants by type per year (stacked bar)
-const participantsByTypeYear = YEARS.map(yr => {
-  const row: Record<string, string | number> = { Year: String(yr) };
-  for (const type of HX_TYPES) {
-    const sessions = healthXSessions.filter(h => h.year === yr && h.type === type);
-    row[type] = sessions.reduce((s, h) => s + h.participants, 0);
-  }
-  return row as { Year: string } & Record<typeof HX_TYPES[number], number>;
-});
-
-// Session type donut data
-const typeData = HX_TYPES.map(type => ({
-  name:  type,
-  value: healthXSessions.filter(h => h.type === type).reduce((s, h) => s + h.participants, 0),
-}));
-
-// Country coverage
-const countryData = Object.entries(
-  healthXSessions.reduce<Record<string, number>>((acc, h) => {
-    acc[h.country] = (acc[h.country] || 0) + h.participants;
-    return acc;
-  }, {})
-).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-
-// Satisfaction heatmap: type × score dimension
-const SCORE_DIMS = ["Learning Experience", "Practical Relevance", "Accessibility", "Innovation Impact"] as const;
-
-const hxHeatmap = HX_TYPES.map(type => {
+const hxHeatmap = HX_SESSION_TYPES.map(type => {
   const sessions = healthXSessions.filter(h => h.type === type);
   return {
     type,
@@ -128,15 +102,21 @@ const hxHeatmap = HX_TYPES.map(type => {
   };
 });
 
-// KPI tiles
-const KPI_TILES = [
-  { label: "Total Sessions",    clr: "#0F766E" },
-  { label: "Total Participants",clr: "#4C1D95" },
-  { label: "Countries Visited", clr: "#1E3A8A" },
-  { label: "Partnerships",      clr: "#065F46" },
-  { label: "Avg Completion",    clr: "#B45309" },
-  { label: "Avg Satisfaction",  clr: "#9D174D" },
-] as const;
+const TYPE_COLOR: Record<string, string> = {
+  "Health Facility Visit": TEAL,
+  "Innovation Challenge":  VIOLET,
+  "Field Exposure":        BLUE_LIGHT,
+  "Industry Tour":         AMBER,
+};
+
+// ── Country reach ──
+const countryData = Object.entries(
+  healthXSessions.reduce<Record<string, number>>((acc, h) => {
+    acc[h.country] = (acc[h.country] || 0) + h.participants;
+    return acc;
+  }, {})
+).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+const COUNTRY_HEX = [TEAL, BLUE_LIGHT, AMBER, VIOLET, GREEN, INDIGO, ROSE, "#A855F7", "#EC4899", "#6B7280"];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -158,39 +138,32 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub: string; clr: string;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div className="rounded border px-2 py-2.5 text-center" style={{ backgroundColor: clr, borderColor: clr }}>
-      <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
-        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-      <p className="text-lg font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
-      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
-    </div>
-  );
+function heatColor(v: number): string {
+  if (v >= 4.5) return TEAL;
+  if (v >= 4.0) return BLUE;
+  if (v >= 3.5) return AMBER;
+  return ROSE;
 }
 
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
+function SecHeader({ title, sub, accent = TEAL }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: TEAL }} />
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: accent }} />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: TEAL }}>{title}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: accent }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
       </div>
     </div>
   );
 }
 
-function ChartCard({ title, sub, accent = TEAL, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
+function Card({ accent = TEAL, title, sub, children }: {
+  accent?: string; title: string; sub?: string; children: React.ReactNode;
 }) {
   return (
     <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
-        style={{ backgroundColor: accent, borderBottomColor: accent }}>
+      <div className="px-5 py-3.5 flex items-start gap-2.5"
+        style={{ backgroundColor: accent }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
           style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
         <div>
@@ -203,231 +176,357 @@ function ChartCard({ title, sub, accent = TEAL, children }: {
   );
 }
 
-function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
-  const max = data[0]?.value ?? 1;
-  return (
-    <div className="space-y-2">
-      {data.map((row, i) => {
-        const col = colors[i % colors.length];
-        return (
-          <div key={row.name} className="flex items-center gap-2.5">
-            <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
-            </div>
-            <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function CustomDonut({ data, colors, label, valueFormatter = (v: number) => `${v}`, className = "" }: {
-  data: { name: string; value: number }[];
-  colors: string[];
-  label?: string;
-  valueFormatter?: (v: number) => string;
-  className?: string;
-}) {
-  const tot = data.reduce((s, d) => s + d.value, 0);
-  if (!tot) return null;
-  const CX = 80, CY = 80, OR = 70, IR = 43;
-  let theta = -Math.PI / 2;
-  const slices = data.map((d, i) => {
-    const sweep = (d.value / tot) * 2 * Math.PI;
-    const t0 = theta, t1 = theta + sweep;
-    theta = t1;
-    const lg = sweep > Math.PI ? 1 : 0;
-    const path = [
-      `M ${CX + OR * Math.cos(t0)} ${CY + OR * Math.sin(t0)}`,
-      `A ${OR} ${OR} 0 ${lg} 1 ${CX + OR * Math.cos(t1)} ${CY + OR * Math.sin(t1)}`,
-      `L ${CX + IR * Math.cos(t1)} ${CY + IR * Math.sin(t1)}`,
-      `A ${IR} ${IR} 0 ${lg} 0 ${CX + IR * Math.cos(t0)} ${CY + IR * Math.sin(t0)}`,
-      "Z",
-    ].join(" ");
-    return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
-  });
-  return (
-    <div className={`flex items-center justify-center ${className}`}>
-      <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
-        {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
-        ))}
-        {label && (
-          <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
-            fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
-        )}
-      </svg>
-    </div>
-  );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function HealthXPage() {
-  const [trendTab, setTrendTab] = useState<"participants" | "types">("participants");
 
-  const trendData       = trendTab === "participants" ? trendFemale : participantsByTypeYear;
-  const trendCats       = trendTab === "participants"
-    ? (["Female", "Male"] as const)
-    : HX_TYPES;
-  const trendColors     = trendTab === "participants"
-    ? [ROSE, SKY]
-    : TYPE_HEX_LIST;
-
-  const kpiValues = [
-    { sub: `${YEARS[0]}–${YEARS[YEARS.length - 1]}`, num: total.sessions,      fmt: (n: number) => String(Math.round(n)) },
-    { sub: "All sessions combined",                    num: total.participants,  fmt: (n: number) => n >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
-    { sub: "Unique countries",                         num: countries.length,    fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Industry links",                           num: total.partnerships,  fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Programme completion",                     num: avgComp,             fmt: (n: number) => `${Math.round(n)}%` },
-    { sub: "Satisfaction (1–5)",                       num: avgSat,              fmt: (n: number) => `${n.toFixed(1)}/5` },
-  ];
+  // ── Animate headline numbers ──
+  const animVisits  = useCountUp(visitsCompleted);
+  const animPships  = useCountUp(totalPships);
+  const animPart    = useCountUp(hxPart);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HEMPNav />
 
-      {/* ── HEADER + KPIs ─── */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-end justify-between py-4">
+      {/* ── HEADER ─── */}
+      <header className="bg-white border-b border-gray-200" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+        <div className="max-w-[1440px] mx-auto px-6">
+
+          <div className="flex items-end justify-between py-5">
             <div>
-              <h1 className="text-xl font-black" style={{ color: NAVY }}>HealthX</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">
-                Experiential learning sessions · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {total.sessions} sessions tracked
+              <h1 className="text-[1.55rem] font-black leading-none" style={{ color: NAVY }}>HealthX</h1>
+              <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
+                Field-based learning · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {visitsCompleted} sessions · {countries.length} countries
               </p>
             </div>
-            <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export Data
+            <div className="flex gap-2">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
+                <Download size={11} /> Export
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded font-semibold text-white transition-colors shadow-sm"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm"
                 style={{ backgroundColor: TEAL }}>
-                <FileText size={11} /> Custom Report
+                <FileText size={11} /> Report
               </button>
             </div>
           </div>
 
-          <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {KPI_TILES.map(({ label, clr }, i) => (
-                <KpiTile key={label} label={label} num={kpiValues[i].num}
-                  displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
-              ))}
+          {/* ── THREE HEADLINE METRICS ─── */}
+          <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+            <div className="rounded-lg border p-5 flex items-center gap-4"
+              style={{ backgroundColor: TEAL, borderColor: TEAL }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
+                <MapPin size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
+              </div>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
+                  style={{ color: "rgba(255,255,255,0.65)" }}>Health Hub Visits Completed</p>
+                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
+                  {Math.round(animVisits)}
+                </p>
+                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {YEARS[0]}–{YEARS[YEARS.length - 1]} · {countries.length} countries
+                </p>
+              </div>
             </div>
+
+            <div className="rounded-lg border p-5 flex items-center gap-4"
+              style={{ backgroundColor: TEAL_MID, borderColor: TEAL_MID }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
+                <Handshake size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
+              </div>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
+                  style={{ color: "rgba(255,255,255,0.65)" }}>Active Partnerships (MOUs Signed)</p>
+                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
+                  {Math.round(animPships)}
+                </p>
+                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {mouSigned} org sites with formal agreements
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-lg border p-5 flex items-center gap-4"
+              style={{ backgroundColor: BLUE, borderColor: BLUE }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
+                <Users size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
+              </div>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
+                  style={{ color: "rgba(255,255,255,0.65)" }}>Students with Field Exposure</p>
+                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
+                  {Math.round(animPart).toLocaleString()}
+                </p>
+                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {femalePct}% female · {avgComp}% avg completion
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
       </header>
 
       {/* ── BODY ─── */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
+      <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
-        {/* ── SECTION 1: SESSION PROFILES ─── */}
+        {/* ── SECTION 1: PIPELINE + FEEDBACK ─── */}
         <section>
-          <SecHeader title="Session Type Profiles"
-            sub={`${total.sessions} sessions · ${total.participants.toLocaleString()} participants across ${countries.length} countries`} />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <SecHeader title="Partnership Pipeline &amp; Student Feedback"
+            sub="Visit-to-MOU conversion funnel alongside student experience quality ratings" />
 
-            {/* Type stat rows */}
-            <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-              {typeStats.map((t, i) => (
-                <div key={t.type} className={`px-4 py-3.5 ${i > 0 ? "border-t border-gray-100" : ""}`}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none"
-                      style={{ color: TYPE_COLOR[t.type] + "AA" }}>{t.type}</p>
-                    <p className="text-lg font-black tabular-nums leading-none"
-                      style={{ color: TYPE_COLOR[t.type] }}>{t.count}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+            {/* Partnership pipeline funnel — 3 cols */}
+            <div className="lg:col-span-3">
+              <Card accent={TEAL_DEEP} title="Partnership Pipeline"
+                sub="Org progression from first visit to formal MOU — 2021–2026">
+
+                <div className="space-y-3 py-1">
+
+                  {/* Stage 1 */}
+                  <div>
+                    <div className="h-14 w-full rounded flex items-center px-5 justify-between"
+                      style={{ backgroundColor: TEAL }}>
+                      <div>
+                        <p className="text-white text-[11px] font-bold">Visit completed</p>
+                        <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
+                          {visitsCompleted} orgs received a student field visit
+                        </p>
+                      </div>
+                      <p className="text-white text-2xl font-black tabular-nums">{visitsCompleted}</p>
+                    </div>
                   </div>
-                  <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: TYPE_COLOR[t.type] + "20" }}>
-                    <div className="h-full" style={{ width: `${(t.count / total.sessions) * 100}%`, backgroundColor: TYPE_COLOR[t.type] }} />
+
+                  {/* Connector */}
+                  <div className="flex items-center gap-2 px-6">
+                    <div className="flex-1 h-px" style={{ backgroundColor: TEAL + "40" }} />
+                    <p className="text-[9px] text-gray-400 font-medium whitespace-nowrap">
+                      {Math.round(feedbackCollected / visitsCompleted * 100)}% advanced
+                    </p>
+                    <div className="flex-1 h-px" style={{ backgroundColor: TEAL + "40" }} />
                   </div>
-                  <div className="flex gap-3 mt-1.5 text-[10px] text-gray-400 tabular-nums">
-                    <span>{t.part.toLocaleString()} participants</span>
-                    <span className="ml-auto font-semibold" style={{ color: TYPE_COLOR[t.type] }}>sat {t.avgSat}/5</span>
+
+                  {/* Stage 2 */}
+                  <div className="px-6">
+                    <div className="h-14 rounded flex items-center px-5 justify-between"
+                      style={{ backgroundColor: TEAL_MID }}>
+                      <div>
+                        <p className="text-white text-[11px] font-bold">Student feedback collected</p>
+                        <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
+                          Completion rate ≥ 90% — survey submitted
+                        </p>
+                      </div>
+                      <p className="text-white text-2xl font-black tabular-nums">{feedbackCollected}</p>
+                    </div>
                   </div>
+
+                  {/* Connector */}
+                  <div className="flex items-center gap-2 px-12">
+                    <div className="flex-1 h-px" style={{ backgroundColor: TEAL + "40" }} />
+                    <p className="text-[9px] text-gray-400 font-medium whitespace-nowrap">
+                      {Math.round(mouSigned / feedbackCollected * 100)}% signed MOU
+                    </p>
+                    <div className="flex-1 h-px" style={{ backgroundColor: TEAL + "40" }} />
+                  </div>
+
+                  {/* Stage 3 */}
+                  <div className="px-12">
+                    <div className="h-14 rounded flex items-center px-5 justify-between"
+                      style={{ backgroundColor: TEAL_DEEP }}>
+                      <div>
+                        <p className="text-white text-[11px] font-bold">MOU / Partnership signed</p>
+                        <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
+                          Formal agreement · ≥ 2 partnerships per site
+                        </p>
+                      </div>
+                      <p className="text-white text-2xl font-black tabular-nums">{mouSigned}</p>
+                    </div>
+                  </div>
+
                 </div>
-              ))}
+
+                {/* Summary strip */}
+                <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-3 text-center">
+                  {[
+                    { label: "Total MOUs",       value: totalPships, color: TEAL   },
+                    { label: "Avg per Session",  value: parseFloat((totalPships / visitsCompleted).toFixed(1)), color: TEAL_MID },
+                    { label: "Conversion Rate",  value: `${Math.round(mouSigned / visitsCompleted * 100)}%`,     color: TEAL_DEEP },
+                  ].map(s => (
+                    <div key={s.label}>
+                      <p className="text-lg font-black tabular-nums" style={{ color: s.color }}>{s.value}</p>
+                      <p className="text-[9px] text-gray-400 mt-0.5 font-medium">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+              </Card>
             </div>
 
-            <ChartCard title="Participants by Session Type"
-              sub="Distribution of total participant reach across session categories"
-              accent={VIOLET}>
-              <CustomDonut
-                data={typeData}
-                colors={TYPE_HEX_LIST}
-                className="h-44"
-                label={String(total.participants)}
-                valueFormatter={(v: number) => `${v} participants`}
-              />
-              <div className="flex justify-center flex-wrap gap-3 mt-3 text-[11px] text-gray-500">
-                {HX_TYPES.map((t, i) => (
-                  <span key={t} className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: TYPE_HEX_LIST[i] }} />
-                    {t.split(" ").slice(-1)[0]}
-                  </span>
-                ))}
-              </div>
-            </ChartCard>
+            {/* Student feedback bars — 2 cols */}
+            <div className="lg:col-span-2">
+              <Card accent={BLUE} title="Student Feedback"
+                sub="Positive response rate per experience dimension — field survey">
 
-            <ChartCard title="Gender &amp; Completion Overview"
-              sub="Cross-session diversity and programme completion"
-              accent={ROSE}>
-              <div className="space-y-3">
-                {([
-                  { label: "Female Participants", value: total.female,                      pct: femalePct, color: ROSE   },
-                  { label: "Male Participants",   value: total.participants - total.female, pct: malePct,   color: SKY    },
-                ] as const).map(item => (
-                  <div key={item.label} className="px-1">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none"
-                        style={{ color: item.color + "AA" }}>{item.label}</p>
-                      <p className="text-xl font-black tabular-nums leading-none"
-                        style={{ color: item.color }}>{item.pct}%</p>
+                <div className="space-y-5 py-1">
+                  {feedbackBars.map(m => {
+                    const barColor = m.pct >= 70 ? TEAL : m.pct >= 50 ? AMBER : ROSE;
+                    return (
+                      <div key={m.label}>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[11px] font-semibold text-gray-700">{m.label}</p>
+                          <p className="text-[11px] font-black tabular-nums"
+                            style={{ color: barColor }}>{m.pct}%</p>
+                        </div>
+                        {/* 10px bar */}
+                        <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                          <div className="h-full rounded-full transition-all"
+                            style={{ width: `${m.pct}%`, backgroundColor: barColor }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <p className="text-[10px] text-gray-400 mt-5 pt-4 border-t border-gray-100">
+                  Positive response rate — student survey. Score ≥ 4.5 / 5 classified as positive.
+                </p>
+
+                {/* Threshold legend */}
+                <div className="flex gap-4 mt-3 text-[10px] text-gray-400">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: TEAL }} />
+                    ≥ 70%
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: AMBER }} />
+                    50–69%
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: ROSE }} />
+                    &lt; 50%
+                  </span>
+                </div>
+
+                {/* Supporting stats */}
+                <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="text-gray-500 font-medium">Avg Satisfaction</span>
+                      <span className="font-bold tabular-nums" style={{ color: TEAL }}>{avgSat}/5</span>
                     </div>
-                    <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
-                      <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                    <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                      <div className="h-full rounded-full" style={{ width: `${(avgSat / 5) * 100}%`, backgroundColor: TEAL }} />
                     </div>
-                    <p className="text-[10px] text-gray-400 mt-1.5 tabular-nums">
-                      {item.value.toLocaleString()} / {total.participants.toLocaleString()}
-                    </p>
                   </div>
-                ))}
-              </div>
-              <div className="mt-5 pt-4 border-t border-gray-100 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-500 font-medium">Avg Completion</span>
-                  <span className="font-black tabular-nums" style={{ color: GREEN }}>{avgComp}%</span>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="text-gray-500 font-medium">Avg Completion Rate</span>
+                      <span className="font-bold tabular-nums" style={{ color: BLUE }}>{avgComp}%</span>
+                    </div>
+                    <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                      <div className="h-full rounded-full" style={{ width: `${avgComp}%`, backgroundColor: BLUE }} />
+                    </div>
+                  </div>
                 </div>
-                <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: GREEN + "1A" }}>
-                  <div className="h-full" style={{ width: `${avgComp}%`, backgroundColor: GREEN }} />
-                </div>
-                <div className="flex items-center justify-between text-xs mt-2">
-                  <span className="text-gray-500 font-medium">Avg Satisfaction</span>
-                  <span className="font-black tabular-nums" style={{ color: VIOLET }}>{avgSat}/5</span>
-                </div>
-                <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET + "1A" }}>
-                  <div className="h-full" style={{ width: `${(avgSat / 5) * 100}%`, backgroundColor: VIOLET }} />
-                </div>
-              </div>
-            </ChartCard>
+
+              </Card>
+            </div>
 
           </div>
         </section>
 
-        {/* ── SECTION 2: ANNUAL ACTIVITY ─── */}
+        {/* ── SECTION 2: VISITS BY ORG TYPE ─── */}
         <section>
-          <SecHeader title="Annual Activity"
-            sub="Session frequency and participant reach year on year" />
+          <SecHeader title="Visits by Organisation Type"
+            sub="Count of HealthX sessions per host organisation category — absolute numbers" accent={BLUE} />
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Sessions Delivered per Year"
-              sub="Count of HealthX sessions organised each calendar year"
-              accent={TEAL}>
-              <ResponsiveContainer width="100%" height={192}>
+            <Card accent={BLUE} title="Sessions by Organisation Type"
+              sub="Blue fill bars — absolute session counts per org category">
+              <div className="space-y-4 py-1">
+                {orgTypeData.map(row => (
+                  <div key={row.name} className="flex items-center gap-3">
+                    <div className="w-36 text-[11px] text-gray-600 text-right flex-shrink-0 font-medium">{row.name}</div>
+                    <div className="flex-1 h-8 rounded overflow-hidden" style={{ backgroundColor: BLUE_LIGHT + "18" }}>
+                      <div className="h-full rounded flex items-center px-3 transition-all"
+                        style={{ width: `${(row.value / orgTypeMax) * 100}%`, backgroundColor: BLUE_LIGHT }}>
+                        {row.value > 0 && (
+                          <span className="text-white text-[11px] font-bold tabular-nums">{row.value}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="w-6 text-[11px] font-bold tabular-nums text-right flex-shrink-0"
+                      style={{ color: BLUE }}>{row.value}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                {visitsCompleted} total sessions · {countries.length} countries · values are session counts not percentages
+              </p>
+            </Card>
+
+            {/* Org type proportional breakdown */}
+            <Card accent={TEAL} title="Participant Reach by Org Type"
+              sub="Total students reached per organisation category">
+              <div className="space-y-4 py-1">
+                {ORG_TYPES.map((type, i) => {
+                  const sessions = healthXSessions.filter(h => h.orgType === type);
+                  const part     = sessions.reduce((s, h) => s + h.participants, 0);
+                  const pct      = Math.round(part / hxPart * 100);
+                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#064E45"];
+                  return (
+                    <div key={type}>
+                      <div className="flex items-center justify-between text-xs mb-1.5">
+                        <span className="font-medium text-gray-700 flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: tealShades[i] }} />
+                          {type}
+                        </span>
+                        <span className="tabular-nums text-gray-400">
+                          <span className="font-bold" style={{ color: tealShades[i] }}>
+                            {part.toLocaleString()}
+                          </span> students · {pct}%
+                        </span>
+                      </div>
+                      <div className="h-[10px] rounded-sm overflow-hidden" style={{ backgroundColor: tealShades[i] + "18" }}>
+                        <div className="h-full rounded-sm"
+                          style={{ width: `${pct}%`, backgroundColor: tealShades[i] }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2 text-center">
+                {ORG_TYPES.map((type, i) => {
+                  const count = healthXSessions.filter(h => h.orgType === type).length;
+                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#064E45"];
+                  return (
+                    <div key={type}>
+                      <p className="text-sm font-black" style={{ color: tealShades[i] }}>{count}</p>
+                      <p className="text-[9px] text-gray-400 leading-tight mt-0.5">{type.split(" ")[0]}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+          </div>
+        </section>
+
+        {/* ── SECTION 3: ANNUAL ACTIVITY ─── */}
+        <section>
+          <SecHeader title="Annual Activity" sub="Session frequency and student reach year on year" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <Card accent={TEAL} title="Sessions Delivered per Year"
+              sub="Count of HealthX sessions per calendar year">
+              <ResponsiveContainer width="100%" height={188}>
                 <BarChart data={sessionsPerYear} barCategoryGap="40%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
@@ -437,91 +536,46 @@ export default function HealthXPage() {
                   <Bar dataKey="Sessions" fill={TEAL} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </ChartCard>
+            </Card>
 
-            <ChartCard title="Participant Reach per Year"
-              sub="Total participants across HealthX sessions — year-on-year growth"
-              accent={VIOLET}>
-              <ResponsiveContainer width="100%" height={192}>
+            <Card accent={BLUE} title="Student Reach per Year"
+              sub="Total students across HealthX sessions — year-on-year growth">
+              <ResponsiveContainer width="100%" height={188}>
                 <AreaChart data={participantsPerYear}>
                   <defs>
                     <linearGradient id="hxGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor={VIOLET} stopOpacity={0.25} />
-                      <stop offset="95%" stopColor={VIOLET} stopOpacity={0.03} />
+                      <stop offset="5%"  stopColor={BLUE_LIGHT} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={BLUE_LIGHT} stopOpacity={0.03} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                    formatter={(v: number) => [`${v.toLocaleString()} participants`, "Reach"]} />
-                  <Area type="monotone" dataKey="Participants" stroke={VIOLET} strokeWidth={2} fill="url(#hxGrad)" dot={false} />
+                    formatter={(v: number) => [`${v.toLocaleString()} students`, "Reach"]} />
+                  <Area type="monotone" dataKey="Participants" stroke={BLUE_LIGHT} strokeWidth={2} fill="url(#hxGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
-            </ChartCard>
+            </Card>
 
           </div>
         </section>
 
-        {/* ── SECTION 3: TRENDS ─── */}
+        {/* ── SECTION 4: PERFORMANCE & GEOGRAPHY ─── */}
         <section>
-          <SecHeader title="Participation Trends"
-            sub="Year-on-year breakdown by gender and session type" />
-
-          <div className="flex gap-1 mb-4 bg-white rounded shadow-sm px-1 py-1 w-fit">
-            {([["participants", "Gender Breakdown"], ["types", "By Session Type"]] as const).map(([tab, label]) => {
-              const active = trendTab === tab;
-              return (
-                <button key={tab} onClick={() => setTrendTab(tab)}
-                  className="text-xs px-4 py-1.5 rounded font-medium transition-colors"
-                  style={active ? { backgroundColor: TEAL, color: "white" } : { color: "#6b7280" }}>
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-
-          <ChartCard
-            title={trendTab === "participants" ? "Participant Growth by Year — Gender" : "Participants by Session Type per Year"}
-            sub={trendTab === "participants" ? "Female vs male participation trend" : "Session type contribution to participant reach"}
-            accent={SKY}>
-            <div className="flex flex-wrap items-center gap-4 text-[11px] text-gray-500 mb-3">
-              {trendCats.map((cat, i) => (
-                <span key={cat} className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: trendColors[i] }} />{cat}
-                </span>
-              ))}
-            </div>
-            <ResponsiveContainer width="100%" height={208}>
-              <BarChart data={trendData} barCategoryGap="30%" barGap={2}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} />
-                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
-                {trendCats.map((cat, i) => (
-                  <Bar key={cat} dataKey={cat} fill={trendColors[i]} radius={[0, 0, 0, 0]} />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </section>
-
-        {/* ── SECTION 4: PERFORMANCE HEATMAP ─── */}
-        <section>
-          <SecHeader title="Satisfaction &amp; Performance"
-            sub="Score breakdown by session type and evaluation dimension" />
+          <SecHeader title="Satisfaction &amp; Geographic Reach"
+            sub="Score breakdown by session type · country coverage by participant volume" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Satisfaction Heatmap — Type × Dimension"
-              sub="Avg score · Teal ≥4.5 · Violet ≥4.0 · Amber ≥3.5 · Rose <3.5"
-              accent={TEAL}>
+            <Card accent={TEAL_MID} title="Satisfaction Heatmap — Session Type × Dimension"
+              sub="Avg score · Teal ≥4.5 · Blue ≥4.0 · Amber ≥3.5">
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
                   <thead>
                     <tr>
-                      <th className="text-left text-gray-400 font-bold pb-3 pr-4 uppercase tracking-wider text-[9px]">Type</th>
+                      <th className="text-left text-gray-400 font-bold pb-3 pr-3 uppercase tracking-wider text-[9px]">Type</th>
                       {SCORE_DIMS.map(d => (
-                        <th key={d} className="text-center text-gray-400 font-bold pb-3 px-1 min-w-[64px] uppercase tracking-wider text-[9px] leading-tight">{d}</th>
+                        <th key={d} className="text-center text-gray-400 font-bold pb-3 px-1 min-w-[60px] uppercase tracking-wider text-[9px] leading-tight">{d}</th>
                       ))}
                       <th className="text-center text-gray-400 font-bold pb-3 px-1 uppercase tracking-wider text-[9px]">Avg</th>
                     </tr>
@@ -532,7 +586,7 @@ export default function HealthXPage() {
                       const rowAvg = parseFloat(avg(scores).toFixed(1));
                       return (
                         <tr key={row.type} className="border-t border-gray-100">
-                          <td className="py-2.5 pr-4">
+                          <td className="py-2.5 pr-3">
                             <span className="flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: TYPE_COLOR[row.type] }} />
                               <span className="font-semibold text-gray-700 text-[10px] leading-tight">{row.type}</span>
@@ -558,13 +612,25 @@ export default function HealthXPage() {
                   </tbody>
                 </table>
               </div>
-            </ChartCard>
+            </Card>
 
-            <ChartCard title="Geographic Reach"
-              sub="Countries by total HealthX participant volume"
-              accent={ORANGE}>
-              <ColorBarList data={countryData} colors={COUNTRY_HEX} />
-            </ChartCard>
+            <Card accent={BLUE} title="Country Reach"
+              sub="Countries by total student participant volume">
+              <div className="space-y-2">
+                {countryData.map((row, i) => {
+                  const col = COUNTRY_HEX[i % COUNTRY_HEX.length];
+                  return (
+                    <div key={row.name} className="flex items-center gap-2.5">
+                      <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 truncate">{row.name}</div>
+                      <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                        <div className="h-full" style={{ width: `${(row.value / countryData[0].value) * 100}%`, backgroundColor: col }} />
+                      </div>
+                      <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
 
           </div>
         </section>
@@ -573,15 +639,16 @@ export default function HealthXPage() {
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(total.participants), label: "Total Participants", clr: "#4C1D95" },
-              { value: `${femalePct}%`,            label: "Female Reach",      clr: "#9D174D" },
-              { value: String(total.partnerships), label: "Partnerships",      clr: "#065F46" },
-              { value: `${avgSat}/5`,              label: "Avg Satisfaction",  clr: "#0F766E" },
+              { value: String(visitsCompleted),      label: "Hub Visits",            clr: TEAL_DEEP  },
+              { value: String(totalPships),           label: "Partnerships (MOUs)",   clr: TEAL_MID   },
+              { value: hxPart.toLocaleString(),       label: "Students Reached",      clr: BLUE       },
+              { value: `${femalePct}%`,              label: "Female Participation",  clr: "#9D174D"  },
             ] as const).map(tile => (
               <div key={tile.label} className="px-6 py-6 text-center"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
                 <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider"
+                  style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
               </div>
             ))}
           </div>
