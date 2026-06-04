@@ -1,18 +1,23 @@
 "use client";
-import { useState, useEffect } from "react";
-import {
-  BarChart, Bar,
-  AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts";
-import { Download, FileText, TrendingUp, Users, Award, Handshake, Target, Zap, type LucideIcon } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
-import { masterclasses }        from "@/data/masterclasses";
-import { fieldVisits }          from "@/data/fieldVisits";
-import { hackathons }           from "@/data/hackathons";
-import { mentorshipPrograms }   from "@/data/mentorships";
+import { fieldVisits } from "@/data/fieldVisits";
+import { founders } from "@/data/founders";
+import { hackathons } from "@/data/hackathons";
+import { masterclasses } from "@/data/masterclasses";
+import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { founders }             from "@/data/founders";
+import { Award, Download, FileText, Handshake, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis, YAxis,
+} from "recharts";
 
 // ─── Color palette ────────────────────────────────────────────────────────────
 const NAVY    = "#002147";
@@ -90,7 +95,7 @@ const TOTAL_JOBS    = ALL_VENTURES.reduce((s, v) => s + v.jobsTotal, 0);
 const FOUNDER_FEM   = Math.round(founders.filter(f => f.gender === "Female").length / founders.length * 100);
 
 // ─── Chart data ───────────────────────────────────────────────────────────────
-const YEARS = [2020, 2021, 2022, 2023, 2024, 2025, 2026];
+const YEARS = [2022, 2023, 2024, 2025, 2026];
 
 const activityByYear = YEARS
   .map(yr => ({
@@ -420,7 +425,7 @@ export default function ExecutiveDashboard() {
             <div>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                All programmes · 2020–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026
+                All programmes · 2022–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
