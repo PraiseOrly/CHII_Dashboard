@@ -1,17 +1,27 @@
 "use client";
-import { useState, useEffect } from "react";
-import {
-  BarChart, Bar, AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts";
-import {
-  Download, FileText, TrendingUp, Users,
-  Briefcase, Award, Target, Zap, type LucideIcon,
-} from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
 import { healthXSessions } from "@/data/hemp/healthx";
-import { internships }     from "@/data/hemp/internships";
+import { internships } from "@/data/hemp/internships";
 import { missionStudents } from "@/data/hemp/missionStudents";
+import {
+  Award,
+  Briefcase,
+  Download, FileText,
+  Target,
+  TrendingUp, Users,
+  Zap, type LucideIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis, YAxis,
+} from "recharts";
 
 // ─── Palette ─────────────────────────────────────────────────────────────────
 const VIOLET = "#7C3AED";
@@ -346,8 +356,9 @@ export default function HEMPOverview() {
             <div>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Health Entrepreneurship &amp; Management Programme · 2021–2026 · {totalStudents} students · {healthXSessions.length} HealthX sessions
+                HEMP Programme · 2021–2026 · {totalStudents} students · {healthXSessions.length} HealthX sessions
               </p>
+
             </div>
             <div className="flex gap-2 pb-0.5">
               <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">

@@ -1,7 +1,7 @@
 "use client";
+import { LayoutGrid, Power } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Power } from "lucide-react";
 
 const NAVY   = "#002147";
 const VIOLET = "#7C3AED";
@@ -59,7 +59,9 @@ export default function HEMPNav() {
           </div>
 
           {/* Nav links */}
-          <nav className="flex-1 flex items-stretch">
+          <nav className="flex-1 flex items-stretch justify-center">
+
+
             {HEMP_NAV_ITEMS.map(({ label, href }) => {
               const isActive = activeLabel === label;
               return (
@@ -87,8 +89,9 @@ export default function HEMPNav() {
               href="/"
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 transition-colors"
             >
-              <LayoutGrid size={11} /> Impact Portal
+              <LayoutGrid size={11} /> HEMP Portal
             </Link>
+
             <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors">
               <Power size={15} />
             </button>

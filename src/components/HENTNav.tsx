@@ -1,7 +1,7 @@
 "use client";
+import { LayoutGrid, Power } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Power } from "lucide-react";
 
 const NAVY = "#002147";
 const RED  = "#D4264A";
@@ -51,7 +51,8 @@ export default function HENTNav() {
           </div>
 
           {/* Nav links */}
-          <nav className="flex-1 flex items-stretch">
+          <nav className="flex-1 flex items-stretch justify-center">
+
             {HENT_NAV_ITEMS.map(({ label, href }) => {
               const isActive = activeLabel === label;
               return (
