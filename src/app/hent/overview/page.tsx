@@ -263,16 +263,28 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
 }
 
 function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: number; maleColor: string }) {
+  const [hovered, setHovered] = useState<{ label: string; pct: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   return (
-    <div className="flex items-center gap-3 mb-3 last:mb-0">
+    <div className="relative flex items-center gap-3 mb-3 last:mb-0"
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+      onMouseLeave={() => setHovered(null)}>
       <div className="w-28 text-[11px] text-gray-600 text-right font-medium flex-shrink-0 leading-tight">{label}</div>
       <div className="flex-1 h-5 rounded-full overflow-hidden flex" style={{ backgroundColor: PURPLE + "15" }}>
-        <div style={{ width: `${femalePct}%`, backgroundColor: PURPLE }}
-          title={`Female: ${femalePct}%`} className="transition-all" />
-        <div style={{ width: `${100 - femalePct}%`, backgroundColor: maleColor }}
-          title={`Male: ${100 - femalePct}%`} className="transition-all" />
+        <div style={{ width: `${femalePct}%`, backgroundColor: PURPLE, cursor: "pointer",
+            opacity: hovered && hovered.label !== "Female" ? 0.45 : 1, transition: "opacity 0.15s" }}
+          onMouseEnter={() => setHovered({ label: "Female", pct: femalePct, color: PURPLE })} />
+        <div style={{ width: `${100 - femalePct}%`, backgroundColor: maleColor, cursor: "pointer",
+            opacity: hovered && hovered.label !== "Male" ? 0.45 : 1, transition: "opacity 0.15s" }}
+          onMouseEnter={() => setHovered({ label: "Male", pct: 100 - femalePct, color: maleColor })} />
       </div>
       <div className="text-[11px] font-bold w-8 flex-shrink-0 text-right" style={{ color: PURPLE }}>{femalePct}%</div>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
+          {hovered.label}: {hovered.pct}%
+        </div>
+      )}
     </div>
   );
 }
@@ -308,6 +320,8 @@ function CustomDonut({
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
+  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
 
@@ -331,27 +345,27 @@ function CustomDonut({
   });
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`relative flex items-center justify-center ${className}`}
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}>
       <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
+            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
+            onMouseLeave={() => setHovered(null)} />
         ))}
         {label && (
-          <text
-            x={CX} y={CY + 1}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="#111827"
-            fontSize="20"
-            fontWeight="900"
-            fontFamily="ui-sans-serif,system-ui,sans-serif"
-          >
-            {label}
-          </text>
+          <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
+            fill="#111827" fontSize="20" fontWeight="900"
+            fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
         )}
       </svg>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
+          {hovered.name}: {valueFormatter(hovered.value)}
+        </div>
+      )}
     </div>
   );
 }
@@ -404,9 +418,6 @@ export default function ExecutiveDashboard() {
 
           <div className="flex items-end justify-between py-5">
             <div>
-              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-1.5">
-                CHII · HENT · Executive Overview
-              </p>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
                 All programmes · 2020–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026

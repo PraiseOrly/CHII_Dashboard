@@ -94,6 +94,8 @@ function CustomDonut({
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
+  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
   const CX = 80, CY = 80, OR = 70, IR = 43;
@@ -113,12 +115,14 @@ function CustomDonut({
     return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
   });
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`relative flex items-center justify-center ${className}`}
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}>
       <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
+            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
+            onMouseLeave={() => setHovered(null)} />
         ))}
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
@@ -126,6 +130,12 @@ function CustomDonut({
             fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
         )}
       </svg>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
+          {hovered.name}: {valueFormatter(hovered.value)}
+        </div>
+      )}
     </div>
   );
 }
@@ -174,6 +184,8 @@ function RatingBar({ label, sessions, criterion }: {
   sessions: typeof masterclasses;
   criterion: typeof RATING_CRITERIA[number];
 }) {
+  const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const vh  = sessions.filter(s => s.scores[criterion] >= 4.5).length;
   const hi  = sessions.filter(s => s.scores[criterion] >= 3.8 && s.scores[criterion] < 4.5).length;
   const mo  = sessions.filter(s => s.scores[criterion] >= 3.0 && s.scores[criterion] < 3.8).length;
@@ -181,16 +193,31 @@ function RatingBar({ label, sessions, criterion }: {
   const tot = sessions.length || 1;
   const avg = sessions.length
     ? (sessions.reduce((s, m) => s + m.scores[criterion], 0) / sessions.length).toFixed(1) : "—";
+  const segs = [
+    { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
+    { key: "High",      count: hi, color: RATING_COLORS["High"] },
+    { key: "Moderate",  count: mo, color: RATING_COLORS["Moderate"] },
+    { key: "Low",       count: lo, color: RATING_COLORS["Low"] },
+  ];
   return (
-    <div className="flex items-center gap-3 mb-3 last:mb-0">
+    <div className="relative flex items-center gap-3 mb-3 last:mb-0"
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+      onMouseLeave={() => setHovered(null)}>
       <div className="w-40 text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
       <div className="flex-1 h-5 bg-gray-100 rounded-sm overflow-hidden flex">
-        <div style={{ width: `${(vh / tot) * 100}%`, backgroundColor: RATING_COLORS["Very High"] }} title={`Very High: ${vh}`} />
-        <div style={{ width: `${(hi / tot) * 100}%`, backgroundColor: RATING_COLORS["High"] }}      title={`High: ${hi}`} />
-        <div style={{ width: `${(mo / tot) * 100}%`, backgroundColor: RATING_COLORS["Moderate"] }}  title={`Moderate: ${mo}`} />
-        <div style={{ width: `${(lo / tot) * 100}%`, backgroundColor: RATING_COLORS["Low"] }}       title={`Low: ${lo}`} />
+        {segs.map(s => (
+          <div key={s.key} style={{ width: `${(s.count / tot) * 100}%`, backgroundColor: s.color, cursor: "pointer",
+              opacity: hovered && hovered.label !== s.key ? 0.4 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ label: s.key, count: s.count, color: s.color })} />
+        ))}
       </div>
       <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
+          {hovered.label}: {hovered.count}
+        </div>
+      )}
     </div>
   );
 }

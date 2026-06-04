@@ -210,6 +210,33 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   );
 }
 
+function GenderMiniBar({ year, female, male, fPct }: { year: string; female: number; male: number; fPct: number }) {
+  const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  return (
+    <div className="relative flex items-center gap-2 text-[11px]"
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+      onMouseLeave={() => setHovered(null)}>
+      <span className="w-10 text-gray-500 flex-shrink-0">{year}</span>
+      <div className="flex-1 h-3 rounded-sm overflow-hidden flex" style={{ backgroundColor: SKY + "1A" }}>
+        <div style={{ width: `${fPct}%`, backgroundColor: VIOLET, cursor: "pointer",
+            opacity: hovered && hovered.label !== "Female" ? 0.4 : 1, transition: "opacity 0.15s" }}
+          onMouseEnter={() => setHovered({ label: "Female", count: female, color: VIOLET })} />
+        <div style={{ width: `${100 - fPct}%`, backgroundColor: SKY, cursor: "pointer",
+            opacity: hovered && hovered.label !== "Male" ? 0.4 : 1, transition: "opacity 0.15s" }}
+          onMouseEnter={() => setHovered({ label: "Male", count: male, color: SKY })} />
+      </div>
+      <span className="text-gray-400 w-8 text-right">{female + male}</span>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 26, transform: "translateX(-50%)" }}>
+          {hovered.label}: {hovered.count}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── KPI tile colour map (10 metrics) ────────────────────────────────────────
 const KPI_TILES = [
   { label: "Total Hackathons",   clr: "#C2410C" },  // orange — identity
@@ -557,14 +584,7 @@ export default function HackathonsPage() {
                   const tot = row.Female + row.Male;
                   const fPct = tot > 0 ? Math.round((row.Female / tot) * 100) : 0;
                   return (
-                    <div key={row.Year} className="flex items-center gap-2 text-[11px]">
-                      <span className="w-10 text-gray-500 flex-shrink-0">{row.Year}</span>
-                      <div className="flex-1 h-3 rounded-sm overflow-hidden flex" style={{ backgroundColor: SKY + "1A" }}>
-                        <div style={{ width: `${fPct}%`, backgroundColor: VIOLET }} title={`Female: ${row.Female}`} />
-                        <div style={{ width: `${100 - fPct}%`, backgroundColor: SKY }} title={`Male: ${row.Male}`} />
-                      </div>
-                      <span className="text-gray-400 w-8 text-right">{tot}</span>
-                    </div>
+                    <GenderMiniBar key={row.Year} year={row.Year} female={row.Female} male={row.Male} fPct={fPct} />
                   );
                 })}
                 <div className="flex items-center gap-4 mt-2 text-[10px] text-gray-400">

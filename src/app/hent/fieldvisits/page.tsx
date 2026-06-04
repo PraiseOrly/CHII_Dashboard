@@ -4,7 +4,7 @@ import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, FileText, Star, MapPin, Camera, Users, Handshake } from "lucide-react";
+import { Download, FileText, Star, MapPin, Users, Handshake } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
 import {
   fieldVisits, VISIT_TYPES, FV_CRITERIA, FV_REGIONS,
@@ -48,6 +48,8 @@ function CustomDonut({
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
+  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
   const CX = 80, CY = 80, OR = 70, IR = 43;
@@ -67,12 +69,14 @@ function CustomDonut({
     return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
   });
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`relative flex items-center justify-center ${className}`}
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}>
       <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
+            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
+            onMouseLeave={() => setHovered(null)} />
         ))}
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
@@ -80,6 +84,12 @@ function CustomDonut({
             fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
         )}
       </svg>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
+          {hovered.name}: {valueFormatter(hovered.value)}
+        </div>
+      )}
     </div>
   );
 }
@@ -159,6 +169,8 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
 function RatingBar({ label, visits, criterion }: {
   label: string; visits: typeof fieldVisits; criterion: typeof FV_CRITERIA[number];
 }) {
+  const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const vh  = visits.filter(v => v.scores[criterion] >= 4.5).length;
   const hi  = visits.filter(v => v.scores[criterion] >= 3.8 && v.scores[criterion] < 4.5).length;
   const mo  = visits.filter(v => v.scores[criterion] >= 3.0 && v.scores[criterion] < 3.8).length;
@@ -166,16 +178,31 @@ function RatingBar({ label, visits, criterion }: {
   const tot = visits.length || 1;
   const avg = visits.length
     ? (visits.reduce((s, v) => s + v.scores[criterion], 0) / visits.length).toFixed(1) : "—";
+  const segs = [
+    { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
+    { key: "High",      count: hi, color: RATING_COLORS.High },
+    { key: "Moderate",  count: mo, color: RATING_COLORS.Moderate },
+    { key: "Low",       count: lo, color: RATING_COLORS.Low },
+  ];
   return (
-    <div className="flex items-center gap-3 mb-2.5 last:mb-0">
+    <div className="relative flex items-center gap-3 mb-2.5 last:mb-0"
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+      onMouseLeave={() => setHovered(null)}>
       <div className="w-44 text-[10px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
       <div className="flex-1 h-4 bg-gray-100 rounded-sm overflow-hidden flex">
-        <div style={{ width: `${(vh / tot) * 100}%`, backgroundColor: RATING_COLORS["Very High"] }} title={`Very High: ${vh}`} />
-        <div style={{ width: `${(hi / tot) * 100}%`, backgroundColor: RATING_COLORS.High }}        title={`High: ${hi}`} />
-        <div style={{ width: `${(mo / tot) * 100}%`, backgroundColor: RATING_COLORS.Moderate }}    title={`Moderate: ${mo}`} />
-        <div style={{ width: `${(lo / tot) * 100}%`, backgroundColor: RATING_COLORS.Low }}         title={`Low: ${lo}`} />
+        {segs.map(s => (
+          <div key={s.key} style={{ width: `${(s.count / tot) * 100}%`, backgroundColor: s.color, cursor: "pointer",
+              opacity: hovered && hovered.label !== s.key ? 0.4 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ label: s.key, count: s.count, color: s.color })} />
+        ))}
       </div>
       <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
+          {hovered.label}: {hovered.count}
+        </div>
+      )}
     </div>
   );
 }
@@ -251,7 +278,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
       style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-      <p className="text-lg font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
+      <p className="text-[1.1rem] font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
       <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
     </div>
   );
@@ -259,13 +286,12 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 
 // ─── KPI tile map (7 metrics) ─────────────────────────────────────────────────
 const KPI_TILES = [
-  { label: "Total Field Visits",      bg: "#ECFDF5", clr: "#064E3B" },
-  { label: "Total Participants",      bg: "#D1FAE5", clr: "#065F46" },
-  { label: "Ventures Participating",  bg: "#CCFBF1", clr: "#115E59" },
-  { label: "Organisations Visited",   bg: "#F0FDFA", clr: "#134E4A" },
-  { label: "Female Participants",     bg: "#A7F3D0", clr: "#064E3B" },
-  { label: "Avg Attendance / Visit",  bg: "#99F6E4", clr: "#0F766E" },
-  { label: "Avg Completion Rate",     bg: "#ECFEFF", clr: "#164E63" },
+  { label: "Total Field Visits",      clr: "#065F46" },  // emerald  — page identity
+  { label: "Total Participants",      clr: "#1E3A8A" },  // deep blue
+  { label: "Ventures Participating",  clr: "#6D28D9" },  // violet
+  { label: "Organisations Visited",   clr: "#0E7490" },  // cyan
+  { label: "Avg Attendance / Visit",  clr: "#C2410C" },  // orange
+  { label: "Avg Completion Rate",     clr: "#3730A3" },  // indigo
 ] as const;
 
 // ─── page ─────────────────────────────────────────────────────────────────────
@@ -335,7 +361,7 @@ export default function FieldVisitsPage() {
   const TYPE_COLORS = [SKY, EMERALD, VIOLET, AMBER, ROSE, TEAL, PRIMARY];
 
   const attendanceTrend = [...filtered].sort((a, b) => a.date.localeCompare(b.date))
-    .map(v => ({ Visit: v.organization.length > 20 ? v.organization.slice(0, 20) + "…" : v.organization, Participants: v.participants }));
+    .map(v => ({ Visit: `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][v.month - 1]} '${String(v.year).slice(2)}`, Participants: v.participants }));
 
   let cum = 0;
   const growthData = [...filtered].sort((a, b) => a.date.localeCompare(b.date))
@@ -353,7 +379,7 @@ export default function FieldVisitsPage() {
 
   const topVisits = [...filtered]
     .map(v => ({ ...v, avgScore: FV_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / FV_CRITERIA.length }))
-    .sort((a, b) => b.avgScore - a.avgScore).slice(0, 6);
+    .sort((a, b) => b.avgScore - a.avgScore).slice(0, 3);
 
   const orgFreq: Record<string, { type: string; count: number; participants: number; avgScore: number; location: string }> = {};
   filtered.forEach(v => {
@@ -365,22 +391,38 @@ export default function FieldVisitsPage() {
   });
   const frequentOrgs = Object.entries(orgFreq)
     .map(([name, d]) => ({ name, ...d, avgScore: d.avgScore / d.count }))
-    .sort((a, b) => b.count - a.count || b.participants - a.participants).slice(0, 6);
+    .sort((a, b) => b.count - a.count || b.participants - a.participants).slice(0, 3);
 
   const partnershipsTrend = YEARS.map(yr => ({
     Year: String(yr),
     Partnerships: filtered.filter(v => v.year === yr).reduce((s, v) => s + v.partnerships, 0),
   }));
 
-  const MEDIA_PALETTE = [INDIGO, PRIMARY, TEAL, ACCENT, VIOLET, AMBER];
-  const MEDIA_ICONS   = [Camera, Users, MapPin, Handshake, Star, Camera];
+  const BASE = "?auto=format&fit=crop&w=600&h=360&q=80";
+  const FV_IMAGES: Record<string, string> = {
+    FV01: `https://images.unsplash.com/photo-1576091160399-112ba8d25d1d${BASE}`,  // hospital corridor / clinical staff
+    FV02: `https://images.unsplash.com/photo-1551076805-e1869033e919${BASE}`,      // medical device / health tech
+    FV03: `https://images.unsplash.com/photo-1524758631624-e2822132a628${BASE}`,   // modern innovation workspace
+    FV04: `https://images.unsplash.com/photo-1559757148-5c350d0d3c56${BASE}`,      // hospital exterior / facility
+    FV05: `https://images.unsplash.com/photo-1584308666744-24d5c474f2ae${BASE}`,   // pharmacy / medicine dispensing
+    FV06: `https://images.unsplash.com/photo-1583947215259-5d1d7b14df19${BASE}`,   // medical team / institutional
+    FV07: `https://images.unsplash.com/photo-1579684385127-1571b5f1cc84${BASE}`,   // doctor consultation / private hospital
+    FV08: `https://images.unsplash.com/photo-1532187863486-abf9dbad1b69${BASE}`,   // research lab / NGO health
+    FV09: `https://images.unsplash.com/photo-1516549655669-df28c2a37e48${BASE}`,   // digital health / data lab
+    FV10: `https://images.unsplash.com/photo-1576091160399-112ba8d25d1d${BASE}`,   // EHR / health startup
+    FV11: `https://images.unsplash.com/photo-1538108149393-dbada5a3f2ba${BASE}`,   // public health / government lab
+    FV12: `https://images.unsplash.com/photo-1532187863486-abf9dbad1b69${BASE}`,   // Africa health research lab
+    FV13: `https://images.unsplash.com/photo-1551076805-e1869033e919${BASE}`,      // health startup / delivery tech
+    FV14: `https://images.unsplash.com/photo-1516549655669-df28c2a37e48${BASE}`,   // iHub / health innovation hub
+    FV15: `https://images.unsplash.com/photo-1584308666744-24d5c474f2ae${BASE}`,   // pharmaceutical / access to medicine
+    FV16: `https://images.unsplash.com/photo-1559757148-5c350d0d3c56${BASE}`,      // innovation city / modern facility
+  };
 
   const kpiValues = [
     { sub: "Excursions conducted",   num: tot.visits,        fmt: (n: number) => String(Math.round(n)) },
     { sub: "Across all visits",      num: tot.participants,   fmt: (n: number) => Math.round(n).toLocaleString() },
     { sub: "Unique ventures",        num: tot.ventures,       fmt: (n: number) => Math.round(n).toLocaleString() },
     { sub: "Distinct host sites",    num: tot.orgs,           fmt: (n: number) => String(Math.round(n)) },
-    { sub: `${tot.female} people`,   num: femalePct,          fmt: (n: number) => `${Math.round(n)}%` },
     { sub: "Per excursion",          num: avgAtt,             fmt: (n: number) => String(Math.round(n)) },
     { sub: "Participants completing", num: tot.completion,    fmt: (n: number) => `${Math.round(n)}%` },
   ];
@@ -388,24 +430,27 @@ export default function FieldVisitsPage() {
   const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
 
       {/* ── HEADER ────────────────────────────────────────────────────────── */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-end justify-between py-4">
+      <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+        <div className="max-w-[1440px] mx-auto px-6">
+          <div className="flex items-end justify-between py-5">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: NAVY }}>Field Visits</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-1.5">
+                CHII · HENT · Field Visits
+              </p>
+              <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Field Visits</h1>
+              <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
                 Industry excursions · 2022–2026 · {fieldVisits.length} visits tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export Data
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
+                <Download size={11} /> Export Report
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-lg font-semibold text-white shadow-sm"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-lg font-semibold text-white shadow-sm transition-colors"
                 style={{ backgroundColor: RED }}>
                 <FileText size={11} /> Custom Report
               </button>
@@ -414,7 +459,7 @@ export default function FieldVisitsPage() {
 
           {/* KPI strip — 7 distinct tinted tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
                 <KpiTile key={label} label={label} num={kpiValues[i].num}
                   displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
@@ -425,57 +470,54 @@ export default function FieldVisitsPage() {
       </header>
 
       {/* ── MAIN ──────────────────────────────────────────────────────────── */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
+      <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* FILTERS */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-5 py-4">
-          <div className="flex flex-wrap items-end gap-5">
-            {[
-              { label: "Year", value: yearFilter, set: setYearFilter, opts: [["All","All Years"],["2022","2022"],["2023","2023"],["2024","2024"],["2025","2025"],["2026","2026"]], w: "min-w-[120px]" },
-            ].map(f => (
-              <div key={f.label} className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{f.label}</label>
-                <select value={f.value} onChange={e => (f.set as (v: string) => void)(e.target.value)}
-                  className={`text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer shadow-sm ${f.w}`}>
-                  {f.opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                </select>
-              </div>
-            ))}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Visit Type</label>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Year</label>
+              <select value={yearFilter} onChange={e => setYearFilter(e.target.value as "All"|"2022"|"2023"|"2024"|"2025"|"2026")}
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm">
+                <option value="All">All Years</option>
+                {(["2022","2023","2024","2025","2026"] as const).map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Type</label>
               <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as "All" | VisitType)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer min-w-[190px] shadow-sm">
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm min-w-[160px]">
                 <option value="All">All Types</option>
                 {VISIT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Region</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Region</label>
               <select value={regionFilter} onChange={e => setRegionFilter(e.target.value as "All" | FVRegion)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer min-w-[190px] shadow-sm">
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm min-w-[150px]">
                 <option value="All">All Regions</option>
                 {FV_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Gender</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Gender</label>
               <select value={genderView} onChange={e => setGenderView(e.target.value as "All" | "Female" | "Male")}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer min-w-[140px] shadow-sm">
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm">
                 <option value="All">All Genders</option>
-                <option value="Female">Female</option>
-                <option value="Male">Male</option>
+                <option value="Female">Female-majority</option>
+                <option value="Male">Male-majority</option>
               </select>
             </div>
-            <div className="flex items-end gap-3 ml-auto pb-0.5">
-              <span className="text-[11px] text-gray-400">
-                {filtered.length} of {fieldVisits.length} visit{fieldVisits.length !== 1 ? "s" : ""}
+            <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
+              <span className="text-[10px] text-gray-400">
+                {filtered.length} of {fieldVisits.length} visits
               </span>
               {(yearFilter !== "All" || typeFilter !== "All" || regionFilter !== "All" || genderView !== "All") && (
                 <button
                   onClick={() => { setYearFilter("All"); setTypeFilter("All"); setRegionFilter("All"); setGenderView("All"); }}
-                  className="text-[11px] font-medium underline underline-offset-2 transition-colors"
+                  className="text-[10px] font-medium underline underline-offset-2 transition-colors"
                   style={{ color: ACCENT }}>
-                  Clear filters
+                  Clear
                 </button>
               )}
             </div>
@@ -537,20 +579,49 @@ export default function FieldVisitsPage() {
           <SecHeader title="Participant Demographics"
             sub="Breakdown by gender, age, venture stage, and social inclusion" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ProfileCard label="Female Participants"  value={tot.female}                pct={femalePct}      total={tot.participants} color={VIOLET}  />
-            <ProfileCard label="Male Participants"    value={tot.participants-tot.female} pct={100-femalePct} total={tot.participants} color={SKY}     />
-            <ProfileCard label="Student Participants" value={tot.students}               pct={studentPct}     total={tot.participants} color={EMERALD} />
-            <ProfileCard label="Alumni Participants"  value={alumniTotal}               pct={100-studentPct} total={tot.participants} color={AMBER}   />
+            <ProfileCard label="Female Participants"  value={tot.female}                  pct={femalePct}        total={tot.participants} color={VIOLET}  />
+            <ProfileCard label="Male Participants"    value={tot.participants - tot.female} pct={100 - femalePct} total={tot.participants} color={SKY}     />
+            <ProfileCard label="Student Participants" value={tot.students}                pct={studentPct}       total={tot.participants} color={EMERALD} />
+            <ProfileCard label="Alumni Participants"  value={alumniTotal}                 pct={100 - studentPct} total={tot.participants} color={AMBER}   />
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <ChartCard title="Age Group Distribution" sub="Participants by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={[SKY, PRIMARY, VIOLET, ROSE]} className="h-36" valueFormatter={(v) => `${v}`} />
+              <div className="mt-2 space-y-0.5">
+                {ageData.map((d, i) => (
+                  <div key={d.name} className="flex items-center justify-between text-[10px]">
+                    <span className="flex items-center gap-1.5 text-gray-500">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [SKY, PRIMARY, VIOLET, ROSE][i] }} />{d.name}
+                    </span>
+                    <span className="font-medium" style={{ color: [SKY, PRIMARY, VIOLET, ROSE][i] }}>{d.value}</span>
+                  </div>
+                ))}
+              </div>
             </ChartCard>
-            <ChartCard title="Venture Stage Representation" sub="Attendees by development stage" accent={INDIGO}>
-              <CustomDonut data={stageData} colors={[SKY, PRIMARY, INDIGO]} className="h-36" valueFormatter={(v) => `${v}`} />
-            </ChartCard>
-            <ChartCard title="Visit Type Breakdown" sub="Organisations by sector category" accent={TEAL}>
+            <ChartCard title="Visit Type Breakdown" sub="Excursions by sector category" accent={TEAL}>
               <CustomDonut data={typeData} colors={TYPE_COLORS} className="h-36" valueFormatter={(v) => `${v}`} />
+              <div className="mt-2 space-y-0.5">
+                {typeData.slice(0, 4).map((d, i) => (
+                  <div key={d.name} className="flex items-center justify-between text-[10px]">
+                    <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: TYPE_COLORS[i] }} />
+                      <span className="truncate">{d.name}</span>
+                    </span>
+                    <span className="font-medium ml-1 flex-shrink-0" style={{ color: TYPE_COLORS[i] }}>{d.value}</span>
+                  </div>
+                ))}
+              </div>
+            </ChartCard>
+            <ChartCard title="Venture Stage" sub="Attendees by development stage" accent={INDIGO}>
+              <CustomDonut data={stageData} colors={[SKY, PRIMARY, INDIGO]} className="h-36" valueFormatter={(v) => `${v}`} />
+              <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
+                {stageData.map((d, i) => (
+                  <div key={d.name}>
+                    <p className="text-sm font-black" style={{ color: [SKY, PRIMARY, INDIGO][i] }}>{d.value}</p>
+                    <p className="text-[9px] text-gray-400">{d.name}</p>
+                  </div>
+                ))}
+              </div>
             </ChartCard>
             <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER}>
               <div className="space-y-3 mt-2">
@@ -625,8 +696,8 @@ export default function FieldVisitsPage() {
               <ResponsiveContainer width="100%" height={208}>
                 <BarChart data={attendanceTrend.slice(0, 12)} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Visit" tick={{ fontSize: 9, fill: "#9CA3AF" }} angle={-35} textAnchor="end"
-                    axisLine={false} tickLine={false} height={50} />
+                  <XAxis dataKey="Visit" tick={{ fontSize: 9, fill: "#9CA3AF" }}
+                    axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Participants"]} />
                   <Bar dataKey="Participants" fill={SKY} radius={[3, 3, 0, 0]} />
@@ -654,30 +725,6 @@ export default function FieldVisitsPage() {
           </div>
         </section>
 
-        {/* GROWTH */}
-        <section>
-          <SecHeader title="Participation Growth Over Time"
-            sub="Cumulative participants reached through field excursions" />
-          <ChartCard title="Cumulative Participant Reach"
-            sub="Running total across all visits — shows programme exposure growth"
-            accent={EMERALD}>
-            <ResponsiveContainer width="100%" height={208}>
-              <AreaChart data={growthData}>
-                <defs>
-                  <linearGradient id="cumGradFV" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor={EMERALD} stopOpacity={0.25} />
-                    <stop offset="95%" stopColor={EMERALD} stopOpacity={0.03} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Period" tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Cumulative Participants"]} />
-                <Area type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2} fill="url(#cumGradFV)" dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </section>
 
         {/* MOST IMPACTFUL + FREQUENTLY VISITED */}
         <section>
@@ -786,15 +833,15 @@ export default function FieldVisitsPage() {
           <SecHeader title="Visit Highlights & Field Notes"
             sub="Key takeaways and learning moments from recent excursions" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...filtered].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6).map((v, i) => {
-              const bg   = MEDIA_PALETTE[i % MEDIA_PALETTE.length];
-              const Icon = MEDIA_ICONS[i % MEDIA_ICONS.length];
+            {[...filtered].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3).map((v) => {
               return (
                 <div key={v.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-                  <div className="h-20 flex items-center justify-center" style={{ backgroundColor: bg + "18" }}>
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: bg + "25" }}>
-                      <Icon size={22} style={{ color: bg }} />
-                    </div>
+                  <div className="h-44 overflow-hidden">
+                    <img
+                      src={FV_IMAGES[v.id] ?? `https://picsum.photos/seed/${v.id}/600/360`}
+                      alt={v.organization}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-1.5 mb-1.5">
@@ -820,23 +867,43 @@ export default function FieldVisitsPage() {
           </div>
         </section>
 
-        {/* COMPLETION ANALYTICS */}
+        {/* GROWTH + COMPLETION ANALYTICS */}
         <section>
-          <SecHeader title="Attendance & Completion Analytics"
-            sub="Engagement and completion rates across all field visits" />
+          <SecHeader title="Participation Growth & Completion Analytics"
+            sub="Cumulative reach over time and completion rates across all field visits" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <ChartCard title="Cumulative Participant Reach"
+            sub="Running total across all visits — shows programme exposure growth"
+            accent={EMERALD}>
+            <ResponsiveContainer width="100%" height={208}>
+              <AreaChart data={growthData}>
+                <defs>
+                  <linearGradient id="cumGradFV" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor={EMERALD} stopOpacity={0.25} />
+                    <stop offset="95%" stopColor={EMERALD} stopOpacity={0.03} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                <XAxis dataKey="Period" tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Cumulative Participants"]} />
+                <Area type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2} fill="url(#cumGradFV)" dot={false} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartCard>
           <ChartCard title="Completion Rate by Field Visit"
             sub="Percentage of registered participants completing each excursion"
             accent={EMERALD}>
             <ResponsiveContainer width="100%" height={208}>
               <BarChart
                 data={[...filtered].sort((a, b) => a.date.localeCompare(b.date)).map(v => ({
-                  Visit: v.organization.length > 18 ? v.organization.slice(0, 18) + "…" : v.organization,
+                  Visit: `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][v.month - 1]} '${String(v.year).slice(2)}`,
                   "Completion %": v.completionRate,
                 }))}
                 barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Visit" tick={{ fontSize: 9, fill: "#9CA3AF" }} angle={-35} textAnchor="end"
-                  axisLine={false} tickLine={false} height={50} />
+                <XAxis dataKey="Visit" tick={{ fontSize: 9, fill: "#9CA3AF" }}
+                  axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
                 <Bar dataKey="Completion %" fill={EMERALD} radius={[3, 3, 0, 0]} />
@@ -856,21 +923,23 @@ export default function FieldVisitsPage() {
               ))}
             </div>
           </ChartCard>
+          </div>
         </section>
 
         {/* FOOTER */}
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(tot.visits),               label: "Field Visits",             bg: "#ECFDF5", clr: "#064E3B" },
-              { value: tot.participants.toLocaleString(), label: "Total Participants",       bg: "#D1FAE5", clr: "#065F46" },
-              { value: `${femalePct}%`,                  label: "Female Participation",     bg: "#CCFBF1", clr: "#115E59" },
-              { value: String(tot.partnerships),          label: "Partnerships Established", bg: "#F0FDFA", clr: "#134E4A" },
-            ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
-                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
+              { icon: MapPin,    value: String(tot.visits),               label: "Field Visits",             clr: "#065F46" },  // emerald — page identity
+              { icon: Users,     value: tot.participants.toLocaleString(), label: "Total Participants",       clr: "#1E3A8A" },  // deep blue
+              { icon: Star,      value: `${femalePct}%`,                  label: "Female Participation",     clr: "#9D174D" },  // rose
+              { icon: Handshake, value: String(tot.partnerships),          label: "Partnerships Established", clr: "#C2410C" },  // orange
+            ] as const).map(({ icon: Icon, value, label, clr }) => (
+              <div key={label} className="px-5 py-5 text-center"
+                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}` }}>
+                <Icon size={15} className="mx-auto mb-2" style={{ color: "rgba(255,255,255,0.72)" }} />
+                <p className="text-2xl font-black tabular-nums text-white">{value}</p>
+                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</p>
               </div>
             ))}
           </div>

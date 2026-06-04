@@ -54,6 +54,8 @@ function CustomDonut({
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
+  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
   const CX = 80, CY = 80, OR = 70, IR = 43;
@@ -73,12 +75,14 @@ function CustomDonut({
     return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
   });
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`relative flex items-center justify-center ${className}`}
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}>
       <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
+            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
+            onMouseLeave={() => setHovered(null)} />
         ))}
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
@@ -86,6 +90,12 @@ function CustomDonut({
             fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
         )}
       </svg>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
+          {hovered.name}: {valueFormatter(hovered.value)}
+        </div>
+      )}
     </div>
   );
 }
@@ -165,6 +175,8 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
 function RatingBar({ label, programs, criterion }: {
   label: string; programs: typeof mentorshipPrograms; criterion: MFCriterion;
 }) {
+  const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const vh  = programs.filter(p => p.scores[criterion] >= 4.5).length;
   const hi  = programs.filter(p => p.scores[criterion] >= 3.8 && p.scores[criterion] < 4.5).length;
   const mo  = programs.filter(p => p.scores[criterion] >= 3.0 && p.scores[criterion] < 3.8).length;
@@ -172,16 +184,31 @@ function RatingBar({ label, programs, criterion }: {
   const tot = programs.length || 1;
   const avg = programs.length
     ? (programs.reduce((s, p) => s + p.scores[criterion], 0) / programs.length).toFixed(1) : "—";
+  const segs = [
+    { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
+    { key: "High",      count: hi, color: RATING_COLORS.High },
+    { key: "Moderate",  count: mo, color: RATING_COLORS.Moderate },
+    { key: "Low",       count: lo, color: RATING_COLORS.Low },
+  ];
   return (
-    <div className="flex items-center gap-3 mb-3 last:mb-0">
+    <div className="relative flex items-center gap-3 mb-3 last:mb-0"
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+      onMouseLeave={() => setHovered(null)}>
       <div className="w-44 text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
       <div className="flex-1 h-5 bg-gray-100 rounded-sm overflow-hidden flex">
-        <div style={{ width: `${(vh / tot) * 100}%`, backgroundColor: RATING_COLORS["Very High"] }} title={`Very High: ${vh}`} />
-        <div style={{ width: `${(hi / tot) * 100}%`, backgroundColor: RATING_COLORS.High }}        title={`High: ${hi}`} />
-        <div style={{ width: `${(mo / tot) * 100}%`, backgroundColor: RATING_COLORS.Moderate }}    title={`Moderate: ${mo}`} />
-        <div style={{ width: `${(lo / tot) * 100}%`, backgroundColor: RATING_COLORS.Low }}         title={`Low: ${lo}`} />
+        {segs.map(s => (
+          <div key={s.key} style={{ width: `${(s.count / tot) * 100}%`, backgroundColor: s.color, cursor: "pointer",
+              opacity: hovered && hovered.label !== s.key ? 0.4 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ label: s.key, count: s.count, color: s.color })} />
+        ))}
       </div>
       <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
+          {hovered.label}: {hovered.count}
+        </div>
+      )}
     </div>
   );
 }
@@ -263,16 +290,12 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   );
 }
 
-// ─── KPI tile map (8 metrics) — each a distinct hue ──────────────────────────
+// ─── KPI tile map (4 metrics) ────────────────────────────────────────────────
 const KPI_TILES = [
-  { label: "Mentorship Programs",   clr: "#6D28D9" },  // violet  — identity
-  { label: "Fellowship Programs",   clr: "#059669" },  // emerald
-  { label: "Total Fellows",         clr: "#1E3A8A" },  // deep blue
-  { label: "Mentor Engagements",    clr: "#C2410C" },  // orange
-  { label: "Ventures Involved",     clr: "#0891B2" },  // cyan
-  { label: "1-Yr Fellowship Grads", clr: "#D97706" },  // amber/gold
-  { label: "Female Fellows",        clr: "#9D174D" },  // rose
-  { label: "Avg Completion Rate",   clr: "#134E4A" },  // teal
+  { label: "Total Fellows",       clr: "#1E3A8A" },  // deep blue
+  { label: "Mentor Engagements",  clr: "#C2410C" },  // orange
+  { label: "Female Fellows",      clr: "#9D174D" },  // rose
+  { label: "Avg Completion Rate", clr: "#134E4A" },  // teal
 ] as const;
 
 const QUAL_THEMES: { text: string; area: MFQualArea; threshold: number }[] = [
@@ -386,7 +409,7 @@ export default function MentorshipPage() {
   const topPrograms = [...filtered]
     .map(p => ({ ...p, avgScore: MF_CRITERIA.reduce((s, c) => s + p.scores[c], 0) / MF_CRITERIA.length }))
     .sort((a, b) => b.avgScore - a.avgScore).slice(0, 6);
-  const testimonials = filtered.filter(p => p.testimonial).sort((a, b) => b.year - a.year).slice(0, 3);
+  const testimonials = filtered.filter(p => p.testimonial).sort((a, b) => b.year - a.year).slice(0, 4);
   const heatmapRows = [...filtered]
     .map(p => ({ ...p, avgScore: MF_CRITERIA.reduce((s, c) => s + p.scores[c], 0) / MF_CRITERIA.length }))
     .sort((a, b) => b.avgScore - a.avgScore).slice(0, 10);
@@ -402,14 +425,10 @@ export default function MentorshipPage() {
   const isFiltered = yearFilter !== "All" || typeFilter !== "All" || genderView !== "All";
 
   const kpiValues = [
-    { sub: "Active cohorts",            num: tot.programs,      fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Incl. one-year tracks",     num: tot.fellowships,   fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Across all programmes",     num: tot.fellows,       fmt: (n: number) => Math.round(n).toLocaleString() },
-    { sub: "Mentor slots deployed",     num: tot.mentors,       fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Participating ventures",    num: tot.ventures,      fmt: (n: number) => Math.round(n).toLocaleString() },
-    { sub: "Graduates enrolled",        num: tot.grad1yr,       fmt: (n: number) => String(Math.round(n)) },
-    { sub: `${tot.female} people`,      num: femalePct,         fmt: (n: number) => `${Math.round(n)}%` },
-    { sub: "Participants completing",   num: tot.completion,    fmt: (n: number) => `${Math.round(n)}%` },
+    { sub: "Across all programmes",   num: tot.fellows,    fmt: (n: number) => Math.round(n).toLocaleString() },
+    { sub: "Mentor slots deployed",   num: tot.mentors,    fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${tot.female} people`,    num: femalePct,      fmt: (n: number) => `${Math.round(n)}%` },
+    { sub: "Participants completing", num: tot.completion, fmt: (n: number) => `${Math.round(n)}%` },
   ];
 
   const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
@@ -441,7 +460,7 @@ export default function MentorshipPage() {
 
           {/* KPI strip — 8 distinct tinted tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
                 <KpiTile key={label} label={label} num={kpiValues[i].num}
                   displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
@@ -619,101 +638,73 @@ export default function MentorshipPage() {
         <section>
           <SecHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-            {/* Fellow profile stats — stacked column */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              {([
-                { label: "Female Fellows",  value: tot.female,               pct: femalePct,      color: VIOLET  },
-                { label: "Male Fellows",    value: tot.fellows - tot.female, pct: 100 - femalePct, color: SKY     },
-                { label: "Student Fellows", value: studentSum,               pct: studentPct,     color: EMERALD },
-                { label: "Alumni Fellows",  value: alumniTotal,              pct: 100 - studentPct, color: AMBER  },
-              ] as const).map((item, i) => (
-                <div key={item.label} className={`px-4 py-3.5 ${i > 0 ? "border-t border-gray-100" : ""}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none"
-                      style={{ color: item.color + "AA" }}>{item.label}</p>
-                    <p className="text-xl font-black tabular-nums leading-none"
-                      style={{ color: item.color }}>{item.pct}%</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <ProfileCard label="Female Fellows"  value={tot.female}               pct={femalePct}        total={tot.fellows} color={VIOLET}  />
+            <ProfileCard label="Male Fellows"    value={tot.fellows - tot.female} pct={100 - femalePct}  total={tot.fellows} color={SKY}     />
+            <ProfileCard label="Student Fellows" value={studentSum}               pct={studentPct}       total={tot.fellows} color={EMERALD} />
+            <ProfileCard label="Alumni Fellows"  value={alumniTotal}              pct={100 - studentPct} total={tot.fellows} color={AMBER}   />
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
+              <CustomDonut data={ageData} colors={[ACCENT, "#C2410C", "#059669", ROSE]} className="h-36" valueFormatter={(v) => `${v}`} />
+              <div className="mt-2 space-y-0.5">
+                {ageData.map((d, i) => (
+                  <div key={d.name} className="flex items-center justify-between text-[10px]">
+                    <span className="flex items-center gap-1.5 text-gray-500">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [ACCENT,"#C2410C","#059669",ROSE][i] }} />{d.name}
+                    </span>
+                    <span className="font-medium" style={{ color: [ACCENT,"#C2410C","#059669",ROSE][i] }}>{d.value}</span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
-                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                ))}
+              </div>
+            </ChartCard>
+            <ChartCard title="Geographic Region" sub="Fellows by region of origin" accent={EMERALD}>
+              <CustomDonut data={regionData} colors={[EMERALD, TEAL, "#C2410C", VIOLET]} className="h-36" valueFormatter={(v) => `${v}`} />
+              <div className="mt-2 space-y-0.5">
+                {regionData.map((d, i) => (
+                  <div key={d.name} className="flex items-center justify-between text-[10px]">
+                    <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [EMERALD,TEAL,"#C2410C",VIOLET][i] }} />
+                      <span className="truncate">{d.name}</span>
+                    </span>
+                    <span className="font-medium ml-1 flex-shrink-0" style={{ color: [EMERALD,TEAL,"#C2410C",VIOLET][i] }}>{d.value}</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-1.5 tabular-nums">
-                    {item.value.toLocaleString()} / {tot.fellows.toLocaleString()}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Column 2: Age + Stage stacked */}
-            <div className="flex flex-col gap-4">
-              <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
-                <CustomDonut data={ageData} colors={[ACCENT, "#C2410C", "#059669", ROSE]} className="h-32" valueFormatter={(v) => `${v}`} />
-                <div className="mt-2 space-y-0.5">
-                  {ageData.map((d, i) => (
-                    <div key={d.name} className="flex items-center justify-between text-[10px]">
-                      <span className="flex items-center gap-1.5 text-gray-500">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [ACCENT,"#C2410C","#059669",ROSE][i] }} />{d.name}
-                      </span>
-                      <span className="font-medium" style={{ color: [ACCENT,"#C2410C","#059669",ROSE][i] }}>{d.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </ChartCard>
-              <ChartCard title="Venture Stage" sub="Fellows by venture development stage" accent={ACCENT}>
-                <CustomDonut data={stageData} colors={[SKY, "#C2410C", VIOLET]} className="h-32" valueFormatter={(v) => `${v}`} />
-                <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
-                  {stageData.map((d, i) => (
+                ))}
+              </div>
+            </ChartCard>
+            <ChartCard title="Venture Stage" sub="Fellows by venture development stage" accent={ACCENT}>
+              <CustomDonut data={stageData} colors={[SKY, "#C2410C", VIOLET]} className="h-36" valueFormatter={(v) => `${v}`} />
+              <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
+                {stageData.map((d, i) => (
+                  <div key={d.name}>
+                    <p className="text-sm font-black" style={{ color: [SKY,"#C2410C",VIOLET][i] }}>{d.value}</p>
+                    <p className="text-[9px] text-gray-400">{d.name}</p>
+                  </div>
+                ))}
+              </div>
+            </ChartCard>
+            <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER}>
+              <div className="space-y-3 mt-2">
+                {socialData.map((d, i) => {
+                  const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
+                  return (
                     <div key={d.name}>
-                      <p className="text-sm font-black" style={{ color: [SKY,"#C2410C",VIOLET][i] }}>{d.value}</p>
-                      <p className="text-[9px] text-gray-400">{d.name}</p>
-                    </div>
-                  ))}
-                </div>
-              </ChartCard>
-            </div>
-
-            {/* Column 3: Region + Social stacked */}
-            <div className="flex flex-col gap-4">
-              <ChartCard title="Geographic Region" sub="Fellows by region of origin" accent={EMERALD}>
-                <CustomDonut data={regionData} colors={[EMERALD, TEAL, "#C2410C", VIOLET]} className="h-32" valueFormatter={(v) => `${v}`} />
-                <div className="mt-2 space-y-0.5">
-                  {regionData.map((d, i) => (
-                    <div key={d.name} className="flex items-center justify-between text-[10px]">
-                      <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [EMERALD,TEAL,"#C2410C",VIOLET][i] }} />
-                        <span className="truncate">{d.name}</span>
-                      </span>
-                      <span className="font-medium ml-1 flex-shrink-0" style={{ color: [EMERALD,TEAL,"#C2410C",VIOLET][i] }}>{d.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </ChartCard>
-              <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER}>
-                <div className="space-y-3 mt-2">
-                  {socialData.map((d, i) => {
-                    const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
-                    return (
-                      <div key={d.name}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-gray-600">{d.name}</span>
-                          <span className="font-medium" style={{ color: col }}>{d.value}</span>
-                        </div>
-                        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                          <div className="h-full rounded-full"
-                            style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
-                        </div>
-                        <p className="text-[10px] text-gray-400 mt-0.5">
-                          {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
-                        </p>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-600">{d.name}</span>
+                        <span className="font-medium" style={{ color: col }}>{d.value}</span>
                       </div>
-                    );
-                  })}
-                </div>
-              </ChartCard>
-            </div>
-
+                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                        <div className="h-full rounded-full"
+                          style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-0.5">
+                        {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </ChartCard>
           </div>
         </section>
 
