@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import HENTNav from "@/components/HENTNav";
 import { fieldVisits } from "@/data/fieldVisits";
 import { founders } from "@/data/founders";
@@ -19,7 +19,7 @@ import {
   XAxis, YAxis,
 } from "recharts";
 
-// ─── Color palette ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Color palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#002147";
 const PRIMARY = "#2F6FED";
 const TEAL    = "#14B8A6";
@@ -41,7 +41,7 @@ const PROG: Record<string, string> = {
   Mentorships:   C_SKY,
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmt$(n: number) {
   return n >= 1_000_000 ? `$${(n/1_000_000).toFixed(1)}M` : n >= 1_000 ? `$${Math.round(n/1_000)}K` : `$${n}`;
 }
@@ -60,7 +60,7 @@ function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
 
-// ─── Cross-programme aggregates ───────────────────────────────────────────────
+// â”€â”€â”€ Cross-programme aggregates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const hackPart  = hackathons.reduce((s, h) => s + h.participants, 0);
 const hackFem   = hackathons.reduce((s, h) => s + h.femaleCount, 0);
 const hackStart = hackathons.reduce((s, h) => s + h.startupsCreated, 0);
@@ -94,7 +94,7 @@ const TOTAL_FUNDING = ALL_VENTURES.reduce((s, v) => s + v.funding, 0);
 const TOTAL_JOBS    = ALL_VENTURES.reduce((s, v) => s + v.jobsTotal, 0);
 const FOUNDER_FEM   = Math.round(founders.filter(f => f.gender === "Female").length / founders.length * 100);
 
-// ─── Chart data ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const YEARS = [2022, 2023, 2024, 2025, 2026];
 
 const activityByYear = YEARS
@@ -185,7 +185,7 @@ const perfHeatmap = [
 ];
 const HEAT_COLS = ["Quality", "Usefulness", "Accessibility", "Relevance"] as const;
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
@@ -246,7 +246,7 @@ function ExecCard({ label, value, sub, color, note, icon: Icon, bg = "#ffffff" }
   );
 }
 
-// Custom multi-colour horizontal bar — replaces Tremor BarList
+// Custom multi-colour horizontal bar â€” replaces Tremor BarList
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -294,7 +294,7 @@ function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: 
   );
 }
 
-// ─── Chart legend ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Chart legend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PROG_LEGEND = [
   ["Hackathons", PROG.Hackathons],
   ["Masterclasses", PROG.Masterclasses],
@@ -375,7 +375,7 @@ function CustomDonut({
   );
 }
 
-// ─── Count-up animation ───────────────────────────────────────────────────────
+// â”€â”€â”€ Count-up animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -411,13 +411,13 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ExecutiveDashboard() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
 
-      {/* ── EXECUTIVE HEADER ──────────────────────────────────────────────── */}
+      {/* â”€â”€ EXECUTIVE HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div className="max-w-[1440px] mx-auto px-6">
 
@@ -425,7 +425,7 @@ export default function ExecutiveDashboard() {
             <div>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                All programmes · 2022–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026
+                All programmes Â· 2022â€“2026 Â· {TOTAL_PROGS} programmes tracked Â· Updated June 2026
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -439,7 +439,7 @@ export default function ExecutiveDashboard() {
             </div>
           </div>
 
-          {/* ── KPI STRIP ─── */}
+          {/* â”€â”€ KPI STRIP â”€â”€â”€ */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2">
               <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} sub="Participants"                              clr="#075985" />
@@ -455,30 +455,30 @@ export default function ExecutiveDashboard() {
         </div>
       </header>
 
-      {/* ── MAIN CONTENT ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
-        {/* ── HERO EXEC CARDS ─── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* â”€â”€ HERO EXEC CARDS â”€â”€â”€ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <ExecCard label="Avg Programme Rating" value={`${AVG_SAT}/5`}
             sub="Quality, Usefulness, Accessibility, Relevance"
-            note={`Masterclasses ${mcSat} · Field Visits ${fvSat} · Mentorships ${mfSat}`}
+            note={`Masterclasses ${mcSat} Â· Field Visits ${fvSat} Â· Mentorships ${mfSat}`}
             color={PRIMARY} icon={Award} bg="#BAE6FD" />
           <ExecCard label="Avg Completion Rate" value={`${AVG_COMP}%`}
             sub="Participants completing all sessions"
-            note={`MC ${mcComp}% · FV ${fvComp}% · MF ${mfComp}%`}
+            note={`MC ${mcComp}% Â· FV ${fvComp}% Â· MF ${mfComp}%`}
             color={TEAL} icon={Target} bg="#99F6E4" />
           <ExecCard label="Mentorship Fellows" value={mfFel.toLocaleString()}
-            sub={`Across ${mentorshipPrograms.length} programmes · ${mfGrad} in 1-yr track`}
-            note={`${Math.round(mfFem/mfFel*100)}% female · ${mentorshipPrograms.filter(p=>p.isFellowship).length} fellowships`}
+            sub={`Across ${mentorshipPrograms.length} programmes Â· ${mfGrad} in 1-yr track`}
+            note={`${Math.round(mfFem/mfFel*100)}% female Â· ${mentorshipPrograms.filter(p=>p.isFellowship).length} fellowships`}
             color={PURPLE} icon={Users} bg="#DDD6FE" />
           <ExecCard label="Funding Deployed" value={fmt$(TOTAL_FUNDING)}
-            sub={`${ALL_VENTURES.length} ventures · ${TOTAL_JOBS.toLocaleString()} jobs created`}
+            sub={`${ALL_VENTURES.length} ventures Â· ${TOTAL_JOBS.toLocaleString()} jobs created`}
             note={`Founder gender parity: ${FOUNDER_FEM}% female`}
             color={GREEN} icon={TrendingUp} bg="#A7F3D0" />
         </div>
 
-        {/* ── SECTION 1: PROGRAMME ACTIVITY ─── */}
+        {/* â”€â”€ SECTION 1: PROGRAMME ACTIVITY â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Delivery Timeline"
             sub="Activity count and participant volume across all programme types" />
@@ -502,7 +502,7 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <ChartCard title="Participant Volume per Year"
-              sub="Total participants across all programme types — year by year"
+              sub="Total participants across all programme types â€” year by year"
               accent={TEAL}>
               <ChartLegend />
               <ResponsiveContainer width="100%" height={208}>
@@ -530,7 +530,7 @@ export default function ExecutiveDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 2: PARTICIPATION & GENDER ─── */}
+        {/* â”€â”€ SECTION 2: PARTICIPATION & GENDER â”€â”€â”€ */}
         <section>
           <SecHeader title="Participation &amp; Diversity"
             sub="Gender representation, geographic reach, and social inclusion across programmes" />
@@ -593,14 +593,14 @@ export default function ExecutiveDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 3: PROGRAMME PERFORMANCE ─── */}
+        {/* â”€â”€ SECTION 3: PROGRAMME PERFORMANCE â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Performance Analysis"
-            sub="Satisfaction scores across quality dimensions — compared across programme types" />
+            sub="Satisfaction scores across quality dimensions â€” compared across programme types" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Satisfaction Heatmap — Programme × Dimension"
-              sub="Avg score per dimension · Teal ≥4.5 · Blue ≥4.0 · Amber ≥3.5 · Red <3.5"
+            <ChartCard title="Satisfaction Heatmap â€” Programme Ã— Dimension"
+              sub="Avg score per dimension Â· Teal â‰¥4.5 Â· Blue â‰¥4.0 Â· Amber â‰¥3.5 Â· Red <3.5"
               accent={TEAL}>
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
@@ -646,7 +646,7 @@ export default function ExecutiveDashboard() {
                   </tbody>
                 </table>
                 <div className="flex gap-4 mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex-wrap">
-                  {([["Very High (≥4.5)", TEAL],["High (≥4.0)", PRIMARY],["Moderate (≥3.5)", AMBER],["Low (<3.5)", "#EF4444"]] as const).map(([l, c]) => (
+                  {([["Very High (â‰¥4.5)", TEAL],["High (â‰¥4.0)", PRIMARY],["Moderate (â‰¥3.5)", AMBER],["Low (<3.5)", "#EF4444"]] as const).map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
                       <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
                     </span>
@@ -657,7 +657,7 @@ export default function ExecutiveDashboard() {
 
             <div className="space-y-4">
               <ChartCard title="Avg Satisfaction by Programme"
-                sub="Overall satisfaction rating (1–5) across key rated programmes"
+                sub="Overall satisfaction rating (1â€“5) across key rated programmes"
                 accent={PRIMARY}>
                 <div className="space-y-3">
                   {satCompare.map(d => (
@@ -703,14 +703,14 @@ export default function ExecutiveDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 4: VENTURE ECOSYSTEM ─── */}
+        {/* â”€â”€ SECTION 4: VENTURE ECOSYSTEM â”€â”€â”€ */}
         <section>
           <SecHeader title="Venture Ecosystem"
-            sub={`${ALL_VENTURES.length} ventures · ${TOTAL_JOBS.toLocaleString()} jobs created · ${fmt$(TOTAL_FUNDING)} deployed`} />
+            sub={`${ALL_VENTURES.length} ventures Â· ${TOTAL_JOBS.toLocaleString()} jobs created Â· ${fmt$(TOTAL_FUNDING)} deployed`} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <ChartCard title="Venture Stage Pipeline"
-              sub="Distribution across Expose · Build · Scale development stages"
+              sub="Distribution across Expose Â· Build Â· Scale development stages"
               accent={PRIMARY}>
               <CustomDonut
                 data={stageData}
@@ -770,7 +770,7 @@ export default function ExecutiveDashboard() {
                         {row.label}
                       </span>
                       <span className="text-gray-400 tabular-nums">
-                        <span className="font-bold text-gray-700">{row.count}</span> events ·{" "}
+                        <span className="font-bold text-gray-700">{row.count}</span> events Â·{" "}
                         <span className="font-bold" style={{ color: row.color }}>{row.reach.toLocaleString()}</span> participants
                       </span>
                     </div>
@@ -785,9 +785,9 @@ export default function ExecutiveDashboard() {
           </div>
         </section>
 
-        {/* ── FOOTER STRIP ──────────────────────────────────────────────────── */}
+        {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-gray-100">
             {([
               { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",         bg: "#BAE6FD", clr: "#075985" },
               { icon: Zap,        value: String(TOTAL_PROGS),          label: "Programmes Delivered", bg: "#99F6E4", clr: "#115E59" },
@@ -806,7 +806,7 @@ export default function ExecutiveDashboard() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HENT . OVERVIEW · 2023 - 2026
+              HENT . OVERVIEW Â· 2023 - 2026
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 01 Jun 2026 EAT</p>
           </div>

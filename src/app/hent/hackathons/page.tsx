@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import {
   BarChart, Bar,
@@ -9,7 +9,7 @@ import { Download, FileText } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
 import { hackathons, PROJECT_CATEGORIES } from "@/data/hackathons";
 
-// ─── palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY   = "#002147"; // footer bg only
 const RED    = "#D4264A";
 const ORANGE = "#EA580C";
@@ -25,12 +25,12 @@ const INDIGO = "#4338CA";
 // Project-category donut colours (one per category)
 const CAT_COLORS = [SKY, EMERALD, VIOLET, AMBER, ROSE];
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmt(n: number) {
   return n >= 1_000 ? `${(n / 1_000).toFixed(1)}k` : String(n);
 }
 
-// ─── derived totals ───────────────────────────────────────────────────────────
+// â”€â”€â”€ derived totals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const total = {
   events:       hackathons.length,
   participants: hackathons.reduce((s, h) => s + h.participants,    0),
@@ -49,9 +49,9 @@ const alumniTotal = total.participants - total.students;
 
 const YEARS = Array.from(new Set(hackathons.map(h => h.year))).sort();
 
-// ─── sub-components ───────────────────────────────────────────────────────────
+// â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Custom SVG donut — inline fill bypasses Tremor/Tailwind JIT colour lookup
+// Custom SVG donut â€” inline fill bypasses Tremor/Tailwind JIT colour lookup
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -101,7 +101,7 @@ function CustomDonut({
   );
 }
 
-// Multi-colour bar list — one colour per row
+// Multi-colour bar list â€” one colour per row
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -174,7 +174,7 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   );
 }
 
-// ─── Count-up animation ───────────────────────────────────────────────────────
+// â”€â”€â”€ Count-up animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -237,9 +237,9 @@ function GenderMiniBar({ year, female, male, fPct }: { year: string; female: num
   );
 }
 
-// ─── KPI tile colour map (10 metrics) ────────────────────────────────────────
+// â”€â”€â”€ KPI tile colour map (10 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TILES = [
-  { label: "Total Hackathons",   clr: "#C2410C" },  // orange — identity
+  { label: "Total Hackathons",   clr: "#C2410C" },  // orange â€” identity
   { label: "Participants",       clr: "#1E3A8A" },  // blue
   { label: "Winning Teams",      clr: "#D97706" },  // bright amber
   { label: "Projects Developed", clr: "#5B21B6" },  // violet
@@ -247,11 +247,11 @@ const KPI_TILES = [
   { label: "Partnerships",       clr: "#0891B2" },  // rust
 ] as const;
 
-// ─── page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HackathonsPage() {
   const [trendTab, setTrendTab] = useState<"participants" | "projects" | "winners" | "startups">("participants");
 
-  // ── per-year trend data ──
+  // â”€â”€ per-year trend data â”€â”€
   const participantsTrend = YEARS.map(yr => {
     const events = hackathons.filter(h => h.year === yr);
     const fem    = events.reduce((s, h) => s + h.femaleCount,   0);
@@ -301,33 +301,33 @@ export default function HackathonsPage() {
     : trendTab === "winners"     ? `${v} teams`
     : `${v} startups`;
 
-  // ── hackathons per year ──
+  // â”€â”€ hackathons per year â”€â”€
   const hackPerYear = YEARS.map(yr => ({
     Year: String(yr),
     Hackathons: hackathons.filter(h => h.year === yr).length,
   }));
 
-  // ── participant reach per year ──
+  // â”€â”€ participant reach per year â”€â”€
   const reachPerYear = YEARS.map(yr => ({
     Year: String(yr),
     Participants: hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
   }));
 
-  // ── project categories ──
+  // â”€â”€ project categories â”€â”€
   const catTotals = PROJECT_CATEGORIES.map(cat => ({
     name: cat,
     value: hackathons.reduce((s, h) => s + h.categories[cat], 0),
   })).sort((a, b) => b.value - a.value);
 
-  // ── gender breakdown for bar list ──
+  // â”€â”€ gender breakdown for bar list â”€â”€
   const genderBreakdown = [
     { name: "Female Participants", value: total.female },
     { name: "Male Participants",   value: total.participants - total.female },
   ];
 
-  // ── KPI tile values (positionally aligned with KPI_TILES) ──
+  // â”€â”€ KPI tile values (positionally aligned with KPI_TILES) â”€â”€
   const kpiValues = [
-    { sub: `${YEARS[0]}–${YEARS[YEARS.length - 1]}`, num: total.events,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${YEARS[0]}â€“${YEARS[YEARS.length - 1]}`, num: total.events,       fmt: (n: number) => String(Math.round(n)) },
     { sub: "Across all events",                        num: total.participants, fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n) / 1000).toFixed(1)}k` : String(Math.round(n)) },
     { sub: "Total prize winners",                      num: total.winningTeams, fmt: (n: number) => String(Math.round(n)) },
     { sub: "Across all hackathons",                    num: total.projects,     fmt: (n: number) => String(Math.round(n)) },
@@ -335,12 +335,12 @@ export default function HackathonsPage() {
     { sub: "Sponsors & partners",                      num: total.partnerships, fmt: (n: number) => String(Math.round(n)) },
   ];
 
-  // ─── render ────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HENTNav />
 
-      {/* ── TITLE + KPI STRIP ──────────────────────────────────────────────── */}
+      {/* â”€â”€ TITLE + KPI STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-6">
 
@@ -348,7 +348,7 @@ export default function HackathonsPage() {
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Hackathons</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Innovation events · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {total.events} hackathons tracked
+                Innovation events Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {total.events} hackathons tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -362,7 +362,7 @@ export default function HackathonsPage() {
             </div>
           </div>
 
-          {/* KPI strip — 10 distinct tinted tiles */}
+          {/* KPI strip â€” 10 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
@@ -374,17 +374,17 @@ export default function HackathonsPage() {
         </div>
       </header>
 
-      {/* ── MAIN CONTENT ───────────────────────────────────────────────────── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
-        {/* ── SECTION 1: PARTICIPANT PROFILES ─────────────────────────────── */}
+        {/* â”€â”€ SECTION 1: PARTICIPANT PROFILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Participant Profiles"
             sub={`${total.participants.toLocaleString()} participants across all hackathons`} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-            {/* Participant profile stats — stacked column */}
+            {/* Participant profile stats â€” stacked column */}
             <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
               {([
                 { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
@@ -450,7 +450,7 @@ export default function HackathonsPage() {
           </div>
         </section>
 
-        {/* ── SECTION 2: HACKATHONS PER YEAR ──────────────────────────────── */}
+        {/* â”€â”€ SECTION 2: HACKATHONS PER YEAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Hackathons Conducted Per Year"
             sub="Event frequency and participant reach by year" />
@@ -473,7 +473,7 @@ export default function HackathonsPage() {
             </ChartCard>
 
             <ChartCard title="Participant Reach per Year"
-              sub="Total participants across all hackathons — year-on-year growth"
+              sub="Total participants across all hackathons â€” year-on-year growth"
               accent={TEAL}>
               <ResponsiveContainer width="100%" height={192}>
                 <AreaChart data={reachPerYear}>
@@ -498,7 +498,7 @@ export default function HackathonsPage() {
           </div>
         </section>
 
-        {/* ── SECTION 3: HACKATHON TRENDS ─────────────────────────────────── */}
+        {/* â”€â”€ SECTION 3: HACKATHON TRENDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Hackathon Trends"
             sub="Year-on-year trends with male vs female comparison" />
@@ -535,7 +535,7 @@ export default function HackathonsPage() {
               : trendTab === "projects"    ? "Female-led vs male-led project teams"
               : trendTab === "winners"     ? "Female-led vs male-led winning teams"
               :                              "Female-founded vs male-founded startups"
-            } · by year`}
+            } Â· by year`}
             accent={SKY}>
             <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
               <span className="flex items-center gap-1.5">
@@ -563,10 +563,10 @@ export default function HackathonsPage() {
           </ChartCard>
         </section>
 
-        {/* ── SECTION 4: PARTICIPATION & PROJECT CATEGORIES ───────────────── */}
+        {/* â”€â”€ SECTION 4: PARTICIPATION & PROJECT CATEGORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Participation & Project Categories"
-            sub={`${total.participants.toLocaleString()} participants · ${total.projects} projects`} />
+            sub={`${total.participants.toLocaleString()} participants Â· ${total.projects} projects`} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -622,9 +622,9 @@ export default function HackathonsPage() {
           </div>
         </section>
 
-        {/* ── FOOTER STRIP ────────────────────────────────────────────────── */}
+        {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(total.participants), label: "Total Participants",    clr: "#1E3A8A" },
               { value: `${femalePct}%`,            label: "Female Participation", clr: "#9D174D" },
@@ -640,7 +640,7 @@ export default function HackathonsPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HENT · Hackathons · {YEARS[0]}–{YEARS[YEARS.length - 1]}
+              HENT Â· Hackathons Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]}
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>

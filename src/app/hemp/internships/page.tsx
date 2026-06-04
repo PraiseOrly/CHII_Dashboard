@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
 import { Download, FileText } from "lucide-react";
@@ -14,7 +14,7 @@ import {
   XAxis, YAxis,
 } from "recharts";
 
-// ─── Palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY   = "#002147";
 const AMBER  = "#F59E0B";
 const VIOLET = "#7C3AED";
@@ -37,12 +37,12 @@ const SECTOR_COLOR: Record<string, string> = {
 const SECTOR_HEX_LIST = [TEAL, VIOLET, SKY, ORANGE, GREEN, INDIGO];
 const COUNTRY_HEX = [AMBER, TEAL, VIOLET, ORANGE, SKY, GREEN, ROSE, INDIGO, PURPLE, "#EC4899"];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
 
-// ─── Aggregates ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Aggregates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const total = {
   orgs:        internships.length,
   students:    internships.reduce((s, i) => s + i.students,              0),
@@ -122,7 +122,7 @@ const KPI_TILES = [
   { label: "Avg Satisfaction",   clr: "#9D174D" },
 ] as const;
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
@@ -250,7 +250,7 @@ function CustomDonut({ data, colors, label, valueFormatter = (v: number) => `${v
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function InternshipsPage() {
   const [trendTab, setTrendTab] = useState<"students" | "conversions">("students");
 
@@ -263,26 +263,26 @@ export default function InternshipsPage() {
   const trendColors = trendTab === "students" ? [ROSE, SKY] : [VIOLET, GREEN];
 
   const kpiValues = [
-    { sub: `${YEARS[0]}–${YEARS[YEARS.length-1]}`, num: total.orgs,        fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${YEARS[0]}â€“${YEARS[YEARS.length-1]}`, num: total.orgs,        fmt: (n: number) => String(Math.round(n)) },
     { sub: "Total placed",                           num: total.students,   fmt: (n: number) => String(Math.round(n)) },
     { sub: "Placement to hire",                      num: total.conversions,fmt: (n: number) => String(Math.round(n)) },
     { sub: "Unique countries",                        num: countries.length, fmt: (n: number) => String(Math.round(n)) },
     { sub: `${mentorPct}% of organisations`,          num: total.mentored,   fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Satisfaction (1–5)",                      num: avgSat,           fmt: (n: number) => `${n.toFixed(1)}/5`   },
+    { sub: "Satisfaction (1â€“5)",                      num: avgSat,           fmt: (n: number) => `${n.toFixed(1)}/5`   },
   ];
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HEMPNav />
 
-      {/* ── HEADER + KPIs ─── */}
+      {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-end justify-between py-4">
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Internships</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Workplace placements · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {total.orgs} organisations · {total.students} students placed
+                Workplace placements Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {total.orgs} organisations Â· {total.students} students placed
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -307,10 +307,10 @@ export default function InternshipsPage() {
         </div>
       </header>
 
-      {/* ── BODY ─── */}
+      {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
-        {/* ── SECTION 1: SECTOR PROFILES ─── */}
+        {/* â”€â”€ SECTION 1: SECTOR PROFILES â”€â”€â”€ */}
         <section>
           <SecHeader title="Sector Profiles"
             sub={`${total.students} students across ${total.orgs} organisations in ${countries.length} countries`} />
@@ -330,7 +330,7 @@ export default function InternshipsPage() {
                     <div className="h-full" style={{ width: `${(s.students / total.students) * 100}%`, backgroundColor: SECTOR_COLOR[s.sector] }} />
                   </div>
                   <div className="flex gap-3 mt-1.5 text-[10px] text-gray-400 tabular-nums">
-                    <span>{s.count} orgs · sat {s.avgSat}/5</span>
+                    <span>{s.count} orgs Â· sat {s.avgSat}/5</span>
                     <span className="ml-auto font-semibold" style={{ color: SECTOR_COLOR[s.sector] }}>{s.convPct}% conv.</span>
                   </div>
                 </div>
@@ -389,7 +389,7 @@ export default function InternshipsPage() {
           </div>
         </section>
 
-        {/* ── SECTION 2: ANNUAL TRENDS ─── */}
+        {/* â”€â”€ SECTION 2: ANNUAL TRENDS â”€â”€â”€ */}
         <section>
           <SecHeader title="Annual Placement Trends"
             sub="Organisation and student placement volume year on year" />
@@ -435,7 +435,7 @@ export default function InternshipsPage() {
           </div>
         </section>
 
-        {/* ── SECTION 3: TRENDS & ANALYSIS ─── */}
+        {/* â”€â”€ SECTION 3: TRENDS & ANALYSIS â”€â”€â”€ */}
         <section>
           <SecHeader title="Placement Outcomes"
             sub="Employment conversion and gender trend analysis" />
@@ -481,7 +481,7 @@ export default function InternshipsPage() {
 
             <div className="space-y-4">
               <ChartCard title="Satisfaction by Sector"
-                sub="Average satisfaction score per sector (1–5)"
+                sub="Average satisfaction score per sector (1â€“5)"
                 accent={TEAL}>
                 <div className="space-y-3">
                   {satBySector.map((d, i) => (
@@ -502,7 +502,7 @@ export default function InternshipsPage() {
               </ChartCard>
 
               <ChartCard title="Conversion Rate by Sector"
-                sub="Employment conversion rate — placements resulting in a hire"
+                sub="Employment conversion rate â€” placements resulting in a hire"
                 accent={GREEN}>
                 <div className="space-y-3">
                   {convBySector.map((d, i) => (
@@ -526,10 +526,10 @@ export default function InternshipsPage() {
           </div>
         </section>
 
-        {/* ── SECTION 5: COHORT OUTCOMES (HEMP) ─── */}
+        {/* â”€â”€ SECTION 5: COHORT OUTCOMES (HEMP) â”€â”€â”€ */}
         <section>
           <SecHeader
-            title="Cohort Outcomes (Internal · SFH · WAG · KASHA)"
+            title="Cohort Outcomes (Internal Â· SFH Â· WAG Â· KASHA)"
             sub="Internship participation + post-internship placement outcomes" />
 
           {(() => {
@@ -595,7 +595,7 @@ export default function InternshipsPage() {
                     label="Total interns"
                     num={total.students}
                     displayFmt={(n) => String(Math.round(n))}
-                    sub={`${YEARS[0]}–${YEARS[YEARS.length - 1]}`}
+                    sub={`${YEARS[0]}â€“${YEARS[YEARS.length - 1]}`}
                     clr="#1E3A8A"
                   />
                   {(["Internal", "SFH", "WAG", "KASHA"] as const).map((c) => {
@@ -606,7 +606,7 @@ export default function InternshipsPage() {
                         label={`${c} interns`}
                         num={row.interns}
                         displayFmt={(n) => String(Math.round(n))}
-                        sub={`${row.share}% share · ${row.placementRate}% rate`}
+                        sub={`${row.share}% share Â· ${row.placementRate}% rate`}
                         clr={COHORT_COLORS[c]}
                       />
                     );
@@ -713,7 +713,7 @@ export default function InternshipsPage() {
 
                   <ChartCard
                     title="Placement Conversion"
-                    sub={`Placement share across cohorts · Internship-to-placement rate: ${internshipToPlacementRate}%`}
+                    sub={`Placement share across cohorts Â· Internship-to-placement rate: ${internshipToPlacementRate}%`}
                     accent="#065F46"
                   >
                     <ResponsiveContainer width="100%" height={220}>
@@ -755,7 +755,7 @@ export default function InternshipsPage() {
           })()}
         </section>
 
-        {/* ── SECTION 4: GEOGRAPHIC COVERAGE ─── */}
+        {/* â”€â”€ SECTION 4: GEOGRAPHIC COVERAGE â”€â”€â”€ */}
         <section>
 
 
@@ -798,9 +798,9 @@ export default function InternshipsPage() {
 
 
 
-        {/* ── FOOTER STRIP ─── */}
+        {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(total.students),    label: "Students Placed",         clr: "#4C1D95" },
               { value: `${femalePct}%`,           label: "Female Students",         clr: "#9D174D" },
@@ -816,7 +816,7 @@ export default function InternshipsPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP · Internships · {YEARS[0]}–{YEARS[YEARS.length - 1]}
+              HEMP Â· Internships Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]}
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
           </div>

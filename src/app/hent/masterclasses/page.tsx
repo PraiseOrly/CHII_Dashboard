@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo, useEffect } from "react";
 import {
   BarChart, Bar,
@@ -14,7 +14,7 @@ import {
 } from "@/data/masterclasses";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 
-// ─── Palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY      = "#002147";
 const RED       = "#D4264A";
 const ACCENT    = "#2563EB";   // blue
@@ -26,7 +26,7 @@ const ORANGE_MC = "#EA580C";   // orange
 const TEAL      = "#0D9488";   // teal
 const ROSE      = "#E11D48";   // rose
 
-// Donut palettes — each set spans distinct hues across the colour wheel
+// Donut palettes â€” each set spans distinct hues across the colour wheel
 const AGE_COLORS    = [ACCENT, ORANGE_MC, "#16A34A", ROSE];                       // blue, orange, green, rose
 const REGION_COLORS = [TEAL, "#16A34A", ACCENT, VIOLET_MC, AMBER_MC];             // teal, green, blue, violet, amber
 const STAGE_COLORS  = [SKY, ORANGE_MC, VIOLET_MC];                                // sky, orange, violet
@@ -38,7 +38,7 @@ const RATING_COLORS: Record<string, string> = {
 
 const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ratingLabel(score: number): string {
   if (score >= 4.5) return "Very High";
   if (score >= 3.8) return "High";
@@ -46,7 +46,7 @@ function ratingLabel(score: number): string {
   return "Low";
 }
 
-// ─── Shared sub-components ────────────────────────────────────────────────────
+// â”€â”€â”€ Shared sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
@@ -82,7 +82,7 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
   );
 }
 
-// Custom SVG donut — same as overview, guarantees hex fill colours
+// Custom SVG donut â€” same as overview, guarantees hex fill colours
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -192,7 +192,7 @@ function RatingBar({ label, sessions, criterion }: {
   const lo  = sessions.filter(s => s.scores[criterion] < 3.0).length;
   const tot = sessions.length || 1;
   const avg = sessions.length
-    ? (sessions.reduce((s, m) => s + m.scores[criterion], 0) / sessions.length).toFixed(1) : "—";
+    ? (sessions.reduce((s, m) => s + m.scores[criterion], 0) / sessions.length).toFixed(1) : "â€”";
   const segs = [
     { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
     { key: "High",      count: hi, color: RATING_COLORS["High"] },
@@ -235,14 +235,14 @@ function GenderRatingBar({ label, fSessions, mSessions, criterion }: {
       <div className="w-36 text-[11px] text-gray-600 text-right flex-shrink-0">{label}</div>
       <div className="flex-1 space-y-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET_MC }}>♀</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET_MC }}>â™€</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET_MC + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(fAvg / 5) * 100}%`, backgroundColor: VIOLET_MC }} />
           </div>
           <span className="text-[10px] text-gray-500 w-6">{fAvg.toFixed(1)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>♂</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>â™‚</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SKY + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(mAvg / 5) * 100}%`, backgroundColor: SKY }} />
           </div>
@@ -265,7 +265,7 @@ function Stars({ score }: { score: number }) {
   );
 }
 
-// ─── Count-up animation ───────────────────────────────────────────────────────
+// â”€â”€â”€ Count-up animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -301,7 +301,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MasterclassesPage() {
   const [yearFilter,  setYearFilter]  = useState<"All"|"2023"|"2024"|"2025"|"2026">("All");
   const [topicFilter, setTopicFilter] = useState<"All"|MCTopic>("All");
@@ -395,14 +395,14 @@ export default function MasterclassesPage() {
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HENTNav />
 
-      {/* ── HEADER ────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-end justify-between py-4">
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Masterclasses</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Capacity-building sessions · 2023–2026 · {masterclasses.length} sessions tracked
+                Capacity-building sessions Â· 2023â€“2026 Â· {masterclasses.length} sessions tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -434,7 +434,7 @@ export default function MasterclassesPage() {
         </div>
       </header>
 
-      {/* ── MAIN ──────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* FILTERS */}
@@ -487,7 +487,7 @@ export default function MasterclassesPage() {
             sub={`${filtered.length} sessions rated across Quality, Usefulness, Accessibility, Relevance`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Rating Distribution by Criterion"
-              sub="Very High · High · Moderate · Low — proportion of sessions per rating level">
+              sub="Very High Â· High Â· Moderate Â· Low â€” proportion of sessions per rating level">
               <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
                 {(["Very High", "High", "Moderate", "Low"] as const).map(l => (
                   <span key={l} className="flex items-center gap-1">
@@ -499,11 +499,11 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Ratings by Gender of Attendees"
-              sub="Avg score per criterion — female-majority vs male-majority sessions"
+              sub="Avg score per criterion â€” female-majority vs male-majority sessions"
               accent={VIOLET_MC}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET_MC }}>♀</span> Female-majority sessions</span>
-                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: SKY }}>♂</span> Male-majority sessions</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET_MC }}>â™€</span> Female-majority sessions</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: SKY }}>â™‚</span> Male-majority sessions</span>
               </div>
               {RATING_CRITERIA.map(c => (
                 <GenderRatingBar key={c} label={c} fSessions={fSessions} mSessions={mSessions} criterion={c} />
@@ -535,13 +535,13 @@ export default function MasterclassesPage() {
         <section>
           <SecHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <ProfileCard label="Female Participants"  value={tot.female}              pct={femalePct}      total={tot.attendees} color={VIOLET_MC}  />
             <ProfileCard label="Male Participants"    value={tot.attendees - tot.female} pct={100 - femalePct} total={tot.attendees} color={ACCENT}  />
             <ProfileCard label="Student Participants" value={tot.students}            pct={studentPct}     total={tot.attendees} color={EMERALD_MC} />
             <ProfileCard label="Alumni Participants"  value={alumniTot}               pct={100 - studentPct} total={tot.attendees} color={AMBER_MC} />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <ChartCard title="Age Group Distribution" sub="Participants by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={AGE_COLORS} className="h-36" valueFormatter={v => `${v}`} />
               <div className="mt-2 space-y-0.5">
@@ -629,7 +629,7 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Attendance by Gender per Year"
-              sub="Female vs male participants — yearly comparison"
+              sub="Female vs male participants â€” yearly comparison"
               accent={VIOLET_MC}>
               <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
                 <span className="flex items-center gap-1.5">
@@ -653,13 +653,13 @@ export default function MasterclassesPage() {
           </div>
         </section>
 
-        {/* SECTION 4+6: GROWTH + COMPLETION — same row */}
+        {/* SECTION 4+6: GROWTH + COMPLETION â€” same row */}
         <section>
           <SecHeader title="Growth &amp; Completion Analytics"
             sub="Cumulative reach and per-session completion rates across all masterclasses" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Cumulative Attendee Growth"
-              sub="Running total of participants — shows programme reach expansion"
+              sub="Running total of participants â€” shows programme reach expansion"
               accent={VIOLET_MC}>
               <ResponsiveContainer width="100%" height={180}>
                 <AreaChart data={growthData}>
@@ -699,7 +699,7 @@ export default function MasterclassesPage() {
                 </div>
                 <div>
                   <p className="text-lg font-bold" style={{ color: EMERALD_MC }}>{filtered.filter(m => m.completionRate >= 90).length}</p>
-                  <p className="text-[9px] text-gray-400">Sessions ≥90%</p>
+                  <p className="text-[9px] text-gray-400">Sessions â‰¥90%</p>
                 </div>
                 <div>
                   <p className="text-lg font-bold" style={{ color: AMBER_MC }}>{filtered.filter(m => m.completionRate < 80).length}</p>
@@ -775,7 +775,7 @@ export default function MasterclassesPage() {
 
         {/* FOOTER */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(tot.sessions),            label: "Sessions Delivered",   clr: "#1E3A8A" },
               { value: tot.attendees.toLocaleString(),   label: "Total Attendees",      clr: "#14532D" },
@@ -790,7 +790,7 @@ export default function MasterclassesPage() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT · Masterclasses · 2023–2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT Â· Masterclasses Â· 2023â€“2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>

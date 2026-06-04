@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo, useEffect } from "react";
 import {
   BarChart, Bar, AreaChart, Area,
@@ -11,10 +11,10 @@ import {
   type MFCriterion, type MFQualArea,
 } from "@/data/mentorships";
 
-// ─── palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#002147"; // footer bg + testimonial border only
 const RED     = "#D4264A";
-const ACCENT  = "#7C3AED"; // page identity — mentorship/fellowship = purple
+const ACCENT  = "#7C3AED"; // page identity â€” mentorship/fellowship = purple
 const SKY     = "#0EA5E9";
 const VIOLET  = "#8B5CF6";
 const TEAL    = "#14B8A6";
@@ -41,7 +41,7 @@ function heatBg(s: number): string {
   return ROSE;
 }
 
-// ─── shared components ────────────────────────────────────────────────────────
+// â”€â”€â”€ shared components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function CustomDonut({
   data, colors, label,
@@ -183,7 +183,7 @@ function RatingBar({ label, programs, criterion }: {
   const lo  = programs.filter(p => p.scores[criterion] < 3.0).length;
   const tot = programs.length || 1;
   const avg = programs.length
-    ? (programs.reduce((s, p) => s + p.scores[criterion], 0) / programs.length).toFixed(1) : "—";
+    ? (programs.reduce((s, p) => s + p.scores[criterion], 0) / programs.length).toFixed(1) : "â€”";
   const segs = [
     { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
     { key: "High",      count: hi, color: RATING_COLORS.High },
@@ -224,14 +224,14 @@ function GenderRatingBar({ label, fPrograms, mPrograms, criterion }: {
       <div className="w-40 text-[10px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
       <div className="flex-1 space-y-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET }}>♀</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET }}>â™€</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(fAvg / 5) * 100}%`, backgroundColor: VIOLET }} />
           </div>
           <span className="text-[10px] text-gray-500 w-7">{fAvg.toFixed(1)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>♂</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>â™‚</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SKY + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(mAvg / 5) * 100}%`, backgroundColor: SKY }} />
           </div>
@@ -254,7 +254,7 @@ function Stars({ score }: { score: number }) {
   );
 }
 
-// ─── Count-up animation ───────────────────────────────────────────────────────
+// â”€â”€â”€ Count-up animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -290,7 +290,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   );
 }
 
-// ─── KPI tile map (4 metrics) ────────────────────────────────────────────────
+// â”€â”€â”€ KPI tile map (4 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TILES = [
   { label: "Total Fellows",       clr: "#1E3A8A" },  // deep blue
   { label: "Mentor Engagements",  clr: "#C2410C" },  // orange
@@ -318,7 +318,7 @@ type YearVal  = "All" | "2022" | "2023" | "2024" | "2025" | "2026";
 type TypeVal  = "All" | "Mentorship" | "Fellowship" | "One-Year Fellowship" | "Advisory";
 type GenderVal = "All" | "Female" | "Male";
 
-// ─── page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MentorshipPage() {
   const [yearFilter,  setYearFilter]  = useState<YearVal>("All");
   const [typeFilter,  setTypeFilter]  = useState<TypeVal>("All");
@@ -350,7 +350,7 @@ export default function MentorshipPage() {
   const femalePct   = tot.fellows ? Math.round((tot.female  / tot.fellows) * 100) : 0;
   const studentPct  = tot.fellows ? Math.round((studentSum  / tot.fellows) * 100) : 0;
   const alumniTotal = tot.fellows - studentSum;
-  const mentorRatio = tot.fellows ? (tot.mentors / tot.fellows).toFixed(2) : "—";
+  const mentorRatio = tot.fellows ? (tot.mentors / tot.fellows).toFixed(2) : "â€”";
   const avgHighSat  = filtered.length
     ? Math.round(filtered.reduce((s, p) => s + p.highSatisfactionPct, 0) / filtered.length) : 0;
 
@@ -420,7 +420,7 @@ export default function MentorshipPage() {
     Graduates: filtered.filter(p => p.isOneYearFellowship && p.year === yr).reduce((s, p) => s + p.graduateFellows, 0),
   }));
   const fellowshipMentorRatio = oneYearProgs.length && oneYearProgs.reduce((s, p) => s + p.fellows, 0) > 0
-    ? (oneYearProgs.reduce((s, p) => s + p.mentors, 0) / oneYearProgs.reduce((s, p) => s + p.fellows, 0)).toFixed(2) : "—";
+    ? (oneYearProgs.reduce((s, p) => s + p.mentors, 0) / oneYearProgs.reduce((s, p) => s + p.fellows, 0)).toFixed(2) : "â€”";
 
   const isFiltered = yearFilter !== "All" || typeFilter !== "All" || genderView !== "All";
 
@@ -437,14 +437,14 @@ export default function MentorshipPage() {
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HENTNav />
 
-      {/* ── HEADER ────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-end justify-between py-4">
             <div>
               <h1 className="text-xl font-black" style={{ color: NAVY }}>Mentorship &amp; Fellowships</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                Capacity-building &amp; fellowship tracks · 2022–2026 · {mentorshipPrograms.length} programmes tracked
+                Capacity-building &amp; fellowship tracks Â· 2022â€“2026 Â· {mentorshipPrograms.length} programmes tracked
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
@@ -458,7 +458,7 @@ export default function MentorshipPage() {
             </div>
           </div>
 
-          {/* KPI strip — 8 distinct tinted tiles */}
+          {/* KPI strip â€” 8 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
@@ -470,7 +470,7 @@ export default function MentorshipPage() {
         </div>
       </header>
 
-      {/* ── MAIN ──────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* FILTERS */}
@@ -525,7 +525,7 @@ export default function MentorshipPage() {
             sub={`${filtered.length} programmes rated across Quality, Usefulness, Accessibility, Relevance`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Rating Distribution by Criterion"
-              sub="Very High · High · Moderate · Low — proportion of programmes per level"
+              sub="Very High Â· High Â· Moderate Â· Low â€” proportion of programmes per level"
               accent={ACCENT}>
               <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
                 {(["Very High","High","Moderate","Low"] as const).map(l => (
@@ -538,11 +538,11 @@ export default function MentorshipPage() {
             </ChartCard>
 
             <ChartCard title="Ratings by Gender of Participants"
-              sub="Avg score per criterion — female-majority vs male-majority programmes"
+              sub="Avg score per criterion â€” female-majority vs male-majority programmes"
               accent={VIOLET}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>♀</span> Female-majority programmes</span>
-                <span className="flex items-center gap-1"><span style={{ color: SKY }}>♂</span> Male-majority programmes</span>
+                <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>â™€</span> Female-majority programmes</span>
+                <span className="flex items-center gap-1"><span style={{ color: SKY }}>â™‚</span> Male-majority programmes</span>
               </div>
               {MF_CRITERIA.map(c => (
                 <GenderRatingBar key={c} label={c} fPrograms={fProgs} mPrograms={mProgs} criterion={c} />
@@ -575,7 +575,7 @@ export default function MentorshipPage() {
             sub={`${avgHighSat}% average high/very-high satisfaction across filtered programmes`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="% Rating High or Very High by Criterion"
-              sub="Proportion of programmes where criterion avg score ≥ 3.8 (High)"
+              sub="Proportion of programmes where criterion avg score â‰¥ 3.8 (High)"
               accent={EMERALD}>
               <div className="space-y-3">
                 {highSatData.map(d => (
@@ -598,7 +598,7 @@ export default function MentorshipPage() {
                 </div>
                 <div>
                   <p className="text-xl font-bold" style={{ color: EMERALD }}>{filtered.filter(p => p.highSatisfactionPct >= 85).length}</p>
-                  <p className="text-[10px] text-gray-400">Programmes ≥85%</p>
+                  <p className="text-[10px] text-gray-400">Programmes â‰¥85%</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold" style={{ color: AMBER }}>{filtered.filter(p => p.highSatisfactionPct < 70).length}</p>
@@ -608,7 +608,7 @@ export default function MentorshipPage() {
             </ChartCard>
 
             <ChartCard title="Qualitative Feedback by Area"
-              sub="Average programme score across five qualitative feedback dimensions (1–5)"
+              sub="Average programme score across five qualitative feedback dimensions (1â€“5)"
               accent={SKY}>
               <ColorBarList data={qualAvgData} colors={BAR_COLORS} />
               <div className="mt-5">
@@ -638,13 +638,13 @@ export default function MentorshipPage() {
         <section>
           <SecHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <ProfileCard label="Female Fellows"  value={tot.female}               pct={femalePct}        total={tot.fellows} color={VIOLET}  />
             <ProfileCard label="Male Fellows"    value={tot.fellows - tot.female} pct={100 - femalePct}  total={tot.fellows} color={SKY}     />
             <ProfileCard label="Student Fellows" value={studentSum}               pct={studentPct}       total={tot.fellows} color={EMERALD} />
             <ProfileCard label="Alumni Fellows"  value={alumniTotal}              pct={100 - studentPct} total={tot.fellows} color={AMBER}   />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={[ACCENT, "#C2410C", "#059669", ROSE]} className="h-36" valueFormatter={(v) => `${v}`} />
               <div className="mt-2 space-y-0.5">
@@ -712,8 +712,8 @@ export default function MentorshipPage() {
         <section>
           <SecHeader title="Satisfaction Heatmap"
             sub="Score per criterion across top-rated programmes" />
-          <ChartCard title="Programme × Criterion Satisfaction Matrix"
-            sub="Top 10 programmes by avg score · Green ≥4.5 · Blue ≥4.0 · Amber ≥3.5 · Red <3.5"
+          <ChartCard title="Programme Ã— Criterion Satisfaction Matrix"
+            sub="Top 10 programmes by avg score Â· Green â‰¥4.5 Â· Blue â‰¥4.0 Â· Amber â‰¥3.5 Â· Red <3.5"
             accent={TEAL}>
             {heatmapRows.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-6">No programmes match the current filters.</p>
@@ -733,7 +733,7 @@ export default function MentorshipPage() {
                     {heatmapRows.map(p => (
                       <tr key={p.id} className="border-t border-gray-50">
                         <td className="py-1.5 pr-4 text-gray-700 leading-tight">
-                          {p.name.length > 28 ? p.name.slice(0, 28) + "…" : p.name}
+                          {p.name.length > 28 ? p.name.slice(0, 28) + "â€¦" : p.name}
                           <span className="text-[9px] text-gray-400 ml-1">({p.year})</span>
                         </td>
                         {MF_CRITERIA.map(c => (
@@ -755,7 +755,7 @@ export default function MentorshipPage() {
                   </tbody>
                 </table>
                 <div className="flex gap-4 mt-3 pt-3 border-t border-gray-100 text-[10px] text-gray-500 flex-wrap">
-                  {[[`Very High`, EMERALD,"≥4.5"],[`High`,PRIMARY,"≥4.0"],[`Moderate`,AMBER,"≥3.5"],[`Low`,ROSE,"<3.5"]].map(([l, c, r]) => (
+                  {[[`Very High`, EMERALD,"â‰¥4.5"],[`High`,PRIMARY,"â‰¥4.0"],[`Moderate`,AMBER,"â‰¥3.5"],[`Low`,ROSE,"<3.5"]].map(([l, c, r]) => (
                     <span key={l} className="flex items-center gap-1">
                       <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l} ({r})
                     </span>
@@ -786,7 +786,7 @@ export default function MentorshipPage() {
               </ResponsiveContainer>
             </ChartCard>
             <ChartCard title="Participation by Gender per Year"
-              sub="Female vs male fellows — yearly comparison"
+              sub="Female vs male fellows â€” yearly comparison"
               accent={VIOLET}>
               <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
                 <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET }}/>Female</span>
@@ -806,7 +806,7 @@ export default function MentorshipPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Venture-Stage Distribution per Year"
-              sub="Expose · Build · Scale fellow counts by cohort year"
+              sub="Expose Â· Build Â· Scale fellow counts by cohort year"
               accent={INDIGO}>
               <div className="flex gap-4 text-[11px] text-gray-500 mb-3">
                 {(["Expose","Build","Scale"] as const).map((l, i) => (
@@ -828,7 +828,7 @@ export default function MentorshipPage() {
               </ResponsiveContainer>
             </ChartCard>
             <ChartCard title="Cumulative Fellow Growth"
-              sub="Running total of fellows — shows programme reach expansion over time"
+              sub="Running total of fellows â€” shows programme reach expansion over time"
               accent={EMERALD}>
               <ResponsiveContainer width="100%" height={176}>
                 <AreaChart data={growthData}>
@@ -852,7 +852,7 @@ export default function MentorshipPage() {
         {/* S6: TOP + TESTIMONIALS */}
         <section>
           <SecHeader title="Top Rated Programmes &amp; Success Stories"
-            sub="Ranked by average fellow feedback — voices from the field" />
+            sub="Ranked by average fellow feedback â€” voices from the field" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Top Rated Mentorship &amp; Fellowship Programmes"
               sub="Ranked by average score across all four rating criteria"
@@ -901,7 +901,7 @@ export default function MentorshipPage() {
                         <p className="text-[11px] text-gray-600 italic leading-relaxed">"{t.quote}"</p>
                         <div className="mt-2">
                           <p className="text-xs font-bold text-gray-900">{t.author}</p>
-                          <p className="text-[10px] text-gray-400">{t.role}{t.venture ? ` · ${t.venture}` : ""}</p>
+                          <p className="text-[10px] text-gray-400">{t.role}{t.venture ? ` Â· ${t.venture}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-2 mt-1.5">
                           <span className="text-[9px] px-1.5 py-0.5 rounded font-medium"
@@ -1009,12 +1009,12 @@ export default function MentorshipPage() {
                 <Bar dataKey="Completion %" fill={EMERALD} radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-            <div className="mt-3 grid grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">
               {[
                 { value: `${tot.completion}%`, color: INDIGO,  label: "Avg completion rate"       },
-                { value: String(filtered.filter(p => p.completionRate >= 92).length), color: EMERALD, label: "Programmes ≥92%" },
+                { value: String(filtered.filter(p => p.completionRate >= 92).length), color: EMERALD, label: "Programmes â‰¥92%" },
                 { value: String(filtered.filter(p => p.completionRate < 85).length),  color: AMBER,   label: "Programmes <85%" },
-                { value: String(filtered.filter(p => p.highSatisfactionPct >= 85).length), color: ACCENT, label: "High satisfaction (≥85%)" },
+                { value: String(filtered.filter(p => p.highSatisfactionPct >= 85).length), color: ACCENT, label: "High satisfaction (â‰¥85%)" },
               ].map(s => (
                 <div key={s.label}>
                   <p className="text-xl font-bold tabular-nums" style={{ color: s.color }}>{s.value}</p>
@@ -1027,7 +1027,7 @@ export default function MentorshipPage() {
 
         {/* FOOTER */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", clr: "#6D28D9" },
               { value: tot.fellows.toLocaleString(),            label: "Total Fellows",        clr: "#1E3A8A" },
@@ -1042,7 +1042,7 @@ export default function MentorshipPage() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT · Mentorship &amp; Fellowships · 2022–2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT Â· Mentorship &amp; Fellowships Â· 2022â€“2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 01 Jun 2026 EAT</p>
           </div>
         </div>

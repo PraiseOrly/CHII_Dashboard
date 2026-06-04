@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -18,7 +18,7 @@ import {
   RadialBar, RadialBarChart,
 } from "recharts";
 
-// ─── Palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const VIOLET = "#7C3AED";
 const TEAL   = "#0D9488";
 const GREEN  = "#10B981";
@@ -29,7 +29,7 @@ const INDIGO = "#4338CA";
 const ORANGE = "#EA580C";
 const EXEC_BG = "#f8fafc";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
@@ -52,7 +52,7 @@ function useCountUp(target: number, duration = 800): number {
   return val;
 }
 
-// ─── Contextual filter components ────────────────────────────────────────────
+// â”€â”€â”€ Contextual filter components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Opt<T> = { label: string; value: T };
 
 function PillGroup<T extends string>({ options, value, onChange }: {
@@ -102,7 +102,7 @@ function HeaderDropdown<T extends string>({ options, value, onChange }: {
   );
 }
 
-// ─── UI atoms ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ UI atoms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SecHeader({ title, sub, accent = VIOLET }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
@@ -174,7 +174,7 @@ function HBar({ label, value, max, color, dimmed = false }: { label: string; val
   );
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const YEARS = [2022, 2023, 2024, 2025, 2026] as const;
 type YearVal = typeof YEARS[number] | "all";
 
@@ -186,7 +186,7 @@ const VENTURE_SECTORS: Sector[] = ["Digital Health", "Medical Devices", "Diagnos
 const STAGE_COLORS = [AMBER, ORANGE, TEAL, SKY, VIOLET, GREEN];
 const SECTOR_COLORS = [TEAL, VIOLET, ORANGE, SKY, ROSE, GREEN, AMBER, INDIGO, "#8B5CF6", "#06B6D4"];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HENTImpactPage() {
   const [yearFilter,    setYearFilter]    = useState<YearVal>("all");
   const [programFilter, setProgramFilter] = useState<ProgramVal>("all");
@@ -238,7 +238,7 @@ export default function HENTImpactPage() {
     // Venture analytics
     const stageDist = VENTURE_STAGES.map((s) => ({ name: s, value: vcAll.filter((v) => v.stage === s).length }));
     const sectorDist = VENTURE_SECTORS.map((s) => ({
-      name: s.length > 16 ? s.slice(0, 14) + "…" : s, full: s,
+      name: s.length > 16 ? s.slice(0, 14) + "â€¦" : s, full: s,
       value: vcAll.filter((v) => v.sector === s).length,
     }));
     const fundingDist: { name: FundingStatus; value: number }[] = [
@@ -250,7 +250,7 @@ export default function HENTImpactPage() {
       ...fv.map((v) => v.country),
     ])).filter(Boolean);
 
-    // Programme volume by year — supports metric switching (participants / projects / startups)
+    // Programme volume by year â€” supports metric switching (participants / projects / startups)
     const volByYear = YEARS.map((y) => ({
       Year: String(y),
       Hackathons:    hackathons.filter((h) => h.year === y).reduce((s, h) => s + h.participants, 0),
@@ -309,14 +309,14 @@ export default function HENTImpactPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: EXEC_BG }}>
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div className="max-w-[1440px] mx-auto px-6">
           <div className="flex items-start justify-between py-5 gap-4 flex-wrap">
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">HENT Impact Analytics</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Entrepreneurship Pillar · Ventures · Hackathons · Masterclasses · Field Visits · Mentorship & Fellowships · {D.countries.length} countries
+                Entrepreneurship Pillar Â· Ventures Â· Hackathons Â· Masterclasses Â· Field Visits Â· Mentorship & Fellowships Â· {D.countries.length} countries
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -331,7 +331,7 @@ export default function HENTImpactPage() {
 
           {/* KPI tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
               <KpiTile label="Portfolio Ventures"   num={D.vc.length}      displayFmt={fmt}  sub="Filtered cohorts"    clr={VIOLET}  />
               <KpiTile label="Hackathon Participants" num={D.hakPart}       displayFmt={fmt}  sub="Sprint innovators"  clr={ORANGE}  />
               <KpiTile label="Projects Built"        num={D.hakProj}       displayFmt={fmt}  sub="Designed solutions" clr={AMBER}   />
@@ -347,13 +347,13 @@ export default function HENTImpactPage() {
 
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-10">
 
-        {/* ── Venture Portfolio ────────────────────────────────────────────── */}
+        {/* â”€â”€ Venture Portfolio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Venture Portfolio Analytics" sub="Stage progression, sector distribution, and funding status of HENT ventures" accent={VIOLET} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Stage Distribution"
-              sub={portfolioGender === "all" ? `${D.vc.length} ventures — all team types` : `${portfolioGender}-led ventures by stage`}
+              sub={portfolioGender === "all" ? `${D.vc.length} ventures â€” all team types` : `${portfolioGender}-led ventures by stage`}
               accent={VIOLET}
               headerRight={
                 <div className="flex flex-col items-end gap-1.5">
@@ -437,13 +437,13 @@ export default function HENTImpactPage() {
           </div>
         </section>
 
-        {/* ── Programme Volume ─────────────────────────────────────────────── */}
+        {/* â”€â”€ Programme Volume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Participation Over Time" sub="Year-on-year reach per HENT initiative" accent={ORANGE} />
 
           <ChartCard
             title="HENT Programme Growth"
-            sub={growthMetric === "participants" ? "Participant reach by programme — 2022 to 2026"
+            sub={growthMetric === "participants" ? "Participant reach by programme â€” 2022 to 2026"
               : growthMetric === "projects" ? "Hackathon projects built per year"
               : "Hackathon startups created per year"}
             accent={ORANGE}
@@ -487,7 +487,7 @@ export default function HENTImpactPage() {
           </ChartCard>
         </section>
 
-        {/* ── Programme Quality ────────────────────────────────────────────── */}
+        {/* â”€â”€ Programme Quality â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Quality & Outcomes" sub="Satisfaction scores, completion rates, and fellowship outcomes" accent={SKY} />
 
@@ -628,7 +628,7 @@ export default function HENTImpactPage() {
 
         <footer className="border-t border-gray-200 pt-6 pb-10">
           <p className="text-[10px] text-gray-400">
-            HENT Impact · {yearFilter === "all" ? "2022–2026" : String(yearFilter)} · {D.vcAll.length} portfolio ventures · {fmt(D.totalPart)} programme participants
+            HENT Impact Â· {yearFilter === "all" ? "2022â€“2026" : String(yearFilter)} Â· {D.vcAll.length} portfolio ventures Â· {fmt(D.totalPart)} programme participants
           </p>
         </footer>
       </div>

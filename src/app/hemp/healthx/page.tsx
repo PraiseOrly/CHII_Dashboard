@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import {
   BarChart, Bar, AreaChart, Area,
@@ -8,7 +8,7 @@ import { Download, FileText, MapPin, Handshake, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 
-// ─── Color language ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Color language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Primary: teal (partnership / field theme)
 // Supporting: blue
 // Warning: amber
@@ -24,12 +24,12 @@ const INDIGO      = "#4338CA";
 const ROSE        = "#F43F5E";
 const VIOLET      = "#7C3AED";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
 
-// ─── Module-level aggregates ─────────────────────────────────────────────────
+// â”€â”€â”€ Module-level aggregates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const hxPart      = healthXSessions.reduce((s, h) => s + h.participants, 0);
 const hxFem       = healthXSessions.reduce((s, h) => s + h.femalePart,   0);
 const totalPships = healthXSessions.reduce((s, h) => s + h.partnerships, 0);
@@ -39,14 +39,14 @@ const avgSat      = parseFloat(avg(healthXSessions.map(h => avg(Object.values(h.
 const countries   = Array.from(new Set(healthXSessions.map(h => h.country)));
 const YEARS       = Array.from(new Set(healthXSessions.map(h => h.year))).sort();
 
-// ── Partnership pipeline funnel ──
+// â”€â”€ Partnership pipeline funnel â”€â”€
 const visitsCompleted    = healthXSessions.length;
 const feedbackCollected  = healthXSessions.filter(h => h.completionRate >= 90).length;
 const mouSigned          = healthXSessions.filter(
   h => h.partnerships >= 2 && h.completionRate >= 93
 ).length;
 
-// ── Student feedback bars (positive response = score ≥ 4.5/5) ──
+// â”€â”€ Student feedback bars (positive response = score â‰¥ 4.5/5) â”€â”€
 const HIGH_SAT = 4.5;
 const feedbackBars = [
   { label: "Quality of experience",  dim: "Learning Experience"  as const },
@@ -60,14 +60,14 @@ const feedbackBars = [
   ),
 }));
 
-// ── Visits by org type (absolute counts) ──
+// â”€â”€ Visits by org type (absolute counts) â”€â”€
 const orgTypeData = ORG_TYPES.map(type => ({
   name:  type,
   value: healthXSessions.filter(h => h.orgType === type).length,
 })).sort((a, b) => b.value - a.value);
 const orgTypeMax = orgTypeData[0]?.value ?? 1;
 
-// ── Annual charts ──
+// â”€â”€ Annual charts â”€â”€
 const sessionsPerYear = YEARS.map(yr => ({
   Year:     String(yr),
   Sessions: healthXSessions.filter(h => h.year === yr).length,
@@ -77,7 +77,7 @@ const participantsPerYear = YEARS.map(yr => ({
   Participants: healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
 }));
 
-// ── Satisfaction heatmap (type × dimension) ──
+// â”€â”€ Satisfaction heatmap (type Ã— dimension) â”€â”€
 const HX_SESSION_TYPES = [
   "Health Facility Visit",
   "Innovation Challenge",
@@ -109,7 +109,7 @@ const TYPE_COLOR: Record<string, string> = {
   "Industry Tour":         AMBER,
 };
 
-// ── Country reach ──
+// â”€â”€ Country reach â”€â”€
 const countryData = Object.entries(
   healthXSessions.reduce<Record<string, number>>((acc, h) => {
     acc[h.country] = (acc[h.country] || 0) + h.participants;
@@ -118,7 +118,7 @@ const countryData = Object.entries(
 ).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 const COUNTRY_HEX = [TEAL, BLUE_LIGHT, AMBER, VIOLET, GREEN, INDIGO, ROSE, "#A855F7", "#EC4899", "#6B7280"];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
@@ -176,10 +176,10 @@ function Card({ accent = TEAL, title, sub, children }: {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HealthXPage() {
 
-  // ── Animate headline numbers ──
+  // â”€â”€ Animate headline numbers â”€â”€
   const animVisits  = useCountUp(visitsCompleted);
   const animPships  = useCountUp(totalPships);
   const animPart    = useCountUp(hxPart);
@@ -188,7 +188,7 @@ export default function HealthXPage() {
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HEMPNav />
 
-      {/* ── HEADER ─── */}
+      {/* â”€â”€ HEADER â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-200" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div className="max-w-[1440px] mx-auto px-6">
 
@@ -196,7 +196,7 @@ export default function HealthXPage() {
             <div>
               <h1 className="text-[1.55rem] font-black leading-none" style={{ color: NAVY }}>HealthX</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Field-based learning · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {visitsCompleted} sessions · {countries.length} countries
+                Field-based learning Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {visitsCompleted} sessions Â· {countries.length} countries
               </p>
             </div>
             <div className="flex gap-2">
@@ -210,7 +210,7 @@ export default function HealthXPage() {
             </div>
           </div>
 
-          {/* ── THREE HEADLINE METRICS ─── */}
+          {/* â”€â”€ THREE HEADLINE METRICS â”€â”€â”€ */}
           <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
 
             <div className="rounded-lg border p-5 flex items-center gap-4"
@@ -226,7 +226,7 @@ export default function HealthXPage() {
                   {Math.round(animVisits)}
                 </p>
                 <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {YEARS[0]}–{YEARS[YEARS.length - 1]} · {countries.length} countries
+                  {YEARS[0]}â€“{YEARS[YEARS.length - 1]} Â· {countries.length} countries
                 </p>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function HealthXPage() {
                   {Math.round(animPart).toLocaleString()}
                 </p>
                 <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {femalePct}% female · {avgComp}% avg completion
+                  {femalePct}% female Â· {avgComp}% avg completion
                 </p>
               </div>
             </div>
@@ -271,20 +271,20 @@ export default function HealthXPage() {
         </div>
       </header>
 
-      {/* ── BODY ─── */}
+      {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
-        {/* ── SECTION 1: PIPELINE + FEEDBACK ─── */}
+        {/* â”€â”€ SECTION 1: PIPELINE + FEEDBACK â”€â”€â”€ */}
         <section>
           <SecHeader title="Partnership Pipeline &amp; Student Feedback"
             sub="Visit-to-MOU conversion funnel alongside student experience quality ratings" />
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
-            {/* Partnership pipeline funnel — 3 cols */}
+            {/* Partnership pipeline funnel â€” 3 cols */}
             <div className="lg:col-span-3">
               <Card accent={TEAL_DEEP} title="Partnership Pipeline"
-                sub="Org progression from first visit to formal MOU — 2021–2026">
+                sub="Org progression from first visit to formal MOU â€” 2021â€“2026">
 
                 <div className="space-y-3 py-1">
 
@@ -318,7 +318,7 @@ export default function HealthXPage() {
                       <div>
                         <p className="text-white text-[11px] font-bold">Student feedback collected</p>
                         <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
-                          Completion rate ≥ 90% — survey submitted
+                          Completion rate â‰¥ 90% â€” survey submitted
                         </p>
                       </div>
                       <p className="text-white text-2xl font-black tabular-nums">{feedbackCollected}</p>
@@ -341,7 +341,7 @@ export default function HealthXPage() {
                       <div>
                         <p className="text-white text-[11px] font-bold">MOU / Partnership signed</p>
                         <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>
-                          Formal agreement · ≥ 2 partnerships per site
+                          Formal agreement Â· â‰¥ 2 partnerships per site
                         </p>
                       </div>
                       <p className="text-white text-2xl font-black tabular-nums">{mouSigned}</p>
@@ -367,10 +367,10 @@ export default function HealthXPage() {
               </Card>
             </div>
 
-            {/* Student feedback bars — 2 cols */}
+            {/* Student feedback bars â€” 2 cols */}
             <div className="lg:col-span-2">
               <Card accent={BLUE} title="Student Feedback"
-                sub="Positive response rate per experience dimension — field survey">
+                sub="Positive response rate per experience dimension â€” field survey">
 
                 <div className="space-y-5 py-1">
                   {feedbackBars.map(m => {
@@ -393,18 +393,18 @@ export default function HealthXPage() {
                 </div>
 
                 <p className="text-[10px] text-gray-400 mt-5 pt-4 border-t border-gray-100">
-                  Positive response rate — student survey. Score ≥ 4.5 / 5 classified as positive.
+                  Positive response rate â€” student survey. Score â‰¥ 4.5 / 5 classified as positive.
                 </p>
 
                 {/* Threshold legend */}
                 <div className="flex gap-4 mt-3 text-[10px] text-gray-400">
                   <span className="flex items-center gap-1.5">
                     <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: TEAL }} />
-                    ≥ 70%
+                    â‰¥ 70%
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: AMBER }} />
-                    50–69%
+                    50â€“69%
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: ROSE }} />
@@ -440,15 +440,15 @@ export default function HealthXPage() {
           </div>
         </section>
 
-        {/* ── SECTION 2: VISITS BY ORG TYPE ─── */}
+        {/* â”€â”€ SECTION 2: VISITS BY ORG TYPE â”€â”€â”€ */}
         <section>
           <SecHeader title="Visits by Organisation Type"
-            sub="Count of HealthX sessions per host organisation category — absolute numbers" accent={BLUE} />
+            sub="Count of HealthX sessions per host organisation category â€” absolute numbers" accent={BLUE} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <Card accent={BLUE} title="Sessions by Organisation Type"
-              sub="Blue fill bars — absolute session counts per org category">
+              sub="Blue fill bars â€” absolute session counts per org category">
               <div className="space-y-4 py-1">
                 {orgTypeData.map(row => (
                   <div key={row.name} className="flex items-center gap-3">
@@ -467,7 +467,7 @@ export default function HealthXPage() {
                 ))}
               </div>
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                {visitsCompleted} total sessions · {countries.length} countries · values are session counts not percentages
+                {visitsCompleted} total sessions Â· {countries.length} countries Â· values are session counts not percentages
               </p>
             </Card>
 
@@ -491,7 +491,7 @@ export default function HealthXPage() {
                         <span className="tabular-nums text-gray-400">
                           <span className="font-bold" style={{ color: tealShades[i] }}>
                             {part.toLocaleString()}
-                          </span> students · {pct}%
+                          </span> students Â· {pct}%
                         </span>
                       </div>
                       <div className="h-[10px] rounded-sm overflow-hidden" style={{ backgroundColor: tealShades[i] + "18" }}>
@@ -519,7 +519,7 @@ export default function HealthXPage() {
           </div>
         </section>
 
-        {/* ── SECTION 3: ANNUAL ACTIVITY ─── */}
+        {/* â”€â”€ SECTION 3: ANNUAL ACTIVITY â”€â”€â”€ */}
         <section>
           <SecHeader title="Annual Activity" sub="Session frequency and student reach year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -539,7 +539,7 @@ export default function HealthXPage() {
             </Card>
 
             <Card accent={BLUE} title="Student Reach per Year"
-              sub="Total students across HealthX sessions — year-on-year growth">
+              sub="Total students across HealthX sessions â€” year-on-year growth">
               <ResponsiveContainer width="100%" height={188}>
                 <AreaChart data={participantsPerYear}>
                   <defs>
@@ -561,14 +561,14 @@ export default function HealthXPage() {
           </div>
         </section>
 
-        {/* ── SECTION 4: PERFORMANCE & GEOGRAPHY ─── */}
+        {/* â”€â”€ SECTION 4: PERFORMANCE & GEOGRAPHY â”€â”€â”€ */}
         <section>
           <SecHeader title="Satisfaction &amp; Geographic Reach"
-            sub="Score breakdown by session type · country coverage by participant volume" />
+            sub="Score breakdown by session type Â· country coverage by participant volume" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <Card accent={TEAL_MID} title="Satisfaction Heatmap — Session Type × Dimension"
-              sub="Avg score · Teal ≥4.5 · Blue ≥4.0 · Amber ≥3.5">
+            <Card accent={TEAL_MID} title="Satisfaction Heatmap â€” Session Type Ã— Dimension"
+              sub="Avg score Â· Teal â‰¥4.5 Â· Blue â‰¥4.0 Â· Amber â‰¥3.5">
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
                   <thead>
@@ -635,9 +635,9 @@ export default function HealthXPage() {
           </div>
         </section>
 
-        {/* ── FOOTER STRIP ─── */}
+        {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(visitsCompleted),      label: "Hub Visits",            clr: TEAL_DEEP  },
               { value: String(totalPships),           label: "Partnerships (MOUs)",   clr: TEAL_MID   },
@@ -654,7 +654,7 @@ export default function HealthXPage() {
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP · HealthX · {YEARS[0]}–{YEARS[YEARS.length - 1]}
+              HEMP Â· HealthX Â· {YEARS[0]}â€“{YEARS[YEARS.length - 1]}
             </p>
             <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
           </div>

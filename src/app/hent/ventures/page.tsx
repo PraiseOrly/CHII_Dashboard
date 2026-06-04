@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useMemo, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -14,7 +14,7 @@ import { filterVentures } from "@/lib/filter";
 import { founders, PROGRAM_EVENTS_LIST } from "@/data/founders";
 import { labVentures } from "@/data/ventureLabs";
 
-// ─── palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#002147"; // footer only
 const RED     = "#D4264A";
 const PRIMARY = "#2F6FED";
@@ -30,7 +30,7 @@ const VIOLET  = "#8B5CF6";
 
 const BAR_COLORS = [PRIMARY, TEAL, ORANGE, PURPLE, AMBER, GREEN, INDIGO, "#EC4899", SKY, EMERALD];
 
-// ─── constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PACE    = 5 / 12;
 const TARGETS = { ventures: 400, jobs: 2_000, funds: 5_000_000 } as const;
 const ACTUALS = { ventures: 31,  jobs: 291,   funds: 485_000   } as const;
@@ -41,7 +41,7 @@ const ALL_SECTORS = [
   "Health Financing","Community Health","Health Data & AI",
 ] as const;
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function sg(stage: string): "Expose" | "Build" | "Scale" {
   if (stage === "Ideation" || stage === "Validation") return "Expose";
   if (stage === "Prototype/MVP" || stage === "Early Growth") return "Build";
@@ -55,7 +55,7 @@ function fmt$(n: number): string {
   return n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `$${Math.round(n / 1e3)}K` : `$${n}`;
 }
 
-// ─── static module-level derivations ─────────────────────────────────────────
+// â”€â”€â”€ static module-level derivations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MCF_IDS = new Set(
   founders.filter(f => f.isMCFScholar).map(f => parseInt(f.ventureId.slice(1)))
 );
@@ -87,9 +87,9 @@ const evData = PROGRAM_EVENTS_LIST
   .map(ev => ({ name: ev, value: founders.filter(f => f.events.includes(ev)).length }))
   .sort((a, b) => b.value - a.value);
 
-// ─── sub-components ───────────────────────────────────────────────────────────
+// â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Custom donut using inline SVG fill — bypasses Tremor JIT class issue
+// Custom donut using inline SVG fill â€” bypasses Tremor JIT class issue
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -139,7 +139,7 @@ function CustomDonut({
   );
 }
 
-// Custom multi-colour bar list — one colour per row
+// Custom multi-colour bar list â€” one colour per row
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -193,7 +193,7 @@ function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }
   );
 }
 
-// ─── Count-up animation ───────────────────────────────────────────────────────
+// â”€â”€â”€ Count-up animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -202,7 +202,7 @@ function useCountUp(target: number, duration = 750): number {
     function tick(now: number) {
       if (start === null) start = now;
       const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic — fast start, smooth landing
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic â€” fast start, smooth landing
       setVal(target * eased);
       if (p < 1) requestAnimationFrame(tick);
       else setVal(target);
@@ -358,7 +358,7 @@ function DivBar({ name, mcf, nm, max }: { name: string; mcf: number; nm: number;
   );
 }
 
-// ─── page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HENTPortfolio() {
   const pathname = usePathname();
   const { filters } = useFilterStore();
@@ -420,19 +420,19 @@ export default function HENTPortfolio() {
     { name: "Female", value: femCount },
   ];
 
-  // ─── render ────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HENTNav />
 
-      {/* ── TITLE + KPI strip ──────────────────────────────────────────────── */}
+      {/* â”€â”€ TITLE + KPI strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-6">
 
           <div className="flex items-end justify-between py-4">
             <div>
               <h1 className="text-xl font-bold" style={{ color: NAVY }}>{getActiveLabel(pathname)}</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort · Updated 28 May 2026</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort Â· Updated 28 May 2026</p>
             </div>
             <div className="flex gap-2 pb-0.5">
               <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
@@ -445,7 +445,7 @@ export default function HENTPortfolio() {
             </div>
           </div>
 
-          {/* KPI strip — 5 distinct tinted tiles */}
+          {/* KPI strip â€” 5 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
               <KpiTile
@@ -473,7 +473,7 @@ export default function HENTPortfolio() {
                 label="Active Founders"
                 num={48}
                 displayFmt={n => String(Math.round(n))}
-                sub={`${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`}
+                sub={`${Math.round((femCount / founders.length) * 100)}% female Â· ${founders.length} total`}
                 clr="#155E75" pace={false} />
               <KpiTile
                 label="Pace of Target"
@@ -486,7 +486,7 @@ export default function HENTPortfolio() {
         </div>
       </header>
 
-      {/* ── MAIN CONTENT ───────────────────────────────────────────────────── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-5 space-y-5">
 
         {/* Filter row */}
@@ -523,13 +523,13 @@ export default function HENTPortfolio() {
         {/* Main grid: sidebar + charts */}
         <div className="flex gap-5 items-start">
 
-          {/* ── SIDEBAR ─────────────────────────────────────────────────────── */}
+          {/* â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="w-64 flex-shrink-0 bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
 
             <SectionLabel label="All Ventures" color={PRIMARY} />
             <MCard label="Total Ventures" big={ACTUALS.ventures} denom={TARGETS.ventures}
               barType="T" bA={ACTUALS.ventures} bT={TARGETS.ventures}
-              color={PRIMARY} sub="↗ 11% YoY"
+              color={PRIMARY} sub="â†— 11% YoY"
               chips={[
                 { label: `Exp ${expN}`,   color: SKY    },
                 { label: `Bld ${buildN}`, color: PRIMARY },
@@ -537,15 +537,15 @@ export default function HENTPortfolio() {
               ]}
             />
             <MCard label="Active Founders" big={48}
-              barType="none" color={ORANGE} sub="↗ 8% YoY"
+              barType="none" color={ORANGE} sub="â†— 8% YoY"
               chips={[
-                { label: `♀ ${Math.round((femCount / founders.length) * 100)}%`,                     color: PURPLE  },
-                { label: `♂ ${Math.round(((founders.length - femCount) / founders.length) * 100)}%`, color: SKY     },
+                { label: `â™€ ${Math.round((femCount / founders.length) * 100)}%`,                     color: PURPLE  },
+                { label: `â™‚ ${Math.round(((founders.length - femCount) / founders.length) * 100)}%`, color: SKY     },
               ]}
             />
             <MCard label="Total Jobs Created" big={ACTUALS.jobs} denom={TARGETS.jobs.toLocaleString()}
               barType="T" bA={ACTUALS.jobs} bT={TARGETS.jobs}
-              color={GREEN} sub="↗ 14% YoY"
+              color={GREEN} sub="â†— 14% YoY"
             />
 
             <SectionLabel label="MCF Scholars" color={PURPLE} />
@@ -554,7 +554,7 @@ export default function HENTPortfolio() {
               color={PURPLE}
               sub={`${Math.round((mcfVentures.length / ALL_VENTURES.length) * 100)}% of portfolio`}
               chips={[
-                { label: `♀ ${Math.round((mcfFemCount / Math.max(mcfFounders, 1)) * 100)}%`, color: PURPLE },
+                { label: `â™€ ${Math.round((mcfFemCount / Math.max(mcfFounders, 1)) * 100)}%`, color: PURPLE },
               ]}
             />
             <MCard label="MCF Funding Deployed" big={fmt$(mcfFunding)}
@@ -592,11 +592,11 @@ export default function HENTPortfolio() {
             </div>
           </div>
 
-          {/* ── CHART GRID (2 × 4) ──────────────────────────────────────────── */}
+          {/* â”€â”€ CHART GRID (2 Ã— 4) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="flex-1 min-w-0 grid grid-cols-2 gap-4">
 
             {/* Engagement Trend */}
-            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding · 2026" accent={SKY}>
+            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding Â· 2026" accent={SKY}>
               <ResponsiveContainer width="100%" height={176}>
                 <AreaChart data={engData}>
                   <defs>
@@ -615,7 +615,7 @@ export default function HENTPortfolio() {
             </ChartCard>
 
             {/* Jobs Created */}
-            <ChartCard title="Jobs Created" sub="Quarterly breakdown · 2026" accent={EMERALD}>
+            <ChartCard title="Jobs Created" sub="Quarterly breakdown Â· 2026" accent={EMERALD}>
               <ResponsiveContainer width="100%" height={176}>
                 <BarChart data={qJobs} barCategoryGap="35%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
@@ -628,7 +628,7 @@ export default function HENTPortfolio() {
             </ChartCard>
 
             {/* Ventures by Sector */}
-            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures · current filter`} accent={PRIMARY}>
+            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures Â· current filter`} accent={PRIMARY}>
               <ColorBarList data={secData} colors={BAR_COLORS} />
             </ChartCard>
 
@@ -647,7 +647,7 @@ export default function HENTPortfolio() {
               </div>
             </ChartCard>
 
-            {/* Ventures by Country — MCF vs Non-MCF diverging */}
+            {/* Ventures by Country â€” MCF vs Non-MCF diverging */}
             <ChartCard title="Ventures by Country" sub="MCF (blue) vs Non-MCF (red)" accent={PRIMARY}>
               <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
                 <span className="flex items-center gap-1">
@@ -667,8 +667,8 @@ export default function HENTPortfolio() {
               <ColorBarList data={jobsCtryData} colors={BAR_COLORS} />
             </ChartCard>
 
-            {/* Sector × Stage */}
-            <ChartCard title="Sector × Stage" sub="Expose · Build · Scale breakdown" accent={INDIGO}>
+            {/* Sector Ã— Stage */}
+            <ChartCard title="Sector Ã— Stage" sub="Expose Â· Build Â· Scale breakdown" accent={INDIGO}>
               <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
                 {(["Expose","Build","Scale"] as const).map((l, i) => (
                   <span key={l} className="flex items-center gap-1">
@@ -697,9 +697,9 @@ export default function HENTPortfolio() {
           </div>
         </div>
 
-        {/* ── FOOTER STRIP ────────────────────────────────────────────────── */}
+        {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: fmt$(totalFunding),                                      label: "Total Funding Raised",    bg: "#F0FDF4", clr: "#14532D" },
               { value: `${Math.round((femCount / founders.length) * 100)}%`,    label: "Female Founders",         bg: "#CFFAFE", clr: "#164E63" },
@@ -714,7 +714,7 @@ export default function HENTPortfolio() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT . VENTURES · 2023 - 2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT . VENTURES Â· 2023 - 2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>

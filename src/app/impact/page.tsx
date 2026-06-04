@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -22,7 +22,7 @@ import {
   Tooltip, XAxis, YAxis,
 } from "recharts";
 
-// ─── Palette ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const VIOLET = "#7C3AED";
 const TEAL   = "#0D9488";
 const GREEN  = "#10B981";
@@ -34,7 +34,7 @@ const ORANGE = "#EA580C";
 const NAVY   = "#002147";
 const EXEC_BG = "#f8fafc";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
@@ -57,9 +57,9 @@ function useCountUp(target: number, duration = 800): number {
   return val;
 }
 
-// ─── Contextual filter components ────────────────────────────────────────────
+// â”€â”€â”€ Contextual filter components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Pill group — sits in coloured card headers (dark background)
+// Pill group â€” sits in coloured card headers (dark background)
 function PillGroup<T extends string>({ options, value, onChange }: {
   options: { label: string; value: T }[];
   value: T;
@@ -84,7 +84,7 @@ function PillGroup<T extends string>({ options, value, onChange }: {
   );
 }
 
-// Dropdown — compact select for coloured card headers (dark background)
+// Dropdown â€” compact select for coloured card headers (dark background)
 function HeaderDropdown<T extends string>({ options, value, onChange }: {
   options: { label: string; value: T }[];
   value: T;
@@ -108,7 +108,7 @@ function HeaderDropdown<T extends string>({ options, value, onChange }: {
   );
 }
 
-// Segmented tab — sits inside white card bodies (light background)
+// Segmented tab â€” sits inside white card bodies (light background)
 function SegTab<T extends string>({ options, value, onChange, accent }: {
   options: { label: string; value: T }[];
   value: T;
@@ -131,7 +131,7 @@ function SegTab<T extends string>({ options, value, onChange, accent }: {
   );
 }
 
-// ─── UI atoms ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ UI atoms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SecHeader({ title, sub, accent = VIOLET }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
@@ -280,7 +280,7 @@ function CustomDonut({ data, colors, label, valueFormatter = String, size = 160 
   );
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
 type YearVal = typeof YEARS[number] | "all";
 
@@ -307,14 +307,14 @@ const MONTH_ABBR: Record<string, number> = {
 };
 
 const PERIOD_LABELS: Record<PeriodVal, string> = {
-  all: "Annual", q1: "Q1 · Jan–Mar", q2: "Q2 · Apr–Jun",
-  q3: "Q3 · Jul–Sep", q4: "Q4 · Oct–Dec",
-  h1: "H1 · Jan–Jun", h2: "H2 · Jul–Dec",
+  all: "Annual", q1: "Q1 Â· Janâ€“Mar", q2: "Q2 Â· Aprâ€“Jun",
+  q3: "Q3 Â· Julâ€“Sep", q4: "Q4 Â· Octâ€“Dec",
+  h1: "H1 Â· Janâ€“Jun", h2: "H2 Â· Julâ€“Dec",
 };
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ImpactDashboard() {
-  // ── Filter state ──────────────────────────────────────────────────────────
+  // â”€â”€ Filter state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [yearFilter,   setYearFilter]   = useState<YearVal>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodVal>("all");
   const [genderFilter, setGenderFilter] = useState<"all" | "female" | "male">("all");
@@ -324,7 +324,7 @@ export default function ImpactDashboard() {
   const [growthView,    setGrowthView]    = useState<"participation" | "quality">("participation");
   const [pipelineSector, setPipelineSector] = useState("all");
 
-  // ── Filtered data ─────────────────────────────────────────────────────────
+  // â”€â”€ Filtered data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const D = useMemo(() => {
     const yr    = yearFilter;
     const months = PERIOD_MONTHS[periodFilter]; // empty array = no month filter
@@ -466,7 +466,7 @@ export default function ImpactDashboard() {
     };
   }, [yearFilter, periodFilter, genderFilter, catFilter, streamFilter]);
 
-  // ── Year trend data ───────────────────────────────────────────────────────
+  // â”€â”€ Year trend data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const growthByYear = useMemo(() =>
     YEARS.map((yr) => {
       const hemp =
@@ -501,7 +501,7 @@ export default function ImpactDashboard() {
         "Venture Eco.": hent,
         Total: hemp + hent,
         "Completion %": complVals.length ? Math.round(avg(complVals)) : 0,
-        "Satisfaction ×20": satVals.length ? Math.round(avg(satVals) * 20) : 0,
+        "Satisfaction Ã—20": satVals.length ? Math.round(avg(satVals) * 20) : 0,
       };
     }).filter((d) => d.Total > 0),
   [yearFilter]);
@@ -537,18 +537,18 @@ export default function ImpactDashboard() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: EXEC_BG }}>
-      {/* ── Page header ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ Page header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div className="max-w-[1440px] mx-auto px-6">
           <div className="flex items-center justify-between py-5 gap-4 flex-wrap">
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">CHII Ecosystem Impact</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Consolidated analytics · {D.allCountries.length} countries · {D.grandTotal.toLocaleString()} participants reached
+                Consolidated analytics Â· {D.allCountries.length} countries Â· {D.grandTotal.toLocaleString()} participants reached
               </p>
             </div>
 
-            {/* Year + period dropdowns + actions — inline row */}
+            {/* Year + period dropdowns + actions â€” inline row */}
             <div className="flex items-center gap-2">
               <select
                 value={String(yearFilter)}
@@ -581,8 +581,8 @@ export default function ImpactDashboard() {
 
           {/* KPI tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-              <KpiTile label="People Reached"       num={D.grandTotal}       displayFmt={fmt}  sub={periodFilter === "all" ? (yearFilter === "all" ? "All years" : String(yearFilter)) : PERIOD_LABELS[periodFilter].split(" · ")[0]} clr={TEAL}   />
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+              <KpiTile label="People Reached"       num={D.grandTotal}       displayFmt={fmt}  sub={periodFilter === "all" ? (yearFilter === "all" ? "All years" : String(yearFilter)) : PERIOD_LABELS[periodFilter].split(" Â· ")[0]} clr={TEAL}   />
               <KpiTile label="Countries"            num={D.allCountries.length} displayFmt={fmt} sub="Geographic reach"  clr={INDIGO} />
               <KpiTile label="Female"               num={D.femalePct}        displayFmt={pct}  sub={`${fmt(D.totalFem)} participants`} clr={ROSE}   />
               <KpiTile label="Ventures & Startups"  num={D.venturesTotal}    displayFmt={fmt}  sub="Innovation outputs" clr={VIOLET} />
@@ -597,27 +597,27 @@ export default function ImpactDashboard() {
 
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-10">
 
-        {/* ── Executive insight cards ──────────────────────────────────────── */}
-        <div className="grid grid-cols-4 gap-4">
+        {/* â”€â”€ Executive insight cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <InsightCard label="Overall Satisfaction"  value={`${D.avgSat}/5`}
             sub="Avg across all programme streams"
-            note={`HealthX ${D.hxAvgSat} · Internships ${D.intAvgSat} · Masterclasses ${D.mcAvgSat}`}
+            note={`HealthX ${D.hxAvgSat} Â· Internships ${D.intAvgSat} Â· Masterclasses ${D.mcAvgSat}`}
             color={TEAL} icon={Star} />
           <InsightCard label="Completion Momentum"   value={pct(D.avgCompl)}
             sub="Programme completion average"
-            note={`HealthX ${D.hxAvgCompl}% · Masterclasses ${D.mcAvgCompl}% · Mission ${D.msCompPct}%`}
+            note={`HealthX ${D.hxAvgCompl}% Â· Masterclasses ${D.mcAvgCompl}% Â· Mission ${D.msCompPct}%`}
             color={VIOLET} icon={Target} />
           <InsightCard label="Innovation Ecosystem"  value={fmt(D.venturesTotal)}
             sub="Ventures, startups & projects"
-            note={`Portfolio ${D.vc.length} · Mission ${D.msVentures} · Hackathons ${D.hakStart}`}
+            note={`Portfolio ${D.vc.length} Â· Mission ${D.msVentures} Â· Hackathons ${D.hakStart}`}
             color={ORANGE} icon={Zap} />
           <InsightCard label="Workforce Impact"      value={fmt(D.employmentOut)}
             sub="People employed or converted"
-            note={`Internship conversions ${D.intConv} · Mission employed ${D.msEmployed.length}`}
+            note={`Internship conversions ${D.intConv} Â· Mission employed ${D.msEmployed.length}`}
             color={GREEN} icon={Briefcase} />
         </div>
 
-        {/* ── SECTION 1: Scale & Reach ──────────────────────────────────────── */}
+        {/* â”€â”€ SECTION 1: Scale & Reach â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Scale & Collective Reach" sub="Participation growth and programme stream distribution" accent={TEAL} />
 
@@ -660,12 +660,12 @@ export default function ImpactDashboard() {
                       <Tooltip
                         contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }}
                         formatter={(v: number, name: string) =>
-                          name === "Satisfaction ×20" ? [`${(v / 20).toFixed(1)}/5`, "Avg Satisfaction"] : [`${v}%`, name]
+                          name === "Satisfaction Ã—20" ? [`${(v / 20).toFixed(1)}/5`, "Avg Satisfaction"] : [`${v}%`, name]
                         }
                       />
                       <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
                       <Line type="monotone" dataKey="Completion %" stroke={GREEN} strokeWidth={2} dot={{ r: 3, fill: GREEN }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="Satisfaction ×20" stroke={SKY} strokeWidth={2} dot={{ r: 3, fill: SKY }} activeDot={{ r: 5 }} strokeDasharray="4 2" />
+                      <Line type="monotone" dataKey="Satisfaction Ã—20" stroke={SKY} strokeWidth={2} dot={{ r: 3, fill: SKY }} activeDot={{ r: 5 }} strokeDasharray="4 2" />
                     </LineChart>
                   )}
                 </ResponsiveContainer>
@@ -706,7 +706,7 @@ export default function ImpactDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 2: Gender Equity ──────────────────────────────────────── */}
+        {/* â”€â”€ SECTION 2: Gender Equity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Gender Equity & Diversity" sub="Disaggregated participation across all programme streams" accent={ROSE} />
 
@@ -792,7 +792,7 @@ export default function ImpactDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 3: Innovation ─────────────────────────────────────────── */}
+        {/* â”€â”€ SECTION 3: Innovation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Innovation & Entrepreneurship Output" sub="Venture creation, hackathon projects, and startup ecosystem" accent={ORANGE} />
 
@@ -837,7 +837,7 @@ export default function ImpactDashboard() {
               </div>
             </ChartCard>
 
-            <ChartCard title="Innovation Projects Timeline" sub={catFilter === "all" ? "All projects by year" : `${catFilter} — by year`} accent={ORANGE}
+            <ChartCard title="Innovation Projects Timeline" sub={catFilter === "all" ? "All projects by year" : `${catFilter} â€” by year`} accent={ORANGE}
               filter={
                 <HeaderDropdown
                   options={[{ label: "All categories", value: "all" }, ...HACK_CATS.map((c) => ({ label: c, value: c as HackCat }))]}
@@ -891,7 +891,7 @@ export default function ImpactDashboard() {
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">Geographic footprint</p>
                     <p className="text-xl font-black tabular-nums" style={{ color: TEAL }}>{D.allCountries.length} countries</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">{D.allCountries.slice(0, 6).join(" · ")}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">{D.allCountries.slice(0, 6).join(" Â· ")}</p>
                   </div>
                 </div>
               </div>
@@ -899,14 +899,14 @@ export default function ImpactDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 4: Workforce Outcomes ─────────────────────────────────── */}
+        {/* â”€â”€ SECTION 4: Workforce Outcomes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Workforce Development & People Outcomes" sub="Employment conversions, post-programme placements, and leadership pipeline" accent={AMBER} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
               <ChartCard title="Employment & Placement Pipeline"
-                sub={pipelineSector === "all" ? "All sectors — conversions and placements by year" : `${pipelineSector} sector — conversion and placement trend`}
+                sub={pipelineSector === "all" ? "All sectors â€” conversions and placements by year" : `${pipelineSector} sector â€” conversion and placement trend`}
                 accent={AMBER}
                 filter={
                   <HeaderDropdown
@@ -937,13 +937,13 @@ export default function ImpactDashboard() {
                     </div>
                   ))}
                 </div>
-                {/* Sector conversion rate insight — visible when a sector is selected */}
+                {/* Sector conversion rate insight â€” visible when a sector is selected */}
                 {pipelineSector !== "all" && (() => {
                   const row = sectorConversionRates.find((s) => s.Sector === pipelineSector);
                   if (!row) return null;
                   return (
                     <div className="mt-3 rounded border p-3" style={{ backgroundColor: AMBER + "08", borderColor: AMBER + "22" }}>
-                      <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-gray-500 mb-2">{pipelineSector} — conversion insight</p>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-gray-500 mb-2">{pipelineSector} â€” conversion insight</p>
                       <div className="flex items-center gap-4">
                         <div>
                           <p className="text-[8px] text-gray-400">Emp. conversion rate</p>
@@ -983,7 +983,7 @@ export default function ImpactDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION 5: Programme Quality ─────────────────────────────────── */}
+        {/* â”€â”€ SECTION 5: Programme Quality â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
           <SecHeader title="Programme Quality & Learning Engagement" sub="Satisfaction and completion benchmarks across all CHII programme streams" accent={SKY} />
 
@@ -1035,13 +1035,13 @@ export default function ImpactDashboard() {
           </div>
         </section>
 
-        {/* ── Footer ───────────────────────────────────────────────────────── */}
+        {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <footer className="border-t border-gray-200 pt-6 pb-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">CHII · Centre for Health Innovation & Impact</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">CHII Â· Centre for Health Innovation & Impact</p>
               <p className="text-[10px] text-gray-400 mt-0.5">
-                {yearFilter === "all" ? "2021–2026" : String(yearFilter)}{periodFilter !== "all" ? ` · ${PERIOD_LABELS[periodFilter]}` : ""} · {D.allCountries.length} countries · {fmt(D.grandTotal)} participants
+                {yearFilter === "all" ? "2021â€“2026" : String(yearFilter)}{periodFilter !== "all" ? ` Â· ${PERIOD_LABELS[periodFilter]}` : ""} Â· {D.allCountries.length} countries Â· {fmt(D.grandTotal)} participants
               </p>
             </div>
             <p className="text-[10px] text-gray-300">Switch programme view using the tabs above</p>
