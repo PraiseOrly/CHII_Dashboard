@@ -211,16 +211,16 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 
 // ─── KPI tile colour map (10 metrics) ────────────────────────────────────────
 const KPI_TILES = [
-  { label: "Total Hackathons",     bg: "#FFF7ED", clr: "#7C2D12" },
-  { label: "Participants",         bg: "#FFEDD5", clr: "#9A3412" },
-  { label: "Female Participants",  bg: "#FECDD3", clr: "#9F1239" },
-  { label: "Male Participants",    bg: "#FEF3C7", clr: "#78350F" },
-  { label: "Winning Teams",        bg: "#FDE68A", clr: "#92400E" },
-  { label: "Projects Developed",   bg: "#FEFCE8", clr: "#713F12" },
-  { label: "Student Participants", bg: "#FFE4E6", clr: "#9F1239" },
-  { label: "Alumni Participants",  bg: "#FEF9C3", clr: "#78350F" },
-  { label: "Startups Created",     bg: "#FED7AA", clr: "#7C2D12" },
-  { label: "Partnerships",         bg: "#FEF2F2", clr: "#991B1B" },
+  { label: "Total Hackathons",     clr: "#C2410C" },  // orange  — identity
+  { label: "Participants",         clr: "#1E3A8A" },  // blue
+  { label: "Female Participants",  clr: "#9D174D" },  // rose
+  { label: "Male Participants",    clr: "#134E4A" },  // teal
+  { label: "Winning Teams",        clr: "#92400E" },  // amber
+  { label: "Projects Developed",   clr: "#5B21B6" },  // violet
+  { label: "Student Participants", clr: "#14532D" },  // green
+  { label: "Alumni Participants",  clr: "#312E81" },  // indigo
+  { label: "Startups Created",     clr: "#064E3B" },  // emerald
+  { label: "Partnerships",         clr: "#7C2D12" },  // rust
 ] as const;
 
 // ─── page ─────────────────────────────────────────────────────────────────────
@@ -320,7 +320,7 @@ export default function HackathonsPage() {
 
           <div className="flex items-end justify-between py-4">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: NAVY }}>Hackathons</h1>
+              <h1 className="text-xl font-black" style={{ color: NAVY }}>Hackathons</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
                 Innovation events · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {total.events} hackathons tracked
               </p>
@@ -561,10 +561,10 @@ export default function HackathonsPage() {
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(total.participants), label: "Total Participants",    bg: "#FFEDD5", clr: "#9A3412" },
-              { value: `${femalePct}%`,            label: "Female Participation", bg: "#FECDD3", clr: "#9F1239" },
-              { value: String(total.startups),     label: "Startups Created",     bg: "#FEF3C7", clr: "#78350F" },
-              { value: String(total.partnerships), label: "Partnerships Secured", bg: "#FDE68A", clr: "#92400E" },
+              { value: String(total.participants), label: "Total Participants",    clr: "#1E3A8A" },
+              { value: `${femalePct}%`,            label: "Female Participation", clr: "#9D174D" },
+              { value: String(total.startups),     label: "Startups Created",     clr: "#064E3B" },
+              { value: String(total.partnerships), label: "Partnerships Secured", clr: "#7C2D12" },
             ] as const).map(tile => (
               <div key={tile.label} className="px-6 py-6 text-center"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
