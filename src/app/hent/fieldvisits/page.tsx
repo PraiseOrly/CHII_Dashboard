@@ -81,11 +81,11 @@ function CustomDonut({
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
             fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
         )}
       </svg>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
           {hovered.name}: {valueFormatter(hovered.value)}
         </div>
@@ -103,8 +103,8 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
         return (
           <div key={row.name} className="flex items-center gap-2.5">
             <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full rounded-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
           </div>
@@ -130,7 +130,7 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
   title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
           backgroundColor: accent,
@@ -152,15 +152,15 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   label: string; value: number; pct: number; total: number; color: string;
 }) {
   return (
-    <div className="rounded-xl border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
+    <div className="rounded border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
       <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: color + "AA" }}>{label}</p>
       <div className="flex items-baseline gap-0.5 mt-3">
         <p className="text-[2.25rem] font-black tabular-nums leading-none" style={{ color }}>{pct}</p>
         <p className="text-lg font-bold mb-0.5" style={{ color }}>%</p>
       </div>
       <p className="text-[11px] text-gray-400 mt-2 tabular-nums">{value.toLocaleString()} / {tot.toLocaleString()}</p>
-      <div className="h-1.5 rounded-full mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
-        <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
+      <div className="h-1.5 rounded-sm mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
+        <div className="h-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
       </div>
     </div>
   );
@@ -198,7 +198,7 @@ function RatingBar({ label, visits, criterion }: {
       </div>
       <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
           {hovered.label}: {hovered.count}
         </div>
@@ -274,7 +274,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded-xl border px-2 py-2.5 text-center"
+    <div className="rounded border px-2 py-2.5 text-center"
       style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
@@ -447,10 +447,10 @@ export default function FieldVisitsPage() {
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <Download size={11} /> Export Report
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-lg font-semibold text-white shadow-sm transition-colors"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm transition-colors"
                 style={{ backgroundColor: RED }}>
                 <FileText size={11} /> Custom Report
               </button>
@@ -473,7 +473,7 @@ export default function FieldVisitsPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* FILTERS */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-2.5">
+        <div className="bg-white rounded shadow-sm border border-gray-100 px-4 py-2.5">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Year</label>
@@ -633,8 +633,8 @@ export default function FieldVisitsPage() {
                         <span className="text-gray-600">{d.name}</span>
                         <span className="font-medium" style={{ color: col }}>{d.value}</span>
                       </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                        <div className="h-full rounded-full"
+                      <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                        <div className="h-full"
                           style={{ width: `${tot.participants > 0 ? (d.value / tot.participants) * 100 : 0}%`, backgroundColor: col }} />
                       </div>
                       <p className="text-[10px] text-gray-400 mt-0.5">
@@ -673,8 +673,8 @@ export default function FieldVisitsPage() {
                           <span className="text-xs text-gray-400 ml-2">· {data.participants} participants</span>
                         </div>
                       </div>
-                      <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: col }} />
+                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                        <div className="h-full" style={{ width: `${pct}%`, backgroundColor: col }} />
                       </div>
                       <p className="text-[10px] text-gray-400 mt-0.5">{pct}% of all visits</p>
                     </div>
@@ -700,7 +700,7 @@ export default function FieldVisitsPage() {
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Participants"]} />
-                  <Bar dataKey="Participants" fill={SKY} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Participants" fill={SKY} radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -717,8 +717,8 @@ export default function FieldVisitsPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Female" fill={VIOLET} radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="Male"   fill={SKY}    radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Female" fill={VIOLET} radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="Male"   fill={SKY}    radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -798,7 +798,7 @@ export default function FieldVisitsPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} partnerships`, "Partnerships"]} />
-                  <Bar dataKey="Partnerships" fill={EMERALD} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Partnerships" fill={EMERALD} radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -817,8 +817,8 @@ export default function FieldVisitsPage() {
                       <p className="text-[10px] text-gray-400">{v.city} · {v.year}</p>
                     </div>
                     <div className="w-20 flex-shrink-0">
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: EMERALD + "20" }}>
-                        <div className="h-full rounded-full" style={{ width: `${(v.partnerships / 8) * 100}%`, backgroundColor: EMERALD }} />
+                      <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: EMERALD + "20" }}>
+                        <div className="h-full" style={{ width: `${(v.partnerships / 8) * 100}%`, backgroundColor: EMERALD }} />
                       </div>
                     </div>
                   </div>
@@ -835,7 +835,7 @@ export default function FieldVisitsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...filtered].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3).map((v) => {
               return (
-                <div key={v.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div key={v.id} className="bg-white rounded shadow-sm overflow-hidden">
                   <div className="h-44 overflow-hidden">
                     <img
                       src={FV_IMAGES[v.id] ?? `https://picsum.photos/seed/${v.id}/600/360`}
@@ -906,7 +906,7 @@ export default function FieldVisitsPage() {
                   axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
-                <Bar dataKey="Completion %" fill={EMERALD} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="Completion %" fill={EMERALD} radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="mt-3 grid grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">
@@ -927,7 +927,7 @@ export default function FieldVisitsPage() {
         </section>
 
         {/* FOOTER */}
-        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { icon: MapPin,    value: String(tot.visits),               label: "Field Visits",             clr: "#065F46" },  // emerald — page identity

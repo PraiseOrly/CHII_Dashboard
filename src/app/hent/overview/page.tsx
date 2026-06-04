@@ -198,7 +198,7 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
           backgroundColor: accent,
@@ -221,14 +221,14 @@ function ExecCard({ label, value, sub, color, note, icon: Icon, bg = "#ffffff" }
   note?: string; bg?: string; icon?: LucideIcon;
 }) {
   return (
-    <div className="rounded-xl border p-3 shadow-sm text-center" style={{
+    <div className="rounded border p-3 shadow-sm text-center" style={{
       backgroundColor: color,
       borderColor: color,
     }}>
       <div className="flex items-start justify-between mb-2">
         <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
         {Icon && (
-          <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
+          <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
             <Icon size={11} style={{ color: "rgba(255,255,255,0.88)" }} />
           </div>
@@ -251,8 +251,8 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
         return (
           <div key={row.name} className="flex items-center gap-2.5">
             <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full rounded-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-5 flex-shrink-0 tabular-nums" style={{ color: col }}>{row.value}</div>
           </div>
@@ -270,7 +270,7 @@ function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: 
       onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
       onMouseLeave={() => setHovered(null)}>
       <div className="w-28 text-[11px] text-gray-600 text-right font-medium flex-shrink-0 leading-tight">{label}</div>
-      <div className="flex-1 h-5 rounded-full overflow-hidden flex" style={{ backgroundColor: PURPLE + "15" }}>
+      <div className="flex-1 h-5 rounded-sm overflow-hidden flex" style={{ backgroundColor: PURPLE + "15" }}>
         <div style={{ width: `${femalePct}%`, backgroundColor: PURPLE, cursor: "pointer",
             opacity: hovered && hovered.label !== "Female" ? 0.45 : 1, transition: "opacity 0.15s" }}
           onMouseEnter={() => setHovered({ label: "Female", pct: femalePct, color: PURPLE })} />
@@ -280,7 +280,7 @@ function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: 
       </div>
       <div className="text-[11px] font-bold w-8 flex-shrink-0 text-right" style={{ color: PURPLE }}>{femalePct}%</div>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
           {hovered.label}: {hovered.pct}%
         </div>
@@ -357,11 +357,11 @@ function CustomDonut({
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
             fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
         )}
       </svg>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
           {hovered.name}: {valueFormatter(hovered.value)}
         </div>
@@ -396,7 +396,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded-xl border px-2 py-2.5 text-center"
+    <div className="rounded border px-2 py-2.5 text-center"
       style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
@@ -424,10 +424,10 @@ export default function ExecutiveDashboard() {
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <Download size={11} /> Export Report
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-lg font-semibold text-white shadow-sm transition-colors"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm transition-colors"
                 style={{ backgroundColor: PRIMARY }}>
                 <FileText size={11} /> Custom Report
               </button>
@@ -490,7 +490,7 @@ export default function ExecutiveDashboard() {
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
                   {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
-                    <Bar key={cat} dataKey={cat} fill={[ORANGE, TEAL, C_PURPLE, C_SKY][i]} radius={[3, 3, 0, 0]} />
+                    <Bar key={cat} dataKey={cat} fill={[ORANGE, TEAL, C_PURPLE, C_SKY][i]} radius={[0, 0, 0, 0]} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -623,14 +623,14 @@ export default function ExecutiveDashboard() {
                           </td>
                           {HEAT_COLS.map(c => (
                             <td key={c} className="py-2.5 px-2 text-center">
-                              <span className="inline-block px-2.5 py-1 rounded-lg text-white text-[10px] font-bold tabular-nums"
+                              <span className="inline-block px-2.5 py-1 rounded text-white text-[10px] font-bold tabular-nums"
                                 style={{ backgroundColor: heatColor(row[c]) }}>
                                 {row[c].toFixed(1)}
                               </span>
                             </td>
                           ))}
                           <td className="py-2.5 px-2 text-center">
-                            <span className="inline-block px-2.5 py-1 rounded-lg text-white text-[10px] font-bold tabular-nums"
+                            <span className="inline-block px-2.5 py-1 rounded text-white text-[10px] font-bold tabular-nums"
                               style={{ backgroundColor: INDIGO }}>
                               {rowAvg.toFixed(1)}
                             </span>
@@ -664,8 +664,8 @@ export default function ExecutiveDashboard() {
                         </span>
                         <span className="font-bold tabular-nums" style={{ color: PROG[d.name] }}>{d.value}/5</span>
                       </div>
-                      <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: PROG[d.name] + "18" }}>
-                        <div className="h-full rounded-full transition-all"
+                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: PROG[d.name] + "18" }}>
+                        <div className="h-full transition-all"
                           style={{ width: `${(d.value / 5) * 100}%`, backgroundColor: d.value >= 4.5 ? TEAL : d.value >= 4.0 ? PRIMARY : AMBER }} />
                       </div>
                     </div>
@@ -686,8 +686,8 @@ export default function ExecutiveDashboard() {
                         </span>
                         <span className="font-bold tabular-nums" style={{ color: PROG[d.name] }}>{d.value}%</span>
                       </div>
-                      <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: PROG[d.name] + "18" }}>
-                        <div className="h-full rounded-full transition-all"
+                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: PROG[d.name] + "18" }}>
+                        <div className="h-full transition-all"
                           style={{ width: `${d.value}%`, backgroundColor: d.value >= 90 ? GREEN : d.value >= 80 ? TEAL : AMBER }} />
                       </div>
                     </div>
@@ -736,7 +736,7 @@ export default function ExecutiveDashboard() {
                   { label: "Partnership Agreements", value: TOTAL_PSHIP,                 color: AMBER,   sub: "Cross-sector"     },
                   { label: "1-Yr Fellowship Grads",  value: mfGrad,                      color: PURPLE,  sub: "Flagship track"   },
                 ] as const).map(m => (
-                  <div key={m.label} className="flex items-center gap-3 p-3 rounded-lg border-l-2"
+                  <div key={m.label} className="flex items-center gap-3 p-3 rounded border-l-2"
                     style={{ backgroundColor: m.color + "0E", borderColor: m.color }}>
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: m.color + "AA" }}>{m.label}</p>
@@ -769,8 +769,8 @@ export default function ExecutiveDashboard() {
                         <span className="font-bold" style={{ color: row.color }}>{row.reach.toLocaleString()}</span> participants
                       </span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: row.color + "1A" }}>
-                      <div className="h-full rounded-full" style={{ width: `${row.pct}%`, backgroundColor: row.color }} />
+                    <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: row.color + "1A" }}>
+                      <div className="h-full" style={{ width: `${row.pct}%`, backgroundColor: row.color }} />
                     </div>
                     <p className="text-[9px] text-gray-400 mt-0.5 text-right">{row.pct}% of total reach</p>
                   </div>
@@ -781,7 +781,7 @@ export default function ExecutiveDashboard() {
         </section>
 
         {/* ── FOOTER STRIP ──────────────────────────────────────────────────── */}
-        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-gray-100">
             {([
               { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",         bg: "#BAE6FD", clr: "#075985" },

@@ -36,13 +36,13 @@ export default function HENTNav() {
             <svg viewBox="0 0 200 200" width="34" height="34" aria-label="CHII logo">
               <rect width="200" height="200" rx="24" fill={NAVY} />
               <text x="100" y="97" textAnchor="middle" fill="white"
-                fontFamily="sans-serif" fontWeight="900" fontSize="74">ALU</text>
+                fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontWeight="900" fontSize="74">ALU</text>
               <text x="100" y="120" textAnchor="middle" fill="rgba(255,255,255,0.65)"
-                fontFamily="sans-serif" fontSize="12">CENTRE FOR HEALTH</text>
+                fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">CENTRE FOR HEALTH</text>
               <text x="100" y="136" textAnchor="middle" fill="rgba(255,255,255,0.65)"
-                fontFamily="sans-serif" fontSize="12">INNOVATION &amp;</text>
+                fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">INNOVATION &amp;</text>
               <text x="100" y="152" textAnchor="middle" fill="rgba(255,255,255,0.65)"
-                fontFamily="sans-serif" fontSize="12">IMPACT</text>
+                fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">IMPACT</text>
             </svg>
             <div>
               <p className="text-sm font-bold leading-none" style={{ color: NAVY }}>HENT</p>

@@ -149,8 +149,8 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
         return (
           <div key={row.name} className="flex items-center gap-2.5">
             <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full rounded-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
           </div>
@@ -164,7 +164,7 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden flex flex-col">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5 flex-shrink-0"
         style={{
           backgroundColor: accent,
@@ -185,8 +185,8 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
 // Pace bar designed for light tinted backgrounds
 function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }) {
   return (
-    <div className="h-1 rounded-full relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(255,255,255,0.22)" }}>
-      <div className="h-full rounded-full"
+    <div className="h-1 rounded-sm relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(255,255,255,0.22)" }}>
+      <div className="h-full"
         style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
       <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: "rgba(255,255,255,0.55)" }} />
     </div>
@@ -226,7 +226,7 @@ function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded-xl border px-2 py-2.5 text-center"
+    <div className="rounded border px-2 py-2.5 text-center"
       style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
@@ -246,8 +246,8 @@ function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }
 // Pace bar for white sidebar backgrounds
 function RBar({ v, total }: { v: number; total: number }) {
   return (
-    <div className="h-1 bg-gray-100 rounded-full mt-2 mb-0.5">
-      <div className="h-full rounded-full bg-sky-500"
+    <div className="h-1 bg-gray-100 rounded-sm mt-2 mb-0.5">
+      <div className="h-full bg-sky-500"
         style={{ width: `${total > 0 ? (v / total) * 100 : 0}%` }} />
     </div>
   );
@@ -290,8 +290,8 @@ function MCard({
         )}
       </div>
       {barType === "T" && bA !== undefined && bT !== undefined && (
-        <div className="h-1 bg-gray-200 rounded-full relative mt-2 mb-0.5">
-          <div className="h-full rounded-full"
+        <div className="h-1 bg-gray-200 rounded-sm relative mt-2 mb-0.5">
+          <div className="h-full"
             style={{ width: `${Math.min((bA / bT) * 100, 100)}%`, backgroundColor: paceColor(bA, bT) }} />
           <div className="absolute top-0 bottom-0 w-px bg-gray-400/40"
             style={{ left: `${PACE * 100}%` }} />
@@ -435,10 +435,10 @@ export default function HENTPortfolio() {
               <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort · Updated 28 May 2026</p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <Download size={11} /> Export Data
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-lg font-semibold text-white transition-colors shadow-sm"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded font-semibold text-white transition-colors shadow-sm"
                 style={{ backgroundColor: RED }}>
                 <FileText size={11} /> Custom Report
               </button>
@@ -503,7 +503,7 @@ export default function HENTPortfolio() {
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-0.5 bg-white rounded-lg shadow-sm px-1 py-1">
+          <div className="flex items-center gap-0.5 bg-white rounded shadow-sm px-1 py-1">
             {(["ALL", "MCF", "NON-MCF", "FLAGGED"] as const).map(n => {
               const label = n === "ALL" ? "All Nations" : n === "MCF" ? "MCF Scholars" : n === "NON-MCF" ? "Non-MCF" : "Flagged";
               const active = nationFilter === n;
@@ -524,7 +524,7 @@ export default function HENTPortfolio() {
         <div className="flex gap-5 items-start">
 
           {/* ── SIDEBAR ─────────────────────────────────────────────────────── */}
-          <div className="w-64 flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="w-64 flex-shrink-0 bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
 
             <SectionLabel label="All Ventures" color={PRIMARY} />
             <MCard label="Total Ventures" big={ACTUALS.ventures} denom={TARGETS.ventures}
@@ -698,7 +698,7 @@ export default function HENTPortfolio() {
         </div>
 
         {/* ── FOOTER STRIP ────────────────────────────────────────────────── */}
-        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: fmt$(totalFunding),                                      label: "Total Funding Raised",    bg: "#F0FDF4", clr: "#14532D" },

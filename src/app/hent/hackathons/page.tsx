@@ -92,7 +92,7 @@ function CustomDonut({
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
             fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="ui-sans-serif,system-ui,sans-serif">
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">
             {label}
           </text>
         )}
@@ -111,8 +111,8 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
         return (
           <div key={row.name} className="flex items-center gap-2.5">
             <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full rounded-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
           </div>
@@ -138,7 +138,7 @@ function ChartCard({ title, sub, accent = ORANGE, children }: {
   title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
           backgroundColor: accent,
@@ -160,15 +160,15 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   label: string; value: number; pct: number; total: number; color: string;
 }) {
   return (
-    <div className="rounded-xl border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
+    <div className="rounded border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
       <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: color + "AA" }}>{label}</p>
       <div className="flex items-baseline gap-0.5 mt-3">
         <p className="text-[2.25rem] font-black tabular-nums leading-none" style={{ color }}>{pct}</p>
         <p className="text-lg font-bold mb-0.5" style={{ color }}>%</p>
       </div>
       <p className="text-[11px] text-gray-400 mt-2 tabular-nums">{value.toLocaleString()} / {tot.toLocaleString()}</p>
-      <div className="h-1.5 rounded-full mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
-        <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
+      <div className="h-1.5 rounded-sm mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
+        <div className="h-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
       </div>
     </div>
   );
@@ -200,7 +200,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded-xl border px-2 py-2.5 text-center"
+    <div className="rounded border px-2 py-2.5 text-center"
       style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
@@ -228,7 +228,7 @@ function GenderMiniBar({ year, female, male, fPct }: { year: string; female: num
       </div>
       <span className="text-gray-400 w-8 text-right">{female + male}</span>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 26, transform: "translateX(-50%)" }}>
           {hovered.label}: {hovered.count}
         </div>
@@ -352,10 +352,10 @@ export default function HackathonsPage() {
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <Download size={11} /> Export Data
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-lg font-semibold text-white transition-colors shadow-sm"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded font-semibold text-white transition-colors shadow-sm"
                 style={{ backgroundColor: RED }}>
                 <FileText size={11} /> Custom Report
               </button>
@@ -385,7 +385,7 @@ export default function HackathonsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             {/* Participant profile stats — stacked column */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
               {([
                 { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
                 { label: "Male Participants",    value: total.participants - total.female,  pct: malePct,    color: SKY     },
@@ -399,8 +399,8 @@ export default function HackathonsPage() {
                     <p className="text-xl font-black tabular-nums leading-none"
                       style={{ color: item.color }}>{item.pct}%</p>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
-                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                  <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
+                    <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1.5 tabular-nums">
                     {item.value.toLocaleString()} / {total.participants.toLocaleString()}
@@ -504,7 +504,7 @@ export default function HackathonsPage() {
             sub="Year-on-year trends with male vs female comparison" />
 
           {/* Tab filters */}
-          <div className="flex gap-1 mb-4 bg-white rounded-lg shadow-sm px-1 py-1 w-fit">
+          <div className="flex gap-1 mb-4 bg-white rounded shadow-sm px-1 py-1 w-fit">
             {(["participants", "projects", "winners", "startups"] as const).map(tab => {
               const label = tab === "participants" ? "Participants"
                           : tab === "projects"     ? "Projects Developed"
@@ -556,8 +556,8 @@ export default function HackathonsPage() {
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
                   formatter={(v: number, name: string) => [trendFormatter(v), name]}
                 />
-                <Bar dataKey={trendCategories[1]} fill={SKY}    radius={[3, 3, 0, 0]} />
-                <Bar dataKey={trendCategories[0]} fill={VIOLET} radius={[3, 3, 0, 0]} />
+                <Bar dataKey={trendCategories[1]} fill={SKY}    radius={[0, 0, 0, 0]} />
+                <Bar dataKey={trendCategories[0]} fill={VIOLET} radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -623,7 +623,7 @@ export default function HackathonsPage() {
         </section>
 
         {/* ── FOOTER STRIP ────────────────────────────────────────────────── */}
-        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(total.participants), label: "Total Participants",    clr: "#1E3A8A" },

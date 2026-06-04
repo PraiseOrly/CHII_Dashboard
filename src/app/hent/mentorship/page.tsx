@@ -87,11 +87,11 @@ function CustomDonut({
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
             fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="ui-sans-serif,system-ui,sans-serif">{label}</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
         )}
       </svg>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
           {hovered.name}: {valueFormatter(hovered.value)}
         </div>
@@ -109,8 +109,8 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
         return (
           <div key={row.name} className="flex items-center gap-2.5">
             <div className="w-[96px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full rounded-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
           </div>
@@ -136,7 +136,7 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
   title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
           backgroundColor: accent,
@@ -158,15 +158,15 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   label: string; value: number; pct: number; total: number; color: string;
 }) {
   return (
-    <div className="rounded-xl border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
+    <div className="rounded border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
       <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: color + "AA" }}>{label}</p>
       <div className="flex items-baseline gap-0.5 mt-3">
         <p className="text-[2.25rem] font-black tabular-nums leading-none" style={{ color }}>{pct}</p>
         <p className="text-lg font-bold mb-0.5" style={{ color }}>%</p>
       </div>
       <p className="text-[11px] text-gray-400 mt-2 tabular-nums">{value.toLocaleString()} / {tot.toLocaleString()}</p>
-      <div className="h-1.5 rounded-full mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
-        <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
+      <div className="h-1.5 rounded-sm mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
+        <div className="h-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
       </div>
     </div>
   );
@@ -204,7 +204,7 @@ function RatingBar({ label, programs, criterion }: {
       </div>
       <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
       {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded-lg px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
           {hovered.label}: {hovered.count}
         </div>
@@ -280,7 +280,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded-xl border px-2 py-2.5 text-center"
+    <div className="rounded border px-2 py-2.5 text-center"
       style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
@@ -448,10 +448,10 @@ export default function MentorshipPage() {
               </p>
             </div>
             <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
+              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <Download size={11} /> Export Data
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-lg font-semibold text-white shadow-sm"
+              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded font-semibold text-white shadow-sm"
                 style={{ backgroundColor: RED }}>
                 <FileText size={11} /> Custom Report
               </button>
@@ -474,7 +474,7 @@ export default function MentorshipPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* FILTERS */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-2.5">
+        <div className="bg-white rounded shadow-sm border border-gray-100 px-4 py-2.5">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Year</label>
@@ -584,8 +584,8 @@ export default function MentorshipPage() {
                       <span className="text-gray-700 font-medium">{d.name}</span>
                       <span className="font-bold" style={{ color: d.value >= 80 ? EMERALD : d.value >= 60 ? PRIMARY : AMBER }}>{d.value}%</span>
                     </div>
-                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all"
+                    <div className="h-3 bg-gray-100 rounded-sm overflow-hidden">
+                      <div className="h-full transition-all"
                         style={{ width: `${d.value}%`, backgroundColor: d.value >= 80 ? EMERALD : d.value >= 60 ? PRIMARY : AMBER }} />
                     </div>
                   </div>
@@ -693,8 +693,8 @@ export default function MentorshipPage() {
                         <span className="text-gray-600">{d.name}</span>
                         <span className="font-medium" style={{ color: col }}>{d.value}</span>
                       </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                        <div className="h-full rounded-full"
+                      <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                        <div className="h-full"
                           style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
                       </div>
                       <p className="text-[10px] text-gray-400 mt-0.5">
@@ -781,7 +781,7 @@ export default function MentorshipPage() {
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} fellows`, "Fellows"]} />
-                  <Bar dataKey="Fellows" fill={SKY} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Fellows" fill={SKY} radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -798,8 +798,8 @@ export default function MentorshipPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Female" fill={VIOLET} radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="Male"   fill={SKY}    radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Female" fill={VIOLET} radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="Male"   fill={SKY}    radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -821,9 +821,9 @@ export default function MentorshipPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Expose" fill={SKY}    radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="Build"  fill={PRIMARY} radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="Scale"  fill={INDIGO}  radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Expose" fill={SKY}    radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="Build"  fill={PRIMARY} radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="Scale"  fill={INDIGO}  radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -891,7 +891,7 @@ export default function MentorshipPage() {
                 ? testimonials.map(p => {
                   const t = p.testimonial!;
                   return (
-                    <div key={p.id} className="bg-white rounded-lg shadow-sm p-4 border-l-4 flex gap-3"
+                    <div key={p.id} className="bg-white rounded shadow-sm p-4 border-l-4 flex gap-3"
                       style={{ borderLeftColor: ACCENT }}>
                       <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold"
                         style={{ backgroundColor: ACCENT }}>
@@ -913,7 +913,7 @@ export default function MentorshipPage() {
                   );
                 })
                 : (
-                  <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+                  <div className="bg-white rounded shadow-sm p-8 text-center">
                     <Award size={28} className="text-gray-300 mx-auto mb-2" />
                     <p className="text-sm text-gray-400">No testimonials available for the current filter selection.</p>
                   </div>
@@ -937,7 +937,7 @@ export default function MentorshipPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} graduates`, "Graduates"]} />
-                  <Bar dataKey="Graduates" fill={EMERALD} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Graduates" fill={EMERALD} radius={[0, 0, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-3 grid grid-cols-4 gap-3 pt-3 border-t border-gray-100 text-center">
@@ -968,9 +968,9 @@ export default function MentorshipPage() {
                 ].map(m => {
                   const Icon = m.icon;
                   return (
-                    <div key={m.label} className="flex items-center gap-4 p-3 rounded-lg border-l-2"
+                    <div key={m.label} className="flex items-center gap-4 p-3 rounded border-l-2"
                       style={{ backgroundColor: m.color + "0E", borderColor: m.color }}>
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      <div className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: m.color + "18" }}>
                         <Icon size={16} style={{ color: m.color }} />
                       </div>
@@ -1006,7 +1006,7 @@ export default function MentorshipPage() {
                   axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
-                <Bar dataKey="Completion %" fill={EMERALD} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="Completion %" fill={EMERALD} radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="mt-3 grid grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">
@@ -1026,7 +1026,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* FOOTER */}
-        <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
               { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", clr: "#6D28D9" },

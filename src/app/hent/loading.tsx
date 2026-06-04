@@ -7,13 +7,13 @@ export default function HENTLoading() {
         <svg viewBox="0 0 200 200" width="44" height="44" aria-label="CHII logo">
           <rect width="200" height="200" rx="24" fill="#002147" />
           <text x="100" y="97" textAnchor="middle" fill="white"
-            fontFamily="sans-serif" fontWeight="900" fontSize="74">ALU</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontWeight="900" fontSize="74">ALU</text>
           <text x="100" y="120" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-            fontFamily="sans-serif" fontSize="12">CENTRE FOR HEALTH</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">CENTRE FOR HEALTH</text>
           <text x="100" y="136" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-            fontFamily="sans-serif" fontSize="12">INNOVATION &amp;</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">INNOVATION &amp;</text>
           <text x="100" y="152" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-            fontFamily="sans-serif" fontSize="12">IMPACT</text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">IMPACT</text>
         </svg>
         <div>
           <p className="text-sm font-bold leading-none" style={{ color: "#002147" }}>HENT</p>
@@ -22,7 +22,7 @@ export default function HENTLoading() {
       </div>
 
       {/* Skeleton stat strip */}
-      <div className="w-[720px] max-w-[90vw] h-16 rounded-xl overflow-hidden">
+      <div className="w-[720px] max-w-[90vw] h-16 rounded overflow-hidden">
         <div className="grid grid-cols-5 h-full">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="animate-pulse" style={{ backgroundColor: i === 0 ? "#002147" : "#0a2d5e", opacity: 1 - i * 0.08 }} />
@@ -33,12 +33,12 @@ export default function HENTLoading() {
       {/* Skeleton chart row */}
       <div className="w-[720px] max-w-[90vw] grid grid-cols-2 gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse">
+          <div key={i} className="bg-white rounded border border-gray-100 overflow-hidden animate-pulse">
             <div className="h-9 bg-gray-100" />
             <div className="p-4 space-y-2">
-              <div className="h-3 bg-gray-100 rounded-full w-3/4" />
-              <div className="h-3 bg-gray-100 rounded-full w-1/2" />
-              <div className="h-20 bg-gray-50 rounded-lg mt-3" />
+              <div className="h-3 bg-gray-100 rounded-sm w-3/4" />
+              <div className="h-3 bg-gray-100 rounded-sm w-1/2" />
+              <div className="h-20 bg-gray-50 rounded mt-3" />
             </div>
           </div>
         ))}
