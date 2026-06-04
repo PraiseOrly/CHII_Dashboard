@@ -1,12 +1,18 @@
 "use client";
-import { useState, useEffect } from "react";
-import {
-  BarChart, Bar, AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts";
-import { Download, FileText } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
-import { internships, INTERNSHIP_SECTORS } from "@/data/hemp/internships";
+import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
+import { Download, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis, YAxis,
+} from "recharts";
 
 // ─── Palette ─────────────────────────────────────────────────────────────────
 const NAVY   = "#002147";
@@ -556,6 +562,239 @@ export default function InternshipsPage() {
             </ChartCard>
 
           </div>
+        </section>
+
+        {/* ── SECTION 5: COHORT OUTCOMES (HEMP) ─── */}
+        <section>
+          <SecHeader
+            title="Cohort Outcomes (Internal · SFH · WAG · KASHA)"
+            sub="Internship participation + post-internship placement outcomes" />
+
+          {(() => {
+            const COHORTS: InternshipCohort[] = ["Internal", "SFH", "WAG", "KASHA"];
+            const COHORT_COLORS: Record<InternshipCohort, string> = {
+              Internal: "#F59E0B", // amber
+              SFH: "#7C3AED", // violet
+              WAG: "#0D9488", // teal
+              KASHA: "#10B981", // green
+            };
+
+            const cohortTotals = COHORTS.map(c => {
+              const row = internships.filter(i => i.cohort === c);
+              const interns = row.reduce((s, i) => s + i.students, 0);
+              const placements = row.reduce((s, i) => s + i.placementsAfterInternship, 0);
+              return {
+                cohort: c,
+                interns,
+                placements,
+                share: total.students ? Math.round((interns / total.students) * 100) : 0,
+                placementRate: interns ? Math.round((placements / interns) * 100) : 0,
+              };
+            }).sort((a, b) => b.interns - a.interns);
+
+            const totalPlacementsAfter = cohortTotals.reduce((s, r) => s + r.placements, 0);
+            const internshipToPlacementRate = total.students ? Math.round((totalPlacementsAfter / total.students) * 100) : 0;
+
+            const cohortBarData = COHORTS.map(c => {
+              const row = cohortTotals.find(x => x.cohort === c)!;
+              return { name: c, Interns: row.interns };
+            });
+
+            const cohortDonutData = cohortTotals.map(r => ({ name: r.cohort, value: r.interns }));
+            const COHORT_COLOR_LIST = COHORTS.map(c => COHORT_COLORS[c]);
+
+            // Yearly growth by cohort (intern participation)
+            const yearlyCohort = YEARS.map(yr => {
+              const byCohort: Record<InternshipCohort, number> = {
+                Internal: 0,
+                SFH: 0,
+                WAG: 0,
+                KASHA: 0,
+              };
+              internships
+                .filter(i => i.year === Number(yr) && i.cohort)
+                .forEach(i => {
+                  byCohort[i.cohort] += i.students;
+                });
+              return {
+                Year: String(yr),
+                ...byCohort,
+              };
+            });
+
+            // Placement conversion visuals: placementsAfterInternship vs notPlaced
+            const placedNotPlaced = cohortTotals.map(r => {
+              const notPlaced = Math.max(r.interns - r.placements, 0);
+              return { cohort: r.cohort, placed: r.placements, notPlaced };
+            });
+
+            return (
+              <div className="space-y-6">
+                {/* KPI tiles */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                  <KpiTile
+                    label="Total interns"
+                    num={total.students}
+                    displayFmt={(n) => String(Math.round(n))}
+                    sub={`${YEARS[0]}–${YEARS[YEARS.length - 1]}`}
+                    clr="#1E3A8A"
+                  />
+                  {(["Internal", "SFH", "WAG", "KASHA"] as const).map((c) => {
+                    const row = cohortTotals.find(x => x.cohort === c)!;
+                    return (
+                      <KpiTile
+                        key={c}
+                        label={`${c} interns`}
+                        num={row.interns}
+                        displayFmt={(n) => String(Math.round(n))}
+                        sub={`${row.share}% share · ${row.placementRate}% rate`}
+                        clr={COHORT_COLORS[c]}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <ChartCard
+                    title="Interns by Cohort"
+                    sub="Participation volume comparison"
+                    accent="#7C3AED"
+                  >
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart data={cohortBarData} barCategoryGap="30%" barGap={2}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
+                        {COHORTS.map((c) => {
+                          const color = COHORT_COLORS[c];
+                          return (
+                            <Bar
+                              key={c}
+                              dataKey="Interns"
+                              fill={color}
+                              radius={[4, 4, 0, 0]}
+                              isAnimationActive={false}
+                            />
+                          );
+                        })}
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <div className="mt-4 space-y-2 text-[11px] text-gray-600">
+                      {cohortTotals.map((r) => (
+                        <div key={r.cohort} className="flex items-center justify-between">
+                          <span className="flex items-center gap-1.5 truncate">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COHORT_COLORS[r.cohort] }} />
+                            {r.cohort}
+                          </span>
+                          <span className="font-bold text-gray-700 tabular-nums">
+                            {r.interns} ({r.share}%)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </ChartCard>
+
+                  <ChartCard
+                    title="Cohort Distribution"
+                    sub="Share of total interns across cohorts"
+                    accent="#F59E0B"
+                  >
+                    <CustomDonut
+                      data={cohortDonutData}
+                      colors={COHORT_COLOR_LIST}
+                      className="h-44"
+                      label={`${total.students}`}
+                      valueFormatter={(v: number) => `${v} interns`}
+                    />
+                    <div className="mt-3 space-y-1">
+                      {cohortTotals.map((r, i) => (
+                        <div key={r.cohort} className="flex items-center justify-between text-[11px]">
+                          <span className="flex items-center gap-1.5 text-gray-600">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COHORT_COLOR_LIST[i] }} />
+                            {r.cohort}
+                          </span>
+                          <span className="font-bold text-gray-700 ml-2">
+                            {r.interns} ({r.share}%)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </ChartCard>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <ChartCard
+                    title="Yearly Cohort Growth"
+                    sub="Intern participation by cohort per year"
+                    accent="#0EA5E9"
+                  >
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart data={yearlyCohort} barGap={1}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                        <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
+                        {COHORTS.map((c) => (
+                          <Bar
+                            key={c}
+                            dataKey={c}
+                            fill={COHORT_COLORS[c]}
+                            radius={[0, 0, 0, 0]}
+                            stackId="coh"
+                          />
+                        ))}
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <div className="flex flex-wrap gap-4 mt-4 text-[11px] text-gray-600">
+                      {COHORTS.map((c) => (
+                        <span key={c} className="flex items-center gap-1.5">
+                          <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: COHORT_COLORS[c] }} />{c}
+                        </span>
+                      ))}
+                    </div>
+                  </ChartCard>
+
+                  <ChartCard
+                    title="Placement Conversion"
+                    sub={`Placement share across cohorts · Internship-to-placement rate: ${internshipToPlacementRate}%`}
+                    accent="#065F46"
+                  >
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart data={placedNotPlaced} barCategoryGap="30%" barGap={0}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                        <XAxis dataKey="cohort" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
+                        {COHORTS.map((c) => {
+                          const row = placedNotPlaced.find(x => x.cohort === c)!;
+                          // placed bar
+                          return (
+                            <Bar key={c + "-placed"} dataKey="placed" fill={COHORT_COLORS[c]} stackId="place" radius={[4, 4, 0, 0]} />
+                          );
+                        })}
+                        <Bar dataKey="notPlaced" fill="#E5E7EB" stackId="place" radius={[0, 0, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <div className="mt-3 flex items-center justify-between text-[11px] text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981" }} />
+                        <span>Placed</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 rounded-full bg-gray-200" />
+                        <span>Not placed</span>
+                      </div>
+                      <div className="font-bold text-gray-800 tabular-nums">
+                        Total placements: {totalPlacementsAfter}
+                      </div>
+                    </div>
+                  </ChartCard>
+                </div>
+
+              </div>
+            );
+          })()}
         </section>
 
         {/* ── FOOTER STRIP ─── */}
