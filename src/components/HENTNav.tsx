@@ -33,10 +33,10 @@ export default function HENTNav() {
 
           {/* CHII logo + wordmark */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            <svg viewBox="0 0 200 200" width="34" height="34" aria-label="CHII logo">
+            <svg viewBox="0 0 200 200" width="40" height="40" aria-label="CHII logo">
               <rect width="200" height="200" rx="24" fill={NAVY} />
               <text x="100" y="97" textAnchor="middle" fill="white"
-                fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontWeight="900" fontSize="74">ALU</text>
+                fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontWeight="900" fontSize="84">ALU</text>
               <text x="100" y="120" textAnchor="middle" fill="rgba(255,255,255,0.65)"
                 fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontSize="12">CENTRE FOR HEALTH</text>
               <text x="100" y="136" textAnchor="middle" fill="rgba(255,255,255,0.65)"
@@ -46,7 +46,6 @@ export default function HENTNav() {
             </svg>
             <div>
               <p className="text-sm font-bold leading-none" style={{ color: NAVY }}>HENT</p>
-              <p className="text-[10px] text-gray-400 leading-none mt-0.5">CHII · ALU</p>
             </div>
           </div>
 
@@ -74,7 +73,7 @@ export default function HENTNav() {
           <div className="flex items-center gap-2 flex-shrink-0">
             <Link href="/"
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 transition-colors">
-              <LayoutGrid size={11} /> Impact Portal
+              <LayoutGrid size={11} /> HENT Portal
             </Link>
             <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors">
               <Power size={15} />

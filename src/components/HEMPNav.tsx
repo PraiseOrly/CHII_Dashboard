@@ -34,11 +34,11 @@ export default function HEMPNav() {
 
           {/* Logo + wordmark */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            <svg viewBox="0 0 200 200" width="34" height="34" aria-label="CHII logo">
+            <svg viewBox="0 0 200 200" width="40" height="40" aria-label="CHII logo">
               <rect width="200" height="200" rx="24" fill={NAVY} />
               <text x="100" y="97" textAnchor="middle" fill="white"
                 fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
-                fontWeight="900" fontSize="74">ALU</text>
+                fontWeight="900" fontSize="84">ALU</text>
               <text x="100" y="120" textAnchor="middle"
                 fill="rgba(255,255,255,0.65)"
                 fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
@@ -54,7 +54,6 @@ export default function HEMPNav() {
             </svg>
             <div>
               <p className="text-sm font-bold leading-none" style={{ color: VIOLET }}>HEMP</p>
-              <p className="text-[10px] text-gray-400 leading-none mt-0.5">CHII · ALU</p>
             </div>
           </div>
 

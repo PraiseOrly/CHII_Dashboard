@@ -22,14 +22,14 @@ export interface Hackathon {
 
 export const hackathons: Hackathon[] = [
   {
-    id: "H01", name: "ALU Health Hackathon I", year: 2020, location: "Kigali, Rwanda",
+    id: "H01", name: "ALU Health Hackathon I", year: 2022, location: "Kigali, Rwanda",
     participants: 48,  femaleCount: 20, studentCount: 31,
     projects: 10, winningTeams: 3, femaleWinnerTeams: 1,
     startupsCreated: 2, femaleStartups: 1, partnerships: 3,
     categories: { "AI/Technology": 12, Health: 17, Business: 9, Sustainability: 6, Other: 4 },
   },
   {
-    id: "H02", name: "ALU Health Hackathon II", year: 2021, location: "Lagos, Nigeria",
+    id: "H02", name: "ALU Health Hackathon II", year: 2023, location: "Lagos, Nigeria",
     participants: 56,  femaleCount: 24, studentCount: 37,
     projects: 12, winningTeams: 3, femaleWinnerTeams: 1,
     startupsCreated: 3, femaleStartups: 1, partnerships: 4,
