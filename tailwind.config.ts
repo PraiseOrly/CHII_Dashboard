@@ -12,6 +12,19 @@ const config: Config = {
     current: "currentColor",
     extend: {
       colors: {
+        // HEMP brand — violet
+        hemp: {
+          50:  "#f5f3ff",
+          100: "#ede9fe",
+          200: "#ddd6fe",
+          300: "#c4b5fd",
+          400: "#a78bfa",
+          500: "#8b5cf6",
+          600: "#7c3aed",  // primary
+          700: "#6d28d9",
+          800: "#5b21b6",
+          900: "#4c1d95",
+        },
         // HENT brand — deep teal
         hent: {
           50:  "#edfafa",
@@ -70,7 +83,7 @@ const config: Config = {
     },
   },
   safelist: [
-    { pattern: /^(bg|text|border|ring|fill|stroke)-(tremor|hent)-/ },
+    { pattern: /^(bg|text|border|ring|fill|stroke)-(tremor|hent|hemp)-/ },
     {
       pattern:
         /^(bg|text|border|ring)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|100|200|300|400|500|600|700|800|900|950)$/,

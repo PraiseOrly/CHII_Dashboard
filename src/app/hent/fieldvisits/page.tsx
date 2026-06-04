@@ -438,9 +438,6 @@ export default function FieldVisitsPage() {
         <div className="max-w-[1440px] mx-auto px-6">
           <div className="flex items-end justify-between py-5">
             <div>
-              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-1.5">
-                CHII · HENT · Field Visits
-              </p>
               <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Field Visits</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
                 Industry excursions · 2022–2026 · {fieldVisits.length} visits tracked
