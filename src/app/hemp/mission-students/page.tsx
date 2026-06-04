@@ -1,39 +1,73 @@
 "use client";
-import { useState, useEffect } from "react";
-import {
-  BarChart, Bar, AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts";
-import {
-  Download, FileText, Users, BookOpen, Package,
-  CheckCircle2, AlertTriangle, Mic, GraduationCap,
-} from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
 import { missionStudents } from "@/data/hemp/missionStudents";
+import {
+  AlertTriangle,
+  BookOpen,
+  CheckCircle2,
+  Download, FileText,
+  GraduationCap,
+  Mic,
+  Package,
+  Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis, YAxis,
+} from "recharts";
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
 // Page identity (header KPIs only): purple/violet
-// Section A – Mentorship:    indigo
-// Section B – Guest Faculty: teal + sky
-// Section C – Curator:       orange + green + amber
-// Section D – Survey:        rose
-// Amber: all flags and data gaps (unchanged)
+// Keep section header accents as-is for brand consistency.
 const VIOLET      = "#7C3AED";
 const VIOLET_MID  = "#6D28D9";
 const VIOLET_DARK = "#4C1D95";
+const NAVY        = "#002147";
+
+// Section header accents
 const INDIGO      = "#4338CA";
-const INDIGO_MID  = "#4F46E5";   // indigo-600
-const INDIGO_LITE = "#818CF8";   // indigo-400
+const INDIGO_MID  = "#4F46E5";
 const TEAL        = "#0D9488";
 const SKY         = "#0EA5E9";
-const PURPLE_MED  = "#9333EA";   // faculty disagg
+const PURPLE_MED  = "#9333EA";
 const ORANGE      = "#EA580C";
 const GREEN       = "#10B981";
 const AMBER       = "#F59E0B";
 const ROSE_900    = "#9D174D";
 const AMBER_BG    = "#FEF3C7";
 const AMBER_TEXT  = "#92400E";
-const NAVY        = "#002147";
+
+// ─── Distinct series colours (for Mission Students visualizations) ─────────
+// Using a dedicated palette per chart so categories are visually distinct.
+const MS = {
+  // Mentorship series: mentors / enrolled / feedback
+  MENTORS:  "#4338CA", // indigo-700
+  ENROLLED: "#A855F7", // violet
+  FEEDBACK: "#10B981", // emerald-500
+
+  // Guest faculty series: sessions / feedback / disaggregated
+  FAC_SESSIONS:      "#0D9488", // teal
+  FAC_FEEDBACK:      "#0EA5E9", // sky
+  FAC_DISAGGREGATED: "#F59E0B", // amber
+
+  // Curator series: career events / training / 1-on-1
+  CUR_CAREER: "#EA580C", // orange
+  CUR_TRAIN: "#22C55E", // green-500 (distinct from amber/emerald)
+  CUR_ONEON1: "#9333EA", // purple
+
+  // Courses completed line
+  COURSES_COMPLETED: "#10B981", // emerald
+
+  // Tooltip/markers use bright variants if needed (kept simple here)
+} as const;
+
 
 // ─── Program operation data (2021–2026) ──────────────────────────────────────
 const mentorData = [
@@ -240,11 +274,11 @@ export default function MissionStudentsPage() {
             </div>
           </div>
 
-          {/* ── THREE HEADLINE KPIs — page-identity purple ─── */}
+          {/* ── THREE HEADLINE KPIs — distinct stat card colours ─── */}
           <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
 
             <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: VIOLET_DARK, borderColor: VIOLET_DARK }}>
+              style={{ backgroundColor: MS.MENTORS, borderColor: MS.MENTORS }}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
                 <Users size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
@@ -262,7 +296,7 @@ export default function MissionStudentsPage() {
             </div>
 
             <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: VIOLET_MID, borderColor: VIOLET_MID }}>
+              style={{ backgroundColor: MS.ENROLLED, borderColor: MS.ENROLLED }}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
                 <BookOpen size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
@@ -280,7 +314,7 @@ export default function MissionStudentsPage() {
             </div>
 
             <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: VIOLET, borderColor: VIOLET }}>
+              style={{ backgroundColor: MS.CUR_CAREER, borderColor: MS.CUR_CAREER }}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
                 <Package size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
@@ -319,11 +353,12 @@ export default function MissionStudentsPage() {
               <Card accent={INDIGO} title="Mentorship Activity by Year"
                 sub="Mentors recruited · students enrolled · feedback collected per cohort year">
                 <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                  {[["Mentors", INDIGO], ["Enrolled", INDIGO_LITE], ["Feedback", GREEN]].map(([l, c]) => (
+                  {[["Mentors", MS.MENTORS], ["Enrolled", MS.ENROLLED], ["Feedback", MS.FEEDBACK]].map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
                       <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
                     </span>
                   ))}
+
                 </div>
                 <ResponsiveContainer width="100%" height={208}>
                   <BarChart data={mentorChartData} barCategoryGap="28%" barGap={2}>
@@ -331,9 +366,10 @@ export default function MissionStudentsPage() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
                     <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
-                    <Bar dataKey="Mentors"  fill={INDIGO}      radius={[0,0,0,0]} />
-                    <Bar dataKey="Enrolled" fill={INDIGO_LITE} radius={[0,0,0,0]} />
-                    <Bar dataKey="Feedback" fill={GREEN}       radius={[0,0,0,0]} />
+                    <Bar dataKey="Mentors"  fill={MS.MENTORS}      radius={[0,0,0,0]} />
+                    <Bar dataKey="Enrolled" fill={MS.ENROLLED}    radius={[0,0,0,0]} />
+                    <Bar dataKey="Feedback" fill={MS.FEEDBACK}    radius={[0,0,0,0]} />
+
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
@@ -373,10 +409,11 @@ export default function MissionStudentsPage() {
                 {/* Breakdown summary */}
                 <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-3 text-center">
                   {[
-                    { label: "Enrolled",  value: totalEnrolled,  color: INDIGO_LITE },
-                    { label: "Feedback",  value: totalFeedbackM, color: GREEN       },
-                    { label: "Mentors",   value: totalMentors,   color: INDIGO      },
+                    { label: "Enrolled",  value: totalEnrolled,  color: MS.ENROLLED },
+                    { label: "Feedback",  value: totalFeedbackM, color: MS.FEEDBACK },
+                    { label: "Mentors",   value: totalMentors,   color: MS.MENTORS },
                   ].map(m => (
+
                     <div key={m.label}>
                       <p className="text-lg font-black tabular-nums" style={{ color: m.color }}>{m.value}</p>
                       <p className="text-[9px] text-gray-400 mt-0.5 font-medium">{m.label}</p>
@@ -432,11 +469,13 @@ export default function MissionStudentsPage() {
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Feedback Disaggregated</p>
                   <p className="text-lg font-black tabular-nums"
-                    style={{ color: disaggPct >= 70 ? PURPLE_MED : AMBER }}>{disaggPct}%</p>
+                    style={{ color: disaggPct >= 70 ? MS.FAC_DISAGGREGATED : AMBER }}>{disaggPct}%</p>
+
                 </div>
                 <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
-                  <div className="h-full rounded-full"
-                    style={{ width: `${disaggPct}%`, backgroundColor: disaggPct >= 70 ? PURPLE_MED : AMBER }} />
+                    <div className="h-full rounded-full"
+                    style={{ width: `${disaggPct}%`, backgroundColor: disaggPct >= 70 ? MS.FAC_DISAGGREGATED : AMBER }} />
+
                 </div>
                 <p className="text-[9px] text-gray-400 mt-1.5 tabular-nums">
                   {totalDisagg} of {totalSessions} sessions · by gender &amp; cohort
@@ -450,11 +489,12 @@ export default function MissionStudentsPage() {
               <Card accent={TEAL} title="Guest Faculty Sessions per Year"
                 sub="Sessions held · feedback collected · feedback disaggregated — annual comparison">
                 <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                  {[["Sessions", TEAL], ["Feedback", SKY], ["Disaggregated", PURPLE_MED]].map(([l, c]) => (
+                  {[["Sessions", MS.FAC_SESSIONS], ["Feedback", MS.FAC_FEEDBACK], ["Disaggregated", MS.FAC_DISAGGREGATED]].map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
                       <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
                     </span>
                   ))}
+
                 </div>
                 <ResponsiveContainer width="100%" height={208}>
                   <BarChart data={guestChartData} barCategoryGap="28%" barGap={2}>
@@ -462,9 +502,10 @@ export default function MissionStudentsPage() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
                     <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
-                    <Bar dataKey="Sessions"      fill={TEAL}       radius={[0,0,0,0]} />
-                    <Bar dataKey="Feedback"      fill={SKY}        radius={[0,0,0,0]} />
-                    <Bar dataKey="Disaggregated" fill={PURPLE_MED} radius={[0,0,0,0]} />
+                    <Bar dataKey="Sessions"      fill={MS.FAC_SESSIONS}       radius={[0,0,0,0]} />
+                    <Bar dataKey="Feedback"      fill={MS.FAC_FEEDBACK}       radius={[0,0,0,0]} />
+                    <Bar dataKey="Disaggregated" fill={MS.FAC_DISAGGREGATED}  radius={[0,0,0,0]} />
+
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
@@ -533,7 +574,8 @@ export default function MissionStudentsPage() {
               <Card accent={ORANGE} title="Curator Resources Delivered per Year"
                 sub="Career events · training courses · 1-on-1 sessions — stacked by type">
                 <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                  {[["Career Events", ORANGE], ["Training", GREEN], ["1-on-1", AMBER]].map(([l, c]) => (
+                  {[["Career Events", MS.CUR_CAREER], ["Training", MS.CUR_TRAIN], ["1-on-1", MS.CUR_ONEON1]].map(([l, c]) => (
+
                     <span key={l} className="flex items-center gap-1.5">
                       <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
                     </span>
@@ -545,9 +587,11 @@ export default function MissionStudentsPage() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
                     <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
-                    <Bar dataKey="Career Events" fill={ORANGE} radius={[0,0,0,0]} stackId="a" />
-                    <Bar dataKey="Training"       fill={GREEN}  radius={[0,0,0,0]} stackId="a" />
-                    <Bar dataKey="1-on-1"         fill={AMBER}  radius={[4,4,0,0]} stackId="a" />
+                    <Bar dataKey="Career Events" fill={MS.CUR_CAREER} radius={[0,0,0,0]} stackId="a" />
+                    <Bar dataKey="Training"       fill={MS.CUR_TRAIN}  radius={[0,0,0,0]} stackId="a" />
+                    <Bar dataKey="1-on-1"         fill={MS.CUR_ONEON1}  radius={[4,4,0,0]} stackId="a" />
+
+
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
@@ -558,16 +602,26 @@ export default function MissionStudentsPage() {
                   <AreaChart data={coursesChartData}>
                     <defs>
                       <linearGradient id="courseGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={GREEN} stopOpacity={0.30} />
-                        <stop offset="95%" stopColor={GREEN} stopOpacity={0.03} />
+                        <stop offset="5%"  stopColor={MS.COURSES_COMPLETED} stopOpacity={0.30} />
+                        <stop offset="95%" stopColor={MS.COURSES_COMPLETED} stopOpacity={0.03} />
+
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
-                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                      formatter={(v: number) => [`${v} courses`, "Completed"]} />
-                    <Area type="monotone" dataKey="Completed" stroke={GREEN} strokeWidth={2} fill="url(#courseGrad)" dot={false} />
+                    <Tooltip
+                      contentStyle={{
+                        fontSize: 12,
+                        borderRadius: 8,
+                        border: "1px solid #E5E7EB",
+                        boxShadow: "0 4px 6px rgba(0,0,0,.05)",
+                      }}
+                      formatter={(v: number) => [`${v} courses`, "Completed"]}
+                    />
+
+                    <Area type="monotone" dataKey="Completed" stroke={MS.COURSES_COMPLETED} strokeWidth={2} fill="url(#courseGrad)" dot={false} />
+
                   </AreaChart>
                 </ResponsiveContainer>
               </Card>
