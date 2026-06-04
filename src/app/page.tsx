@@ -158,7 +158,7 @@ export default function LoginPage() {
           </form>
 
           <p className="text-xs text-gray-400 mt-5">
-            © {new Date().getFullYear()} Centre for Health Innovation &amp; Entrepreneurship · ALU
+            © {new Date().getFullYear()} Centre for Health Innovation &amp; Impact · ALU
           </p>
         </div>
 
