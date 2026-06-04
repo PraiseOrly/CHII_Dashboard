@@ -71,10 +71,7 @@ export default function LoginPage() {
 
   return (
     /* Mobile: outer bg matches the dark form panel for a seamless full-screen feel */
-    <div
-      className="min-h-screen flex items-center justify-center sm:bg-slate-100 sm:p-4"
-      style={{ background: "linear-gradient(160deg, #0F1F3D 0%, #1B3F8B 100%)" }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
       <div className="w-full sm:max-w-4xl flex flex-col md:flex-row sm:rounded-lg sm:overflow-hidden sm:shadow-2xl">
 
         {/* ── Form panel — DARK, full-screen on mobile, left half on desktop ── */}
