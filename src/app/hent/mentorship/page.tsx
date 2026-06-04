@@ -263,16 +263,16 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   );
 }
 
-// ─── KPI tile map (8 metrics) ─────────────────────────────────────────────────
+// ─── KPI tile map (8 metrics) — each a distinct hue ──────────────────────────
 const KPI_TILES = [
-  { label: "Mentorship Programs",   bg: "#F5F3FF", clr: "#4C1D95" },
-  { label: "Fellowship Programs",   bg: "#EDE9FE", clr: "#5B21B6" },
-  { label: "Total Fellows",         bg: "#FAF5FF", clr: "#6B21A8" },
-  { label: "Mentor Engagements",    bg: "#EEF2FF", clr: "#312E81" },
-  { label: "Ventures Involved",     bg: "#E9D5FF", clr: "#6B21A8" },
-  { label: "1-Yr Fellowship Grads", bg: "#DDD6FE", clr: "#4C1D95" },
-  { label: "Female Fellows",        bg: "#FCE7F3", clr: "#831843" },
-  { label: "Avg Completion Rate",   bg: "#C7D2FE", clr: "#312E81" },
+  { label: "Mentorship Programs",   clr: "#6D28D9" },  // violet  — identity
+  { label: "Fellowship Programs",   clr: "#059669" },  // emerald
+  { label: "Total Fellows",         clr: "#1E3A8A" },  // deep blue
+  { label: "Mentor Engagements",    clr: "#C2410C" },  // orange
+  { label: "Ventures Involved",     clr: "#0891B2" },  // cyan
+  { label: "1-Yr Fellowship Grads", clr: "#D97706" },  // amber/gold
+  { label: "Female Fellows",        clr: "#9D174D" },  // rose
+  { label: "Avg Completion Rate",   clr: "#134E4A" },  // teal
 ] as const;
 
 const QUAL_THEMES: { text: string; area: MFQualArea; threshold: number }[] = [
@@ -364,9 +364,10 @@ export default function MentorshipPage() {
     .map(t => ({ text: t.text, count: filtered.filter(p => p.qualScores[t.area] >= t.threshold).length }))
     .filter(t => t.count > 0).sort((a, b) => b.count - a.count);
 
+  const MF_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const attendanceTrend = [...filtered]
     .sort((a, b) => a.date.localeCompare(b.date))
-    .map(p => ({ Program: p.name.length > 22 ? p.name.slice(0, 22) + "…" : p.name, Fellows: p.fellows }));
+    .map(p => ({ Program: `${MF_MONTHS[p.month - 1]} '${String(p.year).slice(2)}`, Fellows: p.fellows }));
 
   let cum = 0;
   const growthData = [...filtered]
@@ -422,7 +423,7 @@ export default function MentorshipPage() {
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-end justify-between py-4">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: NAVY }}>Mentorship &amp; Fellowships</h1>
+              <h1 className="text-xl font-black" style={{ color: NAVY }}>Mentorship &amp; Fellowships</h1>
               <p className="text-[11px] text-gray-400 mt-0.5">
                 Capacity-building &amp; fellowship tracks · 2022–2026 · {mentorshipPrograms.length} programmes tracked
               </p>
@@ -454,21 +455,20 @@ export default function MentorshipPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* FILTERS */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-5 py-4">
-          <div className="flex flex-wrap items-end gap-5">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Year / Cohort</label>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Year</label>
               <select value={yearFilter} onChange={e => setYearFilter(e.target.value as YearVal)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer min-w-[130px] shadow-sm"
-                style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}>
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm">
                 <option value="All">All Years</option>
                 {(["2022","2023","2024","2025","2026"] as const).map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Programme Type</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Type</label>
               <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as TypeVal)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer min-w-[200px] shadow-sm">
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm min-w-[160px]">
                 <option value="All">All Types</option>
                 <option value="Mentorship">Mentorship</option>
                 <option value="Fellowship">Fellowship</option>
@@ -476,24 +476,24 @@ export default function MentorshipPage() {
                 <option value="Advisory">Advisory Program</option>
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Gender</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Gender</label>
               <select value={genderView} onChange={e => setGenderView(e.target.value as GenderVal)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 cursor-pointer min-w-[140px] shadow-sm">
+                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm">
                 <option value="All">All Genders</option>
                 <option value="Female">Female-majority</option>
                 <option value="Male">Male-majority</option>
               </select>
             </div>
-            <div className="flex items-end gap-3 ml-auto pb-0.5">
-              <span className="text-[11px] text-gray-400">
-                {filtered.length} of {mentorshipPrograms.length} programme{mentorshipPrograms.length !== 1 ? "s" : ""}
+            <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
+              <span className="text-[10px] text-gray-400">
+                {filtered.length} of {mentorshipPrograms.length} programmes
               </span>
               {isFiltered && (
                 <button onClick={() => { setYearFilter("All"); setTypeFilter("All"); setGenderView("All"); }}
-                  className="text-[11px] font-medium underline underline-offset-2 transition-colors"
+                  className="text-[10px] font-medium underline underline-offset-2 transition-colors"
                   style={{ color: ACCENT }}>
-                  Clear filters
+                  Clear
                 </button>
               )}
             </div>
@@ -619,44 +619,101 @@ export default function MentorshipPage() {
         <section>
           <SecHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ProfileCard label="Female Fellows"  value={tot.female}             pct={femalePct}      total={tot.fellows} color={VIOLET}  />
-            <ProfileCard label="Male Fellows"    value={tot.fellows - tot.female} pct={100-femalePct} total={tot.fellows} color={SKY}     />
-            <ProfileCard label="Student Fellows" value={studentSum}             pct={studentPct}     total={tot.fellows} color={EMERALD} />
-            <ProfileCard label="Alumni Fellows"  value={alumniTotal}            pct={100-studentPct} total={tot.fellows} color={AMBER}   />
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
-              <CustomDonut data={ageData} colors={[SKY, PRIMARY, VIOLET, ROSE]} className="h-36" valueFormatter={(v) => `${v}`} />
-            </ChartCard>
-            <ChartCard title="Geographic Region" sub="Fellows by region of origin" accent={EMERALD}>
-              <CustomDonut data={regionData} colors={[EMERALD, TEAL, PRIMARY, VIOLET]} className="h-36" valueFormatter={(v) => `${v}`} />
-            </ChartCard>
-            <ChartCard title="Venture Stage" sub="Fellows by venture development stage" accent={INDIGO}>
-              <CustomDonut data={stageData} colors={[SKY, PRIMARY, INDIGO]} className="h-36" valueFormatter={(v) => `${v}`} />
-            </ChartCard>
-            <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER}>
-              <div className="space-y-3 mt-2">
-                {socialData.map((d, i) => {
-                  const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
-                  return (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-600">{d.name}</span>
-                        <span className="font-medium" style={{ color: col }}>{d.value}</span>
-                      </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                        <div className="h-full rounded-full"
-                          style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-0.5">
-                        {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
-                      </p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+            {/* Fellow profile stats — stacked column */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              {([
+                { label: "Female Fellows",  value: tot.female,               pct: femalePct,      color: VIOLET  },
+                { label: "Male Fellows",    value: tot.fellows - tot.female, pct: 100 - femalePct, color: SKY     },
+                { label: "Student Fellows", value: studentSum,               pct: studentPct,     color: EMERALD },
+                { label: "Alumni Fellows",  value: alumniTotal,              pct: 100 - studentPct, color: AMBER  },
+              ] as const).map((item, i) => (
+                <div key={item.label} className={`px-4 py-3.5 ${i > 0 ? "border-t border-gray-100" : ""}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none"
+                      style={{ color: item.color + "AA" }}>{item.label}</p>
+                    <p className="text-xl font-black tabular-nums leading-none"
+                      style={{ color: item.color }}>{item.pct}%</p>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
+                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1.5 tabular-nums">
+                    {item.value.toLocaleString()} / {tot.fellows.toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Column 2: Age + Stage stacked */}
+            <div className="flex flex-col gap-4">
+              <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
+                <CustomDonut data={ageData} colors={[ACCENT, "#C2410C", "#059669", ROSE]} className="h-32" valueFormatter={(v) => `${v}`} />
+                <div className="mt-2 space-y-0.5">
+                  {ageData.map((d, i) => (
+                    <div key={d.name} className="flex items-center justify-between text-[10px]">
+                      <span className="flex items-center gap-1.5 text-gray-500">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [ACCENT,"#C2410C","#059669",ROSE][i] }} />{d.name}
+                      </span>
+                      <span className="font-medium" style={{ color: [ACCENT,"#C2410C","#059669",ROSE][i] }}>{d.value}</span>
                     </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
+                  ))}
+                </div>
+              </ChartCard>
+              <ChartCard title="Venture Stage" sub="Fellows by venture development stage" accent={ACCENT}>
+                <CustomDonut data={stageData} colors={[SKY, "#C2410C", VIOLET]} className="h-32" valueFormatter={(v) => `${v}`} />
+                <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
+                  {stageData.map((d, i) => (
+                    <div key={d.name}>
+                      <p className="text-sm font-black" style={{ color: [SKY,"#C2410C",VIOLET][i] }}>{d.value}</p>
+                      <p className="text-[9px] text-gray-400">{d.name}</p>
+                    </div>
+                  ))}
+                </div>
+              </ChartCard>
+            </div>
+
+            {/* Column 3: Region + Social stacked */}
+            <div className="flex flex-col gap-4">
+              <ChartCard title="Geographic Region" sub="Fellows by region of origin" accent={EMERALD}>
+                <CustomDonut data={regionData} colors={[EMERALD, TEAL, "#C2410C", VIOLET]} className="h-32" valueFormatter={(v) => `${v}`} />
+                <div className="mt-2 space-y-0.5">
+                  {regionData.map((d, i) => (
+                    <div key={d.name} className="flex items-center justify-between text-[10px]">
+                      <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [EMERALD,TEAL,"#C2410C",VIOLET][i] }} />
+                        <span className="truncate">{d.name}</span>
+                      </span>
+                      <span className="font-medium ml-1 flex-shrink-0" style={{ color: [EMERALD,TEAL,"#C2410C",VIOLET][i] }}>{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </ChartCard>
+              <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER}>
+                <div className="space-y-3 mt-2">
+                  {socialData.map((d, i) => {
+                    const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
+                    return (
+                      <div key={d.name}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-gray-600">{d.name}</span>
+                          <span className="font-medium" style={{ color: col }}>{d.value}</span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                          <div className="h-full rounded-full"
+                            style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
+                        </div>
+                        <p className="text-[10px] text-gray-400 mt-0.5">
+                          {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </ChartCard>
+            </div>
+
           </div>
         </section>
 
@@ -729,8 +786,8 @@ export default function MentorshipPage() {
               <ResponsiveContainer width="100%" height={208}>
                 <BarChart data={attendanceTrend.slice(0, 14)} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Program" tick={{ fontSize: 9, fill: "#9CA3AF" }} angle={-35} textAnchor="end"
-                    axisLine={false} tickLine={false} height={50} />
+                  <XAxis dataKey="Program" tick={{ fontSize: 9, fill: "#9CA3AF" }}
+                    axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} fellows`, "Fellows"]} />
                   <Bar dataKey="Fellows" fill={SKY} radius={[3, 3, 0, 0]} />
@@ -949,13 +1006,13 @@ export default function MentorshipPage() {
             <ResponsiveContainer width="100%" height={208}>
               <BarChart
                 data={[...filtered].sort((a, b) => a.date.localeCompare(b.date)).map(p => ({
-                  Programme: p.name.length > 22 ? p.name.slice(0, 22) + "…" : p.name,
+                  Programme: `${MF_MONTHS[p.month - 1]} '${String(p.year).slice(2)}`,
                   "Completion %": p.completionRate,
                 }))}
                 barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Programme" tick={{ fontSize: 9, fill: "#9CA3AF" }} angle={-35} textAnchor="end"
-                  axisLine={false} tickLine={false} height={50} />
+                <XAxis dataKey="Programme" tick={{ fontSize: 9, fill: "#9CA3AF" }}
+                  axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
                 <Bar dataKey="Completion %" fill={EMERALD} radius={[3, 3, 0, 0]} />
@@ -981,10 +1038,10 @@ export default function MentorshipPage() {
         <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {([
-              { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", bg: "#F5F3FF", clr: "#4C1D95" },
-              { value: tot.fellows.toLocaleString(),            label: "Total Fellows",        bg: "#EDE9FE", clr: "#5B21B6" },
-              { value: `${femalePct}%`,                         label: "Female Participation", bg: "#FCE7F3", clr: "#831843" },
-              { value: `${tot.completion}%`,                    label: "Avg Completion Rate",  bg: "#EEF2FF", clr: "#312E81" },
+              { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", clr: "#6D28D9" },
+              { value: tot.fellows.toLocaleString(),            label: "Total Fellows",        clr: "#1E3A8A" },
+              { value: `${femalePct}%`,                         label: "Female Participation", clr: "#9D174D" },
+              { value: `${tot.completion}%`,                    label: "Avg Completion Rate",  clr: "#059669" },
             ] as const).map(tile => (
               <div key={tile.label} className="px-6 py-6 text-center"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>

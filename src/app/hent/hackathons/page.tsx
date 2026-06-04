@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import {
   BarChart, Bar,
+  AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Download, FileText } from "lucide-react";
@@ -211,16 +212,12 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 
 // ─── KPI tile colour map (10 metrics) ────────────────────────────────────────
 const KPI_TILES = [
-  { label: "Total Hackathons",     clr: "#C2410C" },  // orange  — identity
-  { label: "Participants",         clr: "#1E3A8A" },  // blue
-  { label: "Female Participants",  clr: "#9D174D" },  // rose
-  { label: "Male Participants",    clr: "#134E4A" },  // teal
-  { label: "Winning Teams",        clr: "#92400E" },  // amber
-  { label: "Projects Developed",   clr: "#5B21B6" },  // violet
-  { label: "Student Participants", clr: "#14532D" },  // green
-  { label: "Alumni Participants",  clr: "#312E81" },  // indigo
-  { label: "Startups Created",     clr: "#064E3B" },  // emerald
-  { label: "Partnerships",         clr: "#7C2D12" },  // rust
+  { label: "Total Hackathons",   clr: "#C2410C" },  // orange — identity
+  { label: "Participants",       clr: "#1E3A8A" },  // blue
+  { label: "Winning Teams",      clr: "#D97706" },  // bright amber
+  { label: "Projects Developed", clr: "#5B21B6" },  // violet
+  { label: "Startups Created",   clr: "#064E3B" },  // emerald
+  { label: "Partnerships",       clr: "#0891B2" },  // rust
 ] as const;
 
 // ─── page ─────────────────────────────────────────────────────────────────────
@@ -283,6 +280,12 @@ export default function HackathonsPage() {
     Hackathons: hackathons.filter(h => h.year === yr).length,
   }));
 
+  // ── participant reach per year ──
+  const reachPerYear = YEARS.map(yr => ({
+    Year: String(yr),
+    Participants: hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
+  }));
+
   // ── project categories ──
   const catTotals = PROJECT_CATEGORIES.map(cat => ({
     name: cat,
@@ -297,16 +300,12 @@ export default function HackathonsPage() {
 
   // ── KPI tile values (positionally aligned with KPI_TILES) ──
   const kpiValues = [
-    { sub: `${YEARS[0]}–${YEARS[YEARS.length-1]}`,             num: total.events,        fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Across all events",                                  num: total.participants,   fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
-    { sub: `${total.female} people`,                             num: femalePct,            fmt: (n: number) => `${Math.round(n)}%` },
-    { sub: `${total.participants - total.female} people`,        num: malePct,              fmt: (n: number) => `${Math.round(n)}%` },
-    { sub: "Total prize winners",                                num: total.winningTeams,   fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Across all hackathons",                              num: total.projects,       fmt: (n: number) => String(Math.round(n)) },
-    { sub: `${studentPct}% of total`,                           num: total.students,       fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
-    { sub: `${alumniPct}% of total`,                            num: alumniTotal,          fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
-    { sub: "Ventures from hacks",                                num: total.startups,       fmt: (n: number) => String(Math.round(n)) },
-    { sub: "Sponsors & partners",                                num: total.partnerships,   fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${YEARS[0]}–${YEARS[YEARS.length - 1]}`, num: total.events,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Across all events",                        num: total.participants, fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n) / 1000).toFixed(1)}k` : String(Math.round(n)) },
+    { sub: "Total prize winners",                      num: total.winningTeams, fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Across all hackathons",                    num: total.projects,     fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Ventures from hacks",                      num: total.startups,     fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Sponsors & partners",                      num: total.partnerships, fmt: (n: number) => String(Math.round(n)) },
   ];
 
   // ─── render ────────────────────────────────────────────────────────────────
@@ -338,7 +337,7 @@ export default function HackathonsPage() {
 
           {/* KPI strip — 10 distinct tinted tiles */}
           <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
                 <KpiTile key={label} label={label} num={kpiValues[i].num}
                   displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
@@ -356,14 +355,33 @@ export default function HackathonsPage() {
           <SecHeader title="Participant Profiles"
             sub={`${total.participants.toLocaleString()} participants across all hackathons`} />
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ProfileCard label="Female Participants"   value={total.female}                      pct={femalePct}  total={total.participants} color={VIOLET}  />
-            <ProfileCard label="Male Participants"     value={total.participants - total.female} pct={malePct}    total={total.participants} color={SKY}     />
-            <ProfileCard label="Student Participants"  value={total.students}                    pct={studentPct} total={total.participants} color={EMERALD} />
-            <ProfileCard label="Alumni Participants"   value={alumniTotal}                       pct={alumniPct}  total={total.participants} color={AMBER}   />
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Participant profile stats — stacked column */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              {([
+                { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
+                { label: "Male Participants",    value: total.participants - total.female,  pct: malePct,    color: SKY     },
+                { label: "Student Participants", value: total.students,                     pct: studentPct, color: EMERALD },
+                { label: "Alumni Participants",  value: alumniTotal,                        pct: alumniPct,  color: AMBER   },
+              ] as const).map((item, i) => (
+                <div key={item.label} className={`px-4 py-3.5 ${i > 0 ? "border-t border-gray-100" : ""}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none"
+                      style={{ color: item.color + "AA" }}>{item.label}</p>
+                    <p className="text-xl font-black tabular-nums leading-none"
+                      style={{ color: item.color }}>{item.pct}%</p>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
+                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1.5 tabular-nums">
+                    {item.value.toLocaleString()} / {total.participants.toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+
             <ChartCard title="Gender Composition"
               sub="Distribution of participants by gender across all events"
               accent={VIOLET}>
@@ -401,29 +419,56 @@ export default function HackathonsPage() {
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: ROSE }} /> Alumni</span>
               </div>
             </ChartCard>
+
           </div>
         </section>
 
         {/* ── SECTION 2: HACKATHONS PER YEAR ──────────────────────────────── */}
         <section>
           <SecHeader title="Hackathons Conducted Per Year"
-            sub="Number of hackathon events held each year" />
-          <ChartCard title="Annual Hackathon Frequency"
-            sub="Count of hackathons organised per calendar year"
-            accent={ORANGE}>
-            <ResponsiveContainer width="100%" height={192}>
-              <BarChart data={hackPerYear} barCategoryGap="40%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
-                <Tooltip
-                  contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                  formatter={(v: number) => [`${v} event${v !== 1 ? "s" : ""}`, "Hackathons"]}
-                />
-                <Bar dataKey="Hackathons" fill={ORANGE} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
+            sub="Event frequency and participant reach by year" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Annual Hackathon Frequency"
+              sub="Count of hackathons organised per calendar year"
+              accent={ORANGE}>
+              <ResponsiveContainer width="100%" height={192}>
+                <BarChart data={hackPerYear} barCategoryGap="40%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
+                    formatter={(v: number) => [`${v} event${v !== 1 ? "s" : ""}`, "Hackathons"]}
+                  />
+                  <Bar dataKey="Hackathons" fill={ORANGE} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Participant Reach per Year"
+              sub="Total participants across all hackathons — year-on-year growth"
+              accent={TEAL}>
+              <ResponsiveContainer width="100%" height={192}>
+                <AreaChart data={reachPerYear}>
+                  <defs>
+                    <linearGradient id="reachGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor={TEAL} stopOpacity={0.25} />
+                      <stop offset="95%" stopColor={TEAL} stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
+                    formatter={(v: number) => [`${v.toLocaleString()} participants`, "Reach"]}
+                  />
+                  <Area type="monotone" dataKey="Participants"
+                    stroke={TEAL} strokeWidth={2} fill="url(#reachGrad)" dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
         </section>
 
         {/* ── SECTION 3: HACKATHON TRENDS ─────────────────────────────────── */}
@@ -564,7 +609,7 @@ export default function HackathonsPage() {
               { value: String(total.participants), label: "Total Participants",    clr: "#1E3A8A" },
               { value: `${femalePct}%`,            label: "Female Participation", clr: "#9D174D" },
               { value: String(total.startups),     label: "Startups Created",     clr: "#064E3B" },
-              { value: String(total.partnerships), label: "Partnerships Secured", clr: "#7C2D12" },
+              { value: String(total.partnerships), label: "Partnerships Secured", clr: "#0891B2" },
             ] as const).map(tile => (
               <div key={tile.label} className="px-6 py-6 text-center"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
