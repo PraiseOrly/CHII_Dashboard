@@ -545,7 +545,7 @@ export default function ImpactDashboard() {
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">CHII Ecosystem Impact</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Consolidated analytics  *  {D.allCountries.length} countries  *  {D.grandTotal.toLocaleString()} participants reached
+                Consolidated analytics {D.grandTotal.toLocaleString()} participants reached
               </p>
             </div>
 
