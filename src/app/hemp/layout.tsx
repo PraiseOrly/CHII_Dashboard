@@ -3,7 +3,7 @@ import HEMPProviders from "./providers";
 export const metadata = {
   title: "HEMP — Programme Management Dashboard",
   description:
-    "Health Entrepreneurship & Management Programme — student analytics, HealthX experiences, internships, and mission outcomes.",
+    "Health Management Programme — student analytics, HealthX experiences, internships, and mission outcomes.",
 };
 
 export default function HEMPLayout({ children }: { children: React.ReactNode }) {

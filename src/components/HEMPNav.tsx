@@ -52,9 +52,18 @@ export default function HEMPNav() {
                 fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
                 fontSize="12">IMPACT</text>
             </svg>
-            <div>
-              <p className="text-sm font-bold leading-none" style={{ color: VIOLET }}>HEMP</p>
-            </div>
+              <div>
+              	<p
+              		className="text-sm font-bold leading-none"
+              		style={{
+              			color: NAVY,
+              			fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+              			fontWeight: 900,
+              		}}
+              	>
+              		HEMP
+              	</p>
+              </div>
           </div>
 
           {/* Nav links */}
