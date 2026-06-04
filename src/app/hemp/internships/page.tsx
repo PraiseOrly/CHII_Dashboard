@@ -395,6 +395,7 @@ export default function InternshipsPage() {
             sub="Organisation and student placement volume year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
+
             <ChartCard title="Organisations per Year"
               sub="Count of host organisations hosting interns each year"
               accent={AMBER}>
@@ -525,45 +526,6 @@ export default function InternshipsPage() {
           </div>
         </section>
 
-        {/* ── SECTION 4: GEOGRAPHIC COVERAGE ─── */}
-        <section>
-          <SecHeader title="Geographic Coverage"
-            sub={`Internship placements across ${countries.length} countries`} />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-            <ChartCard title="Students Placed by Country"
-              sub="Total intern students placed in each host country"
-              accent={ORANGE}>
-              <ColorBarList data={countryData} colors={COUNTRY_HEX} />
-            </ChartCard>
-
-            <ChartCard title="Country Placement Distribution"
-              sub="Donut view of intern student distribution by country"
-              accent={INDIGO}>
-              <CustomDonut
-                data={countryData.slice(0, 8)}
-                colors={COUNTRY_HEX}
-                className="h-52"
-                valueFormatter={(v: number) => `${v} students`}
-              />
-              <div className="mt-3 space-y-1">
-                {countryData.slice(0, 5).map((c, i) => (
-                  <div key={c.name} className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1.5 text-gray-600">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COUNTRY_HEX[i % COUNTRY_HEX.length] }} />
-                      {c.name}
-                    </span>
-                    <span className="font-bold text-gray-700 ml-2">
-                      {c.value} ({Math.round(c.value / total.students * 100)}%)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-
-          </div>
-        </section>
-
         {/* ── SECTION 5: COHORT OUTCOMES (HEMP) ─── */}
         <section>
           <SecHeader
@@ -603,7 +565,6 @@ export default function InternshipsPage() {
             const cohortDonutData = cohortTotals.map(r => ({ name: r.cohort, value: r.interns }));
             const COHORT_COLOR_LIST = COHORTS.map(c => COHORT_COLORS[c]);
 
-            // Yearly growth by cohort (intern participation)
             const yearlyCohort = YEARS.map(yr => {
               const byCohort: Record<InternshipCohort, number> = {
                 Internal: 0,
@@ -622,7 +583,6 @@ export default function InternshipsPage() {
               };
             });
 
-            // Placement conversion visuals: placementsAfterInternship vs notPlaced
             const placedNotPlaced = cohortTotals.map(r => {
               const notPlaced = Math.max(r.interns - r.placements, 0);
               return { cohort: r.cohort, placed: r.placements, notPlaced };
@@ -630,7 +590,6 @@ export default function InternshipsPage() {
 
             return (
               <div className="space-y-6">
-                {/* KPI tiles */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                   <KpiTile
                     label="Total interns"
@@ -666,18 +625,15 @@ export default function InternshipsPage() {
                         <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
-                        {COHORTS.map((c) => {
-                          const color = COHORT_COLORS[c];
-                          return (
-                            <Bar
-                              key={c}
-                              dataKey="Interns"
-                              fill={color}
-                              radius={[4, 4, 0, 0]}
-                              isAnimationActive={false}
-                            />
-                          );
-                        })}
+                        {COHORTS.map((c) => (
+                          <Bar
+                            key={c}
+                            dataKey="Interns"
+                            fill={COHORT_COLORS[c]}
+                            radius={[4, 4, 0, 0]}
+                            isAnimationActive={false}
+                          />
+                        ))}
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="mt-4 space-y-2 text-[11px] text-gray-600">
@@ -766,13 +722,15 @@ export default function InternshipsPage() {
                         <XAxis dataKey="cohort" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }} />
-                        {COHORTS.map((c) => {
-                          const row = placedNotPlaced.find(x => x.cohort === c)!;
-                          // placed bar
-                          return (
-                            <Bar key={c + "-placed"} dataKey="placed" fill={COHORT_COLORS[c]} stackId="place" radius={[4, 4, 0, 0]} />
-                          );
-                        })}
+                        {COHORTS.map((c) => (
+                          <Bar
+                            key={c + "-placed"}
+                            dataKey="placed"
+                            fill={COHORT_COLORS[c]}
+                            stackId="place"
+                            radius={[4, 4, 0, 0]}
+                          />
+                        ))}
                         <Bar dataKey="notPlaced" fill="#E5E7EB" stackId="place" radius={[0, 0, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -796,6 +754,49 @@ export default function InternshipsPage() {
             );
           })()}
         </section>
+
+        {/* ── SECTION 4: GEOGRAPHIC COVERAGE ─── */}
+        <section>
+
+
+          <SecHeader title="Geographic Coverage"
+            sub={`Internship placements across ${countries.length} countries`} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <ChartCard title="Students Placed by Country"
+              sub="Total intern students placed in each host country"
+              accent={ORANGE}>
+              <ColorBarList data={countryData} colors={COUNTRY_HEX} />
+            </ChartCard>
+
+            <ChartCard title="Country Placement Distribution"
+              sub="Donut view of intern student distribution by country"
+              accent={INDIGO}>
+              <CustomDonut
+                data={countryData.slice(0, 8)}
+                colors={COUNTRY_HEX}
+                className="h-52"
+                valueFormatter={(v: number) => `${v} students`}
+              />
+              <div className="mt-3 space-y-1">
+                {countryData.slice(0, 5).map((c, i) => (
+                  <div key={c.name} className="flex items-center justify-between text-[11px]">
+                    <span className="flex items-center gap-1.5 text-gray-600">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COUNTRY_HEX[i % COUNTRY_HEX.length] }} />
+                      {c.name}
+                    </span>
+                    <span className="font-bold text-gray-700 ml-2">
+                      {c.value} ({Math.round(c.value / total.students * 100)}%)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </ChartCard>
+
+          </div>
+        </section>
+
+
 
         {/* ── FOOTER STRIP ─── */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
