@@ -235,14 +235,14 @@ function GenderRatingBar({ label, fSessions, mSessions, criterion }: {
       <div className="w-36 text-[11px] text-gray-600 text-right flex-shrink-0">{label}</div>
       <div className="flex-1 space-y-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET_MC }}>â™€</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET_MC }}>F</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET_MC + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(fAvg / 5) * 100}%`, backgroundColor: VIOLET_MC }} />
           </div>
           <span className="text-[10px] text-gray-500 w-6">{fAvg.toFixed(1)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>â™‚</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>M</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SKY + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(mAvg / 5) * 100}%`, backgroundColor: SKY }} />
           </div>
@@ -502,8 +502,8 @@ export default function MasterclassesPage() {
               sub="Avg score per criterion  -  female-majority vs male-majority sessions"
               accent={VIOLET_MC}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET_MC }}>â™€</span> Female-majority sessions</span>
-                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: SKY }}>â™‚</span> Male-majority sessions</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET_MC }}>F</span> Female-majority sessions</span>
+                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: SKY }}>M</span> Male-majority sessions</span>
               </div>
               {RATING_CRITERIA.map(c => (
                 <GenderRatingBar key={c} label={c} fSessions={fSessions} mSessions={mSessions} criterion={c} />

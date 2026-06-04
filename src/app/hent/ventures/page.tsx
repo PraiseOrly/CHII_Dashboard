@@ -89,7 +89,7 @@ const evData = PROGRAM_EVENTS_LIST
 
 // â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Custom donut using inline SVG fill  -  bypasses Tremor JIT class issue
+// Interactive donut — hover dims other slices and shows a colour tooltip
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -101,6 +101,8 @@ function CustomDonut({
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
+  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
   const CX = 80, CY = 80, OR = 70, IR = 43;
@@ -120,21 +122,29 @@ function CustomDonut({
     return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
   });
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div
+      className={`relative flex items-center justify-center ${className}`}
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+    >
       <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
+            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
+            onMouseLeave={() => setHovered(null)} />
         ))}
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
             fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="ui-sans-serif,system-ui,sans-serif">
-            {label}
-          </text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
         )}
       </svg>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
+          {hovered.name}: {valueFormatter(hovered.value)}
+        </div>
+      )}
     </div>
   );
 }
@@ -453,21 +463,21 @@ export default function HENTPortfolio() {
                 num={ACTUALS.ventures}
                 displayFmt={n => String(Math.round(n))}
                 denom={TARGETS.ventures}
-                sub={`Expected pace: ${Math.round(PACE * 100)}%`}
+                sub="Scout 9 ventures/qtr to close gap"
                 clr="#0C4A6E" pace paceA={ACTUALS.ventures} paceT={TARGETS.ventures} />
               <KpiTile
                 label="Jobs Created"
                 num={ACTUALS.jobs}
                 displayFmt={n => String(Math.round(n))}
                 denom={TARGETS.jobs.toLocaleString()}
-                sub={`Expected pace: ${Math.round(PACE * 100)}%`}
+                sub="Prioritise scale-stage ventures"
                 clr="#14532D" pace paceA={ACTUALS.jobs} paceT={TARGETS.jobs} />
               <KpiTile
                 label="Funds Deployed"
                 num={ACTUALS.funds}
                 displayFmt={n => fmt$(Math.round(n))}
                 denom={fmt$(TARGETS.funds)}
-                sub={`Expected pace: ${Math.round(PACE * 100)}%`}
+                sub="Review grant disbursement pipeline"
                 clr="#164E63" pace paceA={ACTUALS.funds} paceT={TARGETS.funds} />
               <KpiTile
                 label="Active Founders"
@@ -529,7 +539,7 @@ export default function HENTPortfolio() {
             <SectionLabel label="All Ventures" color={PRIMARY} />
             <MCard label="Total Ventures" big={ACTUALS.ventures} denom={TARGETS.ventures}
               barType="T" bA={ACTUALS.ventures} bT={TARGETS.ventures}
-              color={PRIMARY} sub="â†— 11% YoY"
+              color={PRIMARY} sub="+ 11% YoY"
               chips={[
                 { label: `Exp ${expN}`,   color: SKY    },
                 { label: `Bld ${buildN}`, color: PRIMARY },
@@ -537,15 +547,15 @@ export default function HENTPortfolio() {
               ]}
             />
             <MCard label="Active Founders" big={48}
-              barType="none" color={ORANGE} sub="â†— 8% YoY"
+              barType="none" color={ORANGE} sub="+ 8% YoY"
               chips={[
-                { label: `â™€ ${Math.round((femCount / founders.length) * 100)}%`,                     color: PURPLE  },
-                { label: `â™‚ ${Math.round(((founders.length - femCount) / founders.length) * 100)}%`, color: SKY     },
+                { label: `F ${Math.round((femCount / founders.length) * 100)}%`,                     color: PURPLE  },
+                { label: `M ${Math.round(((founders.length - femCount) / founders.length) * 100)}%`, color: SKY     },
               ]}
             />
             <MCard label="Total Jobs Created" big={ACTUALS.jobs} denom={TARGETS.jobs.toLocaleString()}
               barType="T" bA={ACTUALS.jobs} bT={TARGETS.jobs}
-              color={GREEN} sub="â†— 14% YoY"
+              color={GREEN} sub="+ 14% YoY"
             />
 
             <SectionLabel label="MCF Scholars" color={PURPLE} />
@@ -554,7 +564,7 @@ export default function HENTPortfolio() {
               color={PURPLE}
               sub={`${Math.round((mcfVentures.length / ALL_VENTURES.length) * 100)}% of portfolio`}
               chips={[
-                { label: `â™€ ${Math.round((mcfFemCount / Math.max(mcfFounders, 1)) * 100)}%`, color: PURPLE },
+                { label: `F ${Math.round((mcfFemCount / Math.max(mcfFounders, 1)) * 100)}%`, color: PURPLE },
               ]}
             />
             <MCard label="MCF Funding Deployed" big={fmt$(mcfFunding)}
@@ -641,9 +651,15 @@ export default function HENTPortfolio() {
                 label={`${founders.length}`}
                 valueFormatter={(v: number) => `${v} founders`}
               />
-              <div className="flex justify-center gap-5 mt-2 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SKY }} /> Male</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: PURPLE }} /> Female</span>
+              <div className="flex flex-wrap justify-center gap-4 mt-2 text-[11px] text-gray-500">
+                <span className="flex items-center gap-1.5">
+                  <span style={{ display:"inline-block", width:"12px", height:"8px", borderRadius:"2px", backgroundColor: SKY, flexShrink: 0 }} />
+                  Male
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span style={{ display:"inline-block", width:"12px", height:"8px", borderRadius:"2px", backgroundColor: PURPLE, flexShrink: 0 }} />
+                  Female
+                </span>
               </div>
             </ChartCard>
 

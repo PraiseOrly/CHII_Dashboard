@@ -51,7 +51,7 @@ const YEARS = Array.from(new Set(hackathons.map(h => h.year))).sort();
 
 // â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Custom SVG donut  -  inline fill bypasses Tremor/Tailwind JIT colour lookup
+// Interactive donut — hover dims other slices and shows a colour tooltip
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -63,6 +63,8 @@ function CustomDonut({
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
+  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
   const CX = 80, CY = 80, OR = 70, IR = 43;
@@ -82,21 +84,29 @@ function CustomDonut({
     return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
   });
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div
+      className={`relative flex items-center justify-center ${className}`}
+      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
+    >
       <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5">
-            <title>{s.name}: {valueFormatter(s.value)}</title>
-          </path>
+          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
+            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
+            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
+            onMouseLeave={() => setHovered(null)} />
         ))}
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
             fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">
-            {label}
-          </text>
+            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
         )}
       </svg>
+      {hovered && (
+        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
+          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
+          {hovered.name}: {valueFormatter(hovered.value)}
+        </div>
+      )}
     </div>
   );
 }
@@ -605,10 +615,9 @@ export default function HackathonsPage() {
               />
               <div className="mt-3 space-y-1.5">
                 {catTotals.map((cat, i) => (
-                  <div key={cat.name} className="flex items-center justify-between text-xs text-gray-600">
+                  <div key={cat.name} className="flex items-center justify-between text-[11px] text-gray-600">
                     <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: CAT_COLORS[i % CAT_COLORS.length] }} />
+                      <span style={{ display:"inline-block", width:"12px", height:"8px", borderRadius:"2px", backgroundColor: CAT_COLORS[i % CAT_COLORS.length], flexShrink: 0 }} />
                       {cat.name}
                     </span>
                     <span className="font-medium tabular-nums" style={{ color: CAT_COLORS[i % CAT_COLORS.length] }}>

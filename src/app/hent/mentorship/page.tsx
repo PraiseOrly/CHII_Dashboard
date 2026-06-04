@@ -224,14 +224,14 @@ function GenderRatingBar({ label, fPrograms, mPrograms, criterion }: {
       <div className="w-40 text-[10px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
       <div className="flex-1 space-y-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET }}>â™€</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET }}>F</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(fAvg / 5) * 100}%`, backgroundColor: VIOLET }} />
           </div>
           <span className="text-[10px] text-gray-500 w-7">{fAvg.toFixed(1)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>â™‚</span>
+          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>M</span>
           <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SKY + "20" }}>
             <div className="h-full rounded-sm" style={{ width: `${(mAvg / 5) * 100}%`, backgroundColor: SKY }} />
           </div>
@@ -541,8 +541,8 @@ export default function MentorshipPage() {
               sub="Avg score per criterion  -  female-majority vs male-majority programmes"
               accent={VIOLET}>
               <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>â™€</span> Female-majority programmes</span>
-                <span className="flex items-center gap-1"><span style={{ color: SKY }}>â™‚</span> Male-majority programmes</span>
+                <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>F</span> Female-majority programmes</span>
+                <span className="flex items-center gap-1"><span style={{ color: SKY }}>M</span> Male-majority programmes</span>
               </div>
               {MF_CRITERIA.map(c => (
                 <GenderRatingBar key={c} label={c} fPrograms={fProgs} mPrograms={mProgs} criterion={c} />
