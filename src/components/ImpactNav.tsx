@@ -81,9 +81,13 @@ export default function ImpactNav() {
                 className="relative flex flex-col items-center justify-center px-5 h-14 transition-colors group"
                 style={{ color: isActive ? tab.color : "#6B7280" }}
               >
-                <span className="text-[13px] font-bold leading-tight">{tab.label}</span>
+                {!isActive && (
+                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded"
+                    style={{ backgroundColor: tab.bg }} />
+                )}
+                <span className="relative text-[13px] font-bold leading-tight">{tab.label}</span>
                 <span
-                  className="text-[9px] font-medium mt-0.5 transition-opacity"
+                  className="relative text-[9px] font-medium mt-0.5 transition-opacity"
                   style={{ color: isActive ? tab.color : "#9CA3AF", opacity: isActive ? 1 : 0 }}
                 >
                   {tab.desc}
@@ -91,10 +95,6 @@ export default function ImpactNav() {
                 {isActive && (
                   <span className="absolute bottom-0 left-3 right-3 h-[2.5px] rounded-t-full"
                     style={{ backgroundColor: tab.color }} />
-                )}
-                {!isActive && (
-                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded"
-                    style={{ backgroundColor: tab.bg }} />
                 )}
               </Link>
             );
