@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function ImpactLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <ImpactNav />
       {children}
     </div>

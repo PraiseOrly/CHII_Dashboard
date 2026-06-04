@@ -221,8 +221,8 @@ export default function LoginPage() {
             </p>
 
             {/* Partner logos — mobile only */}
-            <div className="flex md:hidden items-center justify-between mt-6 pt-5"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+            <div className="flex md:hidden items-center justify-between mt-6 rounded-lg px-4 py-3"
+              style={{ background: "white" }}>
               <img src="/logos/alu.png"  alt="African Leadership University" style={{ height: "22px", width: "auto", objectFit: "contain" }} />
               <img src="/logos/ahc.jpg"  alt="Africa Health Collaborative"   style={{ height: "22px", width: "auto", objectFit: "contain" }} />
               <img src="/logos/mcf.png"  alt="Mastercard Foundation"         style={{ height: "22px", width: "auto", objectFit: "contain" }} />

@@ -89,7 +89,7 @@ export default function AppShell({ children, hideSidebar = false }: { children: 
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Desktop sidebar — hidden when hideSidebar=true */}
       {!hideSidebar && <Sidebar />}
 
@@ -118,13 +118,13 @@ export default function AppShell({ children, hideSidebar = false }: { children: 
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           )}
-          <div className="flex-1">
+          <div className="flex-1 overflow-x-auto">
             <GlobalFilterBar />
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">{children}</main>
+        <main className="flex-1 p-4 lg:p-6 overflow-x-hidden overflow-y-auto">{children}</main>
       </div>
     </div>
   );
