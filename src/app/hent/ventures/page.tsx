@@ -167,7 +167,7 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5 flex-shrink-0"
         style={{
-          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          backgroundColor: accent,
           borderBottomColor: accent,
         }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
@@ -227,7 +227,7 @@ function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }
   const animated = useCountUp(num);
   return (
     <div className="rounded-xl border px-2 py-2.5 text-center"
-      style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
+      style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
       <div className="flex items-baseline gap-1 justify-center">
@@ -257,7 +257,7 @@ function SectionLabel({ label, color = PRIMARY }: { label: string; color?: strin
   return (
     <div className="px-4 py-2.5 flex items-center gap-2 border-b"
       style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${color}`,
+        backgroundColor: color,
         borderBottomColor: color,
       }}>
       <div className="w-[3px] h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />

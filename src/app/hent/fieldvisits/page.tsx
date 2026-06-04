@@ -133,7 +133,7 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
-          background: `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.08) 100%), ${accent}`,
+          backgroundColor: accent,
           borderBottomColor: accent,
         }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
@@ -275,7 +275,7 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
   const animated = useCountUp(num);
   return (
     <div className="rounded-xl border px-2 py-2.5 text-center"
-      style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
+      style={{ backgroundColor: clr, borderColor: clr }}>
       <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
         style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
       <p className="text-[1.1rem] font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
