@@ -46,7 +46,7 @@ export default function ImpactNav() {
 
   return (
     <div className="bg-white border-b border-gray-200" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-      <div className="max-w-[1440px] mx-auto px-6 flex items-center h-14 gap-4">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-14 gap-2 sm:gap-4">
 
         {/* Logo + wordmark */}
         <Link href="/impact" className="flex items-center gap-2.5 flex-shrink-0 group">
@@ -78,7 +78,7 @@ export default function ImpactNav() {
               <Link
                 key={tab.label}
                 href={tab.href}
-                className="relative flex flex-col items-center justify-center px-5 h-14 transition-colors group"
+                className="relative flex flex-col items-center justify-center px-3 sm:px-5 h-14 transition-colors group"
                 style={{ color: isActive ? tab.color : "#6B7280" }}
               >
                 {!isActive && (
