@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -227,6 +227,42 @@ function Stars({ score }: { score: number }) {
   );
 }
 
+// ─── Count-up animation ───────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 750): number {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start: number | null = null;
+    function tick(now: number) {
+      if (start === null) start = now;
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+      else setVal(target);
+    }
+    const id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [target, duration]);
+  return val;
+}
+
+function KpiTile({ label, num, displayFmt, sub, clr }: {
+  label: string; num: number; displayFmt: (n: number) => string;
+  sub: string; clr: string;
+}) {
+  const animated = useCountUp(num);
+  return (
+    <div className="rounded-xl border px-2 py-2.5 text-center"
+      style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
+      <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
+        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+      <p className="text-lg font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
+      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    </div>
+  );
+}
+
 // ─── KPI tile map (8 metrics) ─────────────────────────────────────────────────
 const KPI_TILES = [
   { label: "Mentorship Programs",   bg: "#F5F3FF", clr: "#4C1D95" },
@@ -365,14 +401,14 @@ export default function MentorshipPage() {
   const isFiltered = yearFilter !== "All" || typeFilter !== "All" || genderView !== "All";
 
   const kpiValues = [
-    { value: String(tot.programs),              sub: "Active cohorts"           },
-    { value: String(tot.fellowships),            sub: "Incl. one-year tracks"    },
-    { value: tot.fellows.toLocaleString(),        sub: "Across all programmes"    },
-    { value: String(tot.mentors),                sub: "Mentor slots deployed"    },
-    { value: tot.ventures.toLocaleString(),       sub: "Participating ventures"   },
-    { value: String(tot.grad1yr),                sub: "Graduates enrolled"       },
-    { value: `${femalePct}%`,                    sub: `${tot.female} people`     },
-    { value: `${tot.completion}%`,               sub: "Participants completing"   },
+    { sub: "Active cohorts",            num: tot.programs,      fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Incl. one-year tracks",     num: tot.fellowships,   fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Across all programmes",     num: tot.fellows,       fmt: (n: number) => Math.round(n).toLocaleString() },
+    { sub: "Mentor slots deployed",     num: tot.mentors,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Participating ventures",    num: tot.ventures,      fmt: (n: number) => Math.round(n).toLocaleString() },
+    { sub: "Graduates enrolled",        num: tot.grad1yr,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${tot.female} people`,      num: femalePct,         fmt: (n: number) => `${Math.round(n)}%` },
+    { sub: "Participants completing",   num: tot.completion,    fmt: (n: number) => `${Math.round(n)}%` },
   ];
 
   const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
@@ -405,14 +441,9 @@ export default function MentorshipPage() {
           {/* KPI strip — 8 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-              {KPI_TILES.map(({ label, bg, clr }, i) => (
-                <div key={label} className="rounded-xl border px-3 py-3.5"
-                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
-                  <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-2"
-                    style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-                  <p className="text-xl font-black tabular-nums leading-none text-white">{kpiValues[i].value}</p>
-                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{kpiValues[i].sub}</p>
-                </div>
+              {KPI_TILES.map(({ label, clr }, i) => (
+                <KpiTile key={label} label={label} num={kpiValues[i].num}
+                  displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
               ))}
             </div>
           </div>

@@ -7,17 +7,18 @@ const NAVY = "#002147";
 const RED  = "#D4264A";
 
 export const HENT_NAV_ITEMS = [
-  { label: "Overview",                 href: "/hent"             },
-  { label: "Ventures",                 href: "/hent/ventures"    },
-  { label: "Hackathons",               href: "/hent/hackathons"  },
-  { label: "Mentorship & Fellowships", href: "/hent/mentorship"  },
-  { label: "Field Visits",             href: "/hent/fieldvisits" },
+  { label: "Overview",                 href: "/hent/overview"       },
+  { label: "Ventures",                 href: "/hent/ventures"       },
+  { label: "Masterclasses",            href: "/hent/masterclasses"  },
+  { label: "Hackathons",               href: "/hent/hackathons"     },
+  { label: "Mentorship & Fellowships", href: "/hent/mentorship"     },
+  { label: "Field Visits",             href: "/hent/fieldvisits"    },
 ] as const;
 
 export type HENTNavLabel = typeof HENT_NAV_ITEMS[number]["label"];
 
 export function getActiveLabel(pathname: string): HENTNavLabel {
-  if (pathname === "/hent") return "Overview";
+  if (pathname === "/hent/overview" || pathname === "/hent") return "Overview";
   return HENT_NAV_ITEMS.find(n => n.href === pathname)?.label ?? "Overview";
 }
 

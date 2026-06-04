@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -221,6 +221,42 @@ function Stars({ score }: { score: number }) {
   );
 }
 
+// ─── Count-up animation ───────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 750): number {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start: number | null = null;
+    function tick(now: number) {
+      if (start === null) start = now;
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+      else setVal(target);
+    }
+    const id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [target, duration]);
+  return val;
+}
+
+function KpiTile({ label, num, displayFmt, sub, clr }: {
+  label: string; num: number; displayFmt: (n: number) => string;
+  sub: string; clr: string;
+}) {
+  const animated = useCountUp(num);
+  return (
+    <div className="rounded-xl border px-2 py-2.5 text-center"
+      style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
+      <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
+        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+      <p className="text-lg font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
+      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    </div>
+  );
+}
+
 // ─── KPI tile map (7 metrics) ─────────────────────────────────────────────────
 const KPI_TILES = [
   { label: "Total Field Visits",      bg: "#ECFDF5", clr: "#064E3B" },
@@ -340,13 +376,13 @@ export default function FieldVisitsPage() {
   const MEDIA_ICONS   = [Camera, Users, MapPin, Handshake, Star, Camera];
 
   const kpiValues = [
-    { value: String(tot.visits),               sub: "Excursions conducted"   },
-    { value: tot.participants.toLocaleString(), sub: "Across all visits"      },
-    { value: tot.ventures.toLocaleString(),     sub: "Unique ventures"        },
-    { value: String(tot.orgs),                  sub: "Distinct host sites"    },
-    { value: `${femalePct}%`,                   sub: `${tot.female} people`   },
-    { value: String(avgAtt),                    sub: "Per excursion"          },
-    { value: `${tot.completion}%`,              sub: "Participants completing" },
+    { sub: "Excursions conducted",   num: tot.visits,        fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Across all visits",      num: tot.participants,   fmt: (n: number) => Math.round(n).toLocaleString() },
+    { sub: "Unique ventures",        num: tot.ventures,       fmt: (n: number) => Math.round(n).toLocaleString() },
+    { sub: "Distinct host sites",    num: tot.orgs,           fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${tot.female} people`,   num: femalePct,          fmt: (n: number) => `${Math.round(n)}%` },
+    { sub: "Per excursion",          num: avgAtt,             fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Participants completing", num: tot.completion,    fmt: (n: number) => `${Math.round(n)}%` },
   ];
 
   const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
@@ -379,14 +415,9 @@ export default function FieldVisitsPage() {
           {/* KPI strip — 7 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-              {KPI_TILES.map(({ label, bg, clr }, i) => (
-                <div key={label} className="rounded-xl border px-3 py-3.5"
-                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
-                  <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-2"
-                    style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-                  <p className="text-xl font-black tabular-nums leading-none text-white">{kpiValues[i].value}</p>
-                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{kpiValues[i].sub}</p>
-                </div>
+              {KPI_TILES.map(({ label, clr }, i) => (
+                <KpiTile key={label} label={label} num={kpiValues[i].num}
+                  displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
               ))}
             </div>
           </div>

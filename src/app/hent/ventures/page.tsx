@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
   BarChart, Bar,
@@ -193,6 +193,56 @@ function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }
   );
 }
 
+// ─── Count-up animation ───────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 750): number {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start: number | null = null;
+    function tick(now: number) {
+      if (start === null) start = now;
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic — fast start, smooth landing
+      setVal(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+      else setVal(target);
+    }
+    const id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [target, duration]);
+  return val;
+}
+
+function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }: {
+  label: string;
+  num: number;
+  displayFmt: (n: number) => string;
+  denom?: string | number;
+  sub: string;
+  clr: string;
+  pace: boolean;
+  paceA?: number;
+  paceT?: number;
+}) {
+  const animated = useCountUp(num);
+  return (
+    <div className="rounded-xl border px-2 py-2.5 text-center"
+      style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
+      <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5"
+        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+      <div className="flex items-baseline gap-1 justify-center">
+        <span className="text-xl font-black tabular-nums leading-none text-white">{displayFmt(animated)}</span>
+        {denom !== undefined && (
+          <span className="text-[10px] font-normal" style={{ color: "rgba(255,255,255,0.52)" }}>/ {denom}</span>
+        )}
+      </div>
+      {pace && <LightPaceBar a={paceA!} t={paceT!} clr={clr} />}
+      {!pace && <div className="mt-1.5" />}
+      <p className="text-[8px] font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    </div>
+  );
+}
+
 // Pace bar for white sidebar backgrounds
 function RBar({ v, total }: { v: number; total: number }) {
   return (
@@ -205,9 +255,13 @@ function RBar({ v, total }: { v: number; total: number }) {
 
 function SectionLabel({ label, color = PRIMARY }: { label: string; color?: string }) {
   return (
-    <div className="px-4 py-2.5 flex items-center gap-2 border-b border-gray-100">
-      <div className="w-[3px] h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: color + "CC" }}>{label}</p>
+    <div className="px-4 py-2.5 flex items-center gap-2 border-b"
+      style={{
+        background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${color}`,
+        borderBottomColor: color,
+      }}>
+      <div className="w-[3px] h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+      <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white">{label}</p>
     </div>
   );
 }
@@ -394,30 +448,39 @@ export default function HENTPortfolio() {
           {/* KPI strip — 5 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-              {([
-                { label: "Health Ventures", value: ACTUALS.ventures, denom: TARGETS.ventures,               sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#E0F2FE", clr: "#0C4A6E", pace: true,  a: ACTUALS.ventures, t: TARGETS.ventures  },
-                { label: "Jobs Created",    value: ACTUALS.jobs,     denom: TARGETS.jobs.toLocaleString(),   sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#F0FDF4", clr: "#14532D", pace: true,  a: ACTUALS.jobs,     t: TARGETS.jobs      },
-                { label: "Funds Deployed",  value: fmt$(ACTUALS.funds), denom: fmt$(TARGETS.funds),          sub: `Expected pace: ${Math.round(PACE * 100)}%`, bg: "#CFFAFE", clr: "#164E63", pace: true,  a: ACTUALS.funds,    t: TARGETS.funds     },
-                { label: "Active Founders", value: 48,               denom: undefined,                      sub: `${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`,  bg: "#ECFEFF", clr: "#155E75", pace: false },
-                { label: "Pace of Target",  value: "5.5%",           denom: undefined,                      sub: `Against ${Math.round(PACE * 100)}% expected`, bg: "#F0FDFA", clr: "#134E4A", pace: false },
-              ] as const).map(tile => (
-                <div key={tile.label} className="rounded-xl border px-5 py-4"
-                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}`, borderColor: tile.clr }}>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-tight mb-2"
-                    style={{ color: "rgba(255,255,255,0.68)" }}>{tile.label}</p>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black tabular-nums leading-none text-white">{tile.value}</span>
-                    {tile.denom !== undefined && (
-                      <span className="text-sm font-normal" style={{ color: "rgba(255,255,255,0.52)" }}>/ {tile.denom}</span>
-                    )}
-                  </div>
-                  {tile.pace && (
-                    <LightPaceBar a={tile.a!} t={tile.t!} clr={tile.clr} />
-                  )}
-                  {!tile.pace && <div className="mt-3" />}
-                  <p className="text-[9px] font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{tile.sub}</p>
-                </div>
-              ))}
+              <KpiTile
+                label="Health Ventures"
+                num={ACTUALS.ventures}
+                displayFmt={n => String(Math.round(n))}
+                denom={TARGETS.ventures}
+                sub={`Expected pace: ${Math.round(PACE * 100)}%`}
+                clr="#0C4A6E" pace paceA={ACTUALS.ventures} paceT={TARGETS.ventures} />
+              <KpiTile
+                label="Jobs Created"
+                num={ACTUALS.jobs}
+                displayFmt={n => String(Math.round(n))}
+                denom={TARGETS.jobs.toLocaleString()}
+                sub={`Expected pace: ${Math.round(PACE * 100)}%`}
+                clr="#14532D" pace paceA={ACTUALS.jobs} paceT={TARGETS.jobs} />
+              <KpiTile
+                label="Funds Deployed"
+                num={ACTUALS.funds}
+                displayFmt={n => fmt$(Math.round(n))}
+                denom={fmt$(TARGETS.funds)}
+                sub={`Expected pace: ${Math.round(PACE * 100)}%`}
+                clr="#164E63" pace paceA={ACTUALS.funds} paceT={TARGETS.funds} />
+              <KpiTile
+                label="Active Founders"
+                num={48}
+                displayFmt={n => String(Math.round(n))}
+                sub={`${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`}
+                clr="#155E75" pace={false} />
+              <KpiTile
+                label="Pace of Target"
+                num={5.5}
+                displayFmt={n => `${n.toFixed(1)}%`}
+                sub={`Against ${Math.round(PACE * 100)}% expected`}
+                clr="#134E4A" pace={false} />
             </div>
           </div>
         </div>
@@ -651,7 +714,7 @@ export default function HENTPortfolio() {
             ))}
           </div>
           <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT · Catalyst for Change · 2026</p>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT . VENTURES · 2023 - 2026</p>
             <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
           </div>
         </div>

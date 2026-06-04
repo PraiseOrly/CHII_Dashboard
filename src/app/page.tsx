@@ -16,7 +16,7 @@ const NAVY_HOVER = "#0d2d5e";
 const HIGHLIGHTS = [
   { n: "1", text: "Reach and access across Africa" },
   { n: "2", text: "Youth employment and entrepreneurship outcomes" },
-  { n: "3", text: "Impact stories and change pathways — our MEL framework in action" },
+  { n: "3", text: "Impact stories and change pathways. Our MEL framework in action" },
   { n: "4", text: "Recent impact reports" },
 ];
 
@@ -194,7 +194,7 @@ export default function LoginPage() {
               </h1>
               <p className="text-blue-100/75 text-sm leading-relaxed mb-5">
                 CHII develops ethical and entrepreneurial health leaders through
-                mission-driven, experiential learning — enabling young Africans to
+                mission-driven, experiential learning enabling young Africans to
                 access dignified work, build ventures, and drive lasting health
                 impact across the continent.
               </p>

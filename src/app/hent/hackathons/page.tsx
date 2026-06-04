@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -173,6 +173,42 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   );
 }
 
+// ─── Count-up animation ───────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 750): number {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start: number | null = null;
+    function tick(now: number) {
+      if (start === null) start = now;
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+      else setVal(target);
+    }
+    const id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [target, duration]);
+  return val;
+}
+
+function KpiTile({ label, num, displayFmt, sub, clr }: {
+  label: string; num: number; displayFmt: (n: number) => string;
+  sub: string; clr: string;
+}) {
+  const animated = useCountUp(num);
+  return (
+    <div className="rounded-xl border px-2 py-2.5 text-center"
+      style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
+      <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
+        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+      <p className="text-lg font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
+      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    </div>
+  );
+}
+
 // ─── KPI tile colour map (10 metrics) ────────────────────────────────────────
 const KPI_TILES = [
   { label: "Total Hackathons",     bg: "#FFF7ED", clr: "#7C2D12" },
@@ -261,16 +297,16 @@ export default function HackathonsPage() {
 
   // ── KPI tile values (positionally aligned with KPI_TILES) ──
   const kpiValues = [
-    { value: String(total.events),       sub: `${YEARS[0]}–${YEARS[YEARS.length-1]}` },
-    { value: fmt(total.participants),    sub: "Across all events"       },
-    { value: `${femalePct}%`,            sub: `${total.female} people`  },
-    { value: `${malePct}%`,             sub: `${total.participants - total.female} people` },
-    { value: String(total.winningTeams), sub: "Total prize winners"     },
-    { value: String(total.projects),     sub: "Across all hackathons"   },
-    { value: fmt(total.students),        sub: `${studentPct}% of total` },
-    { value: fmt(alumniTotal),           sub: `${alumniPct}% of total`  },
-    { value: String(total.startups),     sub: "Ventures from hacks"     },
-    { value: String(total.partnerships), sub: "Sponsors & partners"     },
+    { sub: `${YEARS[0]}–${YEARS[YEARS.length-1]}`,             num: total.events,        fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Across all events",                                  num: total.participants,   fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
+    { sub: `${total.female} people`,                             num: femalePct,            fmt: (n: number) => `${Math.round(n)}%` },
+    { sub: `${total.participants - total.female} people`,        num: malePct,              fmt: (n: number) => `${Math.round(n)}%` },
+    { sub: "Total prize winners",                                num: total.winningTeams,   fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Across all hackathons",                              num: total.projects,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: `${studentPct}% of total`,                           num: total.students,       fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
+    { sub: `${alumniPct}% of total`,                            num: alumniTotal,          fmt: (n: number) => Math.round(n) >= 1000 ? `${(Math.round(n)/1000).toFixed(1)}k` : String(Math.round(n)) },
+    { sub: "Ventures from hacks",                                num: total.startups,       fmt: (n: number) => String(Math.round(n)) },
+    { sub: "Sponsors & partners",                                num: total.partnerships,   fmt: (n: number) => String(Math.round(n)) },
   ];
 
   // ─── render ────────────────────────────────────────────────────────────────
@@ -303,18 +339,9 @@ export default function HackathonsPage() {
           {/* KPI strip — 10 distinct tinted tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-              {KPI_TILES.map(({ label, bg, clr }, i) => (
-                <div key={label} className="rounded-xl border px-3 py-3.5"
-                  style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}`, borderColor: clr }}>
-                  <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-2"
-                    style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-                  <p className="text-xl font-black tabular-nums leading-none text-white">
-                    {kpiValues[i].value}
-                  </p>
-                  <p className="text-[8.5px] mt-1.5 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>
-                    {kpiValues[i].sub}
-                  </p>
-                </div>
+              {KPI_TILES.map(({ label, clr }, i) => (
+                <KpiTile key={label} label={label} num={kpiValues[i].num}
+                  displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
               ))}
             </div>
           </div>
