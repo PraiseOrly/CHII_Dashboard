@@ -28,7 +28,8 @@ export default function HECOImpactPage() {
             <BarChart2 size={28} className="text-white" />
           </div>
 
-          <h1 className="text-3xl font-black text-gray-900 mb-6">HECO Portal</h1>
+          <h1 className="text-3xl font-black text-gray-900 mb-2">HECO Portal</h1>
+          <p className="text-[13px] text-gray-400 font-medium mb-6">Ecosystems Pillar</p>
 
           {/* CTAs */}
           <div className="flex items-center justify-center gap-3 flex-wrap">

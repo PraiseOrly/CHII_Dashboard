@@ -365,7 +365,7 @@ export default function HEMPImpactPage() {
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">HEMP Impact Analytics</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                HealthX · Internships · Mission Students · {D.countries.length} countries
+                Employment Pillar · HealthX · Internships · Mission Students · {D.countries.length} countries
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">

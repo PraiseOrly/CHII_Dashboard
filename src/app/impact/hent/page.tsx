@@ -316,7 +316,7 @@ export default function HENTImpactPage() {
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">HENT Impact Analytics</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Ventures · Hackathons · Masterclasses · Field Visits · Mentorship & Fellowships · {D.countries.length} countries
+                Entrepreneurship Pillar · Ventures · Hackathons · Masterclasses · Field Visits · Mentorship & Fellowships · {D.countries.length} countries
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -356,9 +356,9 @@ export default function HENTImpactPage() {
               sub={portfolioGender === "all" ? `${D.vc.length} ventures — all team types` : `${portfolioGender}-led ventures by stage`}
               accent={VIOLET}
               headerRight={
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-col items-end gap-1.5">
                   <PillGroup
-                    options={[{ label: "All", value: "all" }, { label: "Female-led", value: "female" }, { label: "Male-led", value: "male" }, { label: "Mixed", value: "mixed" }]}
+                    options={[{ label: "All", value: "all" }, { label: "Female", value: "female" }, { label: "Male", value: "male" }, { label: "Mixed", value: "mixed" }]}
                     value={portfolioGender} onChange={setPortfolioGender} />
                   <HeaderDropdown options={stageOpts} value={stageFilter} onChange={(v) => setStageFilter(v)} />
                 </div>
