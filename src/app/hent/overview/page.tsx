@@ -7,7 +7,7 @@ import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 import { Award, Download, FileText, Handshake, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Area,
   AreaChart,
@@ -202,8 +202,18 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
 function ChartCard({ title, sub, accent = PRIMARY, children }: {
   title: string; sub?: string; accent?: string; children: React.ReactNode;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  async function handleDownload() {
+    if (!cardRef.current) return;
+    const h2c = (await import("html2canvas")).default;
+    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const a = document.createElement("a");
+    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
+    a.href = canvas.toDataURL();
+    a.click();
+  }
   return (
-    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
+    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
           backgroundColor: accent,
@@ -211,10 +221,16 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
         }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
           style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
+        <button onClick={handleDownload} title="Download chart"
+          style={{ color: "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center", flexShrink: 0 }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "white"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}>
+          <Download size={12} />
+        </button>
       </div>
       <div className="p-5">{children}</div>
     </div>
