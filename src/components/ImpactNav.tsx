@@ -7,26 +7,34 @@ import { LayoutGrid, ChevronDown } from "lucide-react";
 const NAVY = "#002147";
 
 export const IMPACT_TABS = [
-  { label: "CHII",  href: "/impact",       desc: "Ecosystem Overview",       color: "#002147", bg: "#EFF6FF" },
-  { label: "HENT",  href: "/impact/hent",  desc: "Entrepreneurship Pillar",  color: "#7C3AED", bg: "#F5F3FF" },
-  { label: "HEMP",  href: "/impact/hemp",  desc: "Employment Pillar",        color: "#0D9488", bg: "#F0FDFA" },
-  { label: "HECO",  href: "/impact/heco",  desc: "Ecosystems Pillar",        color: "#2563EB", bg: "#EFF6FF" },
+  { label: "Overview",                    href: "/impact",                  color: "#002147", bg: "#EFF6FF" },
+  { label: "Outreach",                    href: "/impact/outreach",         color: "#0D9488", bg: "#F0FDFA" },
+  { label: "Youth in Work",               href: "/impact/youth-in-work",    color: "#0EA5E9", bg: "#F0F9FF" },
+  { label: "Wage Employment",             href: "/impact/wage-employment",  color: "#F59E0B", bg: "#FFFBEB" },
+  { label: "Entrepreneurship",            href: "/impact/entrepreneurship", color: "#7C3AED", bg: "#F5F3FF" },
+  { label: "Program Feedback Experience", href: "/impact/feedback",         color: "#10B981", bg: "#ECFDF5" },
+  { label: "Impact Reports",              href: "/impact/reports",          color: "#2563EB", bg: "#EFF6FF" },
+  { label: "Impact Stories",              href: "/impact/stories",          color: "#EA580C", bg: "#FFF7ED" },
 ] as const;
 
 const PORTAL_LINKS = [
-  { label: "HENT",   desc: "Entrepreneurship Pillar",  href: "/hent/overview", color: "#7C3AED", bg: "#F5F3FF" },
-  { label: "HEMP",   desc: "Employment Pillar",        href: "/hemp",          color: "#0D9488", bg: "#F0FDFA" },
-  { label: "HECO",   desc: "Ecosystems Pillar",        href: "/heco",          color: "#2563EB", bg: "#EFF6FF" },
+  { label: "HENT", desc: "Entrepreneurship Pillar", href: "/hent/overview", color: "#7C3AED", bg: "#F5F3FF" },
+  { label: "HEMP", desc: "Employment Pillar",       href: "/hemp",          color: "#0D9488", bg: "#F0FDFA" },
+  { label: "HECO", desc: "Ecosystems Pillar",       href: "/heco",          color: "#2563EB", bg: "#EFF6FF" },
 ] as const;
 
 export type ImpactTabLabel = typeof IMPACT_TABS[number]["label"];
 
 function getActiveTab(pathname: string): ImpactTabLabel {
-  if (pathname === "/impact") return "CHII";
-  if (pathname.startsWith("/impact/hent")) return "HENT";
-  if (pathname.startsWith("/impact/hemp")) return "HEMP";
-  if (pathname.startsWith("/impact/heco")) return "HECO";
-  return "CHII";
+  if (pathname === "/impact")                          return "Overview";
+  if (pathname.startsWith("/impact/outreach"))         return "Outreach";
+  if (pathname.startsWith("/impact/youth-in-work"))    return "Youth in Work";
+  if (pathname.startsWith("/impact/wage-employment"))  return "Wage Employment";
+  if (pathname.startsWith("/impact/entrepreneurship")) return "Entrepreneurship";
+  if (pathname.startsWith("/impact/feedback"))         return "Program Feedback Experience";
+  if (pathname.startsWith("/impact/reports"))          return "Impact Reports";
+  if (pathname.startsWith("/impact/stories"))          return "Impact Stories";
+  return "Overview";
 }
 
 export default function ImpactNav() {
@@ -35,7 +43,6 @@ export default function ImpactNav() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     function handle(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -46,11 +53,11 @@ export default function ImpactNav() {
 
   return (
     <div className="bg-white border-b border-gray-200" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-14 gap-2 sm:gap-4">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-14 gap-2 sm:gap-3">
 
         {/* Logo + wordmark */}
         <Link href="/impact" className="flex items-center gap-2.5 flex-shrink-0 group">
-          <svg viewBox="0 0 200 200" width="34" height="34" aria-label="CHII">
+          <svg viewBox="0 0 200 200" width="32" height="32" aria-label="CHII">
             <rect width="200" height="200" rx="22" fill={NAVY} />
             <text x="100" y="95" textAnchor="middle" fill="white"
               fontFamily="Inter, ui-sans-serif, sans-serif" fontWeight="900" fontSize="82">ALU</text>
@@ -61,39 +68,33 @@ export default function ImpactNav() {
             <text x="100" y="150" textAnchor="middle" fill="rgba(255,255,255,0.6)"
               fontFamily="Inter, ui-sans-serif, sans-serif" fontSize="11.5">IMPACT</text>
           </svg>
-          <div className="hidden sm:block">
-            <p className="text-[13px] font-black leading-none" style={{ color: NAVY }}>Impact</p>
-            <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wide">CHII Analytics Platform</p>
+          <div className="hidden xl:block">
+            <p className="text-[12px] font-black leading-none" style={{ color: NAVY }}>Impact</p>
+            <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wide">CHII Analytics</p>
           </div>
         </Link>
 
         {/* Divider */}
         <div className="h-6 w-px bg-gray-200 flex-shrink-0" />
 
-        {/* Tab navigation — centered */}
-        <nav className="flex items-stretch flex-1 justify-center">
+        {/* Tab navigation — horizontally scrollable */}
+        <nav className="flex items-stretch flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {IMPACT_TABS.map((tab) => {
             const isActive = tab.label === activeLabel;
             return (
               <Link
                 key={tab.label}
                 href={tab.href}
-                className="relative flex flex-col items-center justify-center px-3 sm:px-5 h-14 transition-colors group"
+                className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-14 transition-colors group flex-shrink-0"
                 style={{ color: isActive ? tab.color : "#6B7280" }}
               >
                 {!isActive && (
-                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded"
+                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ backgroundColor: tab.bg }} />
                 )}
-                <span className="relative text-[13px] font-bold leading-tight">{tab.label}</span>
-                <span
-                  className="relative text-[9px] font-medium mt-0.5 transition-opacity"
-                  style={{ color: isActive ? tab.color : "#9CA3AF", opacity: isActive ? 1 : 0 }}
-                >
-                  {tab.desc}
-                </span>
+                <span className="relative text-[10.5px] font-bold leading-tight whitespace-nowrap">{tab.label}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-3 right-3 h-[2.5px] rounded-t-full"
+                  <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full"
                     style={{ backgroundColor: tab.color }} />
                 )}
               </Link>

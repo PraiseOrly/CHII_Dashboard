@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
-  Award, Briefcase, Download, FileText,
-  Globe, Handshake, Star, Target, TrendingUp,
-  Zap,
+  AlertCircle, Award, Briefcase, CheckCircle, Clock,
+  Download, FileText, Globe, GraduationCap, Handshake,
+  Heart, Moon, Star, Sun, Target, TrendingUp, Users, Zap,
 } from "lucide-react";
 
 import { healthXSessions } from "@/data/hemp/healthx";
@@ -15,6 +15,7 @@ import { masterclasses } from "@/data/masterclasses";
 import { fieldVisits } from "@/data/fieldVisits";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
+import Link from "next/link";
 
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -22,25 +23,54 @@ import {
   Tooltip, XAxis, YAxis,
 } from "recharts";
 
-// â"€â"€â"€ Palette â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-const VIOLET = "#7C3AED";
-const TEAL   = "#0D9488";
-const GREEN  = "#10B981";
-const AMBER  = "#F59E0B";
-const SKY    = "#0EA5E9";
-const ROSE   = "#F43F5E";
-const INDIGO = "#4338CA";
-const ORANGE = "#EA580C";
-const NAVY   = "#002147";
-const EXEC_BG = "#f8fafc";
+// ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Palette ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
+// Design tokens — blue (access) · teal (outcomes) · amber (attention only) · indigo (categorical)
+const B50   = "#E6F1FB";  // Blue  50  — ACCESS card fill
+const B200  = "#85B7EB";  // Blue 200
+const B400  = "#378ADD";  // Blue 400
+const B600  = "#185FA5";  // Blue 600  — hero fill · access label · section bar
+const B800  = "#0C447C";  // Blue 800  — ACCESS number text
+const B900  = "#042C53";  // Blue 900  — chart headers · deep anchors
+const T50   = "#E1F5EE";  // Teal  50  — OUTCOME card fill
+const T400  = "#1D9E75";  // Teal 400
+const T600  = "#0F6E56";  // Teal 600  — OUTCOME label · section bar
+const T800  = "#085041";  // Teal 800  — OUTCOME number text
+const AM400 = "#BA7517";  // Amber 400 — attention / "seeking" slice only
+const IN400 = "#7F77DD";  // Indigo 400 — fourth categorical hue
+const IN600 = "#534AB7";  // Indigo 600
+const G50   = "#F1EFE8";  // Gray  50  — QUALITY card fill
+const G600  = "#5F5E5A";  // Gray 600  — QUALITY label
+const G900  = "#2C2C2A";  // Gray 900  — QUALITY number
+const EXEC_BG = "#F8F9FA"; // Page background — very pale neutral
+// Semantic aliases (keep chart/data references working)
+const NAVY   = B900;
+const TEAL   = T400;
+const GREEN  = T600;
+const AMBER  = AM400;
+const SKY    = B200;
+const INDIGO = IN400;
+const VIOLET = IN600;
+const ROSE   = AM400;
+const ORANGE = T400;
 
-// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Helpers ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
 function fmt(n: number) { return Math.round(n).toLocaleString(); }
 function pct(n: number) { return `${Math.round(n)}%`; }
 
+function useDarkMode(): boolean {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    setDark(mq.matches);
+    const fn = (e: MediaQueryListEvent) => setDark(e.matches);
+    mq.addEventListener("change", fn);
+    return () => mq.removeEventListener("change", fn);
+  }, []);
+  return dark;
+}
 function useCountUp(target: number, duration = 800): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -57,7 +87,7 @@ function useCountUp(target: number, duration = 800): number {
   return val;
 }
 
-// â"€â"€â"€ Contextual filter components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Contextual filter components ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
 
 // Pill group  -  sits in coloured card headers (dark background)
 function PillGroup<T extends string>({ options, value, onChange }: {
@@ -131,7 +161,69 @@ function SegTab<T extends string>({ options, value, onChange, accent }: {
   );
 }
 
-// â"€â"€â"€ UI atoms â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// -- Sidebar rail components -------------------------------------------------
+
+const YOUTH_PWD       = 47;
+const REFUGEES        = 23;
+const EMPLOYER_RATING = 4.6;
+
+function PersonIcon({ color, outline = false }: { color: string; outline?: boolean }) {
+  return (
+    <svg width="11" height="14" viewBox="0 0 12 15" fill="none">
+      <circle cx="6" cy="4" r="2.8"
+        fill={outline ? "none" : color}
+        stroke={outline ? color : "none"}
+        strokeWidth="1.3" />
+      <path d="M1 14.5c0-2.761 2.239-5 5-5s5 2.239 5 5"
+        stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function RailLabel({ label, top = false }: { label: string; top?: boolean }) {
+  return (
+    <div className={`px-3 py-2 rounded-md mb-3 ${top ? "" : "mt-4"}`}
+      style={{ backgroundColor: NAVY }}>
+      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white leading-none">{label}</p>
+    </div>
+  );
+}
+
+function SideCard({
+  label, big, denom, yoy, femPct, malePct,
+}: {
+  label: string;
+  big: string | number;
+  denom?: string | number;
+  yoy?: number | null;
+  femPct?: number;
+  malePct?: number;
+}) {
+  return (
+    <div className="cursor-default transition-transform duration-200 hover:-translate-y-0.5 rounded-lg"
+      style={{ backgroundColor: "#2F5FD1", padding: "10px 12px" }}>
+      <p style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 4 }}>{label}</p>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+        <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", lineHeight: 1, letterSpacing: "-0.02em" }}>{big}</span>
+        {denom !== undefined && (
+          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.45)" }}>/ {denom}</span>
+        )}
+      </div>
+      {yoy != null && (
+        <p style={{ fontSize: 10, fontWeight: 600, marginTop: 4, color: yoy >= 0 ? "#B6F2C5" : "#FCA5A5" }}>
+          {yoy >= 0 ? "↑" : "↓"} {Math.abs(yoy)}% YoY
+        </p>
+      )}
+      {femPct != null && (
+        <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.50)", marginTop: 3 }}>
+          {femPct}% F · {100 - femPct}% M
+        </p>
+      )}
+    </div>
+  );
+}
+
+// -- UI atoms ----------------------------------------------------------------
 function SecHeader({ title, sub, accent = VIOLET }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
@@ -298,7 +390,7 @@ function CustomDonut({ data, colors, label, valueFormatter = String, size = 160 
   );
 }
 
-// â"€â"€â"€ Constants â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Constants ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
 type YearVal = typeof YEARS[number] | "all";
 
@@ -331,19 +423,27 @@ const PERIOD_LABELS: Record<PeriodVal, string> = {
   h1: "H1 - Jan to Jun", h2: "H2 - Jul to Dec",
 };
 
-// â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Page ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
 export default function ImpactDashboard() {
-  // â"€â"€ Filter state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  // ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Filter state ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
+  const sysDark    = useDarkMode();
+  const [manualDark, setManualDark] = useState<boolean | null>(null);
+  const dark = manualDark !== null ? manualDark : sysDark;
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  }, [dark]);
+
   const [yearFilter,   setYearFilter]   = useState<YearVal>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodVal>("all");
   const [genderFilter, setGenderFilter] = useState<"all" | "female" | "male">("all");
   const [catFilter,    setCatFilter]    = useState<HackCat>("all");
   const [streamFilter, setStreamFilter] = useState<"all" | "hemp" | "hent">("all");
+  const [regionFilter, setRegionFilter] = useState<string>("all");
   // Analytical drill-down states
   const [growthView,    setGrowthView]    = useState<"participation" | "quality">("participation");
   const [pipelineSector, setPipelineSector] = useState("all");
 
-  // â"€â"€ Filtered data â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  // ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Filtered data ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
   const D = useMemo(() => {
     const yr    = yearFilter;
     const months = PERIOD_MONTHS[periodFilter]; // empty array = no month filter
@@ -383,6 +483,11 @@ export default function ImpactDashboard() {
     const msEmployed  = msCompleted.filter((s) => s.employment === "Employed" || s.employment === "Entrepreneur");
     const msVentures  = ms.filter((s) => s.ventureCreated).length;
     const msCompPct   = msTotal ? Math.round((msCompleted.length / msTotal) * 100) : 0;
+    // Disaggregated outcome breakdowns for metric columns
+    const msWageOnly  = msCompleted.filter((s) => s.employment === "Employed").length;
+    const msEntOnly   = msCompleted.filter((s) => s.employment === "Entrepreneur").length;
+    const msSeeking   = msCompleted.filter((s) => s.employment === "Seeking").length;
+    const msFurther   = msCompleted.filter((s) => s.employment === "Further Study").length;
 
     // HENT
     const hakPart    = hak.reduce((s, h) => s + h.participants, 0);
@@ -465,6 +570,8 @@ export default function ImpactDashboard() {
       { name: "Mentorship",   sat: mfAvgSat,   compl: mfAvgCompl,  color: VIOLET },
     ];
 
+    const jobsFromVC = vc.reduce((s, v) => s + (v.jobsTotal ?? v.jobs6m ?? 0), 0);
+
     return {
       // raw filtered slices for charts
       hx, int: int, ms, hak, mc, fv, mf, vc,
@@ -482,10 +589,12 @@ export default function ImpactDashboard() {
       totalPartners, venturesTotal, employmentOut, avgSat, avgCompl,
       filteredHakProj, hakCatTotals, allCountries, streamDist,
       displayFem, displayMale, displayTotal, programQuality,
+      // Metric column extras
+      msWageOnly, msEntOnly, msSeeking, msFurther, jobsFromVC,
     };
   }, [yearFilter, periodFilter, genderFilter, catFilter, streamFilter]);
 
-  // â"€â"€ Year trend data â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  // ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Year trend data ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
   const growthByYear = useMemo(() =>
     YEARS.map((yr) => {
       const hemp =
@@ -520,7 +629,7 @@ export default function ImpactDashboard() {
         "Venture Eco.": hent,
         Total: hemp + hent,
         "Completion %": complVals.length ? Math.round(avg(complVals)) : 0,
-        "Satisfaction Ã—20": satVals.length ? Math.round(avg(satVals) * 20) : 0,
+        "Satisfaction ÃƒÆ’Ã¢â‚¬â€20": satVals.length ? Math.round(avg(satVals) * 20) : 0,
       };
     }).filter((d) => d.Total > 0),
   [yearFilter]);
@@ -554,519 +663,465 @@ export default function ImpactDashboard() {
     }).filter((d) => d.Placed + d.Converted > 0),
   [pipelineSector]);
 
-  return (
-    <div className="min-h-screen" style={{ backgroundColor: EXEC_BG }}>
-      {/* â"€â"€ Page header â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-      <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div className="max-w-[1440px] mx-auto px-6">
-          <div className="flex items-center justify-between py-5 gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl font-black text-gray-900 leading-none">CHII Ecosystem Impact</h1>
-              <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Consolidated analytics {D.grandTotal.toLocaleString()} participants reached
-              </p>
-            </div>
+  const yoyReach = useMemo(() => {
+    const total = (yr: number) =>
+      healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0) +
+      internships.filter(i => i.year === yr).reduce((s, i) => s + i.students, 0) +
+      missionStudents.filter(s => s.cohort === yr).length +
+      hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0) +
+      masterclasses.filter(m => m.year === yr).reduce((s, m) => s + m.attendees, 0) +
+      fieldVisits.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0) +
+      mentorshipPrograms.filter(p => p.year === yr).reduce((s, p) => s + p.fellows, 0);
+    const y25 = total(2025), y24 = total(2024);
+    return y24 > 0 ? Math.round(((y25 - y24) / y24) * 100) : null;
+  }, []);
 
-            {/* Year + period dropdowns + actions  -  inline row */}
-            <div className="flex items-center gap-2">
-              <select
-                value={String(yearFilter)}
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: "var(--page-bg)" }}>
+      <style>{`
+        :root {
+          --page-bg:#F8F9FA;
+          --hero-fill:#185FA5; --hero-lbl:#B5D4F4; --hero-num:#FFFFFF;
+          --ac-fill:#E6F1FB; --ac-lbl:#185FA5; --ac-num:#0C447C;
+          --oc-fill:#E1F5EE; --oc-lbl:#0F6E56; --oc-num:#085041;
+          --ql-fill:#F1EFE8; --ql-lbl:#5F5E5A; --ql-num:#2C2C2A;
+        }
+        [data-theme="dark"]{
+          --page-bg:#0A1929;
+          --hero-fill:#0C447C; --hero-lbl:#85B7EB; --hero-num:#E6F1FB;
+          --ac-fill:#0C447C;  --ac-lbl:#85B7EB;  --ac-num:#E6F1FB;
+          --oc-fill:#085041;  --oc-lbl:#1D9E75;  --oc-num:#E1F5EE;
+          --ql-fill:#2C2C2A;  --ql-lbl:#F1EFE8;  --ql-num:#F1EFE8;
+        }
+      `}</style>
+      {/* -- Page header -- */}
+      <header className="border-b" style={{ borderColor: "rgba(0,33,71,0.10)" }}>
+        <div className="max-w-[1440px] mx-auto px-6 py-4">
+          <div className="flex items-start justify-between gap-6 flex-wrap">
+            <div>
+              <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>CHII Ecosystem Impact</h1>
+              <p className="text-[11px] text-gray-400 mt-1 font-medium">Consolidated analytics</p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <select value={String(yearFilter)}
                 onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-                className="text-xs font-medium border border-gray-200 text-gray-700 bg-white px-3 py-2 rounded appearance-none cursor-pointer hover:border-gray-400 focus:outline-none focus:border-gray-400 transition-colors pr-7"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
-              >
-                <option value="all">All Years</option>
+                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
+                <option value="all">All years</option>
                 {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
               </select>
-              <select
-                value={periodFilter}
-                onChange={(e) => setPeriodFilter(e.target.value as PeriodVal)}
-                className="text-xs font-medium border border-gray-200 text-gray-700 bg-white px-3 py-2 rounded appearance-none cursor-pointer hover:border-gray-400 focus:outline-none focus:border-gray-400 transition-colors pr-7"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
-              >
-                {(Object.entries(PERIOD_LABELS) as [PeriodVal, string][]).map(([val, label]) => (
-                  <option key={val} value={val}>{label}</option>
-                ))}
+              <select value={streamFilter}
+                onChange={(e) => setStreamFilter(e.target.value as "all" | "hemp" | "hent")}
+                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
+                <option value="all">All pathways</option>
+                <option value="hent">HENT</option>
+                <option value="hemp">HEMP</option>
               </select>
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
+              <select value={regionFilter}
+                onChange={(e) => setRegionFilter(e.target.value)}
+                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
+                <option value="all">All regions</option>
+                <option value="east-africa">East Africa</option>
+                <option value="west-africa">West Africa</option>
+              </select>
+              <select value={genderFilter}
+                onChange={(e) => setGenderFilter(e.target.value as "all" | "female" | "male")}
+                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
+                <option value="all">All genders</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+              <button
+                onClick={() => setManualDark(prev => !(prev ?? sysDark))}
+                title={dark ? "Switch to light mode" : "Switch to dark mode"}
+                className="flex items-center justify-center w-9 h-9 rounded-lg border transition-colors"
+                style={{ color: dark ? "#85B7EB" : "#185FA5", borderColor: dark ? "#85B7EB" : "#185FA5", backgroundColor: dark ? "#0C447C" : "transparent" }}>
+                {dark ? <Sun size={14} /> : <Moon size={14} />}
+              </button>
+              <button className="flex items-center gap-1.5 text-[12px] font-medium border px-4 py-2 rounded-lg transition-colors" style={{ color: "#185FA5", borderColor: "#185FA5" }}>
                 <Download size={11} /> Export
               </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm"
-                style={{ backgroundColor: NAVY }}>
-                <FileText size={11} /> Report
+            </div>
+          </div>
+          {(yearFilter !== "all" || streamFilter !== "all" || genderFilter !== "all" || regionFilter !== "all") && (
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <span className="text-[11px] font-medium text-gray-400">Active:</span>
+              {streamFilter !== "all" && (
+                <button onClick={() => setStreamFilter("all")}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
+                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
+                  {streamFilter.toUpperCase()} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
+                </button>
+              )}
+              {yearFilter !== "all" && (
+                <button onClick={() => setYearFilter("all")}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
+                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
+                  {yearFilter} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
+                </button>
+              )}
+              {genderFilter !== "all" && (
+                <button onClick={() => setGenderFilter("all")}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
+                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
+                  {genderFilter === "female" ? "Female" : "Male"} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
+                </button>
+              )}
+              {regionFilter !== "all" && (
+                <button onClick={() => setRegionFilter("all")}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
+                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
+                  {regionFilter} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
+                </button>
+              )}
+              <button
+                onClick={() => { setYearFilter("all"); setStreamFilter("all"); setGenderFilter("all"); setRegionFilter("all"); }}
+                className="text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors">
+                Clear all
               </button>
             </div>
-          </div>
-
-          {/* KPI tiles */}
-          <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-              <KpiTile label="People Reached"       num={D.grandTotal}       displayFmt={fmt}  sub={periodFilter === "all" ? (yearFilter === "all" ? "All years" : String(yearFilter)) : PERIOD_LABELS[periodFilter].split("  *  ")[0]} clr={TEAL}   />
-              <KpiTile label="Countries"            num={D.allCountries.length} displayFmt={fmt} sub="Geographic reach"  clr={INDIGO} />
-              <KpiTile label="Female"               num={D.femalePct}        displayFmt={pct}  sub={`${fmt(D.totalFem)} participants`} clr={ROSE}   />
-              <KpiTile label="Ventures & Startups"  num={D.venturesTotal}    displayFmt={fmt}  sub="Innovation outputs" clr={VIOLET} />
-              <KpiTile label="Employment Outcomes"  num={D.employmentOut}    displayFmt={fmt}  sub="Converted & placed" clr={GREEN}  />
-              <KpiTile label="Partnerships"         num={D.totalPartners}    displayFmt={fmt}  sub="Collaborations"     clr={AMBER}  />
-              <KpiTile label="Avg Satisfaction"     num={D.avgSat * 10}      displayFmt={(n) => `${(n / 10).toFixed(1)}/5`} sub="All streams" clr={ORANGE} />
-              <KpiTile label="Avg Completion"       num={D.avgCompl}         displayFmt={pct}  sub="All programmes"    clr={SKY}    />
-            </div>
-          </div>
+          )}
         </div>
       </header>
 
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-10">
 
-        {/* â"€â"€ Executive insight cards â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <InsightCard label="Overall Satisfaction"  value={`${D.avgSat}/5`}
-            sub="Avg across all programme streams"
-            note={`HealthX ${D.hxAvgSat}  *  Internships ${D.intAvgSat}  *  Masterclasses ${D.mcAvgSat}`}
-            color={TEAL} icon={Star} />
-          <InsightCard label="Completion Momentum"   value={pct(D.avgCompl)}
-            sub="Programme completion average"
-            note={`HealthX ${D.hxAvgCompl}%  *  Masterclasses ${D.mcAvgCompl}%  *  Mission ${D.msCompPct}%`}
-            color={VIOLET} icon={Target} />
-          <InsightCard label="Innovation Ecosystem"  value={fmt(D.venturesTotal)}
-            sub="Ventures, startups & projects"
-            note={`Portfolio ${D.vc.length}  *  Mission ${D.msVentures}  *  Hackathons ${D.hakStart}`}
-            color={ORANGE} icon={Zap} />
-          <InsightCard label="Workforce Impact"      value={fmt(D.employmentOut)}
-            sub="People employed or converted"
-            note={`Internship conversions ${D.intConv}  *  Mission employed ${D.msEmployed.length}`}
-            color={GREEN} icon={Briefcase} />
+        {/* Band 1 · Summary */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px" }}>
+          {[
+            { label: "Reached",        value: fmt(D.grandTotal), sub: "2025 · vs last quarter",   icon: Users       as React.ComponentType<{ size?: number; style?: React.CSSProperties }>, trend: "+8%",    trendUp: true  },
+            { label: "Placement",      value: "75%",             sub: "Within 6 months",          icon: TrendingUp  as React.ComponentType<{ size?: number; style?: React.CSSProperties }>, trend: "+3pt",   trendUp: true  },
+            { label: "Avg income",     value: "$10,043",         sub: "Employed graduates",       icon: Award       as React.ComponentType<{ size?: number; style?: React.CSSProperties }>, trend: "+6%",    trendUp: true  },
+            { label: "Dignified work", value: "97%",             sub: "Of employment conditions", icon: CheckCircle as React.ComponentType<{ size?: number; style?: React.CSSProperties }>, trend: "Steady", trendUp: false },
+            { label: "Rating",         value: `${D.avgSat}/5`,  sub: "Participant satisfaction", icon: Star        as React.ComponentType<{ size?: number; style?: React.CSSProperties }>, trend: "Steady", trendUp: false },
+          ].map(k => (
+            <div key={k.label} className="cursor-default transition-transform duration-200 hover:-translate-y-0.5"
+              style={{ backgroundColor: "var(--hero-fill)", borderRadius: 8, padding: "14px 16px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ width: 26, height: 26, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.20)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <k.icon size={14} style={{ color: "white" }} />
+                </div>
+                <div style={{ backgroundColor: "rgba(255,255,255,0.18)", borderRadius: 999, padding: "2px 6px", display: "flex", alignItems: "center", gap: 2 }}>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: k.trendUp ? "#B6F2C5" : "rgba(255,255,255,0.85)", lineHeight: 1 }}>
+                    {k.trendUp ? "↗ " : "− "}{k.trend}
+                  </span>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                <p style={{ fontSize: 20, fontWeight: 500, color: "white", letterSpacing: "-0.01em", lineHeight: 1, marginBottom: 5 }}>{k.value}</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: "var(--hero-lbl)", letterSpacing: "0.02em" }}>{k.label}</span>
+                  <span className="group/tip relative inline-flex items-center" tabIndex={0} aria-label={k.sub} style={{ outline: "none" }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                      style={{ color: "rgba(255,255,255,0.55)", cursor: "default", display: "block" }}>
+                      <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    <span className="pointer-events-none absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[6px] text-white opacity-0 transition-opacity duration-150 group-hover/tip:opacity-100 group-focus/tip:opacity-100 z-50"
+                      style={{ backgroundColor: "#13264C", fontSize: 11, padding: "6px 9px" }}>
+                      {k.sub}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* â"€â"€ SECTION 1: Scale & Reach â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <section>
-          <SecHeader title="Scale & Collective Reach" sub="Participation growth and programme stream distribution" accent={TEAL} />
+        {/* Band 2 · Pipeline & Programme Analytics */}
+        <div className="space-y-4">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
-              <ChartCard title="Participation Growth"
-                sub={growthView === "participation" ? "Year-on-year reach by programme stream" : "Avg completion % and satisfaction score trend by year"}
-                accent={VIOLET}
-                filter={
-                  <PillGroup
-                    options={[{ label: "Reach", value: "participation" }, { label: "Quality", value: "quality" }]}
-                    value={growthView} onChange={setGrowthView} />
-                }>
-                <ResponsiveContainer width="100%" height={240}>
-                  {growthView === "participation" ? (
-                    <AreaChart data={growthByYear}>
-                      <defs>
-                        <linearGradient id="gHE" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={TEAL} stopOpacity={0.28} />
-                          <stop offset="95%" stopColor={TEAL} stopOpacity={0.02} />
-                        </linearGradient>
-                        <linearGradient id="gVE" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={VIOLET} stopOpacity={0.28} />
-                          <stop offset="95%" stopColor={VIOLET} stopOpacity={0.02} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                      <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
-                      <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={34} />
-                      <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
-                      <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
-                      <Area type="monotone" dataKey="Health Ed."   stroke={TEAL}   strokeWidth={2} fill="url(#gHE)" dot={false} />
-                      <Area type="monotone" dataKey="Venture Eco." stroke={VIOLET} strokeWidth={2} fill="url(#gVE)" dot={false} />
-                    </AreaChart>
-                  ) : (
-                    <LineChart data={growthByYear}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                      <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
-                      <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={34} />
-                      <Tooltip
-                        contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }}
-                        formatter={(v: number, name: string) =>
-                          name === "Satisfaction Ã—20" ? [`${(v / 20).toFixed(1)}/5`, "Avg Satisfaction"] : [`${v}%`, name]
-                        }
-                      />
-                      <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
-                      <Line type="monotone" dataKey="Completion %" stroke={GREEN} strokeWidth={2} dot={{ r: 3, fill: GREEN }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="Satisfaction Ã—20" stroke={SKY} strokeWidth={2} dot={{ r: 3, fill: SKY }} activeDot={{ r: 5 }} strokeDasharray="4 2" />
-                    </LineChart>
-                  )}
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-
-            <ChartCard title="Stream Distribution" sub="Share of reach by engagement type" accent={INDIGO}
-              filter={
-                <PillGroup
-                  options={[{ label: "All", value: "all" }, { label: "Health Ed.", value: "hemp" }, { label: "Venture", value: "hent" }]}
-                  value={streamFilter} onChange={setStreamFilter} />
-              }>
-              <div className="h-[190px]">
-                <CustomDonut
-                  data={D.streamDist}
-                  colors={[TEAL, AMBER, VIOLET, SKY, ORANGE, ROSE]}
-                  label={fmt(D.grandTotal)}
-                  valueFormatter={fmt}
-                />
-              </div>
-              <div className="mt-3 space-y-1.5">
-                {D.streamDist.map((s, i) => {
-                  const cc = [TEAL, AMBER, VIOLET, SKY, ORANGE, ROSE];
-                  const t = D.streamDist.reduce((x, d) => x + d.value, 0);
-                  return (
-                    <div key={s.name} className="flex items-center justify-between text-[11px] text-gray-600">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cc[i] }} />{s.name}
-                      </span>
-                      <span className="font-bold tabular-nums" style={{ color: cc[i] }}>
-                        {fmt(s.value)} ({t > 0 ? Math.round((s.value / t) * 100) : 0}%)
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* â"€â"€ SECTION 2: Gender Equity â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <section>
-          <SecHeader title="Gender Equity & Diversity" sub="Disaggregated participation across all programme streams" accent={ROSE} />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <ChartCard title="Overall Gender Split" sub="Female vs male across all programmes" accent={ROSE}>
-              <div className="flex justify-center mb-4">
-                <SegTab
-                  options={[{ label: "All", value: "all" }, { label: "Female", value: "female" }, { label: "Male", value: "male" }]}
-                  value={genderFilter} onChange={setGenderFilter} accent={ROSE} />
-              </div>
-              <div className="h-[160px]">
-                <CustomDonut
-                  data={[
-                    { name: "Female", value: D.displayFem },
-                    { name: "Male",   value: D.displayMale },
-                  ].filter((d) => d.value > 0)}
-                  colors={[ROSE, "#60A5FA"]}
-                  label={pct(D.femalePct)}
-                  valueFormatter={fmt}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2 mt-3 text-center">
-                <div className="rounded border py-3" style={{ backgroundColor: ROSE + "12", borderColor: ROSE + "33" }}>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500">Female</p>
-                  <p className="text-xl font-black text-gray-900 mt-1 tabular-nums">{fmt(D.totalFem)}</p>
-                </div>
-                <div className="rounded border py-3" style={{ backgroundColor: "#60A5FA22", borderColor: "#60A5FA44" }}>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500">Male</p>
-                  <p className="text-xl font-black text-gray-900 mt-1 tabular-nums">{fmt(Math.max(D.grandTotal - D.totalFem, 0))}</p>
-                </div>
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Female % by Programme" sub="Progress toward gender parity per stream" accent={ROSE}>
-              <div className="space-y-3 pt-1">
-                {[
-                  { label: "HealthX",      fem: D.hxFem,    total: D.hxPart,      color: TEAL   },
-                  { label: "Internships",  fem: D.intFem,   total: D.intStudents,  color: AMBER  },
-                  { label: "Mission",      fem: D.msFem,    total: D.msTotal,      color: VIOLET },
-                  { label: "Hackathons",   fem: D.hakFem,   total: D.hakPart,      color: ORANGE },
-                  { label: "Masterclasses",fem: D.mcFem,    total: D.mcAtt,        color: SKY    },
-                  { label: "Field Visits", fem: D.fvFem,    total: D.fvPart,       color: INDIGO },
-                  { label: "Mentorship",   fem: D.mfFem,    total: D.mfFel,        color: VIOLET },
-                ].map((row) => {
-                  const p = row.total > 0 ? Math.round((row.fem / row.total) * 100) : 0;
-                  return (
-                    <div key={row.label}>
-                      <div className="flex items-center justify-between text-[10px] text-gray-600 mb-1">
-                        <span className="font-medium">{row.label}</span>
-                        <span className="font-bold" style={{ color: row.color }}>{p}%</span>
-                      </div>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: row.color + "20" }}>
-                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${p}%`, backgroundColor: row.color }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Students vs Alumni" sub="Current learners vs programme graduates" accent={INDIGO}>
+          {/* Row 1: Funnel + Programme Mix */}
+          <div className="grid grid-cols-[3fr_2fr] gap-4">
+            <ChartCard title="Beneficiary Pathway Funnel" sub="Conversion through the CHII programme pipeline" accent={NAVY}>
               {(() => {
-                const studentPart = D.intStudents + D.msTotal +
-                  D.mc.reduce((s, m) => s + m.studentAttendees, 0) +
-                  D.hak.reduce((s, h) => s + h.studentCount, 0) +
-                  D.fv.reduce((s, v) => s + v.studentParticipants, 0);
-                const alumniPart = D.msEmployed.length + D.mfGrad + D.intPlace;
+                const inWork = D.msWageOnly + D.msEntOnly;
+                const stages = [
+                  { label: "Outreach",      value: 6482,   color: "#185FA5" },
+                  { label: "Enrolled",      value: 3423,   color: "#378ADD" },
+                  { label: "Graduated",     value: 2007,   color: "#85B7EB" },
+                  { label: "In Employment", value: inWork, color: "#0F6E56" },
+                ];
                 return (
-                  <>
-                    <div className="h-[180px]">
-                      <CustomDonut
-                        data={[{ name: "Students", value: studentPart }, { name: "Alumni", value: alumniPart }]}
-                        colors={[INDIGO, TEAL]} label={fmt(studentPart)} valueFormatter={fmt} />
-                    </div>
-                    <div className="mt-3 space-y-2">
-                      <StatRow label="Active students"    value={fmt(studentPart)} color={INDIGO} />
-                      <StatRow label="Alumni / Graduates" value={fmt(alumniPart)}  color={TEAL}   />
-                    </div>
-                  </>
+                  <div className="space-y-3">
+                    {stages.map((s, i) => {
+                      const w = (s.value / 6482) * 100;
+                      const conv = i > 0 ? Math.round((s.value / stages[i - 1].value) * 100) : null;
+                      return (
+                        <div key={s.label}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-semibold text-gray-700">{s.label}</span>
+                            <div className="flex items-center gap-2">
+                              {conv !== null && (
+                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                                  style={{ backgroundColor: s.color + "18", color: s.color }}>
+                                  {conv}% conv.
+                                </span>
+                              )}
+                              <span className="text-[12px] font-black tabular-nums" style={{ color: s.color }}>{fmt(s.value)}</span>
+                            </div>
+                          </div>
+                          <div className="h-6 rounded overflow-hidden" style={{ backgroundColor: s.color + "15" }}>
+                            <div className="h-full rounded" style={{ width: `${w}%`, backgroundColor: s.color }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <p className="text-[9px] text-gray-400 pt-1 border-t border-gray-50">
+                      Conversion rate relative to prior stage · Mission Student cohort
+                    </p>
+                  </div>
+                );
+              })()}
+            </ChartCard>
+
+            <ChartCard title="Programme Mix" sub="Participant distribution across CHII streams" accent={NAVY}>
+              {(() => {
+                const total = D.streamDist.reduce((s, d) => s + d.value, 0);
+                const colors = ["#185FA5", "#378ADD", "#1D9E75", "#7F77DD", "#85B7EB", "#BA7517"];
+                return (
+                  <div className="space-y-3">
+                    {D.streamDist.map((d, i) => {
+                      const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                      const clr = colors[i % colors.length];
+                      return (
+                        <div key={d.name}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-medium text-gray-700">{d.name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-semibold" style={{ color: clr }}>{pct}%</span>
+                              <span className="text-[11px] font-black tabular-nums" style={{ color: clr }}>{fmt(d.value)}</span>
+                            </div>
+                          </div>
+                          <div className="h-3 rounded-full overflow-hidden" style={{ backgroundColor: clr + "18" }}>
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: clr }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <p className="text-[9px] text-gray-400 pt-1 border-t border-gray-50">
+                      All participant streams · current filter applied
+                    </p>
+                  </div>
                 );
               })()}
             </ChartCard>
           </div>
-        </section>
 
-        {/* â"€â"€ SECTION 3: Innovation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <section>
-          <SecHeader title="Innovation & Entrepreneurship Output" sub="Venture creation, hackathon projects, and startup ecosystem" accent={ORANGE} />
+          {/* Row 2: Year Trend + Sector Conversion + Programme Quality */}
+          <div className="grid grid-cols-3 gap-4">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <ChartCard title="Venture Ecosystem" sub="Portfolio + mission-led + hackathon startups" accent={VIOLET}>
-              <div className="rounded border p-4 mb-4" style={{ backgroundColor: VIOLET + "10", borderColor: VIOLET + "22" }}>
-                <div className="flex items-start justify-between">
+            <ChartCard title="Reach by Year" sub="HEMP and HENT combined participant growth" accent={NAVY}>
+              {(() => {
+                const data = growthByYear.map(d => ({
+                  year: d.Year,
+                  hemp: (d as unknown as Record<string, number>)["Health Ed."] ?? 0,
+                  hent: (d as unknown as Record<string, number>)["Venture Eco."] ?? 0,
+                }));
+                return (
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500">Total innovation outputs</p>
-                    <p className="text-3xl font-black tabular-nums text-gray-900 mt-2">{fmt(D.venturesTotal)}</p>
-                  </div>
-                  <div className="w-10 h-10 rounded bg-white border flex items-center justify-center" style={{ borderColor: VIOLET + "22" }}>
-                    <TrendingUp size={18} color={VIOLET} />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {[
-                  { label: "Portfolio", value: D.vc.length, color: VIOLET },
-                  { label: "Mission",   value: D.msVentures, color: TEAL },
-                  { label: "Hackathon", value: D.hakStart,   color: ORANGE },
-                ].map((r) => (
-                  <div key={r.label} className="rounded border p-3 text-center" style={{ backgroundColor: r.color + "10", borderColor: r.color + "22" }}>
-                    <p className="text-[9px] font-bold uppercase text-gray-500">{r.label}</p>
-                    <p className="text-lg font-black tabular-nums mt-1" style={{ color: r.color }}>{r.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded border p-3">
-                <p className="text-[10px] font-bold text-gray-600 mb-2">
-                  {catFilter === "all" ? "All hackathon categories" : `Category: ${catFilter}`}
-                </p>
-                {D.hakCatTotals.map((c, i) => {
-                  const cc = [TEAL, ROSE, VIOLET, GREEN, AMBER];
-                  const isHighlighted = catFilter === "all" || catFilter === c.name;
-                  return (
-                    <HBar key={c.name} label={c.name} value={c.value}
-                      max={D.hakCatTotals[0].value}
-                      color={isHighlighted ? cc[i] : "#D1D5DB"} />
-                  );
-                })}
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Innovation Projects Timeline" sub={catFilter === "all" ? "All projects by year" : `${catFilter}  -  by year`} accent={ORANGE}
-              filter={
-                <HeaderDropdown
-                  options={[{ label: "All categories", value: "all" }, ...HACK_CATS.map((c) => ({ label: c, value: c as HackCat }))]}
-                  value={catFilter} onChange={setCatFilter} />
-              }>
-              <div className="rounded border p-4 mb-4" style={{ backgroundColor: ORANGE + "10", borderColor: ORANGE + "22" }}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500">
-                  {catFilter === "all" ? "Total projects built" : `${catFilter} projects`}
-                </p>
-                <p className="text-3xl font-black tabular-nums text-gray-900 mt-1">{fmt(D.filteredHakProj)}</p>
-              </div>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={[2022, 2023, 2024, 2025, 2026].map((yr) => {
-                  const yrHaks = hackathons.filter((h) => h.year === yr);
-                  const val = catFilter === "all"
-                    ? yrHaks.reduce((s, h) => s + h.projects, 0)
-                    : yrHaks.reduce((s, h) => s + (h.categories[catFilter as keyof typeof h.categories] ?? 0), 0);
-                  return { Year: String(yr), Projects: val };
-                })}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={26} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
-                  <Bar dataKey="Projects" fill={ORANGE} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
-
-            <ChartCard title="Partnerships & Reach" sub="Institutional collaborations and geographic footprint" accent={GREEN}>
-              <div className="rounded border p-4 mb-4" style={{ backgroundColor: GREEN + "10", borderColor: GREEN + "22" }}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500">Total partnerships</p>
-                    <p className="text-3xl font-black tabular-nums text-gray-900 mt-1">{fmt(D.totalPartners)}</p>
-                  </div>
-                  <div className="w-10 h-10 rounded bg-white border flex items-center justify-center" style={{ borderColor: GREEN + "22" }}>
-                    <Handshake size={18} color={GREEN} />
-                  </div>
-                </div>
-              </div>
-              <div className="rounded border p-3 mb-3">
-                <StatRow label="HealthX partnerships"   value={D.hxPartners}   color={TEAL}   />
-                <StatRow label="Hackathon partnerships" value={D.hakPartners} color={ORANGE} />
-                <StatRow label="Field visit links"      value={D.fvPartners}   color={INDIGO} />
-              </div>
-              <div className="rounded border p-4" style={{ backgroundColor: TEAL + "08", borderColor: TEAL + "18" }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: TEAL + "20" }}>
-                    <Globe size={16} color={TEAL} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">Geographic footprint</p>
-                    <p className="text-xl font-black tabular-nums" style={{ color: TEAL }}>{D.allCountries.length} countries</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">{D.allCountries.slice(0, 6).join("  *  ")}</p>
-                  </div>
-                </div>
-              </div>
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* â"€â"€ SECTION 4: Workforce Outcomes â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <section>
-          <SecHeader title="Workforce Development & People Outcomes" sub="Employment conversions, post-programme placements, and leadership pipeline" accent={AMBER} />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
-              <ChartCard title="Employment & Placement Pipeline"
-                sub={pipelineSector === "all" ? "All sectors  -  conversions and placements by year" : `${pipelineSector} sector  -  conversion and placement trend`}
-                accent={AMBER}
-                filter={
-                  <HeaderDropdown
-                    options={[{ label: "All Sectors", value: "all" }, ...SECTORS_HEMP.map((s) => ({ label: s, value: s }))]}
-                    value={pipelineSector} onChange={setPipelineSector} />
-                }>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={outcomesByYear}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
-                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
-                    <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="Placed"    fill={AMBER} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Converted" fill={TEAL}  radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-4 grid grid-cols-4 gap-2 text-center">
-                  {[
-                    { label: "Internship students",  value: D.intStudents,           color: AMBER  },
-                    { label: "Emp. conversions",      value: D.intConv,               color: TEAL   },
-                    { label: "Post-prog. placed",     value: D.intPlace,              color: GREEN  },
-                    { label: "Mission employed",      value: D.msEmployed.length,     color: VIOLET },
-                  ].map((r) => (
-                    <div key={r.label} className="rounded border p-3" style={{ backgroundColor: r.color + "10", borderColor: r.color + "22" }}>
-                      <p className="text-[9px] font-bold uppercase text-gray-500">{r.label}</p>
-                      <p className="text-lg font-black tabular-nums mt-1" style={{ color: r.color }}>{fmt(r.value)}</p>
+                    <ResponsiveContainer width="100%" height={148}>
+                      <AreaChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+                        <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                        <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6, border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }} />
+                        <Area type="monotone" dataKey="hemp" stackId="1" stroke={"#185FA5"} fill={"#185FA540"} strokeWidth={2} name="HEMP" />
+                        <Area type="monotone" dataKey="hent" stackId="1" stroke={"#1D9E75"} fill={"#1D9E7540"} strokeWidth={2} name="HENT" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                      <span className="flex items-center gap-1.5 text-[10px] text-gray-500"><span className="w-6 h-0.5 rounded-full inline-block" style={{ backgroundColor: "#185FA5" }} /> HEMP</span>
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                      <span className="flex items-center gap-1.5 text-[10px] text-gray-500"><span className="w-6 h-0.5 rounded-full inline-block" style={{ backgroundColor: "#1D9E75" }} /> HENT</span>
+                      </span>
                     </div>
-                  ))}
-                </div>
-                {/* Sector conversion rate insight  -  visible when a sector is selected */}
-                {pipelineSector !== "all" && (() => {
-                  const row = sectorConversionRates.find((s) => s.Sector === pipelineSector);
-                  if (!row) return null;
-                  return (
-                    <div className="mt-3 rounded border p-3" style={{ backgroundColor: AMBER + "08", borderColor: AMBER + "22" }}>
-                      <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-gray-500 mb-2">{pipelineSector}  -  conversion insight</p>
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <p className="text-[8px] text-gray-400">Emp. conversion rate</p>
-                          <p className="text-lg font-black tabular-nums" style={{ color: TEAL }}>{row["Conv. Rate %"]}%</p>
-                        </div>
-                        <div>
-                          <p className="text-[8px] text-gray-400">Placement rate</p>
-                          <p className="text-lg font-black tabular-nums" style={{ color: AMBER }}>{row["Placement Rate %"]}%</p>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-[8px] text-gray-400 mb-1">vs all-sector avg ({sectorConversionRates.length > 0 ? Math.round(sectorConversionRates.reduce((s, r) => s + r["Conv. Rate %"], 0) / sectorConversionRates.length) : 0}%)</p>
-                          <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: TEAL + "20" }}>
-                            <div className="h-full rounded-full" style={{ width: `${Math.min(row["Conv. Rate %"], 100)}%`, backgroundColor: TEAL }} />
-                          </div>
-                        </div>
+                  </div>
+                );
+              })()}
+            </ChartCard>
+
+            <ChartCard title="Sector Conversion" sub="Employment conversion rate by internship sector" accent={NAVY}>
+              <div className="space-y-2.5">
+                {sectorConversionRates.map(s => (
+                  <div key={s.Sector}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-medium text-gray-700">{s.Sector}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-gray-400">
+                          Conv <span className="font-bold" style={{ color: AMBER }}>{s["Conv. Rate %"]}%</span>
+                        </span>
+                        <span className="text-[9px] text-gray-400">
+                          Place <span className="font-bold" style={{ color: GREEN }}>{s["Placement Rate %"]}%</span>
+                        </span>
                       </div>
                     </div>
-                  );
-                })()}
-              </ChartCard>
-            </div>
-
-            <ChartCard title="Leadership Pipeline" sub="Programme completions, fellows graduated, and ventures created" accent={VIOLET}>
-              <div className="rounded border p-4 mb-4" style={{ backgroundColor: VIOLET + "08", borderColor: VIOLET + "18" }}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">Leaders developed</p>
-                <p className="text-3xl font-black tabular-nums mt-1" style={{ color: VIOLET }}>
-                  {fmt(D.msCompleted.length + D.mfGrad)}
-                </p>
-                <p className="text-[11px] text-gray-500 mt-1">Completions + fellowship graduates</p>
-              </div>
-              <StatRow label="Mission completions"   value={fmt(D.msCompleted.length)} color={VIOLET} />
-              <StatRow label="Mission completion %"  value={pct(D.msCompPct)}          color={GREEN}  />
-              <StatRow label="Fellowship graduates"  value={fmt(D.mfGrad)}             color={SKY}    />
-              <StatRow label="Mentorship fellows"    value={fmt(D.mfFel)}              color={INDIGO} />
-              <StatRow label="Ventures created"      value={fmt(D.msVentures)}         color={ORANGE} />
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* â"€â"€ SECTION 5: Programme Quality â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <section>
-          <SecHeader title="Programme Quality & Learning Engagement" sub="Satisfaction and completion benchmarks across all CHII programme streams" accent={SKY} />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Satisfaction Scores" sub="Average participant satisfaction (out of 5) per stream" accent={SKY}>
-              <div className="space-y-3 pt-1">
-                {D.programQuality.map((p) => (
-                  <div key={p.name}>
-                    <div className="flex items-center justify-between text-[11px] text-gray-700 mb-1.5">
-                      <span className="font-semibold">{p.name}</span>
-                      <span className="font-black tabular-nums" style={{ color: p.color }}>{p.sat}/5</span>
-                    </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: p.color + "20" }}>
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(p.sat / 5) * 100}%`, backgroundColor: p.color }} />
+                    <div className="flex gap-1">
+                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: AMBER + "20" }}>
+                        <div className="h-full rounded-full" style={{ width: `${s["Conv. Rate %"]}%`, backgroundColor: AMBER }} />
+                      </div>
+                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: GREEN + "20" }}>
+                        <div className="h-full rounded-full" style={{ width: `${s["Placement Rate %"]}%`, backgroundColor: GREEN }} />
+                      </div>
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="mt-5 rounded border p-3 flex items-center gap-2" style={{ backgroundColor: SKY + "08", borderColor: SKY + "22" }}>
-                <Star size={14} color={SKY} />
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-600">Overall average</p>
-                <p className="text-sm font-black tabular-nums ml-auto" style={{ color: SKY }}>{D.avgSat}/5</p>
+                <div className="flex gap-4 pt-1 border-t border-gray-50">
+                  <span className="flex items-center gap-1 text-[9px] text-gray-400">
+                    <span className="w-3 h-1.5 rounded-full inline-block" style={{ backgroundColor: AMBER }} /> Conversion
+                  </span>
+                  <span className="flex items-center gap-1 text-[9px] text-gray-400">
+                    <span className="w-3 h-1.5 rounded-full inline-block" style={{ backgroundColor: GREEN }} /> Placement
+                  </span>
+                </div>
               </div>
             </ChartCard>
 
-            <ChartCard title="Completion Rates" sub="% of participants completing each programme stream" accent={GREEN}>
-              <div className="space-y-3 pt-1">
-                {[
-                  ...D.programQuality.filter((p) => p.compl < 100),
-                  { name: "Mission Students", sat: 0, compl: D.msCompPct, color: VIOLET },
-                ].map((p) => (
+            <ChartCard title="Programme Quality" sub="Satisfaction and completion rate by programme" accent={NAVY}>
+              <div className="space-y-3">
+                {D.programQuality.map(p => (
                   <div key={p.name}>
-                    <div className="flex items-center justify-between text-[11px] text-gray-700 mb-1.5">
-                      <span className="font-semibold">{p.name}</span>
-                      <span className="font-black tabular-nums" style={{ color: p.color }}>{p.compl}%</span>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-medium text-gray-700">{p.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-bold" style={{ color: p.color }}>{p.sat}/5</span>
+                        <span className="text-[9px] text-gray-400">{p.compl}%</span>
+                      </div>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: p.color + "20" }}>
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${p.compl}%`, backgroundColor: p.color }} />
+                    <div className="flex gap-1">
+                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: p.color + "22" }}>
+                        <div className="h-full rounded-full" style={{ width: `${(p.sat / 5) * 100}%`, backgroundColor: p.color }} />
+                      </div>
+                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: p.color + "18" }}>
+                        <div className="h-full rounded-full" style={{ width: `${p.compl}%`, backgroundColor: p.color + "80" }} />
+                      </div>
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="mt-5 rounded border p-3 flex items-center gap-2" style={{ backgroundColor: GREEN + "08", borderColor: GREEN + "22" }}>
-                <Award size={14} color={GREEN} />
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-600">Overall average</p>
-                <p className="text-sm font-black tabular-nums ml-auto" style={{ color: GREEN }}>{pct(D.avgCompl)}</p>
+                <div className="flex gap-4 pt-1 border-t border-gray-50">
+                  <span className="flex items-center gap-1 text-[9px] text-gray-400">
+                    <span className="w-3 h-1.5 rounded-full bg-gray-400 inline-block" /> Satisfaction
+                  </span>
+                  <span className="flex items-center gap-1 text-[9px] text-gray-400">
+                    <span className="w-3 h-1.5 rounded-full bg-gray-200 inline-block" /> Completion
+                  </span>
+                </div>
               </div>
             </ChartCard>
-          </div>
-        </section>
 
-        {/* â"€â"€ Footer â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <footer className="border-t border-gray-200 pt-6 pb-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">CHII  *  Centre for Health Innovation & Impact</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">
-                {yearFilter === "all" ? "2021 - 2026" : String(yearFilter)}{periodFilter !== "all" ? `  *  ${PERIOD_LABELS[periodFilter]}` : ""}  *  {D.allCountries.length} countries  *  {fmt(D.grandTotal)} participants
-              </p>
-            </div>
-            <p className="text-[10px] text-gray-300">Switch programme view using the tabs above</p>
           </div>
-        </footer>
+        </div>
+
+        {/* Band 3 · Who We Reached */}
+        {/* Band 3 · Who We Reached */}
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-[3px] h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "#185FA5" }} />
+            <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "#185FA5" }}>Who We Reached</p>
+          </div>
+          <div className="grid grid-cols-4 gap-4">
+            {([
+              { label: "MCF Scholars",    value: "1,643", yoy: "+10% YoY", sub: "Merit and need-based scholarships"  },
+              { label: "With Disability", value: "112",   yoy: null,       sub: "Inclusive access programme"         },
+              { label: "Refugees",        value: "475",   yoy: null,       sub: "Displaced youth and asylum seekers" },
+              { label: "Female",          value: "51%",   yoy: null,       sub: "Of all programme participants"      },
+            ] as { label: string; value: string; yoy: string | null; sub: string }[]).map(c => (
+              <div key={c.label} style={{ backgroundColor: "var(--ac-fill)", borderRadius: 8, padding: "12px" }}>
+                <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--ac-lbl)", marginBottom: 4 }}>{c.label}</p>
+                <p style={{ fontSize: 19, fontWeight: 500, color: "var(--ac-num)", lineHeight: 1, marginBottom: 4 }}>{c.value}</p>
+                {c.yoy && <p style={{ fontSize: 11, color: "var(--ac-lbl)", marginBottom: 2 }}>{c.yoy}</p>}
+                <p style={{ fontSize: 11, color: "#185FA5" }}>{c.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Band 4 · Where They Are Now */}
+        {/* Band 4 · Where They Are Now */}
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-[3px] h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "#0F6E56" }} />
+            <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "#0F6E56" }}>Where They Are Now</p>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-1 grid grid-cols-3 gap-3">
+              {([
+                { label: "Wage Employment",   value: "4,012",  yoy: "+16% YoY", sub: "Formal employment"             },
+                { label: "Entrepreneurs",     value: "1,580",  yoy: "+68% YoY", sub: "Running own ventures"          },
+                { label: "Further Education", value: "206",    yoy: "+5% YoY",  sub: "Continuing studies"            },
+                { label: "Jobs Created",       value: "54,657", yoy: "+5% YoY",  sub: "Via CHII ventures & network"  },
+                { label: "Launched Ventures",  value: "1,386",  yoy: null,       sub: "Active alumni enterprises"    },
+                { label: "Freelancers",        value: "35",     yoy: null,       sub: "Of connected alumni"          },
+              ] as { label: string; value: string; yoy: string | null; sub: string }[]).map(c => (
+                <div key={c.label} style={{ backgroundColor: "var(--oc-fill)", borderRadius: 8, padding: "12px" }}>
+                  <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--oc-lbl)", marginBottom: 4 }}>{c.label}</p>
+                  <p style={{ fontSize: 19, fontWeight: 500, color: "var(--oc-num)", lineHeight: 1, marginBottom: 4 }}>{c.value}</p>
+                  {c.yoy && <p style={{ fontSize: 11, color: "var(--oc-lbl)", marginBottom: 2 }}>{c.yoy}</p>}
+                  <p style={{ fontSize: 11, color: "#0F6E56" }}>{c.sub}</p>
+                </div>
+              ))}
+            </div>
+            <div style={{ width: 220, padding: "16px 20px", backgroundColor: "var(--oc-fill)", borderRadius: 8, flexShrink: 0 }}>
+              <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em", color: 'var(--oc-lbl)', marginBottom: 12 }}>Outcome Split</p>
+              {(() => {
+                const dist = [
+                  { name: "Employed",      value: D.msWageOnly, color: "#0F6E56" },
+                  { name: "Entrepreneur",  value: D.msEntOnly,  color: "#185FA5" },
+                  { name: "Further Study", value: D.msFurther,  color: "#7F77DD" },
+                  { name: "Seeking",       value: D.msSeeking,  color: "#BA7517" },
+                ].filter(d => d.value > 0);
+                const tot = dist.reduce((s, d) => s + d.value, 0);
+                return (
+                  <div>
+                    <div className="w-28 h-28 mx-auto mb-3">
+                      <CustomDonut data={dist} colors={dist.map(d => d.color)} valueFormatter={fmt} size={112} />
+                    </div>
+                    <div className="space-y-1.5">
+                      {dist.map(d => (
+                        <div key={d.name} className="flex items-center justify-between text-[10px]">
+                          <span className="flex items-center gap-1.5 font-medium" style={{ color: "var(--oc-num)" }}>
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
+                            {d.name}
+                          </span>
+                          <span className="font-bold tabular-nums" style={{ color: d.color }}>
+                            {tot > 0 ? Math.round((d.value / tot) * 100) : 0}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+        {/* Band 5 · Quality of Outcomes */}
+        {/* Band 5 · Quality of Outcomes */}
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-[3px] h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--ql-lbl)" }} />
+            <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "var(--ql-lbl)" }}>Quality of Outcomes</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+            {([
+              { label: "CSAT",              value: "72%",   sub: "Customer satisfaction score" },
+              { label: "Employer rating",   value: "4.5/5", sub: "Employer satisfaction"       },
+              { label: "Salary vs entry",   value: "5x",    sub: "Vs entry-level baseline"     },
+              { label: "Launched ventures", value: "1,386", sub: "Active alumni ventures"      },
+            ]).map(s => (
+              <div key={s.label} style={{ backgroundColor: "var(--ql-fill)", borderRadius: 8, padding: "12px" }}>
+                <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--ql-lbl)", marginBottom: 4 }}>{s.label}</p>
+                <p style={{ fontSize: 19, fontWeight: 500, color: "var(--ql-num)", lineHeight: 1, marginBottom: 4 }}>{s.value}</p>
+                <p style={{ fontSize: 11, color: "var(--ql-lbl)" }}>{s.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
     </div>
   );
 }

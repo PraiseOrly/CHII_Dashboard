@@ -11,19 +11,23 @@ import {
   TrendingUp, Users,
   Zap, type LucideIcon,
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Area,
   AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis, YAxis,
 } from "recharts";
+import type { InternshipSector } from "@/data/hemp/internships";
+import type { StudentTrack } from "@/data/hemp/missionStudents";
 
-// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Palette â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 const VIOLET = "#7C3AED";
 const TEAL   = "#0D9488";
 const GREEN  = "#10B981";
@@ -34,7 +38,7 @@ const INDIGO = "#4338CA";
 const ORANGE = "#EA580C";
 const PURPLE = "#A855F7";
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
@@ -45,7 +49,7 @@ function heatColor(v: number): string {
   return ROSE;
 }
 
-// â”€â”€â”€ Cross-programme aggregates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Cross-programme aggregates â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 const hxPart     = healthXSessions.reduce((s, h) => s + h.participants, 0);
 const hxFem      = healthXSessions.reduce((s, h) => s + h.femalePart,   0);
 const hxPship    = healthXSessions.reduce((s, h) => s + h.partnerships, 0);
@@ -72,7 +76,7 @@ const FEMALE_PCT_ST  = Math.round(studentFem / totalStudents  * 100);
 const FEMALE_PCT_ALL = Math.round((hxFem + intFem + studentFem) / (hxPart + intStudents + totalStudents) * 100);
 const AVG_SAT        = parseFloat(((hxSatAvg + intSatAvg) / 2).toFixed(1));
 
-// â”€â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Chart data â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
 
 const enrolmentByYear = YEARS.map(yr => ({
@@ -156,7 +160,544 @@ const intSatBySector = Object.entries(
   .sort((a, b) => b.value - a.value);
 const SECTOR_HEX = [GREEN, VIOLET, TEAL, AMBER, SKY, ROSE];
 
-// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Sub-components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+
+// ─── Impact analytics constants ──────────────────────────────────────────────
+const HMP_YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
+type HmpYearVal = typeof HMP_YEARS[number] | "all";
+const HMP_SECTORS: InternshipSector[] = ["Hospital", "NGO", "Government", "MedTech", "Pharma", "Research"];
+const HMP_TRACKS: StudentTrack[] = ["Health Innovation", "Health Management", "Health Policy", "Digital Health"];
+const HMP_TRACK_COLORS = ["#0D9488", "#F59E0B", "#7C3AED", "#0EA5E9"];
+const HMP_SECTOR_COLORS = ["#F43F5E", "#0D9488", "#4338CA", "#EA580C", "#7C3AED", "#10B981"];
+const HMP_ALL_COUNTRIES = Array.from(new Set([
+  ...healthXSessions.map(h => h.country),
+  ...internships.map(i => i.country),
+]));
+
+function HmpPillGroup<T extends string>({ options, value, onChange }: {
+  options: { label: string; value: T }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div className="flex rounded-full gap-px p-0.5" style={{ backgroundColor: "rgba(0,0,0,0.18)" }}>
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <button key={o.value} onClick={() => onChange(o.value)}
+            className="text-[9px] font-bold px-2.5 py-[3px] rounded-full transition-all whitespace-nowrap leading-none"
+            style={{ backgroundColor: active ? "rgba(255,255,255,0.95)" : "transparent", color: active ? "#111827" : "rgba(255,255,255,0.72)" }}>
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function HmpDropdown<T extends string>({ options, value, onChange }: {
+  options: { label: string; value: T }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  return (
+    <select value={value} onChange={(e) => onChange(e.target.value as T)}
+      className="text-[9px] font-bold rounded border appearance-none cursor-pointer focus:outline-none pl-2 pr-5 py-[5px]"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.15)", color: "white",
+        borderColor: "rgba(255,255,255,0.25)",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.75' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "no-repeat", backgroundPosition: "right 6px center",
+      }}>
+      {options.map((o) => (
+        <option key={o.value} value={o.value} style={{ color: "#111827", backgroundColor: "white" }}>{o.label}</option>
+      ))}
+    </select>
+  );
+}
+
+function HmpHBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const w = max > 0 ? Math.min((value / max) * 100, 100) : 0;
+  return (
+    <div className="mb-2.5 last:mb-0">
+      <div className="flex items-center justify-between text-[10px] text-gray-600 mb-1">
+        <span className="font-medium truncate pr-2">{label}</span>
+        <span className="font-bold tabular-nums flex-shrink-0" style={{ color }}>{Math.round(value).toLocaleString()}</span>
+      </div>
+      <div className="h-1.5 rounded-full" style={{ backgroundColor: color + "22" }}>
+        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${w}%`, backgroundColor: color }} />
+      </div>
+    </div>
+  );
+}
+
+function HmpChartCard({ title, sub, accent = VIOLET, children, headerRight }: {
+  title: string; sub?: string; accent?: string; children: React.ReactNode; headerRight?: React.ReactNode;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  async function handleDownload() {
+    if (!cardRef.current) return;
+    const h2c = (await import("html2canvas")).default;
+    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const a = document.createElement("a");
+    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
+    a.href = canvas.toDataURL();
+    a.click();
+  }
+  return (
+    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-5 py-3.5 flex items-start justify-between gap-3" style={{ backgroundColor: accent }}>
+        <div className="flex items-start gap-2.5">
+          <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+            {sub && <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+          {headerRight}
+          <button onClick={handleDownload} title="Download chart"
+            style={{ color: "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "white"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}>
+            <Download size={12} />
+          </button>
+        </div>
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
+// ─── HEMP Impact Analytics (relocated from /impact/hemp) ─────────────────────
+function HEMPImpactAnalytics() {
+  const VIO = "#7C3AED"; const TEA = "#0D9488"; const GRN = "#10B981";
+  const AMB = "#F59E0B"; const SKY = "#0EA5E9"; const ROS = "#F43F5E";
+  const IND = "#4338CA"; const ONG = "#EA580C";
+
+  const [yearFilter,    setYearFilter]    = useState<HmpYearVal>("all");
+  const [trackFilter,   setTrackFilter]   = useState<StudentTrack | "all">("all");
+  const [sectorFilter,  setSectorFilter]  = useState<InternshipSector | "all">("all");
+  const [countryFilter, setCountryFilter] = useState<string>("all");
+  const [internView,    setInternView]    = useState<"volume" | "rate">("volume");
+  const [cohortGender,  setCohortGender]  = useState<"all" | "female" | "male">("all");
+  const [outcomeFilter, setOutcomeFilter] = useState<"all" | "Employed" | "Entrepreneur" | "Further Study" | "Seeking">("all");
+
+  function hAvg(arr: number[]) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
+  function hFmt(n: number) { return Math.round(n).toLocaleString(); }
+  function hPct(n: number) { return `${Math.round(n)}%`; }
+
+  const D = useMemo(() => {
+    const yr   = yearFilter;
+    const ctry = countryFilter;
+
+    const hx  = healthXSessions.filter(h =>
+      (yr === "all" || h.year === yr) && (ctry === "all" || h.country === ctry));
+    const int = internships.filter(i =>
+      (yr === "all" || i.year === yr) && (ctry === "all" || i.country === ctry) && (sectorFilter === "all" || i.sector === sectorFilter));
+    const ms  = missionStudents.filter(s =>
+      (yr === "all" || s.cohort === yr) && (trackFilter === "all" || s.track === trackFilter));
+
+    // HealthX
+    const hxPart     = hx.reduce((s, h) => s + h.participants, 0);
+    const hxFem      = hx.reduce((s, h) => s + h.femalePart,   0);
+    const hxPartners = hx.reduce((s, h) => s + h.partnerships, 0);
+    const hxAvgCompl = Math.round(hAvg(hx.map(h => h.completionRate)));
+    const hxAvgSat   = parseFloat(hAvg(hx.map(h => hAvg(Object.values(h.scores)))).toFixed(1));
+    const hxFemalePct = hxPart > 0 ? Math.round((hxFem / hxPart) * 100) : 0;
+    const hxTypes = (["Health Facility Visit", "Innovation Challenge", "Field Exposure", "Industry Tour"] as const);
+    const hxByType = hxTypes.map(t => ({ name: t, value: hx.filter(h => h.type === t).reduce((s, h) => s + h.participants, 0) }));
+    const hxByYear = HMP_YEARS.map(y => ({
+      Year: String(y),
+      Participants: healthXSessions.filter(h => h.year === y && (ctry === "all" || h.country === ctry)).reduce((s, h) => s + h.participants, 0),
+    }));
+
+    // Internships
+    const intStudents = int.reduce((s, i) => s + i.students, 0);
+    const intFem      = int.reduce((s, i) => s + i.femaleStudents, 0);
+    const intConv     = int.reduce((s, i) => s + i.employmentConversions, 0);
+    const intPlace    = int.reduce((s, i) => s + i.placementsAfterInternship, 0);
+    const intAvgSat   = parseFloat(hAvg(int.map(i => i.satisfactionScore)).toFixed(1));
+    const intBySector = HMP_SECTORS.map(sec => {
+      const filtered = int.filter(i => i.sector === sec);
+      return { name: sec, Students: filtered.reduce((s, i) => s + i.students, 0), Placements: filtered.reduce((s, i) => s + i.placementsAfterInternship, 0) };
+    }).filter(s => s.Students > 0);
+    const intByYear = HMP_YEARS.map(y => {
+      const base = internships.filter(i => i.year === y && (ctry === "all" || i.country === ctry) && (sectorFilter === "all" || i.sector === sectorFilter));
+      const stu  = base.reduce((s, i) => s + i.students, 0);
+      const pla  = base.reduce((s, i) => s + i.placementsAfterInternship, 0);
+      const con  = base.reduce((s, i) => s + i.employmentConversions, 0);
+      return {
+        Year: String(y), Students: stu, Placements: pla,
+        "Conversion Rate %":  stu > 0 ? Math.round((con / stu) * 100) : 0,
+        "Placement Rate %":   stu > 0 ? Math.round((pla / stu) * 100) : 0,
+      };
+    }).filter(d => d.Students > 0);
+
+    // Mission Students
+    const msTotal     = ms.length;
+    const msFem       = ms.filter(s => s.gender === "Female").length;
+    const msCompleted = ms.filter(s => s.status === "Completed");
+    const msEmployed  = msCompleted.filter(s => s.employment === "Employed" || s.employment === "Entrepreneur");
+    const msVentures  = ms.filter(s => s.ventureCreated).length;
+    const msCompPct   = msTotal > 0 ? Math.round((msCompleted.length / msTotal) * 100) : 0;
+    const msFemPct    = msTotal > 0 ? Math.round((msFem / msTotal) * 100) : 0;
+    const msByCohort  = HMP_YEARS.map(y => {
+      const pool = missionStudents.filter(s => s.cohort === y && (trackFilter === "all" || s.track === trackFilter));
+      return {
+        Year: String(y),
+        Students: cohortGender === "all" ? pool.length : cohortGender === "female" ? pool.filter(s => s.gender === "Female").length : pool.filter(s => s.gender === "Male").length,
+        Total: pool.length,
+      };
+    }).filter(d => d.Total > 0);
+    const msByTrack = HMP_TRACKS.map(t => ({
+      name: t.replace("Health ", ""),
+      value: missionStudents.filter(s => s.track === t && (yr === "all" || s.cohort === yr)).length,
+    }));
+    const empByTrack = HMP_TRACKS.map((t, i) => {
+      const completed = missionStudents.filter(s => s.track === t && s.status === "Completed" && (yr === "all" || s.cohort === yr));
+      const matchOut = (emp: string | null) => outcomeFilter === "all" ? emp === "Employed" || emp === "Entrepreneur" : emp === outcomeFilter;
+      return { name: t.replace("Health ", ""), Completed: completed.length, Employed: completed.filter(s => matchOut(s.employment)).length, color: HMP_TRACK_COLORS[i] };
+    });
+
+    // Totals
+    const total = hxPart + intStudents + msTotal;
+    const totalFem = hxFem + intFem + msFem;
+    const femalePct = total > 0 ? Math.round((totalFem / total) * 100) : 0;
+    const avgSat = parseFloat(hAvg([hxAvgSat, intAvgSat].filter(x => x > 0)).toFixed(1));
+    const countries = Array.from(new Set([...hx.map(h => h.country), ...int.map(i => i.country)])).filter(Boolean);
+
+    return {
+      hx, int, ms,
+      hxPart, hxFem, hxPartners, hxAvgCompl, hxAvgSat, hxFemalePct, hxByType, hxByYear,
+      intStudents, intFem, intConv, intPlace, intAvgSat, intBySector, intByYear,
+      msTotal, msFem, msCompleted, msEmployed, msVentures, msCompPct, msFemPct,
+      msByCohort, msByTrack, empByTrack,
+      total, totalFem, femalePct, avgSat, countries,
+    };
+  }, [yearFilter, trackFilter, sectorFilter, countryFilter, cohortGender, outcomeFilter]);
+
+  const trackOpts   = [{ label: "All Tracks",   value: "all" as StudentTrack | "all" }, ...HMP_TRACKS.map(t => ({ label: t.replace("Health ", ""), value: t as StudentTrack | "all" }))];
+  const sectorOpts  = [{ label: "All Sectors",  value: "all" as InternshipSector | "all" }, ...HMP_SECTORS.map(s => ({ label: s, value: s as InternshipSector | "all" }))];
+  const countryOpts = [{ label: "All Countries", value: "all" }, ...HMP_ALL_COUNTRIES.map(c => ({ label: c, value: c }))];
+
+  return (
+    <div className="space-y-10">
+      {/* KPI + year/country filter banner */}
+      <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 flex items-center justify-between gap-4 flex-wrap" style={{ backgroundColor: TEA }}>
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-white">HEMP Impact Analytics</p>
+            <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.70)" }}>
+              Employment Pillar · HealthX · Internships · Mission Students · {D.countries.length} countries
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <select value={String(yearFilter)}
+              onChange={e => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as HmpYearVal)}
+              className="text-xs font-medium border border-gray-200 text-gray-700 bg-white px-3 py-1.5 rounded appearance-none cursor-pointer focus:outline-none pr-7"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}>
+              <option value="all">All Years</option>
+              {HMP_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+            <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)}
+              className="text-xs font-medium border border-gray-200 text-gray-700 bg-white px-3 py-1.5 rounded appearance-none cursor-pointer focus:outline-none pr-7"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}>
+              {countryOpts.slice(0, 8).map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+            {([
+              { label: "Total Reach",        num: D.total,        fmt: hFmt, sub: "All HEMP",              clr: TEA   },
+              { label: "HealthX Part.",       num: D.hxPart,       fmt: hFmt, sub: `${D.hx.length} sessions`, clr: "#0F766E" },
+              { label: "Intern. Students",    num: D.intStudents,  fmt: hFmt, sub: `${D.int.length} placements`, clr: AMB },
+              { label: "Emp. Conversions",    num: D.intConv,      fmt: hFmt, sub: "Post-internship",       clr: GRN   },
+              { label: "Mission Students",    num: D.msTotal,      fmt: hFmt, sub: `${D.ms.length} enrolled`, clr: VIO },
+              { label: "Completions",         num: D.msCompPct,    fmt: hPct, sub: "Completion rate",       clr: IND   },
+              { label: "Ventures Created",    num: D.msVentures,   fmt: hFmt, sub: "By students",           clr: ONG   },
+            ] as const).map(({ label, num, fmt, sub, clr }) => (
+              <div key={label} className="rounded-lg border px-3 py-3 text-center" style={{ backgroundColor: clr, borderColor: clr }}>
+                <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5" style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+                <p className="text-[1rem] font-black tabular-nums leading-none text-white">{fmt(num)}</p>
+                <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.58)" }}>{sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* HealthX */}
+      <section>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: TEA }} />
+          <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: TEA }}>HealthX Experiential Learning</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <HmpChartCard title="HealthX Participation Trend" sub="Participants per year" accent={TEA}>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={D.hxByYear.filter(d => d.Participants > 0)}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                <Bar dataKey="Participants" fill={TEA} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="rounded border p-3 text-center" style={{ backgroundColor: TEA + "10", borderColor: TEA + "22" }}>
+                <p className="text-[9px] font-bold uppercase text-gray-500">Avg completion</p>
+                <p className="text-lg font-black tabular-nums" style={{ color: TEA }}>{D.hxAvgCompl}%</p>
+              </div>
+              <div className="rounded border p-3 text-center" style={{ backgroundColor: SKY + "10", borderColor: SKY + "22" }}>
+                <p className="text-[9px] font-bold uppercase text-gray-500">Avg satisfaction</p>
+                <p className="text-lg font-black tabular-nums" style={{ color: SKY }}>{D.hxAvgSat}/5</p>
+              </div>
+            </div>
+          </HmpChartCard>
+
+          <HmpChartCard title="Session Types" sub="Participants by HealthX experience type" accent={TEA}>
+            <div className="space-y-3 mt-2">
+              {D.hxByType.filter(t => t.value > 0).map((t, i) => {
+                const tc = [TEA, SKY, VIO, ONG];
+                const mx = Math.max(...D.hxByType.map(x => x.value), 1);
+                return <HmpHBar key={t.name} label={t.name} value={t.value} max={mx} color={tc[i % tc.length]} />;
+              })}
+            </div>
+            <div className="mt-4 space-y-2 pt-3 border-t border-gray-100">
+              {[
+                { label: "Total sessions",   value: D.hx.length,    color: TEA  },
+                { label: "Partnerships",      value: D.hxPartners,  color: GRN  },
+                { label: "Female participants", value: hPct(D.hxFemalePct), color: ROS },
+              ].map(r => (
+                <div key={r.label} className="flex items-center justify-between text-[11px] text-gray-600 py-1.5 border-b border-gray-50 last:border-0">
+                  <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: r.color }} />{r.label}</span>
+                  <span className="font-bold tabular-nums" style={{ color: r.color }}>{r.value}</span>
+                </div>
+              ))}
+            </div>
+          </HmpChartCard>
+
+          <HmpChartCard title="HealthX Quality Scores" sub="Session evaluation breakdown" accent={SKY}>
+            <div className="space-y-3 mt-1">
+              {(["Learning Experience", "Practical Relevance", "Accessibility", "Innovation Impact"] as const).map((score, i) => {
+                const sc = [TEA, VIO, AMB, ONG];
+                const val = parseFloat(hAvg(D.hx.map(h => h.scores[score])).toFixed(1));
+                return (
+                  <div key={score}>
+                    <div className="flex items-center justify-between text-[10px] text-gray-700 mb-1">
+                      <span className="font-medium">{score}</span>
+                      <span className="font-black tabular-nums" style={{ color: sc[i] }}>{val}/5</span>
+                    </div>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: sc[i] + "20" }}>
+                      <div className="h-full rounded-full" style={{ width: `${(val / 5) * 100}%`, backgroundColor: sc[i] }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-4 rounded border p-3 flex items-center gap-2" style={{ backgroundColor: SKY + "08", borderColor: SKY + "22" }}>
+              <p className="text-[10px] font-bold text-gray-600">Overall HealthX satisfaction</p>
+              <p className="text-sm font-black tabular-nums ml-auto" style={{ color: SKY }}>{D.hxAvgSat}/5</p>
+            </div>
+          </HmpChartCard>
+        </div>
+      </section>
+
+      {/* Internships */}
+      <section>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: AMB }} />
+          <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: AMB }}>Internship &amp; Placement Analytics</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2">
+            <HmpChartCard
+              title="Students &amp; Placements by Year"
+              sub={internView === "volume" ? "Enrolment vs post-programme placements" : "Conversion & placement rates — % of students"}
+              accent={AMB}
+              headerRight={
+                <HmpPillGroup
+                  options={[{ label: "Volume", value: "volume" }, { label: "Conv. Rate", value: "rate" }]}
+                  value={internView} onChange={setInternView} />
+              }>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={D.intByYear}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28}
+                    tickFormatter={internView === "rate" ? v => `${v}%` : undefined} />
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }}
+                    formatter={internView === "rate" ? (v: number, name: string) => [`${v}%`, name] : undefined} />
+                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+                  {internView === "volume" ? (
+                    <>
+                      <Bar dataKey="Students"   fill={AMB} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Placements" fill={TEA} radius={[4, 4, 0, 0]} />
+                    </>
+                  ) : (
+                    <>
+                      <Bar dataKey="Conversion Rate %" fill={TEA}  radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Placement Rate %"  fill={GRN}  radius={[4, 4, 0, 0]} />
+                    </>
+                  )}
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+                {[
+                  { label: "Students",    value: D.intStudents, color: AMB },
+                  { label: "Conversions", value: D.intConv,     color: TEA },
+                  { label: "Placements",  value: D.intPlace,    color: GRN },
+                  { label: "Satisfaction",value: `${D.intAvgSat}/5`, color: SKY },
+                ].map(r => (
+                  <div key={r.label} className="rounded border p-2.5" style={{ backgroundColor: r.color + "10", borderColor: r.color + "22" }}>
+                    <p className="text-[9px] font-bold uppercase text-gray-500">{r.label}</p>
+                    <p className="text-base font-black tabular-nums mt-0.5" style={{ color: r.color }}>{typeof r.value === "number" ? hFmt(r.value) : r.value}</p>
+                  </div>
+                ))}
+              </div>
+            </HmpChartCard>
+          </div>
+
+          <HmpChartCard title="Students by Sector" sub={sectorFilter === "all" ? "All sectors" : sectorFilter} accent={AMB}
+            headerRight={<HmpDropdown options={sectorOpts} value={sectorFilter} onChange={setSectorFilter} />}>
+            <div className="space-y-2 mt-1">
+              {D.intBySector.map((s, i) => {
+                const mx = Math.max(...D.intBySector.map(x => x.Students), 1);
+                const isActive = sectorFilter === "all" || sectorFilter === (HMP_SECTORS[HMP_SECTORS.indexOf(s.name as InternshipSector)] as string);
+                return (
+                  <div key={s.name} style={{ opacity: isActive ? 1 : 0.35, transition: "opacity 0.2s" }}>
+                    <div className="flex items-center justify-between text-[10px] text-gray-600 mb-1">
+                      <span className="font-medium">{s.name}</span>
+                      <span className="flex gap-2">
+                        <span className="font-bold tabular-nums" style={{ color: HMP_SECTOR_COLORS[i % HMP_SECTOR_COLORS.length] }}>{hFmt(s.Students)}</span>
+                        <span className="text-gray-400">→</span>
+                        <span className="font-bold tabular-nums" style={{ color: TEA }}>{hFmt(s.Placements)}</span>
+                      </span>
+                    </div>
+                    <div className="flex gap-1 h-1.5">
+                      <div className="rounded-full" style={{ width: `${(s.Students / mx) * 100}%`, backgroundColor: HMP_SECTOR_COLORS[i % HMP_SECTOR_COLORS.length] + "99" }} />
+                      <div className="rounded-full" style={{ width: `${(s.Placements / mx) * 100}%`, backgroundColor: TEA + "CC" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100 text-[10px] text-gray-500">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-1.5 rounded-full" style={{ backgroundColor: AMB + "99" }} />Students</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-1.5 rounded-full" style={{ backgroundColor: TEA + "CC" }} />Placements</span>
+            </div>
+          </HmpChartCard>
+        </div>
+      </section>
+
+      {/* Mission Students */}
+      <section>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: VIO }} />
+          <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: VIO }}>Mission Students Outcomes</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <HmpChartCard title="Cohort Enrolment"
+            sub={cohortGender === "all" ? "Total enrolment per intake year" : `${cohortGender === "female" ? "Female" : "Male"} enrolment trend`}
+            accent={VIO}
+            headerRight={
+              <HmpPillGroup
+                options={[{ label: "All", value: "all" }, { label: "Female", value: "female" }, { label: "Male", value: "male" }]}
+                value={cohortGender} onChange={setCohortGender} />
+            }>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={D.msByCohort}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                <Bar dataKey="Students" fill={VIO} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="rounded border p-3 text-center" style={{ backgroundColor: VIO + "10", borderColor: VIO + "22" }}>
+                <p className="text-[9px] font-bold uppercase text-gray-500">Completion rate</p>
+                <p className="text-xl font-black tabular-nums" style={{ color: VIO }}>{D.msCompPct}%</p>
+              </div>
+              <div className="rounded border p-3 text-center" style={{ backgroundColor: ROS + "10", borderColor: ROS + "22" }}>
+                <p className="text-[9px] font-bold uppercase text-gray-500">Female</p>
+                <p className="text-xl font-black tabular-nums" style={{ color: ROS }}>{D.msFemPct}%</p>
+              </div>
+            </div>
+          </HmpChartCard>
+
+          <HmpChartCard title="Track Distribution" sub="Students by programme track" accent={VIO}
+            headerRight={<HmpDropdown options={trackOpts} value={trackFilter} onChange={setTrackFilter} />}>
+            <div className="space-y-3 mt-1">
+              {D.msByTrack.map((t, i) => {
+                const mx = Math.max(...D.msByTrack.map(x => x.value), 1);
+                const isActive = trackFilter === "all" || HMP_TRACKS[i].replace("Health ", "") === t.name;
+                return (
+                  <div key={t.name} style={{ opacity: isActive ? 1 : 0.35, transition: "opacity 0.2s" }}>
+                    <div className="flex items-center justify-between text-[10px] text-gray-700 mb-1">
+                      <span className="font-medium">{t.name}</span>
+                      <span className="font-bold tabular-nums" style={{ color: HMP_TRACK_COLORS[i] }}>{hFmt(t.value)}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: HMP_TRACK_COLORS[i] + "20" }}>
+                      <div className="h-full rounded-full" style={{ width: `${(t.value / mx) * 100}%`, backgroundColor: HMP_TRACK_COLORS[i] }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-4 space-y-1.5 pt-3 border-t border-gray-100">
+              {[
+                { label: "Employed / Entrepreneur", value: hFmt(D.msEmployed.length),  color: GRN  },
+                { label: "Ventures created",        value: hFmt(D.msVentures),         color: ONG  },
+                { label: "Total completions",       value: hFmt(D.msCompleted.length), color: VIO  },
+              ].map(r => (
+                <div key={r.label} className="flex items-center justify-between text-[11px] text-gray-600 py-1.5 border-b border-gray-50 last:border-0">
+                  <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: r.color }} />{r.label}</span>
+                  <span className="font-bold tabular-nums" style={{ color: r.color }}>{r.value}</span>
+                </div>
+              ))}
+            </div>
+          </HmpChartCard>
+
+          <HmpChartCard title="Employment by Track"
+            sub={outcomeFilter === "all" ? "Employed or entrepreneur — by track" : `${outcomeFilter} outcomes by track`}
+            accent={GRN}
+            headerRight={
+              <HmpDropdown
+                options={[
+                  { label: "Employed / Entrep.", value: "all" },
+                  { label: "Employed",      value: "Employed"      },
+                  { label: "Entrepreneur",  value: "Entrepreneur"  },
+                  { label: "Further Study", value: "Further Study" },
+                  { label: "Seeking",       value: "Seeking"       },
+                ]}
+                value={outcomeFilter} onChange={setOutcomeFilter} />
+            }>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={D.empByTrack.filter(t => t.Completed > 0)}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={26} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                <Bar dataKey="Completed" fill={VIO} radius={[4, 4, 0, 0]} opacity={0.5} />
+                <Bar dataKey="Employed"  fill={GRN} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="mt-4 rounded border p-3 flex items-center gap-2" style={{ backgroundColor: GRN + "08", borderColor: GRN + "22" }}>
+              <p className="text-[10px] font-bold text-gray-600">{outcomeFilter === "all" ? "Mission employment rate" : `${outcomeFilter} rate`}</p>
+              <p className="text-sm font-black tabular-nums ml-auto" style={{ color: GRN }}>
+                {D.msCompleted.length > 0 ? hPct(Math.round((D.msEmployed.length / D.msCompleted.length) * 100)) : "—"}
+              </p>
+            </div>
+          </HmpChartCard>
+        </div>
+      </section>
+    </div>
+  );
+}
 
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
@@ -359,13 +900,13 @@ function CustomDonut({ data, colors, label, valueFormatter = (v: number) => `${v
   );
 }
 
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 export default function HEMPOverview() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HEMPNav />
 
-      {/* â”€â”€ HEADER + KPI STRIP â”€â”€â”€ */}
+      {/* â"€â"€ HEADER + KPI STRIP â"€â"€â"€ */}
       <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div className="max-w-[1440px] mx-auto px-6">
           <div className="flex items-end justify-between py-5">
@@ -402,10 +943,10 @@ export default function HEMPOverview() {
         </div>
       </header>
 
-      {/* â”€â”€ BODY â”€â”€â”€ */}
+      {/* â"€â"€ BODY â"€â"€â"€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
-        {/* â”€â”€ HERO EXEC CARDS â”€â”€â”€ */}
+        {/* â"€â"€ HERO EXEC CARDS â"€â"€â"€ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <ExecCard label="HealthX Reach"          value={hxPart.toLocaleString()}
             sub={`${healthXSessions.length} sessions  ·  ${hxCompAvg}% avg completion`}
@@ -425,7 +966,7 @@ export default function HEMPOverview() {
             color={VIOLET} icon={TrendingUp} />
         </div>
 
-        {/* â”€â”€ SECTION 1: ENROLMENT & ACTIVITY â”€â”€â”€ */}
+        {/* â"€â"€ SECTION 1: ENROLMENT & ACTIVITY â"€â"€â"€ */}
         <section>
           <SecHeader title="Enrolment &amp; Activity Timeline"
             sub="Student cohort enrolment and cross-programme reach year by year" />
@@ -487,7 +1028,7 @@ export default function HEMPOverview() {
           </div>
         </section>
 
-        {/* â”€â”€ SECTION 2: DIVERSITY & REACH â”€â”€â”€ */}
+        {/* â"€â"€ SECTION 2: DIVERSITY & REACH â"€â"€â"€ */}
         <section>
           <SecHeader title="Diversity &amp; Geographic Reach"
             sub="Gender representation, country coverage, and student track distribution" />
@@ -548,7 +1089,7 @@ export default function HEMPOverview() {
           </div>
         </section>
 
-        {/* â”€â”€ SECTION 3: PERFORMANCE â”€â”€â”€ */}
+        {/* â"€â"€ SECTION 3: PERFORMANCE â"€â"€â"€ */}
         <section>
           <SecHeader title="Programme Performance"
             sub="HealthX satisfaction by session type and dimension  -  internship sector comparison" />
@@ -659,7 +1200,7 @@ export default function HEMPOverview() {
           </div>
         </section>
 
-        {/* â”€â”€ SECTION 4: OUTCOMES â”€â”€â”€ */}
+        {/* â"€â"€ SECTION 4: OUTCOMES â"€â"€â"€ */}
         <section>
           <SecHeader title="Outcomes &amp; Impact"
             sub={`${completed.length} graduates  ·  ${ventures.length} ventures  ·  ${intConversions} internship-to-hire conversions`} />
@@ -746,7 +1287,12 @@ export default function HEMPOverview() {
           </div>
         </section>
 
-        {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
+        {/* ── IMPACT ANALYTICS (from Impact Dashboard) ─────────────────── */}
+        <section>
+          <HEMPImpactAnalytics />
+        </section>
+
+        {/* -- FOOTER STRIP -- */}
         <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-gray-100">
             {([
