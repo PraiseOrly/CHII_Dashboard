@@ -436,7 +436,6 @@ export default function ImpactDashboard() {
 
   const [yearFilter,   setYearFilter]   = useState<YearVal>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodVal>("all");
-  const [genderFilter, setGenderFilter] = useState<"all" | "female" | "male">("all");
   const [catFilter,    setCatFilter]    = useState<HackCat>("all");
   const [streamFilter, setStreamFilter] = useState<"all" | "hemp" | "hent">("all");
   const [regionFilter, setRegionFilter] = useState<string>("all");
@@ -558,9 +557,6 @@ export default function ImpactDashboard() {
         ];
 
     // Gender-filtered display values
-    const displayFem = genderFilter === "male" ? 0 : totalFem;
-    const displayMale = genderFilter === "female" ? 0 : Math.max(grandTotal - totalFem, 0);
-    const displayTotal = genderFilter === "all" ? grandTotal : genderFilter === "female" ? totalFem : Math.max(grandTotal - totalFem, 0);
 
     // Quality comparison
     const programQuality = [
@@ -589,11 +585,11 @@ export default function ImpactDashboard() {
       totalFem, hempTotal, hentTotal, grandTotal, femalePct,
       totalPartners, venturesTotal, employmentOut, avgSat, avgCompl,
       filteredHakProj, hakCatTotals, allCountries, streamDist,
-      displayFem, displayMale, displayTotal, programQuality,
+      programQuality,
       // Metric column extras
       msWageOnly, msEntOnly, msSeeking, msFurther, jobsFromVC,
     };
-  }, [yearFilter, periodFilter, genderFilter, catFilter, streamFilter]);
+  }, [yearFilter, periodFilter, catFilter, streamFilter]);
 
   // ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Year trend data ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
   const growthByYear = useMemo(() =>
@@ -709,7 +705,7 @@ export default function ImpactDashboard() {
         <div className="max-w-[1440px] mx-auto px-6 py-4">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div>
-              <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>CHII Ecosystem Impact</h1>
+              <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>EXECUTIVE DASHBOARD</h1>
               <p className="text-[11px] text-gray-400 mt-1 font-medium">Consolidated analytics</p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -736,14 +732,6 @@ export default function ImpactDashboard() {
                 <option value="east-africa">East Africa</option>
                 <option value="west-africa">West Africa</option>
               </select>
-              <select value={genderFilter}
-                onChange={(e) => setGenderFilter(e.target.value as "all" | "female" | "male")}
-                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
-                <option value="all">All genders</option>
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-              </select>
               <button
                 onClick={() => setManualDark(prev => !(prev ?? sysDark))}
                 title={dark ? "Switch to light mode" : "Switch to dark mode"}
@@ -756,7 +744,7 @@ export default function ImpactDashboard() {
               </button>
             </div>
           </div>
-          {(yearFilter !== "all" || streamFilter !== "all" || genderFilter !== "all" || regionFilter !== "all") && (
+          {(yearFilter !== "all" || streamFilter !== "all" || regionFilter !== "all") && (
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               <span className="text-[11px] font-medium text-gray-400">Active:</span>
               {streamFilter !== "all" && (
@@ -773,13 +761,6 @@ export default function ImpactDashboard() {
                   {yearFilter} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
                 </button>
               )}
-              {genderFilter !== "all" && (
-                <button onClick={() => setGenderFilter("all")}
-                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
-                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
-                  {genderFilter === "female" ? "Female" : "Male"} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
-                </button>
-              )}
               {regionFilter !== "all" && (
                 <button onClick={() => setRegionFilter("all")}
                   className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
@@ -788,7 +769,7 @@ export default function ImpactDashboard() {
                 </button>
               )}
               <button
-                onClick={() => { setYearFilter("all"); setStreamFilter("all"); setGenderFilter("all"); setRegionFilter("all"); }}
+                onClick={() => { setYearFilter("all"); setStreamFilter("all"); setRegionFilter("all"); }}
                 className="text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors">
                 Clear all
               </button>
@@ -942,14 +923,15 @@ export default function ImpactDashboard() {
               const maxVal = Math.max(...outcomeData.map(d => d.value), 1);
               const BR = Bar as any;
               return (
+                <>
                 <ResponsiveContainer width="100%" height={238}>
-                  <BarChart data={outcomeData} margin={{ top: 22, right: 10, bottom: 52, left: 10 }}>
+                  <BarChart data={outcomeData} margin={{ top: 22, right: 10, bottom: 8, left: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,33,71,0.05)" />
                     <XAxis
                       dataKey="name"
                       tick={{ fontSize: 9, fill: "#374151" }}
                       axisLine={false} tickLine={false}
-                      interval={0} angle={-32} textAnchor="end" height={56}
+                       interval={0} height={30}
                     />
                     <YAxis
                       tick={{ fontSize: 9, fill: "#9CA3AF" }}
@@ -988,6 +970,15 @@ export default function ImpactDashboard() {
                     />
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", gap: 14, marginTop: 10, flexWrap: "wrap" }}>
+                  {outcomeData.map(d => (
+                    <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: d.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 10, color: "#374151" }}>{d.name}</span>
+                    </div>
+                  ))}
+                </div>
+                </>
               );
             })()}
           </div>

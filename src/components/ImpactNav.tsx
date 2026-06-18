@@ -78,7 +78,7 @@ export default function ImpactNav() {
         <div className="h-6 w-px bg-gray-200 flex-shrink-0" />
 
         {/* Tab navigation — horizontally scrollable */}
-        <nav className="flex items-stretch flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        <nav className="flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {IMPACT_TABS.map((tab) => {
             const isActive = tab.label === activeLabel;
             return (
@@ -86,16 +86,16 @@ export default function ImpactNav() {
                 key={tab.label}
                 href={tab.href}
                 className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-14 transition-colors group flex-shrink-0"
-                style={{ color: isActive ? tab.color : "#6B7280" }}
+                style={{ color: isActive ? NAVY : "#6B7280" }}
               >
                 {!isActive && (
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ backgroundColor: tab.bg }} />
+                    style={{ backgroundColor: "#F1F5F9" }} />
                 )}
                 <span className="relative text-[10.5px] font-bold leading-tight whitespace-nowrap">{tab.label}</span>
                 {isActive && (
                   <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full"
-                    style={{ backgroundColor: tab.color }} />
+                    style={{ backgroundColor: NAVY }} />
                 )}
               </Link>
             );

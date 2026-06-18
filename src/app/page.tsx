@@ -7,7 +7,7 @@ const PORTAL_ROUTES: Record<string, string> = {
   HENT:   "/hent",
   HECO:   "/heco",
   HEMP:   "/hemp",
-  IMPACT: "/impact",
+  EXECUTIVE: "/impact",
 };
 
 const HIGHLIGHTS = [
