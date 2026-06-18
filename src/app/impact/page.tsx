@@ -700,7 +700,7 @@ export default function ImpactDashboard() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1, pointerEvents: "none" }} />
 
         {/* Content */}
-        <div className="max-w-[1440px] mx-auto px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
               Pan-African Impact Overview
@@ -715,9 +715,9 @@ export default function ImpactDashboard() {
         </div>
       </header>
 
-      <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-10">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
         {/* L1 · KPI Strip */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
           <StatsKpiCard label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — HEMP and HENT combined." />
           <StatsKpiCard label="Women Reached" num={D.totalFem} sub={`${D.femalePct}% of cohort`} Icon={Heart} tooltip="Female participants across all programs. CHII targets 60%+ female representation across cohorts." />
           <StatsKpiCard label="Countries Active" num={D.allCountries.length} sub="Pan-African reach" Icon={Globe} tooltip="Countries with active CHII program presence, reflecting combined geographic reach of HEMP and HENT." />
@@ -727,7 +727,7 @@ export default function ImpactDashboard() {
         </div>
 
         {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16 }}>
 
           <OutreachAccess />
 
@@ -735,7 +735,7 @@ export default function ImpactDashboard() {
         </div>
 
         {/* L3 · Employment & Enterprise + Pathway Growth */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16 }}>
 
           {/* Right — Jobs & Enterprise Trend (Stacked Area) */}
           <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
@@ -788,7 +788,7 @@ export default function ImpactDashboard() {
         </div>
 
         {/* L4 · Impact Themes */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16 }}>
           <ProgramImpactMatrix />
 
           <ProgramQuality />
@@ -811,7 +811,7 @@ export default function ImpactDashboard() {
             <div className="w-[3px] h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "#042C53" }} />
             <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "#042C53" }}>Strategic Insights</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
             <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#185FA514", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
                 <Heart size={16} color="#185FA5" />
@@ -850,7 +850,7 @@ export default function ImpactDashboard() {
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
 
           {/* -- Content (profile left + story right, centered in blue zone) -- */}
-          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }}>
+          <div style={{ position: "relative", zIndex: 10, display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }}>
             {/* Profile — left */}
             <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
               <div style={{ width: 64, height: 64, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>

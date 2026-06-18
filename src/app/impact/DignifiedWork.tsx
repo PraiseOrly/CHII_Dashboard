@@ -114,7 +114,7 @@ export default function DignifiedWork() {
   return (
     <div>
       {/* Filter row — single line, label embedded in first option */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 14, alignItems: "center" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14, alignItems: "center" }}>
         <select value={gender} onChange={(e) => setGender(e.target.value as Gender)} style={SELECT_STYLE}>
           <option value="all">Gender: All</option>
           <option value="Female">Female</option>
@@ -161,7 +161,7 @@ export default function DignifiedWork() {
 
       {/* Scorecard */}
       {scores ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
           {METRICS.map(m => {
             const score = scores[m.key];
             const benchmark = BENCHMARKS[m.key];
