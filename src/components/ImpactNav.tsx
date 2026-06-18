@@ -32,7 +32,7 @@ export const IMPACT_TABS = [
   { label: "Youth in Work",               href: "/impact/youth-in-work",    color: "#0EA5E9", bg: "#F0F9FF" },
   { label: "Wage Employment",             href: "/impact/wage-employment",  color: "#F59E0B", bg: "#FFFBEB" },
   { label: "Entrepreneurship",            href: "/impact/entrepreneurship", color: "#7C3AED", bg: "#F5F3FF" },
-  { label: "Program Feedback Experience", href: "/impact/feedback",         color: "#10B981", bg: "#ECFDF5" },
+  { label: "Further Education",           href: "/impact/further-education", color: "#10B981", bg: "#ECFDF5" },
   { label: "Impact Reports",              href: "/impact/reports",          color: "#2563EB", bg: "#EFF6FF" },
   { label: "Impact Stories",              href: "/impact/stories",          color: "#EA580C", bg: "#FFF7ED" },
 ] as const;
@@ -51,7 +51,7 @@ function getActiveTab(pathname: string): ImpactTabLabel {
   if (pathname.startsWith("/impact/youth-in-work"))    return "Youth in Work";
   if (pathname.startsWith("/impact/wage-employment"))  return "Wage Employment";
   if (pathname.startsWith("/impact/entrepreneurship")) return "Entrepreneurship";
-  if (pathname.startsWith("/impact/feedback"))         return "Program Feedback Experience";
+  if (pathname.startsWith("/impact/further-education")) return "Further Education";
   if (pathname.startsWith("/impact/reports"))          return "Impact Reports";
   if (pathname.startsWith("/impact/stories"))          return "Impact Stories";
   return "Overview";

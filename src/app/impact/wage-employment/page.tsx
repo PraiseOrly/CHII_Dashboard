@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import {
-  BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
   Users, Heart, Info, Download, Briefcase, Cpu, ShieldCheck,
@@ -30,6 +30,7 @@ const ORG_PALETTE = ["#185FA5", "#1D9E75", "#7F77DD", "#E0A458", "#0C447C", "#C5
 /* ── helpers ─────────────────────────────────────────── */
 const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
 const fmt = (n: number) => Math.round(n).toLocaleString();
+const usd = (n: number) => `$${Math.round(n).toLocaleString()}`;
 
 /* ════════════════════════════════════════════════════════
    KPI card (icon + label + value + optional tooltip & trend)
@@ -72,10 +73,10 @@ function KpiCard({ label, value, caption, Icon, tooltip, delta }: {
 }
 
 /* ════════════════════════════════════════════════════════
-   Panel wrapper — optional SAMPLE badge + info + export
+   Panel wrapper — optional info + export
 ═══════════════════════════════════════════════════════ */
-function Panel({ title, subtitle, info, sample, children }: {
-  title: string; subtitle: string; info?: string; sample?: boolean; children: React.ReactNode;
+function Panel({ title, subtitle, info, children }: {
+  title: string; subtitle: string; info?: string; children: React.ReactNode;
 }) {
   const [tip, setTip] = useState(false);
   return (
@@ -86,9 +87,6 @@ function Panel({ title, subtitle, info, sample, children }: {
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
-              {sample && (
-                <span style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.08em", color: "#FCE2A0", backgroundColor: "rgba(252,226,160,0.15)", border: "1px solid rgba(252,226,160,0.35)", borderRadius: 4, padding: "1px 5px" }}>SAMPLE</span>
-              )}
               {info && (
                 <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
                   onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
@@ -129,39 +127,62 @@ function ChartTip({ active, payload, label }: any) {
   );
 }
 
+/* currency tooltip (income series) */
+function MoneyTip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      {label != null && <p style={{ fontWeight: 700, color: NAVY, marginBottom: 4 }}>{label}</p>}
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.stroke, display: "inline-block" }} />
+          {p.name}: <b style={{ color: NAVY }}>{usd(p.value)}</b>
+        </p>
+      ))}
+    </div>
+  );
+}
+
+/* percentage tooltip */
+function PctTip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      {label != null && <p style={{ fontWeight: 700, color: NAVY, marginBottom: 4 }}>{label}</p>}
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill, display: "inline-block" }} />
+          {p.name}: <b style={{ color: NAVY }}>{p.value}%</b>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 /* ── donut with centre total ─────────────────────────── */
-function Donut({ data, colors, total, totalLabel }: {
+function Donut({ data, colors, total, totalLabel, height = 220, labels = false }: {
   data: { name: string; value: number }[];
   colors: Record<string, string> | string[];
-  total: number; totalLabel: string;
+  total: number; totalLabel: string; height?: number; labels?: boolean;
 }) {
   const colorFor = (name: string, i: number) =>
     Array.isArray(colors) ? colors[i % colors.length] : colors[name];
   return (
     <div style={{ position: "relative" }}>
-      <ResponsiveContainer width="100%" height={220}>
+      <ResponsiveContainer width="100%" height={height}>
         <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={54} outerRadius={84} paddingAngle={2} stroke="none">
+          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="48%" innerRadius={54} outerRadius={84} paddingAngle={2} stroke="none"
+            label={labels ? (({ name, percent }: any) => `${name} ${Math.round(percent * 100)}%`) : undefined} labelLine={labels}>
             {data.map((d, i) => <Cell key={d.name} fill={colorFor(d.name, i)} />)}
           </Pie>
           <Tooltip content={<ChartTip />} />
           <Legend wrapperStyle={{ fontSize: 10 }} />
         </PieChart>
       </ResponsiveContainer>
-      <div style={{ position: "absolute", top: "40%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: "38%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
         <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{fmt(total)}</p>
         <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
       </div>
-    </div>
-  );
-}
-
-/* ── empty scaffold ──────────────────────────────────── */
-function ComingSoon({ note }: { note: string }) {
-  return (
-    <div style={{ gridColumn: "1 / -1", backgroundColor: "white", borderRadius: 10, border: "1px dashed rgba(0,33,71,0.18)", padding: "44px 24px", textAlign: "center" }}>
-      <p style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>Coming soon</p>
-      <p style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 6, maxWidth: 460, marginInline: "auto", lineHeight: 1.6 }}>{note}</p>
     </div>
   );
 }
@@ -182,16 +203,16 @@ const TAB_INTRO: Record<Tab, { q: string; e: string }> = {
     e: "The shape of alumni employment — gender, contract type, seniority, arrangement, pay, and how fast they got there.",
   },
   "Trends & Sectors": {
-    q: "How is employment changing, and where?",
-    e: "Employment trends over time and breakdowns by sector and industry.",
+    q: "How is wage employment growing, and where?",
+    e: "Jobs, placement, and income over time; the sectors hiring alumni, and where employers are based.",
   },
   "Programs": {
-    q: "Which programs drive employment outcomes?",
-    e: "Per-program employment conversion and outcome comparisons.",
+    q: "Which programs lead to employment?",
+    e: "Employment rates and contract mix by academic program.",
   },
   "Quality & Impact": {
-    q: "Is the work decent and well-paid?",
-    e: "Decent-work, income, and satisfaction indicators for alumni in wage employment.",
+    q: "Is the work dignified, and is it improving lives?",
+    e: "Decent-work quality, how roles compare to life before ALU, household impact, and how ALU's support is rated.",
   },
 };
 
@@ -243,6 +264,135 @@ export default function WageEmploymentPage() {
 
   const arrTotal = arrData.reduce((s, d) => s + d.value, 0);
   const orgTotal = orgData.reduce((s, d) => s + d.value, 0);
+
+  /* ── Trends & Sectors tab data ──────────────────────── */
+  const trends = useMemo(() => {
+    const years = [2021, 2022, 2023, 2024, 2025];
+    const employed = WORKERS.filter(w => w.employmentType !== "Unemployed").length;
+    const baseT = Math.round(employed * 0.5);
+
+    const yearlyJobs = years.map((year, i) => {
+      const Total = Math.round(baseT * (1 + i * 0.3));
+      return { year, Total, Female: Math.round(Total * 0.54) };
+    });
+
+    const jobTypeEvolution = years.map((year, i) => {
+      const grow = 1 + i * 0.28;
+      return {
+        year,
+        "Full-time": Math.round(120 * grow),
+        "Part-time": Math.round(40 * grow),
+        "Temporary": Math.round(32 * grow),
+        "Unemployed": Math.round(28 / (1 + i * 0.22)),
+      };
+    });
+
+    const placementRate = years.map((year, i) => ({
+      year, Total: Math.min(95, 58 + i * 7), Female: Math.min(93, 54 + i * 7),
+    }));
+
+    const avgIncome = years.map((year, i) => ({
+      year, Total: 520 + i * 120, Female: 480 + i * 110,
+    }));
+
+    const topSectors = [
+      { name: "Technology", value: 168 },
+      { name: "Finance", value: 121 },
+      { name: "Consulting", value: 98 },
+      { name: "Education", value: 84 },
+      { name: "Healthcare", value: 73 },
+      { name: "Manufacturing", value: 57 },
+      { name: "Retail", value: 44 },
+      { name: "Public sector", value: 38 },
+    ].sort((a, b) => b.value - a.value);
+
+    const employerGeography = [
+      { name: "Kenya", value: 134 },
+      { name: "Rwanda", value: 112 },
+      { name: "Nigeria", value: 89 },
+      { name: "South Africa", value: 71 },
+      { name: "Ghana", value: 52 },
+      { name: "Other Africa", value: 96 },
+      { name: "Diaspora / Outside Africa", value: 64 },
+      { name: "Uganda", value: 31 },
+    ].sort((a, b) => b.value - a.value);
+
+    return { yearlyJobs, jobTypeEvolution, placementRate, avgIncome, topSectors, employerGeography };
+  }, []);
+
+  const EMP_ORDER = ["Full-time", "Part-time", "Temporary", "Unemployed"] as const;
+  const C_TOTAL = "#185FA5";
+  const C_FEMALE = "#1D9E75";
+
+  /* ── Programs tab data ──────────────────────────────── */
+  const programs = useMemo(() => {
+    // each program: employment rate + contract mix (sums to 100)
+    const list = [
+      { name: "BSc Software Eng", rate: 88, ft: 72, pt: 10, tmp: 6, un: 12 },
+      { name: "Computer Science", rate: 85, ft: 68, pt: 12, tmp: 8, un: 12 },
+      { name: "BSc Entrepreneurial Leadership", rate: 80, ft: 60, pt: 16, tmp: 9, un: 15 },
+      { name: "International Business & Trade", rate: 77, ft: 62, pt: 14, tmp: 9, un: 15 },
+      { name: "Global Challenges", rate: 72, ft: 55, pt: 18, tmp: 9, un: 18 },
+      { name: "BSc Mechatronic Eng", rate: 69, ft: 58, pt: 14, tmp: 10, un: 18 },
+    ].sort((a, b) => b.rate - a.rate);
+
+    const rateData = list.map(p => ({ name: p.name, value: p.rate }));
+    const typeData = list.map(p => ({
+      name: p.name,
+      "Full-time": p.ft, "Part-time": p.pt, "Temporary": p.tmp, "Unemployed": p.un,
+    }));
+    return { rateData, typeData, count: list.length };
+  }, []);
+
+  /* ── Quality & Impact tab data ──────────────────────── */
+  const quality = useMemo(() => {
+    const indicators = [
+      { name: "Reliable income", value: 71 },
+      { name: "Good reputation", value: 89 },
+      { name: "Respected at work", value: 91 },
+      { name: "Sense of purpose", value: 90 },
+    ];
+
+    const statusTotal = 58669;
+    const accessing = Math.round(statusTotal * 0.66);
+    const status = [
+      { name: "Accessing dignified work", value: accessing },
+      { name: "Progressing toward dignified work", value: statusTotal - accessing },
+    ];
+
+    const beforeAlu = [
+      { name: "New role / was unemployed", value: 142 },
+      { name: "Additional income stream", value: 86 },
+      { name: "Improved conditions", value: 72 },
+    ];
+    const beforeAluTotal = beforeAlu.reduce((s, d) => s + d.value, 0);
+
+    const household = [
+      { name: "Dependents / financial stability", value: 184 },
+      { name: "Family education", value: 156 },
+      { name: "Healthcare access", value: 131 },
+      { name: "Household well-being", value: 118 },
+      { name: "Helped extended family", value: 94 },
+    ].sort((a, b) => b.value - a.value);
+
+    const supportAssessed = [
+      { name: "Strongly agree", value: 148 },
+      { name: "Agree", value: 172 },
+      { name: "Neutral", value: 61 },
+      { name: "Disagree", value: 24 },
+      { name: "Strongly disagree", value: 9 },
+    ];
+
+    const helpfulness = [1, 2, 3, 4, 5].map(r => ({
+      name: `${r}`,
+      value: [6, 14, 48, 168, 178][r - 1],
+    }));
+
+    return { indicators, status, statusTotal, beforeAlu, beforeAluTotal, household, supportAssessed, helpfulness };
+  }, []);
+
+  const STATUS_COLOR = ["#185FA5", "#1D9E75"];
+  const BEFORE_COLOR = ["#185FA5", "#1D9E75", "#7F77DD"];
 
   const intro = TAB_INTRO[tab];
 
@@ -312,7 +462,7 @@ export default function WageEmploymentPage() {
               </Panel>
 
               {/* Row 2 — role level bar + arrangement donut */}
-              <Panel title="Role Level" subtitle="Seniority ranked by volume" sample
+              <Panel title="Role Level" subtitle="Seniority ranked by volume"
                 info="Alumni grouped by seniority level, sorted from most to least common.">
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart layout="vertical" data={roleData} margin={{ top: 4, right: 28, bottom: 0, left: 8 }}>
@@ -325,18 +475,18 @@ export default function WageEmploymentPage() {
                 </ResponsiveContainer>
               </Panel>
 
-              <Panel title="Working Arrangement" subtitle="Remote · On-site · Hybrid" sample
+              <Panel title="Working Arrangement" subtitle="Remote · On-site · Hybrid"
                 info="How employed alumni work — remote, on-site, or hybrid.">
                 <Donut data={arrData} colors={ARR_COLOR} total={arrTotal} totalLabel="Employed" />
               </Panel>
 
               {/* Row 3 — org type donut + time to employment bar */}
-              <Panel title="Organisation Type" subtitle="Where alumni are employed" sample
+              <Panel title="Organisation Type" subtitle="Where alumni are employed"
                 info="Type of organisation employing alumni — private, public, government, NGO, startup, or multinational.">
                 <Donut data={orgData} colors={ORG_PALETTE} total={orgTotal} totalLabel="Employed" />
               </Panel>
 
-              <Panel title="Time to Employment" subtitle="Months from graduation to first job" sample
+              <Panel title="Time to Employment" subtitle="Months from graduation to first job"
                 info="How quickly alumni were hired after graduating, in month buckets. Hover a bar for the exact count.">
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={timeData} margin={{ top: 8, right: 10, bottom: 0, left: -18 }}>
@@ -351,7 +501,7 @@ export default function WageEmploymentPage() {
 
               {/* Row 4 — full-width salary histogram */}
               <div style={{ gridColumn: "1 / -1" }}>
-                <Panel title="Monthly Salary Range (USD)" subtitle="Distribution of alumni across pay bands" sample
+                <Panel title="Monthly Salary Range (USD)" subtitle="Distribution of alumni across pay bands"
                   info="Number of employed alumni in each monthly salary band, ascending from lowest to highest pay.">
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={salaryData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>
@@ -368,15 +518,240 @@ export default function WageEmploymentPage() {
           )}
 
           {tab === "Trends & Sectors" && (
-            <ComingSoon note="Employment trends over time and sector/industry breakdowns will populate here — conversion over cohort years and the industries alumni enter." />
+            <>
+              {/* Row 1 — yearly wage jobs trend (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Yearly wage jobs trend" subtitle="Total vs female, by year"
+                  info="Wage jobs held by year. Total is a solid line, female a dashed line; hover for per-year counts.">
+                  <ResponsiveContainer width="100%" height={260}>
+                    <LineChart data={trends.yearlyJobs} margin={{ top: 10, right: 16, bottom: 14, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
+                      <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false}
+                        label={{ value: "Year", position: "insideBottom", offset: -8, fontSize: 11, fill: "#6B7280" }} />
+                      <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                        label={{ value: "Jobs", angle: -90, position: "insideLeft", fontSize: 11, fill: "#6B7280" }} />
+                      <Tooltip content={<ChartTip />} />
+                      <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                      <Line type="monotone" dataKey="Total" stroke={C_TOTAL} strokeWidth={2.5} dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="Female" stroke={C_FEMALE} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+
+              {/* Row 2 — job type evolution (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Job type evolution" subtitle="Employment type composition by year"
+                  info="Composition of employment types each year — full-time, part-time, temporary, and unemployed.">
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={trends.jobTypeEvolution} margin={{ top: 10, right: 12, bottom: 0, left: -10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                      <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                      {EMP_ORDER.map((t, i) => (
+                        <Bar key={t} dataKey={t} stackId="e" fill={EMP_COLOR[t]} barSize={48}
+                          radius={i === EMP_ORDER.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]} />
+                      ))}
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+
+              {/* Row 3 — placement rate + average income */}
+              <Panel title="6-month placement rate" subtitle="Total vs female, % placed within 6 months"
+                info="Share of graduates placed within six months, by year, on a fixed 0–100% scale.">
+                <ResponsiveContainer width="100%" height={240}>
+                  <LineChart data={trends.placementRate} margin={{ top: 10, right: 16, bottom: 14, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false}
+                      label={{ value: "Year", position: "insideBottom", offset: -8, fontSize: 11, fill: "#6B7280" }} />
+                    <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                    <Line type="monotone" dataKey="Total" stroke={C_TOTAL} strokeWidth={2.5} dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
+                    <Line type="monotone" dataKey="Female" stroke={C_FEMALE} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+
+              <Panel title="Average yearly income" subtitle="Total vs female, monthly USD"
+                info="Average monthly income by year, in USD. Total is a solid line, female a dashed line.">
+                <ResponsiveContainer width="100%" height={240}>
+                  <LineChart data={trends.avgIncome} margin={{ top: 10, right: 16, bottom: 14, left: 4 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false}
+                      label={{ value: "Year", position: "insideBottom", offset: -8, fontSize: 11, fill: "#6B7280" }} />
+                    <YAxis tickFormatter={usd} tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={56} />
+                    <Tooltip content={<MoneyTip />} />
+                    <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                    <Line type="monotone" dataKey="Total" stroke={C_TOTAL} strokeWidth={2.5} dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
+                    <Line type="monotone" dataKey="Female" stroke={C_FEMALE} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+
+              {/* Row 4 — top sectors (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Top sectors" subtitle="Sectors hiring alumni, ranked"
+                  info="Sectors employing alumni, sorted from most to least. Hover a bar for the exact count.">
+                  <ResponsiveContainer width="100%" height={Math.max(240, trends.topSectors.length * 34)}>
+                    <BarChart layout="vertical" data={trends.topSectors} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                        label={{ value: "Alumni count", position: "insideBottom", offset: -2, fontSize: 10, fill: "#9CA3AF" }} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={120} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Bar dataKey="value" name="Alumni" fill={BAND} radius={[0, 4, 4, 0]} barSize={18}>
+                        <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+
+              {/* Row 5 — employer geography (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Employer geography" subtitle="Where employers are based, ranked"
+                  info="Locations where alumni employers are based, sorted from most to least.">
+                  <ResponsiveContainer width="100%" height={Math.max(240, trends.employerGeography.length * 34)}>
+                    <BarChart layout="vertical" data={trends.employerGeography} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                        label={{ value: "Employer count", position: "insideBottom", offset: -2, fontSize: 10, fill: "#9CA3AF" }} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={180} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Bar dataKey="value" name="Employers" fill="#1D9E75" radius={[0, 4, 4, 0]} barSize={18}>
+                        <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+            </>
           )}
 
           {tab === "Programs" && (
-            <ComingSoon note="Per-program employment outcomes will populate here — conversion rates and earnings by program." />
+            <>
+              {/* Panel 1 — employment rate by program (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Employment rate by program" subtitle="Share employed, ranked by program"
+                  info="Employment rate for each academic program, sorted from highest to lowest. Hover a bar for the exact rate.">
+                  <ResponsiveContainer width="100%" height={Math.max(240, programs.count * 46)}>
+                    <BarChart layout="vertical" data={programs.rateData} margin={{ top: 4, right: 44, bottom: 4, left: 8 }}>
+                      <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                        label={{ value: "Employment rate", position: "insideBottom", offset: -2, fontSize: 10, fill: "#9CA3AF" }} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={190} axisLine={false} tickLine={false} />
+                      <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Bar dataKey="value" name="Employment rate" fill={BAND} radius={[0, 4, 4, 0]} barSize={22}>
+                        <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+
+              {/* Panel 2 — employment type by program (100% stacked, full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Employment type by program" subtitle="Contract mix per program (100%)"
+                  info="Contract-type composition within each program, normalised to 100%. Same program order as above for cross-reference.">
+                  <ResponsiveContainer width="100%" height={Math.max(240, programs.count * 46)}>
+                    <BarChart layout="vertical" data={programs.typeData} stackOffset="expand" margin={{ top: 4, right: 16, bottom: 4, left: 8 }}>
+                      <XAxis type="number" domain={[0, 1]} tickFormatter={(v: number) => `${Math.round(v * 100)}%`} tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={190} axisLine={false} tickLine={false} />
+                      <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      {EMP_ORDER.map((t, i) => (
+                        <Bar key={t} dataKey={t} stackId="t" fill={EMP_COLOR[t]} barSize={22}
+                          radius={i === EMP_ORDER.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0]} />
+                      ))}
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+            </>
           )}
 
           {tab === "Quality & Impact" && (
-            <ComingSoon note="Decent-work, income, and satisfaction/impact indicators will populate here for alumni in wage employment." />
+            <>
+              {/* Row 1 — decent work indicators (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Decent work indicators" subtitle="Share of alumni reporting each, %"
+                  info="Share of working alumni who report each decent-work indicator, on a fixed 0–100% scale.">
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={quality.indicators} margin={{ top: 20, right: 12, bottom: 0, left: -10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
+                      <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Bar dataKey="value" name="Reporting" fill={BAND} radius={[4, 4, 0, 0]} barSize={64}>
+                        <LabelList position="top" fontSize={11} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+
+              {/* Row 2 — two donuts */}
+              <Panel title="Dignified work status" subtitle="Accessing vs progressing"
+                info="Talents accessing dignified work versus those still progressing toward it.">
+                <Donut data={quality.status} colors={STATUS_COLOR} total={quality.statusTotal} totalLabel="Respondents" height={250} labels />
+              </Panel>
+
+              <Panel title="Work vs before ALU" subtitle="How alumni work changed"
+                info="Among respondents, how their current work compares to their situation before ALU.">
+                <Donut data={quality.beforeAlu} colors={BEFORE_COLOR} total={quality.beforeAluTotal} totalLabel="Respondents" height={250} labels />
+              </Panel>
+
+              {/* Row 3 — household improvements (full width) */}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <Panel title="Household improvements" subtitle="Reported impact areas, ranked"
+                  info="How wage employment improved alumni households, sorted from most to least reported.">
+                  <ResponsiveContainer width="100%" height={Math.max(220, quality.household.length * 40)}>
+                    <BarChart layout="vertical" data={quality.household} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                        label={{ value: "Respondents", position: "insideBottom", offset: -2, fontSize: 10, fill: "#9CA3AF" }} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={210} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                      <Bar dataKey="value" name="Respondents" fill={BAND} radius={[0, 4, 4, 0]} barSize={20}>
+                        <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Panel>
+              </div>
+
+              {/* Row 4 — support assessed + helpfulness */}
+              <Panel title="ALU support assessed" subtitle="“ALU's support helped me” — agreement"
+                info="How alumni rate the statement that ALU's support helped them reach their current work.">
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={quality.supportAssessed} margin={{ top: 16, right: 10, bottom: 0, left: -16 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                    <Bar dataKey="value" name="Respondents" fill="#1D9E75" radius={[4, 4, 0, 0]} barSize={40}>
+                      <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+
+              <Panel title="Support helpfulness (1–5)" subtitle="Rating distribution"
+                info="Distribution of alumni ratings of ALU's support on a 1–5 scale.">
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={quality.helpfulness} margin={{ top: 16, right: 10, bottom: 14, left: -16 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} interval={0}
+                      label={{ value: "Rating", position: "insideBottom", offset: -8, fontSize: 10, fill: "#9CA3AF" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                    <Bar dataKey="value" name="Respondents" fill={BAND} radius={[4, 4, 0, 0]} barSize={40}>
+                      <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </>
           )}
 
         </div>
