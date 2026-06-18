@@ -12,6 +12,7 @@
     "@refinedev/core": "^4.54.0",
     "@refinedev/nextjs-router": "^6.1.0",
     "@tremor/react": "^3.18.3",
+    "@types/topojson-client": "^3.1.5",
     "autoprefixer": "^10.4.21",
     "clsx": "^2.1.1",
     "html2canvas": "^1.4.1",
@@ -20,7 +21,9 @@
     "postcss": "^8.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-simple-maps": "^3.0.0",
     "tailwindcss": "^3.4.17",
+    "topojson-client": "^3.1.0",
     "zustand": "^4.5.6"
   },
   "devDependencies": {

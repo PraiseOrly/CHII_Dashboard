@@ -16,6 +16,7 @@ import { fieldVisits } from "@/data/fieldVisits";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
 import Link from "next/link";
+import AfricaChoropleth from "./AfricaChoropleth";
 
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -801,14 +802,14 @@ export default function ImpactDashboard() {
         {/* L1 · KPI Strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
           {([
-            { label: "Total Beneficiaries", value: fmt(D.grandTotal),           sub: yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs", fill: "var(--ac-fill)", lbl: "var(--ac-lbl)", num: "var(--ac-num)" },
-            { label: "Women Reached",        value: fmt(D.totalFem),             sub: `${D.femalePct}% of cohort`,                                  fill: "var(--ac-fill)", lbl: "var(--ac-lbl)", num: "var(--ac-num)" },
-            { label: "Countries Active",     value: String(D.allCountries.length), sub: "Pan-African reach",                                       fill: "var(--ac-fill)", lbl: "var(--ac-lbl)", num: "var(--ac-num)" },
-            { label: "Partner Institutions", value: fmt(D.totalPartners),        sub: "Ecosystem builders",                                         fill: "var(--ac-fill)", lbl: "var(--ac-lbl)", num: "var(--ac-num)" },
-            { label: "In Employment",        value: fmt(D.employmentOut),        sub: "75% within 6 months",                                        fill: "var(--oc-fill)", lbl: "var(--oc-lbl)", num: "var(--oc-num)" },
-            { label: "Ventures Launched",    value: fmt(D.venturesTotal),        sub: "Alumni-led startups",                                        fill: "var(--oc-fill)", lbl: "var(--oc-lbl)", num: "var(--oc-num)" },
+            { label: "Total Beneficiaries", value: fmt(D.grandTotal),            sub: yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs", fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF" },
+            { label: "Women Reached",        value: fmt(D.totalFem),              sub: `${D.femalePct}% of cohort`,                                  fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF" },
+            { label: "Countries Active",     value: String(D.allCountries.length), sub: "Pan-African reach",                                        fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF" },
+            { label: "Partner Institutions", value: fmt(D.totalPartners),         sub: "Ecosystem builders",                                         fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF" },
+            { label: "In Employment",        value: fmt(D.employmentOut),         sub: "75% within 6 months",                                        fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF" },
+            { label: "Ventures Launched",    value: fmt(D.venturesTotal),         sub: "Alumni-led startups",                                        fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF" },
           ] as { label: string; value: string; sub: string; fill: string; lbl: string; num: string }[]).map(c => (
-            <div key={c.label} style={{ backgroundColor: c.fill, borderRadius: 10, padding: "14px 16px" }}>
+            <div key={c.label} style={{ backgroundColor: c.fill, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
               <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: c.lbl, marginBottom: 6 }}>{c.label}</p>
               <p style={{ fontSize: 24, fontWeight: 700, color: c.num, lineHeight: 1, marginBottom: 5 }}>{c.value}</p>
               <p style={{ fontSize: 10, color: c.lbl, opacity: 0.8 }}>{c.sub}</p>
@@ -942,19 +943,19 @@ export default function ImpactDashboard() {
               const BR = Bar as any;
               return (
                 <ResponsiveContainer width="100%" height={238}>
-                  <BarChart layout="vertical" data={outcomeData} margin={{ top: 4, right: 52, bottom: 4, left: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,33,71,0.05)" />
+                  <BarChart data={outcomeData} margin={{ top: 22, right: 10, bottom: 52, left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,33,71,0.05)" />
                     <XAxis
-                      type="number"
-                      domain={[0, Math.ceil(maxVal * 1.18)]}
+                      dataKey="name"
+                      tick={{ fontSize: 9, fill: "#374151" }}
+                      axisLine={false} tickLine={false}
+                      interval={0} angle={-32} textAnchor="end" height={56}
+                    />
+                    <YAxis
                       tick={{ fontSize: 9, fill: "#9CA3AF" }}
                       tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
                       axisLine={false} tickLine={false}
-                    />
-                    <YAxis
-                      type="category" dataKey="name"
-                      tick={{ fontSize: 10, fill: "#374151" }}
-                      width={122} axisLine={false} tickLine={false}
+                      domain={[0, Math.ceil(maxVal * 1.18)]}
                     />
                     <Tooltip
                       cursor={{ fill: "rgba(0,33,71,0.04)" }}
@@ -974,11 +975,11 @@ export default function ImpactDashboard() {
                       dataKey="value"
                       shape={(props: any) => {
                         const { x, y, width, height: bh, payload } = props;
-                        if (!width || width <= 0) return <g />;
+                        if (!bh || bh <= 0) return <g />;
                         return (
                           <g>
-                            <rect x={x} y={y + 3} width={width} height={Math.max(bh - 6, 4)} fill={payload.color} fillOpacity={0.88} rx={4} ry={4} />
-                            <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                            <rect x={x + 3} y={y} width={Math.max(width - 6, 4)} height={bh} fill={payload.color} fillOpacity={0.88} rx={4} ry={4} />
+                            <text x={x + width / 2} y={y - 6} textAnchor="middle" fontSize={10} fontWeight={700} fill="#374151">
                               {fmt(payload.value)}
                             </text>
                           </g>
@@ -1199,50 +1200,13 @@ export default function ImpactDashboard() {
           </div>
         </div>
 
-        {/* L6 · Systems Impact Network */}
+        {/* L6 · Geographic Reach */}
         <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
           <div className="flex items-center gap-3 mb-5">
             <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Systems Impact Network</p>
+            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Geographic Reach</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 260px", gap: 20 }}>
-            <svg viewBox="0 0 560 220" style={{ width: "100%", height: 220 }}>
-              <line x1="115" y1="54"  x2="278" y2="110" stroke="rgba(24,95,165,0.2)"  strokeWidth="1.5" strokeDasharray="4 3" />
-              <line x1="115" y1="110" x2="278" y2="110" stroke="rgba(24,95,165,0.2)"  strokeWidth="1.5" strokeDasharray="4 3" />
-              <line x1="115" y1="166" x2="278" y2="110" stroke="rgba(24,95,165,0.2)"  strokeWidth="1.5" strokeDasharray="4 3" />
-              <line x1="282" y1="110" x2="446" y2="54"  stroke="rgba(15,110,86,0.2)"  strokeWidth="1.5" strokeDasharray="4 3" />
-              <line x1="282" y1="110" x2="446" y2="110" stroke="rgba(15,110,86,0.2)"  strokeWidth="1.5" strokeDasharray="4 3" />
-              <line x1="282" y1="110" x2="446" y2="166" stroke="rgba(15,110,86,0.2)"  strokeWidth="1.5" strokeDasharray="4 3" />
-              <rect x="8"   y="38"  width="107" height="30" rx="5" fill="#E6F1FB" stroke="#185FA5" strokeWidth="1" />
-              <text x="61"  y="57"  textAnchor="middle" fontSize="9" fill="#185FA5" fontWeight="700">HEMP Programs</text>
-              <rect x="8"   y="94"  width="107" height="30" rx="5" fill="#E6F1FB" stroke="#185FA5" strokeWidth="1" />
-              <text x="61"  y="113" textAnchor="middle" fontSize="9" fill="#185FA5" fontWeight="700">HENT Ecosystem</text>
-              <rect x="8"   y="150" width="107" height="30" rx="5" fill="#E6F1FB" stroke="#185FA5" strokeWidth="1" />
-              <text x="61"  y="169" textAnchor="middle" fontSize="9" fill="#185FA5" fontWeight="700">Partner Network</text>
-              <circle cx="280" cy="110" r="42" fill="#042C53" />
-              <text x="280" y="106" textAnchor="middle" fontSize="10" fill="white" fontWeight="700">CHII</text>
-              <text x="280" y="119" textAnchor="middle" fontSize="9"  fill="#85B7EB">Ecosystem</text>
-              <rect x="446" y="38"  width="107" height="30" rx="5" fill="#E1F5EE" stroke="#0F6E56" strokeWidth="1" />
-              <text x="499" y="57"  textAnchor="middle" fontSize="9" fill="#0F6E56" fontWeight="700">Jobs Created</text>
-              <rect x="446" y="94"  width="107" height="30" rx="5" fill="#E1F5EE" stroke="#0F6E56" strokeWidth="1" />
-              <text x="499" y="113" textAnchor="middle" fontSize="9" fill="#0F6E56" fontWeight="700">Ventures Launched</text>
-              <rect x="446" y="150" width="107" height="30" rx="5" fill="#E1F5EE" stroke="#0F6E56" strokeWidth="1" />
-              <text x="499" y="169" textAnchor="middle" fontSize="9" fill="#0F6E56" fontWeight="700">Community Health</text>
-            </svg>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {([
-                { label: "Total Reach",        value: fmt(D.grandTotal),                  sub: "Direct beneficiaries",         color: "#042C53" },
-                { label: "GDP Contribution",   value: "$24M+",                             sub: "Estimated economic value",     color: "#185FA5" },
-                { label: "Health Engagements", value: fmt(D.hxPart + D.mcAtt + D.fvPart), sub: "Community health programming", color: "#1D9E75" },
-              ] as { label: string; value: string; sub: string; color: string }[]).map(m => (
-                <div key={m.label} style={{ backgroundColor: "var(--ql-fill)", borderRadius: 8, padding: "12px 14px", flex: 1 }}>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: "var(--ql-lbl)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>{m.label}</p>
-                  <p style={{ fontSize: 20, fontWeight: 700, color: m.color, lineHeight: 1, marginBottom: 3 }}>{m.value}</p>
-                  <p style={{ fontSize: 10, color: "var(--ql-lbl)" }}>{m.sub}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <AfricaChoropleth />
         </div>
 
         {/* L7 · Strategic Insights */}
