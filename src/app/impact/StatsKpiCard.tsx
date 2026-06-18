@@ -103,11 +103,11 @@ export default function StatsKpiCard({
       </div>
 
       {/* Animated number + Icon */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 5 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 5 }}>
+        <Icon size={22} style={{ color: lbl, flexShrink: 0, opacity: 0.8 }} />
         <p style={{ fontSize: 24, fontWeight: 700, color: numColor, lineHeight: 1 }}>
           {displayFmt(animated)}
         </p>
-        <Icon size={16} style={{ color: lbl, flexShrink: 0, opacity: 0.75 }} />
       </div>
 
       {/* Sub text */}
