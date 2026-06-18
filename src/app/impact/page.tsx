@@ -438,7 +438,6 @@ export default function ImpactDashboard() {
   const [yearFilter,   setYearFilter]   = useState<YearVal>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodVal>("all");
   const [catFilter,    setCatFilter]    = useState<HackCat>("all");
-  const [regionFilter, setRegionFilter] = useState<string>("all");
   // Analytical drill-down states
   const [growthView,    setGrowthView]    = useState<"participation" | "quality">("participation");
   const [pipelineSector, setPipelineSector] = useState("all");
@@ -701,25 +700,10 @@ export default function ImpactDashboard() {
         <div className="max-w-[1440px] mx-auto px-6 py-4">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div>
-              <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>EXECUTIVE DASHBOARD</h1>
+              <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>OVERVIEW</h1>
               <p className="text-[11px] text-gray-400 mt-1 font-medium">Consolidated analytics &mdash; <span style={{ color: "#9CA3AF" }}>Last updated: June 2026</span></p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <select value={String(yearFilter)}
-                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
-                <option value="all">All years</option>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-              <select value={regionFilter}
-                onChange={(e) => setRegionFilter(e.target.value)}
-                className="text-[12px] font-medium border border-gray-200 text-gray-700 bg-white px-4 py-2 rounded-lg appearance-none cursor-pointer hover:border-gray-300 focus:outline-none transition-colors pr-8"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
-                <option value="all">All regions</option>
-                <option value="east-africa">East Africa</option>
-                <option value="west-africa">West Africa</option>
-              </select>
               <button
                 onClick={() => setManualDark(prev => !(prev ?? sysDark))}
                 title={dark ? "Switch to light mode" : "Switch to dark mode"}
@@ -732,30 +716,6 @@ export default function ImpactDashboard() {
               </button>
             </div>
           </div>
-          {(yearFilter !== "all" || regionFilter !== "all") && (
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
-              <span className="text-[11px] font-medium text-gray-400">Active:</span>
-              {yearFilter !== "all" && (
-                <button onClick={() => setYearFilter("all")}
-                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
-                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
-                  {yearFilter} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
-                </button>
-              )}
-              {regionFilter !== "all" && (
-                <button onClick={() => setRegionFilter("all")}
-                  className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full "
-                  style={{ backgroundColor: "var(--ac-fill)", color: "#185FA5" }}>
-                  {regionFilter} <span style={{ opacity: 0.7, fontSize: 10 }}>&#x2715;</span>
-                </button>
-              )}
-              <button
-                onClick={() => { setYearFilter("all"); setRegionFilter("all"); }}
-                className="text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors">
-                Clear all
-              </button>
-            </div>
-          )}
         </div>
       </header>
 
@@ -772,10 +732,10 @@ export default function ImpactDashboard() {
             { label: "Ventures Launched",    value: fmt(D.venturesTotal),          sub: "Alumni-led startups",                                          fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: TrendingUp },
           ] as { label: string; value: string; sub: string; fill: string; lbl: string; num: string; Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }[]).map(c => (
             <div key={c.label} style={{ backgroundColor: c.fill, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
-                <c.Icon size={18} style={{ color: c.lbl }} />
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 6 }}>
+                <c.Icon size={13} style={{ color: c.lbl, flexShrink: 0 }} />
+                <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: c.lbl }}>{c.label}</p>
               </div>
-              <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: c.lbl, marginBottom: 6 }}>{c.label}</p>
               <p style={{ fontSize: 24, fontWeight: 700, color: c.num, lineHeight: 1, marginBottom: 5 }}>{c.value}</p>
               <p style={{ fontSize: 10, color: c.lbl, opacity: 0.8 }}>{c.sub}</p>
             </div>
@@ -787,9 +747,19 @@ export default function ImpactDashboard() {
 
           {/* Left — Outreach & Access (Stacked Gender Bar) */}
           <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Outreach &amp; Access</p>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-3">
+                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
+                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Outreach &amp; Access</p>
+              </div>
+              <select
+                value={String(yearFilter)}
+                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
+                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
+              >
+                <option value={"all"}>All years</option>
+                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
             </div>
             <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Audience segments by gender — sorted by total reach</p>
             {(() => {
@@ -890,9 +860,19 @@ export default function ImpactDashboard() {
 
           {/* Right — Program Outcomes */}
           <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Outcomes</p>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-3">
+                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
+                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Outcomes</p>
+              </div>
+              <select
+                value={String(yearFilter)}
+                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
+                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
+              >
+                <option value={"all"}>All years</option>
+                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
             </div>
             <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Cumulative outcome totals across all programs</p>
             {(() => {
@@ -971,14 +951,6 @@ export default function ImpactDashboard() {
         {/* L3 · Employment & Enterprise + Pathway Growth */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
 
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Dignified Work Indicators</p>
-            </div>
-            <DignifiedWork />
-          </div>
-
           {/* Right — Jobs & Enterprise Trend (Stacked Area) */}
           <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
             <div className="flex items-center gap-3 mb-1">
@@ -1015,15 +987,33 @@ export default function ImpactDashboard() {
               ))}
             </div>
           </div>
+
+          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Dignified Work Indicators</p>
+            </div>
+            <DignifiedWork />
+          </div>
         </div>
 
         {/* L4 · Impact Themes */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           {/* Left — Program Impact Matrix (Bubble Chart) */}
           <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Impact Matrix</p>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-3">
+                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
+                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Impact Matrix</p>
+              </div>
+              <select
+                value={String(yearFilter)}
+                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
+                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
+              >
+                <option value={"all"}>All years</option>
+                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
             </div>
             <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 8, marginLeft: 12 }}>Scale vs. outcome rate — bubble size reflects economic weight</p>
             {(() => {
@@ -1104,9 +1094,19 @@ export default function ImpactDashboard() {
           </div>
 
           <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#7F77DD" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#7F77DD" }}>Program Quality</p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#7F77DD" }} />
+                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#7F77DD" }}>Program Quality</p>
+              </div>
+              <select
+                value={String(yearFilter)}
+                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
+                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
+              >
+                <option value={"all"}>All years</option>
+                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
             </div>
             {D.programQuality.map((p, i) => (
               <div key={p.name} style={{ marginBottom: i < D.programQuality.length - 1 ? 10 : 0 }}>
@@ -1125,9 +1125,19 @@ export default function ImpactDashboard() {
 
         {/* L6 · Geographic Reach */}
         <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Geographic Reach</p>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Geographic Reach</p>
+            </div>
+            <select
+              value={String(yearFilter)}
+              onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
+              style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
+            >
+              <option value={"all"}>All years</option>
+              {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
           </div>
           <AfricaChoropleth />
         </div>

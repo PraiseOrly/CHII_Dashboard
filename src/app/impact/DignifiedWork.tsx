@@ -2,21 +2,21 @@
 
 import { useState, useMemo } from "react";
 
-type Gender   = "all" | "female" | "male";
+type Gender   = "all" | "Female" | "Male";
 type AgeGroup = "all" | "18-24" | "25-29" | "30-35";
 type Country  = "all" | "Rwanda" | "Kenya" | "Nigeria" | "Ghana" | "Uganda" | "Ethiopia" | "South Africa";
 type Program  = "all" | "HENT" | "HEMP";
 type Cohort   = "all" | "2021" | "2022" | "2023" | "2024";
-type EmpType  = "all" | "employed" | "entrepreneur" | "freelance";
+type EmpType  = "all" | "Employed" | "Entrepreneur" | "Freelance";
 
 interface DataPoint {
-  gender: "female" | "male";
+  gender: "Female" | "Male";
   age: "18-24" | "25-29" | "30-35";
   country: Country;
   program: "HENT" | "HEMP";
   cohort: "2021" | "2022" | "2023" | "2024";
-  empType: "employed" | "entrepreneur" | "freelance";
-  jobSatisfaction: number;   // 0-100
+  empType: "Employed" | "Entrepreneur" | "Freelance";
+  jobSatisfaction: number;
   incomeImprovement: number;
   skillsUtilization: number;
   workStability: number;
@@ -41,8 +41,8 @@ function seed(x: number): number {
 const COUNTRIES: Country[] = ["Rwanda", "Kenya", "Nigeria", "Ghana", "Uganda", "Ethiopia", "South Africa"];
 const PROGRAMS:  ("HENT" | "HEMP")[]  = ["HENT", "HEMP"];
 const COHORTS:   ("2021" | "2022" | "2023" | "2024")[] = ["2021", "2022", "2023", "2024"];
-const EMP_TYPES: ("employed" | "entrepreneur" | "freelance")[] = ["employed", "entrepreneur", "freelance"];
-const GENDERS:   ("female" | "male")[] = ["female", "male"];
+const EMP_TYPES: ("Employed" | "Entrepreneur" | "Freelance")[] = ["Employed", "Entrepreneur", "Freelance"];
+const GENDERS:   ("Female" | "Male")[] = ["Female", "Male"];
 const AGES:      ("18-24" | "25-29" | "30-35")[] = ["18-24", "25-29", "30-35"];
 
 const RAW: DataPoint[] = Array.from({ length: 300 }, (_, i) => {
@@ -77,26 +77,16 @@ function avg(arr: number[]): number {
   return Math.round(arr.reduce((s, v) => s + v, 0) / arr.length);
 }
 
-const CHIP = (label: string, active: boolean, onClick: () => void, color = "#185FA5") => (
-  <button
-    key={label}
-    onClick={onClick}
-    style={{
-      padding: "3px 10px",
-      borderRadius: 20,
-      border: `1px solid ${active ? color : "rgba(0,33,71,0.12)"}`,
-      backgroundColor: active ? color : "transparent",
-      color: active ? "white" : "#4B5563",
-      fontSize: 11,
-      fontWeight: 600,
-      cursor: "pointer",
-      transition: "all 0.15s",
-      whiteSpace: "nowrap",
-    }}
-  >
-    {label}
-  </button>
-);
+const SELECT_STYLE: React.CSSProperties = {
+  fontSize: 11,
+  border: "1px solid rgba(0,33,71,0.12)",
+  borderRadius: 5,
+  padding: "3px 6px",
+  color: "#374151",
+  backgroundColor: "white",
+  cursor: "pointer",
+  outline: "none",
+};
 
 export default function DignifiedWork() {
   const [gender,   setGender]   = useState<Gender>("all");
@@ -123,141 +113,130 @@ export default function DignifiedWork() {
     ) as Record<keyof typeof BENCHMARKS, number>;
   }, [filtered]);
 
-  const n = filtered.length;
-  const hasFilters = gender !== "all" || age !== "all" || country !== "all" ||
-                     program !== "all" || cohort !== "all" || empType !== "all";
-
   return (
     <div>
-      {/* Filter row */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+      {/* Dropdown filter row */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14, alignItems: "center" }}>
 
-        {/* Gender */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 2 }}>Gender</span>
-          {(["all", "female", "male"] as Gender[]).map(v =>
-            CHIP(v === "all" ? "All" : v.charAt(0).toUpperCase() + v.slice(1), gender === v, () => setGender(v))
-          )}
+          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Gender</span>
+          <select value={gender} onChange={(e) => setGender(e.target.value as Gender)} style={SELECT_STYLE}>
+            <option value="all">All</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+          </select>
         </div>
 
-        <div style={{ width: 1, height: 20, backgroundColor: "#E5E7EB", alignSelf: "center" }} />
-
-        {/* Age */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 2 }}>Age</span>
-          {(["all", "18-24", "25-29", "30-35"] as AgeGroup[]).map(v =>
-            CHIP(v === "all" ? "All" : v, age === v, () => setAge(v), "#7C3AED")
-          )}
+          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Age</span>
+          <select value={age} onChange={(e) => setAge(e.target.value as AgeGroup)} style={SELECT_STYLE}>
+            <option value="all">All</option>
+            <option value="18-24">18-24</option>
+            <option value="25-29">25-29</option>
+            <option value="30-35">30-35</option>
+          </select>
         </div>
 
-        <div style={{ width: 1, height: 20, backgroundColor: "#E5E7EB", alignSelf: "center" }} />
-
-        {/* Program */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 2 }}>Program</span>
-          {(["all", "HENT", "HEMP"] as Program[]).map(v =>
-            CHIP(v === "all" ? "All" : v, program === v, () => setProgram(v), "#0F6E56")
-          )}
+          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Program</span>
+          <select value={program} onChange={(e) => setProgram(e.target.value as Program)} style={SELECT_STYLE}>
+            <option value="all">All</option>
+            <option value="HENT">HENT</option>
+            <option value="HEMP">HEMP</option>
+          </select>
         </div>
 
-        <div style={{ width: 1, height: 20, backgroundColor: "#E5E7EB", alignSelf: "center" }} />
-
-        {/* Cohort */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 2 }}>Cohort</span>
-          {(["all", "2021", "2022", "2023", "2024"] as Cohort[]).map(v =>
-            CHIP(v === "all" ? "All" : v, cohort === v, () => setCohort(v), "#0891B2")
-          )}
+          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Cohort</span>
+          <select value={cohort} onChange={(e) => setCohort(e.target.value as Cohort)} style={SELECT_STYLE}>
+            <option value="all">All</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+          </select>
         </div>
 
-        <div style={{ width: 1, height: 20, backgroundColor: "#E5E7EB", alignSelf: "center" }} />
-
-        {/* Employment Type */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 2 }}>Type</span>
-          {(["all", "employed", "entrepreneur", "freelance"] as EmpType[]).map(v =>
-            CHIP(v === "all" ? "All" : v.charAt(0).toUpperCase() + v.slice(1), empType === v, () => setEmpType(v), "#D97706")
-          )}
+          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Type</span>
+          <select value={empType} onChange={(e) => setEmpType(e.target.value as EmpType)} style={SELECT_STYLE}>
+            <option value="all">All</option>
+            <option value="Employed">Employed</option>
+            <option value="Entrepreneur">Entrepreneur</option>
+            <option value="Freelance">Freelance</option>
+          </select>
         </div>
 
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Country</span>
+          <select value={country} onChange={(e) => setCountry(e.target.value as Country)} style={SELECT_STYLE}>
+            <option value="all">All Countries</option>
+            <option value="Rwanda">Rwanda</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Ghana">Ghana</option>
+            <option value="Uganda">Uganda</option>
+            <option value="Ethiopia">Ethiopia</option>
+            <option value="South Africa">South Africa</option>
+          </select>
+        </div>
+
+        <span style={{ fontSize: 10, color: "#9CA3AF", marginLeft: "auto" }}>
+          n = <strong style={{ color: "#374151" }}>{filtered.length}</strong>
+        </span>
       </div>
 
-      {/* Country filter — separate row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginBottom: 18 }}>
-        <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 2 }}>Country</span>
-        {(["all", ...COUNTRIES] as Country[]).map(v =>
-          CHIP(v === "all" ? "All Countries" : v, country === v, () => setCountry(v), "#DB2777")
-        )}
-      </div>
-
-      {/* Sample count */}
-      <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 16 }}>
-        Showing <strong style={{ color: "#374151" }}>{n}</strong> respondents
-        {hasFilters && <> · <button onClick={() => { setGender("all"); setAge("all"); setCountry("all"); setProgram("all"); setCohort("all"); setEmpType("all"); }} style={{ background: "none", border: "none", color: "#185FA5", fontSize: 10, cursor: "pointer", fontWeight: 600, padding: 0 }}>Clear filters</button></>}
-      </p>
-
-      {/* Scorecard grid */}
+      {/* Scorecard */}
       {scores ? (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
           {METRICS.map(m => {
             const score = scores[m.key];
             const benchmark = BENCHMARKS[m.key];
             const delta = score - benchmark;
-            const pct = Math.min(score, 100);
-            const bPct = Math.min(benchmark, 100);
 
             return (
               <div key={m.key} style={{
                 backgroundColor: "white",
                 borderRadius: 8,
-                padding: "14px 16px",
+                padding: "12px 14px",
                 border: "1px solid rgba(0,33,71,0.07)",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
               }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                  <span style={{ fontSize: 13, color: m.color, lineHeight: 1 }}>{m.icon}</span>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1F2937", flex: 1 }}>{m.label}</p>
-                  <div style={{
-                    display: "flex", alignItems: "baseline", gap: 2,
-                  }}>
-                    <span style={{ fontSize: 20, fontWeight: 800, color: m.color, lineHeight: 1 }}>{score}</span>
-                    <span style={{ fontSize: 10, color: "#9CA3AF", fontWeight: 500 }}>/100</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, color: m.color }}>{m.icon}</span>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "#1F2937", flex: 1, lineHeight: 1.2 }}>{m.label}</p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 1 }}>
+                    <span style={{ fontSize: 18, fontWeight: 800, color: m.color, lineHeight: 1 }}>{score}</span>
+                    <span style={{ fontSize: 9, color: "#9CA3AF" }}>/100</span>
                   </div>
                 </div>
 
-                {/* Progress bar */}
-                <div style={{ position: "relative", height: 8, borderRadius: 4, backgroundColor: "#F3F4F6", marginBottom: 8 }}>
+                <div style={{ position: "relative", height: 6, borderRadius: 3, backgroundColor: "#F3F4F6", marginBottom: 6 }}>
                   <div style={{
                     position: "absolute", left: 0, top: 0, height: "100%",
-                    width: `${pct}%`,
-                    borderRadius: 4,
+                    width: `${Math.min(score, 100)}%`,
+                    borderRadius: 3,
                     backgroundColor: m.color,
-                    opacity: 0.85,
+                    opacity: 0.8,
                     transition: "width 0.4s ease",
                   }} />
-                  {/* Benchmark tick */}
                   <div style={{
                     position: "absolute",
-                    left: `${bPct}%`,
-                    top: -3,
-                    width: 2,
-                    height: 14,
+                    left: `${Math.min(benchmark, 100)}%`,
+                    top: -2, width: 2, height: 10,
                     backgroundColor: "#6B7280",
                     borderRadius: 1,
                     transform: "translateX(-50%)",
                   }} />
                 </div>
 
-                {/* Delta vs benchmark */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 9, color: "#9CA3AF" }}>
-                    Benchmark: {benchmark}
-                  </span>
+                  <span style={{ fontSize: 9, color: "#9CA3AF" }}>Benchmark: {benchmark}</span>
                   <span style={{
                     fontSize: 9, fontWeight: 700,
                     color: delta >= 0 ? "#0F6E56" : "#DC2626",
                     backgroundColor: delta >= 0 ? "#ECFDF5" : "#FEF2F2",
-                    padding: "1px 6px", borderRadius: 10,
+                    padding: "1px 5px", borderRadius: 8,
                   }}>
                     {delta >= 0 ? "+" : ""}{delta}
                   </span>

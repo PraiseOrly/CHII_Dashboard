@@ -137,9 +137,9 @@ export default function AfricaChoropleth() {
         }}>
           <ComposableMap
             projection="geoMercator"
-            projectionConfig={{ center: [22, 0], scale: 300 }}
+            projectionConfig={{ center: [22, 2], scale: 270 }}
             width={780}
-            height={300}
+            height={420}
             style={{ display: "block", width: "100%", height: "auto" }}
           >
             <Geographies geography={GEO_URL}>
