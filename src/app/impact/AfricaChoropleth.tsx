@@ -139,7 +139,7 @@ export default function AfricaChoropleth() {
             projection="geoMercator"
             projectionConfig={{ center: [22, 0], scale: 300 }}
             width={780}
-            height={460}
+            height={300}
             style={{ display: "block", width: "100%", height: "auto" }}
           >
             <Geographies geography={GEO_URL}>
@@ -223,14 +223,14 @@ export default function AfricaChoropleth() {
             <p style={{ fontSize: 9, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Scale</p>
             <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
               <div style={{
-                width: 12, height: 130, borderRadius: 4, flexShrink: 0,
+                width: 12, height: 80, borderRadius: 4, flexShrink: 0,
                 background: metric === "inwork"
                   ? "linear-gradient(to bottom, #0F6E56, #C5EDE3)"
                   : metric === "graduated"
                   ? "linear-gradient(to bottom, #185FA5, #C7DFFE)"
                   : "linear-gradient(to bottom, #042C53, #C7DFFE)",
               }} />
-              <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: 130 }}>
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: 80 }}>
                 <span style={{ fontSize: 10, color: "#6B7280" }}>High</span>
                 <span style={{ fontSize: 10, color: "#6B7280" }}>Low</span>
               </div>

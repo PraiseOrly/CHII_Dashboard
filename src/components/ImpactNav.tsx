@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LayoutGrid, ChevronDown } from "lucide-react";
 
-const NAVY = "#002147";
+const NAVY = "#042C53";
 
 export const IMPACT_TABS = [
   { label: "Overview",                    href: "/impact",                  color: "#002147", bg: "#EFF6FF" },
@@ -52,8 +52,8 @@ export default function ImpactNav() {
   }, []);
 
   return (
-    <div className="bg-white border-b border-gray-200" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-14 gap-2 sm:gap-3">
+    <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-16 gap-2 sm:gap-3">
 
         {/* Logo + wordmark */}
         <Link href="/impact" className="flex items-center gap-2.5 flex-shrink-0 group">
@@ -69,7 +69,7 @@ export default function ImpactNav() {
               fontFamily="Inter, ui-sans-serif, sans-serif" fontSize="11.5">IMPACT</text>
           </svg>
           <div className="hidden xl:block">
-            <p className="text-[12px] font-black leading-none" style={{ color: NAVY }}>Impact</p>
+            <p className="text-[12px] font-black leading-none" style={{ color: NAVY }}>Executive</p>
             <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wide">CHII Analytics</p>
           </div>
         </Link>
@@ -85,8 +85,8 @@ export default function ImpactNav() {
               <Link
                 key={tab.label}
                 href={tab.href}
-                className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-14 transition-colors group flex-shrink-0"
-                style={{ color: isActive ? NAVY : "#6B7280" }}
+                className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-16 transition-colors group flex-shrink-0"
+                style={{ color: isActive ? NAVY : "rgba(4,44,83,0.45)" }}
               >
                 {!isActive && (
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
