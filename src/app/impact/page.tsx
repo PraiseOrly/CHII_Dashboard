@@ -18,6 +18,10 @@ import { ventures } from "@/data/ventures";
 import Link from "next/link";
 import AfricaChoropleth from "./AfricaChoropleth";
 import DignifiedWork from "./DignifiedWork";
+import OutreachAccess from "./OutreachAccess";
+import ProgramOutcomes from "./ProgramOutcomes";
+import ProgramImpactMatrix from "./ProgramImpactMatrix";
+import ProgramQuality from "./ProgramQuality";
 
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -745,207 +749,9 @@ export default function ImpactDashboard() {
         {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
 
-          {/* Left — Outreach & Access (Stacked Gender Bar) */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-3">
-                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Outreach &amp; Access</p>
-              </div>
-              <select
-                value={String(yearFilter)}
-                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
-              >
-                <option value={"all"}>All years</option>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Audience segments by gender — sorted by total reach</p>
-            {(() => {
-              // Mission students: exact gender from individual records
-              const enrolled_f = missionStudents.filter(s => s.status === "Active"    && s.gender === "Female").length;
-              const enrolled_m = missionStudents.filter(s => s.status === "Active"    && s.gender === "Male"  ).length;
-              const grad_f     = missionStudents.filter(s => s.status === "Completed" && s.gender === "Female").length;
-              const grad_m     = missionStudents.filter(s => s.status === "Completed" && s.gender === "Male"  ).length;
+          <OutreachAccess />
 
-              // Per-program female ratios for social-group gender estimation
-              const mcFemRatio = (() => { const t = masterclasses.reduce((s, m) => s + m.attendees, 0);       return t > 0 ? masterclasses.reduce((s, m) => s + m.femaleAttendees,    0) / t : 0.5; })();
-              const fvFemRatio = (() => { const t = fieldVisits.reduce((s, v) => s + v.participants, 0);      return t > 0 ? fieldVisits.reduce((s, v) => s + v.femaleParticipants,  0) / t : 0.5; })();
-              const mfFemRatio = (() => { const t = mentorshipPrograms.reduce((s, p) => s + p.fellows, 0);    return t > 0 ? mentorshipPrograms.reduce((s, p) => s + p.femaleFellows, 0) / t : 0.5; })();
-
-              const sumFemEst = (key: "MCF Scholars" | "PWD" | "Refugee-Displaced") => Math.round(
-                masterclasses.reduce((s, m) => s + m.bySocial[key], 0)    * mcFemRatio +
-                fieldVisits.reduce((s, v) => s + v.bySocial[key], 0)      * fvFemRatio +
-                mentorshipPrograms.reduce((s, p) => s + p.bySocial[key], 0) * mfFemRatio
-              );
-              const sumTotal = (key: "MCF Scholars" | "PWD" | "Refugee-Displaced") =>
-                masterclasses.reduce((s, m) => s + m.bySocial[key], 0) +
-                fieldVisits.reduce((s, v) => s + v.bySocial[key], 0) +
-                mentorshipPrograms.reduce((s, p) => s + p.bySocial[key], 0);
-
-              const mcf_total = sumTotal("MCF Scholars");         const mcf_f = sumFemEst("MCF Scholars");
-              const pwd_total = sumTotal("PWD");                  const pwd_f = sumFemEst("PWD");
-              const ref_total = sumTotal("Refugee-Displaced");    const ref_f = sumFemEst("Refugee-Displaced");
-
-              const stackData = [
-                { name: "MCF Scholars",          female: mcf_f,     male: mcf_total - mcf_f,     total: mcf_total  },
-                { name: "Youth with Disability", female: pwd_f,     male: pwd_total - pwd_f,     total: pwd_total  },
-                { name: "Graduates",             female: grad_f,    male: grad_m,                total: grad_f + grad_m  },
-                { name: "Refugees & Displaced",  female: ref_f,     male: ref_total - ref_f,     total: ref_total  },
-                { name: "Currently Enrolled",    female: enrolled_f,male: enrolled_m,            total: enrolled_f + enrolled_m },
-              ].sort((a, b) => b.total - a.total);
-
-              const maxVal = Math.max(...stackData.map(d => d.total), 1);
-              const BR2 = Bar as any;
-              return (
-                <ResponsiveContainer width="100%" height={238}>
-                  <BarChart layout="vertical" data={stackData} barSize={18} margin={{ top: 4, right: 52, bottom: 4, left: 4 }}>
-                    <XAxis
-                      type="number"
-                      domain={[0, Math.ceil(maxVal * 1.18)]}
-                      tick={{ fontSize: 9, fill: "#9CA3AF" }}
-                      tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                      axisLine={false} tickLine={false}
-                    />
-                    <YAxis
-                      type="category" dataKey="name"
-                      tick={{ fontSize: 10, fill: "#374151" }}
-                      width={136} axisLine={false} tickLine={false}
-                    />
-                    <Tooltip
-                      cursor={{ fill: "rgba(0,33,71,0.04)" }}
-                      content={({ active, payload }: any) => {
-                        if (!active || !payload?.length) return null;
-                        const d = payload[0].payload;
-                        return (
-                          <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                            <p style={{ fontWeight: 700, color: "#185FA5", marginBottom: 4 }}>{d.name}</p>
-                            <p style={{ color: "#185FA5" }}>Women <b>{fmt(d.female)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.female / d.total * 100)}%)</span></p>
-                            <p style={{ color: "#85B7EB" }}>Men <b style={{ color: "#374151" }}>{fmt(d.male)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.male / d.total * 100)}%)</span></p>
-                            <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 3, borderTop: "1px solid rgba(0,33,71,0.06)", paddingTop: 3 }}>Total {fmt(d.total)}</p>
-                          </div>
-                        );
-                      }}
-                    />
-                    <Bar dataKey="female" stackId="g" fill="#185FA5" name="Women" />
-                    <BR2
-                      dataKey="male" stackId="g" fill="#85B7EB" radius={[0, 3, 3, 0]} name="Men"
-                      label={(props: any) => {
-                        const { x, y, width, height: bh, index } = props;
-                        if (index == null || !stackData[index]) return null;
-                        const total = stackData[index].total;
-                        return (
-                          <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
-                            {fmt(total)}
-                          </text>
-                        );
-                      }}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              );
-            })()}
-            <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
-              <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
-                <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#185FA5" }} />
-                Women
-              </span>
-              <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
-                <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#85B7EB" }} />
-                Men
-              </span>
-            </div>
-          </div>
-
-          {/* Right — Program Outcomes */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-3">
-                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Outcomes</p>
-              </div>
-              <select
-                value={String(yearFilter)}
-                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
-              >
-                <option value={"all"}>All years</option>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Cumulative outcome totals across all programs</p>
-            {(() => {
-              const outcomeData = ([
-                { name: "Youth in Work",     value: D.employmentOut,              color: "#1D9E75" },
-                { name: "Jobs Created",      value: D.jobsFromVC,                 color: "#185FA5" },
-                { name: "Wage Employment",   value: D.msWageOnly + D.intConv,     color: "#0C447C" },
-                { name: "Entrepreneurs",     value: D.msEntOnly  + D.hakStart,    color: "#0F6E56" },
-                { name: "Further Education", value: D.msFurther,                  color: "#7F77DD" },
-              ] as { name: string; value: number; color: string }[])
-                .sort((a, b) => b.value - a.value);
-              const maxVal = Math.max(...outcomeData.map(d => d.value), 1);
-              const BR = Bar as any;
-              return (
-                <>
-                <ResponsiveContainer width="100%" height={238}>
-                  <BarChart data={outcomeData} margin={{ top: 22, right: 10, bottom: 8, left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,33,71,0.05)" />
-                    <XAxis
-                      dataKey="name"
-                      tick={{ fontSize: 9, fill: "#374151" }}
-                      axisLine={false} tickLine={false}
-                       interval={0} height={30}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 9, fill: "#9CA3AF" }}
-                      tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                      axisLine={false} tickLine={false}
-                      domain={[0, Math.ceil(maxVal * 1.18)]}
-                    />
-                    <Tooltip
-                      cursor={{ fill: "rgba(0,33,71,0.04)" }}
-                      content={({ active, payload }: any) => {
-                        if (!active || !payload?.length) return null;
-                        const d = payload[0].payload;
-                        return (
-                          <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                            <p style={{ fontWeight: 700, color: d.color, marginBottom: 2 }}>{d.name}</p>
-                            <p style={{ color: "#042C53", fontWeight: 600 }}>{fmt(d.value)}</p>
-                            <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 1 }}>{Math.round(d.value / maxVal * 100)}% of largest outcome</p>
-                          </div>
-                        );
-                      }}
-                    />
-                    <BR
-                      dataKey="value"
-                      shape={(props: any) => {
-                        const { x, y, width, height: bh, payload } = props;
-                        if (!bh || bh <= 0) return <g />;
-                        return (
-                          <g>
-                            <rect x={x + 3} y={y} width={Math.max(width - 6, 4)} height={bh} fill={payload.color} fillOpacity={0.88} rx={4} ry={4} />
-                            <text x={x + width / 2} y={y - 6} textAnchor="middle" fontSize={10} fontWeight={700} fill="#374151">
-                              {fmt(payload.value)}
-                            </text>
-                          </g>
-                        );
-                      }}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div style={{ display: "flex", justifyContent: "center", gap: 14, marginTop: 10, flexWrap: "wrap" }}>
-                  {outcomeData.map(d => (
-                    <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 10, color: "#374151" }}>{d.name}</span>
-                    </div>
-                  ))}
-                </div>
-                </>
-              );
-            })()}
-          </div>
+          <ProgramOutcomes />
         </div>
 
         {/* L3 · Employment & Enterprise + Pathway Growth */}
@@ -999,128 +805,9 @@ export default function ImpactDashboard() {
 
         {/* L4 · Impact Themes */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          {/* Left — Program Impact Matrix (Bubble Chart) */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-3">
-                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Impact Matrix</p>
-              </div>
-              <select
-                value={String(yearFilter)}
-                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
-              >
-                <option value={"all"}>All years</option>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 8, marginLeft: 12 }}>Scale vs. outcome rate — bubble size reflects economic weight</p>
-            {(() => {
-              const bubbleData = [
-                { name: "HealthX",       x: D.hxPart,      y: D.hxAvgCompl,                                                               z: Math.max(D.hxPart * 0.4, 20),       color: "#378ADD" },
-                { name: "Internships",   x: D.intStudents, y: D.intStudents > 0 ? Math.round(D.intConv / D.intStudents * 100) : 0,        z: Math.max(D.intConv * 18, 20),       color: "#0C447C" },
-                { name: "Mission",       x: D.msTotal,     y: D.msCompPct,                                                                 z: Math.max(D.msEmployed.length * 15, 20), color: "#185FA5" },
-                { name: "Hackathons",    x: D.hakPart,     y: D.hakPart > 0 ? Math.round(D.hakStart / D.hakPart * 100) : 0,               z: Math.max(D.hakStart * 25, 20),      color: "#0F6E56" },
-                { name: "Masterclasses", x: D.mcAtt,       y: D.mcAvgCompl,                                                                z: Math.max(D.mcAtt * 0.6, 20),        color: "#1D9E75" },
-                { name: "Field Visits",  x: D.fvPart,      y: D.fvAvgCompl,                                                                z: Math.max(D.fvPart * 0.5, 20),       color: "#085041" },
-                { name: "Mentorship",    x: D.mfFel,       y: D.mfFel > 0 ? Math.round(D.mfGrad / D.mfFel * 100) : 0,                    z: Math.max(D.mfGrad * 12, 20),        color: "#7F77DD" },
-              ];
-              const zMax = Math.max(...bubbleData.map(b => b.z));
-              const SC = Scatter as any;
-              return (
-                <ResponsiveContainer width="100%" height={196}>
-                  <ScatterChart margin={{ top: 10, right: 16, bottom: 28, left: -4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.05)" />
-                    <XAxis
-                      type="number" dataKey="x" name="Participants"
-                      tick={{ fontSize: 9, fill: "#9CA3AF" }}
-                      tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                      label={{ value: "Participants", position: "insideBottom", offset: -16, fontSize: 9, fill: "#9CA3AF" }}
-                    />
-                    <YAxis
-                      type="number" dataKey="y" name="Outcome Rate" domain={[0, 110]}
-                      tick={{ fontSize: 9, fill: "#9CA3AF" }}
-                      tickFormatter={(v: number) => `${v}%`}
-                      label={{ value: "Outcome %", angle: -90, position: "insideLeft", offset: 14, fontSize: 9, fill: "#9CA3AF" }}
-                    />
-                    <Tooltip
-                      cursor={{ strokeDasharray: "3 3", stroke: "rgba(0,33,71,0.12)" }}
-                      content={({ active, payload }: any) => {
-                        if (!active || !payload?.length) return null;
-                        const d = payload[0].payload;
-                        return (
-                          <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                            <p style={{ fontWeight: 700, color: d.color, marginBottom: 3 }}>{d.name}</p>
-                            <p style={{ color: "#6B7280" }}>Participants: <b style={{ color: "#042C53" }}>{fmt(d.x)}</b></p>
-                            <p style={{ color: "#6B7280" }}>Outcome rate: <b style={{ color: "#042C53" }}>{d.y}%</b></p>
-                          </div>
-                        );
-                      }}
-                    />
-                    <SC
-                      data={bubbleData}
-                      shape={(props: any) => {
-                        const { cx, cy, payload } = props;
-                        const r = 8 + (payload.z / zMax) * 26;
-                        const label = payload.name.length > 9 ? payload.name.slice(0, 8) + "…" : payload.name;
-                        return (
-                          <g>
-                            <circle cx={cx} cy={cy} r={r} fill={payload.color} fillOpacity={0.18} stroke={payload.color} strokeWidth={1.5} />
-                            <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="middle" fontSize={7.5} fill={payload.color} fontWeight={700}>
-                              {label}
-                            </text>
-                          </g>
-                        );
-                      }}
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              );
-            })()}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 6 }}>
-              {([
-                { label: "Employment", color: "#0C447C" },
-                { label: "Enterprise", color: "#0F6E56" },
-                { label: "Education",  color: "#378ADD" },
-                { label: "Mentorship", color: "#7F77DD" },
-              ] as { label: string; color: string }[]).map(c => (
-                <div key={c.label} className="flex items-center gap-1">
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: c.color, opacity: 0.8 }} />
-                  <span style={{ fontSize: 9, color: "#6B7280" }}>{c.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ProgramImpactMatrix />
 
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#7F77DD" }} />
-                <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#7F77DD" }}>Program Quality</p>
-              </div>
-              <select
-                value={String(yearFilter)}
-                onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-                style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
-              >
-                <option value={"all"}>All years</option>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-            {D.programQuality.map((p, i) => (
-              <div key={p.name} style={{ marginBottom: i < D.programQuality.length - 1 ? 10 : 0 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                  <p style={{ fontSize: 11, color: "#374151", fontWeight: 500 }}>{p.name}</p>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: p.color }}>{p.sat.toFixed(1)}/5</p>
-                </div>
-                <div style={{ height: 5, borderRadius: 3, backgroundColor: "rgba(0,33,71,0.06)" }}>
-                  <div style={{ height: "100%", borderRadius: 3, backgroundColor: p.color, width: `${p.compl}%` }} />
-                </div>
-                <p style={{ fontSize: 9, color: "#9CA3AF", marginTop: 2 }}>{p.compl}% completion</p>
-              </div>
-            ))}
-          </div>
+          <ProgramQuality />
         </div>
 
         {/* L6 · Geographic Reach */}
@@ -1130,14 +817,6 @@ export default function ImpactDashboard() {
               <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Geographic Reach</p>
             </div>
-            <select
-              value={String(yearFilter)}
-              onChange={(e) => setYearFilter(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)}
-              style={{ fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5, padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer" }}
-            >
-              <option value={"all"}>All years</option>
-              {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
           </div>
           <AfricaChoropleth />
         </div>

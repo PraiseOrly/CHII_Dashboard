@@ -92,7 +92,7 @@ export default function ImpactNav() {
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ backgroundColor: "#F1F5F9" }} />
                 )}
-                <span className="relative text-[10.5px] font-bold leading-tight whitespace-nowrap">{tab.label}</span>
+                <span className="relative text-[12px] font-bold leading-tight whitespace-nowrap">{tab.label}</span>
                 {isActive && (
                   <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full"
                     style={{ backgroundColor: NAVY }} />

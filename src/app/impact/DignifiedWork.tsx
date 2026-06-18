@@ -92,7 +92,6 @@ export default function DignifiedWork() {
   const [gender,   setGender]   = useState<Gender>("all");
   const [age,      setAge]      = useState<AgeGroup>("all");
   const [country,  setCountry]  = useState<Country>("all");
-  const [program,  setProgram]  = useState<Program>("all");
   const [cohort,   setCohort]   = useState<Cohort>("all");
   const [empType,  setEmpType]  = useState<EmpType>("all");
 
@@ -100,10 +99,9 @@ export default function DignifiedWork() {
     (gender  === "all" || d.gender  === gender)  &&
     (age     === "all" || d.age     === age)      &&
     (country === "all" || d.country === country)  &&
-    (program === "all" || d.program === program)  &&
     (cohort  === "all" || d.cohort  === cohort)   &&
     (empType === "all" || d.empType === empType)
-  ), [gender, age, country, program, cohort, empType]);
+  ), [gender, age, country, cohort, empType]);
 
   const scores = useMemo(() => {
     const n = filtered.length;
@@ -134,15 +132,6 @@ export default function DignifiedWork() {
             <option value="18-24">18-24</option>
             <option value="25-29">25-29</option>
             <option value="30-35">30-35</option>
-          </select>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Program</span>
-          <select value={program} onChange={(e) => setProgram(e.target.value as Program)} style={SELECT_STYLE}>
-            <option value="all">All</option>
-            <option value="HENT">HENT</option>
-            <option value="HEMP">HEMP</option>
           </select>
         </div>
 
@@ -188,7 +177,7 @@ export default function DignifiedWork() {
 
       {/* Scorecard */}
       {scores ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
           {METRICS.map(m => {
             const score = scores[m.key];
             const benchmark = BENCHMARKS[m.key];
