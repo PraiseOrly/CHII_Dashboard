@@ -433,13 +433,6 @@ const PERIOD_LABELS: Record<PeriodVal, string> = {
 // ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Page ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
 export default function ImpactDashboard() {
   // ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ Filter state ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬ÃƒÂ¢"Ã¢â€šÂ¬
-  const sysDark    = useDarkMode();
-  const [manualDark, setManualDark] = useState<boolean | null>(false);
-  const dark = manualDark !== null ? manualDark : sysDark;
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-  }, [dark]);
-
   const [yearFilter,   setYearFilter]   = useState<YearVal>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodVal>("all");
   const [catFilter,    setCatFilter]    = useState<HackCat>("all");
@@ -701,25 +694,23 @@ export default function ImpactDashboard() {
         }
       `}</style>
       {/* -- Page header -- */}
-      <header className="border-b" style={{ borderColor: "rgba(0,33,71,0.10)" }}>
-        <div className="max-w-[1440px] mx-auto px-6 py-4">
-          <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div>
-              <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>OVERVIEW</h1>
-              <p className="text-[11px] text-gray-400 mt-1 font-medium">Consolidated analytics &mdash; <span style={{ color: "#9CA3AF" }}>Last updated: 18 June 2026</span></p>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                onClick={() => setManualDark(prev => !(prev ?? sysDark))}
-                title={dark ? "Switch to light mode" : "Switch to dark mode"}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border transition-colors"
-                style={{ color: dark ? "#85B7EB" : "#185FA5", borderColor: dark ? "#85B7EB" : "#185FA5", backgroundColor: dark ? "#0C447C" : "transparent" }}>
-                {dark ? <Sun size={14} /> : <Moon size={14} />}
-              </button>
-              <button className="flex items-center gap-1.5 text-[12px] font-medium border px-4 py-2 rounded-lg transition-colors" style={{ color: "#185FA5", borderColor: "#185FA5" }}>
-                <Download size={11} /> Export
-              </button>
-            </div>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+
+        {/* Readability overlay */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1, pointerEvents: "none" }} />
+
+        {/* Content */}
+        <div className="max-w-[1440px] mx-auto px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+          <div style={{ textAlign: "center" }}>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
+              Pan-African Impact Overview
+            </h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
+            </p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>
+              Last updated: 18 June 2026
+            </p>
           </div>
         </div>
       </header>
@@ -747,12 +738,13 @@ export default function ImpactDashboard() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
 
           {/* Right — Jobs & Enterprise Trend (Stacked Area) */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Jobs &amp; Enterprise Trend</p>
+          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+            <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Jobs &amp; Enterprise Trend</p>
             </div>
-            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Economic output progression across cohort years</p>
+            <div style={{ padding: "16px 24px 20px" }}>
+            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14 }}>Economic output progression across cohort years</p>
             <div style={{ height: 220 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={economicTrend} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -781,14 +773,17 @@ export default function ImpactDashboard() {
                 </span>
               ))}
             </div>
+            </div>
           </div>
 
-          <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Dignified Work Indicators</p>
+          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+            <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Dignified Work Indicators</p>
             </div>
+            <div style={{ padding: "16px 24px 20px" }}>
             <DignifiedWork />
+            </div>
           </div>
         </div>
 
@@ -800,14 +795,14 @@ export default function ImpactDashboard() {
         </div>
 
         {/* L6 · Geographic Reach */}
-        <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#042C53" }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Geographic Reach</p>
-            </div>
+        <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+          <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Geographic Reach</p>
           </div>
+          <div style={{ padding: "16px 24px 20px" }}>
           <AfricaChoropleth />
+          </div>
         </div>
 
         {/* L7 · Strategic Insights */}
@@ -849,45 +844,40 @@ export default function ImpactDashboard() {
         </div>
 
         {/* L8 · Featured Impact Story */}
-        <div style={{ backgroundColor: "#042C53", borderRadius: 12, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "260px 1fr" }}>
-            <div style={{ backgroundColor: "#0C447C", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ width: 64, height: 64, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-                  <Users size={26} color="#85B7EB" />
-                </div>
-                <p style={{ fontSize: 11, color: "#85B7EB", fontWeight: 600 }}>Featured Graduate</p>
-                <p style={{ fontSize: 14, color: "white", fontWeight: 700, marginTop: 5 }}>Amara Diallo</p>
-                <p style={{ fontSize: 10, color: "#B5D4F4", marginTop: 3 }}>HEMP &middot; Cohort 2024</p>
-                <p style={{ fontSize: 10, color: "#B5D4F4" }}>Nairobi, Kenya</p>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/impact.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
+
+          {/* Readability overlay */}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
+
+          {/* -- Content (profile left + story right, centered in blue zone) -- */}
+          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }}>
+            {/* Profile — left */}
+            <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
+              <div style={{ width: 64, height: 64, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                <Users size={26} color="#85B7EB" />
               </div>
+              <p style={{ fontSize: 11, color: "#85B7EB", fontWeight: 600 }}>Featured Graduate</p>
+              <p style={{ fontSize: 15, color: "white", fontWeight: 700, marginTop: 5 }}>Amara Diallo</p>
+              <p style={{ fontSize: 10, color: "#B5D4F4", marginTop: 3, lineHeight: 1.5 }}>HEMP &middot; Cohort 2024<br/>Nairobi, Kenya</p>
             </div>
-            <div style={{ padding: "28px 32px" }}>
-              <p style={{ fontSize: 10, fontWeight: 600, color: "#85B7EB", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Impact Story</p>
-              <p style={{ fontSize: 17, fontWeight: 700, color: "white", lineHeight: 1.35, marginBottom: 14 }}>
+
+            {/* Divider */}
+            <div style={{ width: 1, alignSelf: "stretch", background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)", flexShrink: 0 }} />
+
+            {/* Story — right */}
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 600, color: "#85B7EB", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Impact Story</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: "white", lineHeight: 1.35, marginBottom: 10 }}>
                 &ldquo;From healthcare worker to health-tech founder in 18 months&rdquo;
               </p>
-              <p style={{ fontSize: 12, color: "#B5D4F4", lineHeight: 1.65, marginBottom: 18 }}>
+              <p style={{ fontSize: 12, color: "#B5D4F4", lineHeight: 1.6 }}>
                 After completing the HEMP HealthX program, Amara used her clinical experience and newly acquired digital health skills to launch a telemedicine platform serving rural communities in East Africa. Her venture now employs 12 graduates from the same cohort and has served over 4,200 patients.
               </p>
-              <div style={{ display: "flex", gap: 24 }}>
-                {([
-                  { label: "Venture Stage",   value: "Series A" },
-                  { label: "Team Size",       value: "12 staff"  },
-                  { label: "Patients Served", value: "4,200+"    },
-                ] as { label: string; value: string }[]).map(m => (
-                  <div key={m.label}>
-                    <p style={{ fontSize: 17, fontWeight: 700, color: "white", lineHeight: 1 }}>{m.value}</p>
-                    <p style={{ fontSize: 9, color: "#85B7EB", marginTop: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>{m.label}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
 
       </div>
-
     </div>
   );
 }

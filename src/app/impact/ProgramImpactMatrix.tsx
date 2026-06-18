@@ -64,18 +64,21 @@ export default function ProgramImpactMatrix() {
   const SC = Scatter as any;
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: "#042C53", flexShrink: 0 }} />
-          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Impact Matrix</p>
-        </div>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+      {/* Navy heading band */}
+      <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+        <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Program Impact Matrix</p>
+      </div>
+      <div style={{ padding: "16px 24px 20px" }}>
+      {/* Description + filter row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <p style={{ fontSize: 10, color: "#9CA3AF" }}>Scale vs. outcome rate — bubble size reflects economic weight</p>
         <select value={String(year)} onChange={e => setYear(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)} style={SEL}>
           <option value="all">All years</option>
           {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
         </select>
       </div>
-      <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 8, marginLeft: 12 }}>Scale vs. outcome rate — bubble size reflects economic weight</p>
       <ResponsiveContainer width="100%" height={280}>
         <ScatterChart margin={{ top: 10, right: 16, bottom: 28, left: -4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.05)" />
@@ -135,6 +138,7 @@ export default function ProgramImpactMatrix() {
             <span style={{ fontSize: 9, color: "#6B7280" }}>{c.label}</span>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

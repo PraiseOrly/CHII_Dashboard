@@ -35,12 +35,15 @@ export default function ProgramQuality() {
   }, [year]);
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "24px 28px", border: "1px solid rgba(0,33,71,0.08)", minHeight: 400 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: "#7F77DD", flexShrink: 0 }} />
-          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#7F77DD" }}>Program Quality</p>
-        </div>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", minHeight: 400, overflow: "hidden" }}>
+      {/* Navy heading band */}
+      <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+        <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Program Quality</p>
+      </div>
+      <div style={{ padding: "18px 28px 24px" }}>
+      {/* Filter row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 16 }}>
         <select value={String(year)} onChange={e => setYear(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)} style={SEL}>
           <option value="all">All years</option>
           {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
@@ -58,6 +61,7 @@ export default function ProgramQuality() {
           <p style={{ fontSize: 10, color: "#9CA3AF" }}>{p.compl}% completion rate</p>
         </div>
       ))}
+      </div>
     </div>
   );
 }

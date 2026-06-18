@@ -64,18 +64,21 @@ export default function OutreachAccess() {
   const BR2 = Bar as any;
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: "#042C53", flexShrink: 0 }} />
-          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Outreach &amp; Access</p>
-        </div>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+      {/* Navy heading band */}
+      <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+        <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Outreach &amp; Access</p>
+      </div>
+      <div style={{ padding: "16px 24px 20px" }}>
+      {/* Description + filter row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <p style={{ fontSize: 10, color: "#9CA3AF" }}>Audience segments by gender — sorted by total reach</p>
         <select value={String(year)} onChange={e => setYear(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)} style={SEL}>
           <option value="all">All years</option>
           {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
         </select>
       </div>
-      <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Audience segments by gender — sorted by total reach</p>
       <ResponsiveContainer width="100%" height={238}>
         <BarChart layout="vertical" data={stackData} barSize={18} margin={{ top: 4, right: 52, bottom: 4, left: 4 }}>
           <XAxis
@@ -99,7 +102,7 @@ export default function OutreachAccess() {
                 <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
                   <p style={{ fontWeight: 700, color: "#185FA5", marginBottom: 4 }}>{d.name}</p>
                   <p style={{ color: "#185FA5" }}>Women <b>{fmt(d.female)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.female / d.total * 100)}%)</span></p>
-                  <p style={{ color: "#85B7EB" }}>Men <b style={{ color: "#374151" }}>{fmt(d.male)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.male / d.total * 100)}%)</span></p>
+                  <p style={{ color: "#1D9E75" }}>Men <b style={{ color: "#374151" }}>{fmt(d.male)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.male / d.total * 100)}%)</span></p>
                   <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 3, borderTop: "1px solid rgba(0,33,71,0.06)", paddingTop: 3 }}>Total {fmt(d.total)}</p>
                 </div>
               );
@@ -107,7 +110,7 @@ export default function OutreachAccess() {
           />
           <Bar dataKey="female" stackId="g" fill="#185FA5" name="Women" />
           <BR2
-            dataKey="male" stackId="g" fill="#85B7EB" radius={[0, 3, 3, 0]} name="Men"
+            dataKey="male" stackId="g" fill="#1D9E75" radius={[0, 3, 3, 0]} name="Men"
             label={(props: any) => {
               const { x, y, width, height: bh, index } = props;
               if (index == null || !stackData[index]) return null;
@@ -127,9 +130,10 @@ export default function OutreachAccess() {
           Women
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
-          <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#85B7EB" }} />
+          <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#1D9E75" }} />
           Men
         </span>
+      </div>
       </div>
     </div>
   );

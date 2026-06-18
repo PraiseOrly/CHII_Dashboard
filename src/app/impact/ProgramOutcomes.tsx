@@ -53,12 +53,16 @@ export default function ProgramOutcomes() {
   const BR = Bar as any;
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: "#042C53", flexShrink: 0 }} />
-          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Outcomes</p>
-        </div>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+      {/* Navy heading band */}
+      <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#8B2232", flexShrink: 0 }} />
+        <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Program Outcomes</p>
+      </div>
+      <div style={{ padding: "16px 24px 20px" }}>
+      {/* Description + filter row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <p style={{ fontSize: 10, color: "#9CA3AF" }}>Cumulative outcome totals across all programs</p>
         <div style={{ display: "flex", gap: 6 }}>
           <select value={gender} onChange={e => setGender(e.target.value as Gender)} style={SEL}>
             <option value="all">Gender: All</option>
@@ -71,7 +75,6 @@ export default function ProgramOutcomes() {
           </select>
         </div>
       </div>
-      <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Cumulative outcome totals across all programs</p>
       <ResponsiveContainer width="100%" height={238}>
         <BarChart data={outcomeData} margin={{ top: 22, right: 10, bottom: 8, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,33,71,0.05)" />
@@ -125,6 +128,7 @@ export default function ProgramOutcomes() {
             <span style={{ fontSize: 10, color: "#374151" }}>{d.name}</span>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

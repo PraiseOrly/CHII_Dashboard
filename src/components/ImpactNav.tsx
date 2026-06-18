@@ -2,9 +2,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown } from "lucide-react";
+import { LayoutGrid, ChevronDown, Sun, Moon, Download } from "lucide-react";
 
 const NAVY = "#042C53";
+
+function useTheme(): [boolean, () => void] {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    const sys = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = stored ? stored === "dark" : sys;
+    setDark(isDark);
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+  }, []);
+  const toggle = () => {
+    setDark(prev => {
+      const next = !prev;
+      document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+      localStorage.setItem("theme", next ? "dark" : "light");
+      return next;
+    });
+  };
+  return [dark, toggle];
+}
 
 export const IMPACT_TABS = [
   { label: "Overview",                    href: "/impact",                  color: "#002147", bg: "#EFF6FF" },
@@ -41,6 +61,7 @@ export default function ImpactNav() {
   const pathname    = usePathname();
   const activeLabel = getActiveTab(pathname);
   const [open, setOpen] = useState(false);
+  const [dark, toggleTheme] = useTheme();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -102,11 +123,33 @@ export default function ImpactNav() {
           })}
         </nav>
 
+        {/* Right-aligned control group */}
+        <div className="flex items-center gap-1.5 flex-shrink-0 ml-auto">
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          title={dark ? "Switch to light mode" : "Switch to dark mode"}
+          className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md border transition-colors flex-shrink-0"
+          style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+        >
+          {dark ? <Sun size={12} /> : <Moon size={12} />}
+        </button>
+
+        {/* Export */}
+        <button
+          title="Export"
+          className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md border transition-colors flex-shrink-0"
+          style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+        >
+          <Download size={12} />
+        </button>
+
         {/* Portals dropdown */}
         <div className="relative flex-shrink-0" ref={ref}>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="hidden sm:flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded border font-medium transition-colors"
+            className="hidden sm:flex items-center gap-1 text-[11px] px-2.5 py-1.5 rounded-md border font-medium transition-colors"
             style={{
               borderColor: open ? "#9CA3AF" : "#E5E7EB",
               color: open ? "#111827" : "#6B7280",
@@ -144,6 +187,7 @@ export default function ImpactNav() {
           )}
         </div>
 
+        </div>
       </div>
     </div>
   );
