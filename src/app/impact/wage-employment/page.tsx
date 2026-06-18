@@ -7,7 +7,7 @@ import {
 } from "recharts";
 import {
   Users, Heart, Info, Download, Briefcase, Cpu, ShieldCheck,
-  ArrowUpRight, ArrowDownRight, BarChart3, LineChart as LineIcon, Layers, Award,
+  ArrowUpRight, ArrowDownRight, LineChart as LineIcon, Layers, Award,
 } from "lucide-react";
 import {
   WORKERS, GENDERS, EMPLOYMENT_TYPES, ROLE_LEVELS, ARRANGEMENTS, ORG_TYPES,
