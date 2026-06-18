@@ -111,7 +111,7 @@ export default function StatsKpiCard({
       </div>
 
       {/* Sub text */}
-      <p style={{ fontSize: 10, color: lbl, opacity: 0.8 }}>{sub}</p>
+      <p style={{ fontSize: 10, color: "rgba(181,212,244,0.7)" }}>{sub}</p>
     </div>
   );
 }
