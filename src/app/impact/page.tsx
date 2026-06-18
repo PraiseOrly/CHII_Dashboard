@@ -850,7 +850,7 @@ export default function ImpactDashboard() {
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
 
           {/* -- Content (profile left + story right, centered in blue zone) -- */}
-          <div style={{ position: "relative", zIndex: 10, display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }}>
+          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }}>
             {/* Profile — left */}
             <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
               <div style={{ width: 64, height: 64, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
@@ -865,7 +865,7 @@ export default function ImpactDashboard() {
             <div style={{ width: 1, alignSelf: "stretch", background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)", flexShrink: 0 }} />
 
             {/* Story — right */}
-            <div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontSize: 10, fontWeight: 600, color: "#85B7EB", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Impact Story</p>
               <p style={{ fontSize: 16, fontWeight: 700, color: "white", lineHeight: 1.35, marginBottom: 10 }}>
                 &ldquo;From healthcare worker to health-tech founder in 18 months&rdquo;
