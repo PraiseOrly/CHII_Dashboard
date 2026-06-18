@@ -819,37 +819,52 @@ export default function ImpactDashboard() {
         {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
 
-          {/* Left — Outreach & Access (Horizontal Bar) */}
+          {/* Left — Outreach & Access (Stacked Gender Bar) */}
           <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
             <div className="flex items-center gap-3 mb-1">
               <div className="w-[3px] h-4 rounded-full" style={{ backgroundColor: "#185FA5" }} />
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#185FA5" }}>Outreach &amp; Access</p>
             </div>
-            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Audience segments across the outreach portfolio</p>
+            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Audience segments by gender — sorted by total reach</p>
             {(() => {
-              const enrolled    = missionStudents.filter(s => s.status === "Active").length;
-              const graduates   = missionStudents.filter(s => s.status === "Completed").length;
-              const allSocial   = [
-                ...masterclasses.map(m => m.bySocial),
-                ...fieldVisits.map(v => v.bySocial),
-                ...mentorshipPrograms.map(p => p.bySocial),
-              ];
-              const mcfScholars = allSocial.reduce((s, b) => s + b["MCF Scholars"], 0);
-              const refugees    = allSocial.reduce((s, b) => s + b["Refugee-Displaced"], 0);
-              const pwdCount    = allSocial.reduce((s, b) => s + b["PWD"], 0);
-              const outreachData = [
-                { name: "Currently Enrolled",   value: enrolled,    color: "#185FA5" },
-                { name: "Graduates",             value: graduates,   color: "#0F6E56" },
-                { name: "MCF Scholars",          value: mcfScholars, color: "#7F77DD" },
-                { name: "Refugees & Displaced",  value: refugees,    color: "#BA7517" },
-                { name: "Youth with Disability", value: pwdCount,    color: "#E06C6C" },
-              ].sort((a, b) => b.value - a.value);
-              const maxVal = Math.max(...outreachData.map(d => d.value), 1);
-              const BR = Bar as any;
+              // Mission students: exact gender from individual records
+              const enrolled_f = missionStudents.filter(s => s.status === "Active"    && s.gender === "Female").length;
+              const enrolled_m = missionStudents.filter(s => s.status === "Active"    && s.gender === "Male"  ).length;
+              const grad_f     = missionStudents.filter(s => s.status === "Completed" && s.gender === "Female").length;
+              const grad_m     = missionStudents.filter(s => s.status === "Completed" && s.gender === "Male"  ).length;
+
+              // Per-program female ratios for social-group gender estimation
+              const mcFemRatio = (() => { const t = masterclasses.reduce((s, m) => s + m.attendees, 0);       return t > 0 ? masterclasses.reduce((s, m) => s + m.femaleAttendees,    0) / t : 0.5; })();
+              const fvFemRatio = (() => { const t = fieldVisits.reduce((s, v) => s + v.participants, 0);      return t > 0 ? fieldVisits.reduce((s, v) => s + v.femaleParticipants,  0) / t : 0.5; })();
+              const mfFemRatio = (() => { const t = mentorshipPrograms.reduce((s, p) => s + p.fellows, 0);    return t > 0 ? mentorshipPrograms.reduce((s, p) => s + p.femaleFellows, 0) / t : 0.5; })();
+
+              const sumFemEst = (key: "MCF Scholars" | "PWD" | "Refugee-Displaced") => Math.round(
+                masterclasses.reduce((s, m) => s + m.bySocial[key], 0)    * mcFemRatio +
+                fieldVisits.reduce((s, v) => s + v.bySocial[key], 0)      * fvFemRatio +
+                mentorshipPrograms.reduce((s, p) => s + p.bySocial[key], 0) * mfFemRatio
+              );
+              const sumTotal = (key: "MCF Scholars" | "PWD" | "Refugee-Displaced") =>
+                masterclasses.reduce((s, m) => s + m.bySocial[key], 0) +
+                fieldVisits.reduce((s, v) => s + v.bySocial[key], 0) +
+                mentorshipPrograms.reduce((s, p) => s + p.bySocial[key], 0);
+
+              const mcf_total = sumTotal("MCF Scholars");         const mcf_f = sumFemEst("MCF Scholars");
+              const pwd_total = sumTotal("PWD");                  const pwd_f = sumFemEst("PWD");
+              const ref_total = sumTotal("Refugee-Displaced");    const ref_f = sumFemEst("Refugee-Displaced");
+
+              const stackData = [
+                { name: "MCF Scholars",          female: mcf_f,     male: mcf_total - mcf_f,     total: mcf_total  },
+                { name: "Youth with Disability", female: pwd_f,     male: pwd_total - pwd_f,     total: pwd_total  },
+                { name: "Graduates",             female: grad_f,    male: grad_m,                total: grad_f + grad_m  },
+                { name: "Refugees & Displaced",  female: ref_f,     male: ref_total - ref_f,     total: ref_total  },
+                { name: "Currently Enrolled",    female: enrolled_f,male: enrolled_m,            total: enrolled_f + enrolled_m },
+              ].sort((a, b) => b.total - a.total);
+
+              const maxVal = Math.max(...stackData.map(d => d.total), 1);
+              const BR2 = Bar as any;
               return (
                 <ResponsiveContainer width="100%" height={238}>
-                  <BarChart layout="vertical" data={outreachData} margin={{ top: 4, right: 52, bottom: 4, left: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,33,71,0.05)" />
+                  <BarChart layout="vertical" data={stackData} barSize={18} margin={{ top: 4, right: 52, bottom: 4, left: 4 }}>
                     <XAxis
                       type="number"
                       domain={[0, Math.ceil(maxVal * 1.18)]}
@@ -869,25 +884,25 @@ export default function ImpactDashboard() {
                         const d = payload[0].payload;
                         return (
                           <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                            <p style={{ fontWeight: 700, color: d.color, marginBottom: 2 }}>{d.name}</p>
-                            <p style={{ color: "#042C53", fontWeight: 600 }}>{fmt(d.value)}</p>
-                            <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 1 }}>{Math.round(d.value / maxVal * 100)}% of largest segment</p>
+                            <p style={{ fontWeight: 700, color: "#185FA5", marginBottom: 4 }}>{d.name}</p>
+                            <p style={{ color: "#185FA5" }}>Women <b>{fmt(d.female)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.female / d.total * 100)}%)</span></p>
+                            <p style={{ color: "#85B7EB" }}>Men <b style={{ color: "#374151" }}>{fmt(d.male)}</b> <span style={{ color: "#9CA3AF", fontSize: 9 }}>({Math.round(d.male / d.total * 100)}%)</span></p>
+                            <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 3, borderTop: "1px solid rgba(0,33,71,0.06)", paddingTop: 3 }}>Total {fmt(d.total)}</p>
                           </div>
                         );
                       }}
                     />
-                    <BR
-                      dataKey="value"
-                      shape={(props: any) => {
-                        const { x, y, width, height: bh, payload } = props;
-                        if (!width || width <= 0) return <g />;
+                    <Bar dataKey="female" stackId="g" fill="#185FA5" name="Women" />
+                    <BR2
+                      dataKey="male" stackId="g" fill="#85B7EB" radius={[0, 3, 3, 0]} name="Men"
+                      label={(props: any) => {
+                        const { x, y, width, height: bh, index } = props;
+                        if (index == null || !stackData[index]) return null;
+                        const total = stackData[index].total;
                         return (
-                          <g>
-                            <rect x={x} y={y + 3} width={width} height={Math.max(bh - 6, 4)} fill={payload.color} fillOpacity={0.88} rx={4} ry={4} />
-                            <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
-                              {fmt(payload.value)}
-                            </text>
-                          </g>
+                          <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                            {fmt(total)}
+                          </text>
                         );
                       }}
                     />
@@ -895,6 +910,16 @@ export default function ImpactDashboard() {
                 </ResponsiveContainer>
               );
             })()}
+            <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
+              <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
+                <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#185FA5" }} />
+                Women
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
+                <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#85B7EB" }} />
+                Men
+              </span>
+            </div>
           </div>
 
           {/* Right — Program Outcomes */}
