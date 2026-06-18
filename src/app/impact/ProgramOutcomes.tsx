@@ -8,6 +8,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContaine
 
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
 type YearVal = typeof YEARS[number] | "all";
+type Gender  = "all" | "Female" | "Male";
 
 function fmt(n: number) { return Math.round(n).toLocaleString(); }
 
@@ -17,11 +18,15 @@ const SEL: React.CSSProperties = {
 };
 
 export default function ProgramOutcomes() {
-  const [year, setYear] = useState<YearVal>("all");
+  const [year,   setYear]   = useState<YearVal>("all");
+  const [gender, setGender] = useState<Gender>("all");
 
   const outcomeData = useMemo(() => {
     const int2 = internships.filter(i => year === "all" || i.year === year);
-    const ms2  = missionStudents.filter(s => year === "all" || s.cohort === year);
+    const ms2  = missionStudents.filter(s =>
+      (year   === "all" || s.cohort === year) &&
+      (gender === "all" || s.gender === gender)
+    );
     const hak2 = hackathons.filter(h => year === "all" || h.year === year);
     const vc2  = ventures.filter(v => year === "all" || v.cohort === year);
 
@@ -42,7 +47,7 @@ export default function ProgramOutcomes() {
       { name: "Entrepreneurs",     value: msEntOnly + hakStart,    color: "#0F6E56" },
       { name: "Further Education", value: msFurther,               color: "#7F77DD" },
     ] as { name: string; value: number; color: string }[]).sort((a, b) => b.value - a.value);
-  }, [year]);
+  }, [year, gender]);
 
   const maxVal = Math.max(...outcomeData.map(d => d.value), 1);
   const BR = Bar as any;
@@ -54,10 +59,17 @@ export default function ProgramOutcomes() {
           <div style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: "#042C53", flexShrink: 0 }} />
           <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "#042C53" }}>Program Outcomes</p>
         </div>
-        <select value={String(year)} onChange={e => setYear(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)} style={SEL}>
-          <option value="all">All years</option>
-          {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ display: "flex", gap: 6 }}>
+          <select value={gender} onChange={e => setGender(e.target.value as Gender)} style={SEL}>
+            <option value="all">Gender: All</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+          </select>
+          <select value={String(year)} onChange={e => setYear(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)} style={SEL}>
+            <option value="all">All years</option>
+            {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </div>
       </div>
       <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 14, marginLeft: 12 }}>Cumulative outcome totals across all programs</p>
       <ResponsiveContainer width="100%" height={238}>

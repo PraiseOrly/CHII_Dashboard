@@ -76,7 +76,7 @@ export default function ProgramImpactMatrix() {
         </select>
       </div>
       <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 8, marginLeft: 12 }}>Scale vs. outcome rate — bubble size reflects economic weight</p>
-      <ResponsiveContainer width="100%" height={196}>
+      <ResponsiveContainer width="100%" height={280}>
         <ScatterChart margin={{ top: 10, right: 16, bottom: 28, left: -4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.05)" />
           <XAxis

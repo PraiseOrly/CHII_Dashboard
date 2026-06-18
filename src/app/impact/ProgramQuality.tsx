@@ -35,7 +35,7 @@ export default function ProgramQuality() {
   }, [year]);
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px 24px", border: "1px solid rgba(0,33,71,0.08)" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "24px 28px", border: "1px solid rgba(0,33,71,0.08)", minHeight: 400 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: "#7F77DD", flexShrink: 0 }} />
@@ -47,15 +47,15 @@ export default function ProgramQuality() {
         </select>
       </div>
       {programQuality.map((p, i) => (
-        <div key={p.name} style={{ marginBottom: i < programQuality.length - 1 ? 10 : 0 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-            <p style={{ fontSize: 11, color: "#374151", fontWeight: 500 }}>{p.name}</p>
-            <p style={{ fontSize: 10, fontWeight: 600, color: p.color }}>{p.sat.toFixed(1)}/5</p>
+        <div key={p.name} style={{ marginBottom: i < programQuality.length - 1 ? 22 : 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            <p style={{ fontSize: 12, color: "#374151", fontWeight: 600 }}>{p.name}</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: p.color }}>{p.sat.toFixed(1)}/5</p>
           </div>
-          <div style={{ height: 5, borderRadius: 3, backgroundColor: "rgba(0,33,71,0.06)" }}>
-            <div style={{ height: "100%", borderRadius: 3, backgroundColor: p.color, width: `${p.compl}%` }} />
+          <div style={{ height: 8, borderRadius: 4, backgroundColor: "rgba(0,33,71,0.06)", marginBottom: 4 }}>
+            <div style={{ height: "100%", borderRadius: 4, backgroundColor: p.color, width: `${p.compl}%`, transition: "width 0.5s ease" }} />
           </div>
-          <p style={{ fontSize: 9, color: "#9CA3AF", marginTop: 2 }}>{p.compl}% completion</p>
+          <p style={{ fontSize: 10, color: "#9CA3AF" }}>{p.compl}% completion rate</p>
         </div>
       ))}
     </div>

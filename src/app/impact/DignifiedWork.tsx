@@ -113,64 +113,48 @@ export default function DignifiedWork() {
 
   return (
     <div>
-      {/* Dropdown filter row */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14, alignItems: "center" }}>
+      {/* Filter row — single line, label embedded in first option */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 14, alignItems: "center" }}>
+        <select value={gender} onChange={(e) => setGender(e.target.value as Gender)} style={SELECT_STYLE}>
+          <option value="all">Gender: All</option>
+          <option value="Female">Female</option>
+          <option value="Male">Male</option>
+        </select>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Gender</span>
-          <select value={gender} onChange={(e) => setGender(e.target.value as Gender)} style={SELECT_STYLE}>
-            <option value="all">All</option>
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
-          </select>
-        </div>
+        <select value={age} onChange={(e) => setAge(e.target.value as AgeGroup)} style={SELECT_STYLE}>
+          <option value="all">Age: All</option>
+          <option value="18-24">18–24</option>
+          <option value="25-29">25–29</option>
+          <option value="30-35">30–35</option>
+        </select>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Age</span>
-          <select value={age} onChange={(e) => setAge(e.target.value as AgeGroup)} style={SELECT_STYLE}>
-            <option value="all">All</option>
-            <option value="18-24">18-24</option>
-            <option value="25-29">25-29</option>
-            <option value="30-35">30-35</option>
-          </select>
-        </div>
+        <select value={cohort} onChange={(e) => setCohort(e.target.value as Cohort)} style={SELECT_STYLE}>
+          <option value="all">Cohort: All</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </select>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Cohort</span>
-          <select value={cohort} onChange={(e) => setCohort(e.target.value as Cohort)} style={SELECT_STYLE}>
-            <option value="all">All</option>
-            <option value="2021">2021</option>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-          </select>
-        </div>
+        <select value={empType} onChange={(e) => setEmpType(e.target.value as EmpType)} style={SELECT_STYLE}>
+          <option value="all">Type: All</option>
+          <option value="Employed">Employed</option>
+          <option value="Entrepreneur">Entrepreneur</option>
+          <option value="Freelance">Freelance</option>
+        </select>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Type</span>
-          <select value={empType} onChange={(e) => setEmpType(e.target.value as EmpType)} style={SELECT_STYLE}>
-            <option value="all">All</option>
-            <option value="Employed">Employed</option>
-            <option value="Entrepreneur">Entrepreneur</option>
-            <option value="Freelance">Freelance</option>
-          </select>
-        </div>
+        <select value={country} onChange={(e) => setCountry(e.target.value as Country)} style={SELECT_STYLE}>
+          <option value="all">Country: All</option>
+          <option value="Rwanda">Rwanda</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Uganda">Uganda</option>
+          <option value="Ethiopia">Ethiopia</option>
+          <option value="South Africa">South Africa</option>
+        </select>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Country</span>
-          <select value={country} onChange={(e) => setCountry(e.target.value as Country)} style={SELECT_STYLE}>
-            <option value="all">All Countries</option>
-            <option value="Rwanda">Rwanda</option>
-            <option value="Kenya">Kenya</option>
-            <option value="Nigeria">Nigeria</option>
-            <option value="Ghana">Ghana</option>
-            <option value="Uganda">Uganda</option>
-            <option value="Ethiopia">Ethiopia</option>
-            <option value="South Africa">South Africa</option>
-          </select>
-        </div>
-
-        <span style={{ fontSize: 10, color: "#9CA3AF", marginLeft: "auto" }}>
+        <span style={{ fontSize: 10, color: "#9CA3AF", marginLeft: "auto", flexShrink: 0 }}>
           n = <strong style={{ color: "#374151" }}>{filtered.length}</strong>
         </span>
       </div>

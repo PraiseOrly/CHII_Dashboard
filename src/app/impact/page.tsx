@@ -22,6 +22,7 @@ import OutreachAccess from "./OutreachAccess";
 import ProgramOutcomes from "./ProgramOutcomes";
 import ProgramImpactMatrix from "./ProgramImpactMatrix";
 import ProgramQuality from "./ProgramQuality";
+import StatsKpiCard from "./StatsKpiCard";
 
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -705,7 +706,7 @@ export default function ImpactDashboard() {
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div>
               <h1 className="text-xl font-black leading-none" style={{ color: NAVY }}>OVERVIEW</h1>
-              <p className="text-[11px] text-gray-400 mt-1 font-medium">Consolidated analytics &mdash; <span style={{ color: "#9CA3AF" }}>Last updated: June 2026</span></p>
+              <p className="text-[11px] text-gray-400 mt-1 font-medium">Consolidated analytics &mdash; <span style={{ color: "#9CA3AF" }}>Last updated: 18 June 2026</span></p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <button
@@ -724,26 +725,14 @@ export default function ImpactDashboard() {
       </header>
 
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-10">
-
         {/* L1 · KPI Strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
-          {([
-            { label: "Total Beneficiaries", value: fmt(D.grandTotal),             sub: yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs", fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: Users },
-            { label: "Women Reached",        value: fmt(D.totalFem),               sub: `${D.femalePct}% of cohort`,                                   fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: Heart },
-            { label: "Countries Active",     value: String(D.allCountries.length), sub: "Pan-African reach",                                            fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: Globe },
-            { label: "Partner Institutions", value: fmt(D.totalPartners),          sub: "Ecosystem builders",                                           fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: Handshake },
-            { label: "In Employment",        value: fmt(D.employmentOut),          sub: "75% within 6 months",                                          fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: Briefcase },
-            { label: "Ventures Launched",    value: fmt(D.venturesTotal),          sub: "Alumni-led startups",                                          fill: "#185FA5", lbl: "#B5D4F4", num: "#FFFFFF", Icon: TrendingUp },
-          ] as { label: string; value: string; sub: string; fill: string; lbl: string; num: string; Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }[]).map(c => (
-            <div key={c.label} style={{ backgroundColor: c.fill, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 6 }}>
-                <c.Icon size={13} style={{ color: c.lbl, flexShrink: 0 }} />
-                <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: c.lbl }}>{c.label}</p>
-              </div>
-              <p style={{ fontSize: 24, fontWeight: 700, color: c.num, lineHeight: 1, marginBottom: 5 }}>{c.value}</p>
-              <p style={{ fontSize: 10, color: c.lbl, opacity: 0.8 }}>{c.sub}</p>
-            </div>
-          ))}
+          <StatsKpiCard label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — HEMP and HENT combined." />
+          <StatsKpiCard label="Women Reached" num={D.totalFem} sub={`${D.femalePct}% of cohort`} Icon={Heart} tooltip="Female participants across all programs. CHII targets 60%+ female representation across cohorts." />
+          <StatsKpiCard label="Countries Active" num={D.allCountries.length} sub="Pan-African reach" Icon={Globe} tooltip="Countries with active CHII program presence, reflecting combined geographic reach of HEMP and HENT." />
+          <StatsKpiCard label="Partner Institutions" num={D.totalPartners} sub="Ecosystem builders" Icon={Handshake} tooltip="Strategic partners including hospitals, NGOs, governments, and enterprises supporting program delivery." />
+          <StatsKpiCard label="In Employment" num={D.employmentOut} sub="75% within 6 months" Icon={Briefcase} tooltip="Graduates in formal employment or entrepreneurship within 6 months of completing a CHII program." />
+          <StatsKpiCard label="Ventures Launched" num={D.venturesTotal} sub="Alumni-led startups" Icon={TrendingUp} tooltip="Alumni-led startups and social enterprises created through or directly inspired by CHII programs." />
         </div>
 
         {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}
