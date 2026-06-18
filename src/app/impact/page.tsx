@@ -709,7 +709,7 @@ export default function ImpactDashboard() {
               Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
             </p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>
-              Last updated: 18 June 2026
+              Last updated: 18 June 2026, 14:30 GMT
             </p>
           </div>
         </div>

@@ -14,6 +14,7 @@ import {
   TIME_BUCKETS, SALARY_BANDS,
   type Gender,
 } from "./_data";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches Outreach & Access) ─────────────── */
 const NAVY = "#042C53";
@@ -197,24 +198,6 @@ const TABS: { key: Tab; Icon: typeof Users }[] = [
   { key: "Programs", Icon: Layers },
   { key: "Quality & Impact", Icon: Award },
 ];
-const TAB_INTRO: Record<Tab, { q: string; e: string }> = {
-  "Employment": {
-    q: "Who is employed, and in what kind of work?",
-    e: "The shape of alumni employment — gender, contract type, seniority, arrangement, pay, and how fast they got there.",
-  },
-  "Trends & Sectors": {
-    q: "How is wage employment growing, and where?",
-    e: "Jobs, placement, and income over time; the sectors hiring alumni, and where employers are based.",
-  },
-  "Programs": {
-    q: "Which programs lead to employment?",
-    e: "Employment rates and contract mix by academic program.",
-  },
-  "Quality & Impact": {
-    q: "Is the work dignified, and is it improving lives?",
-    e: "Decent-work quality, how roles compare to life before ALU, household impact, and how ALU's support is rated.",
-  },
-};
 
 /* ════════════════════════════════════════════════════════
    PAGE
@@ -394,7 +377,6 @@ export default function WageEmploymentPage() {
   const STATUS_COLOR = ["#185FA5", "#1D9E75"];
   const BEFORE_COLOR = ["#185FA5", "#1D9E75", "#7F77DD"];
 
-  const intro = TAB_INTRO[tab];
 
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
@@ -404,8 +386,9 @@ export default function WageEmploymentPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Wage Employment</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Formal employment conversions and earnings progression</p>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Who is employed, and in what kind of work?</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>The shape of alumni employment — gender, contract type, seniority, arrangement, pay, and how fast they got there.</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
           </div>
         </div>
       </header>
@@ -437,12 +420,6 @@ export default function WageEmploymentPage() {
               </button>
             );
           })}
-        </div>
-
-        {/* ── Section intro ────────────────────────────── */}
-        <div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: NAVY }}>{intro.q}</p>
-          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 3 }}>{intro.e}</p>
         </div>
 
         {/* ── Tab content region ───────────────────────── */}
@@ -755,6 +732,8 @@ export default function WageEmploymentPage() {
           )}
 
         </div>
+
+        <FeaturedImpactStory />
       </div>
 
       <style>{`

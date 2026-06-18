@@ -10,6 +10,7 @@ import {
   Download, Info, GitBranch, TrendingUp, Scale, Award,
 } from "lucide-react";
 import { TALENTS, PATHWAYS, type Pathway, type Cohort } from "./_data";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches Outreach & Access) ─────────────── */
 const NAVY = "#042C53";
@@ -138,25 +139,6 @@ const TABS: { key: Tab; Icon: typeof Users }[] = [
   { key: "Inclusion", Icon: Scale },
   { key: "Quality of Work", Icon: Award },
 ];
-const TAB_INTRO: Record<Tab, { q: string; e: string }> = {
-  "Pathways": {
-    q: "Where are our youth, and how do cohorts compare?",
-    e: "The mix of work pathways alumni follow, and how all talents compare to the Scholar cohort.",
-  },
-  "Jobs Created": {
-    q: "What jobs are being created, and how is it trending?",
-    e: "Primary vs secondary jobs, how they break down by category, and the trajectory over time.",
-  },
-  "Inclusion": {
-    q: "Who is getting these jobs?",
-    e: "How primary jobs reach women, refugees and displaced persons, and persons with disabilities — and where alumni are based.",
-  },
-  "Quality of Work": {
-    q: "Is the work dignified and fulfilling?",
-    e: "Decent-work quality, how it has improved relative to before ALU, and overall dignified-work status.",
-  },
-};
-
 /* ════════════════════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════════════════ */
@@ -308,7 +290,6 @@ export default function YouthInWorkPage() {
   const STATUS_COLOR = [C_ALL, C_SCH];
   const BEFORE_COLOR = [C_ALL, C_SCH, "#7F77DD"];
 
-  const intro = TAB_INTRO[tab];
 
   const cohortRows = (s: ReturnType<typeof cohortStats>) => [
     { Icon: Users, label: "Total alumni", value: fmt(s.total) },
@@ -328,8 +309,9 @@ export default function YouthInWorkPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Youth in Work</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Employment and livelihood outcomes for program graduates</p>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Where are our youth, and how do cohorts compare?</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>The mix of work pathways alumni follow, and how all talents compare to the Scholar cohort.</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
           </div>
         </div>
       </header>
@@ -371,12 +353,6 @@ export default function YouthInWorkPage() {
               </button>
             );
           })}
-        </div>
-
-        {/* ── Section intro ────────────────────────────── */}
-        <div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: NAVY }}>{intro.q}</p>
-          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 3 }}>{intro.e}</p>
         </div>
 
         {/* ── Tab content region ───────────────────────── */}
@@ -614,6 +590,8 @@ export default function YouthInWorkPage() {
           )}
 
         </div>
+
+        <FeaturedImpactStory />
       </div>
 
       <style>{`

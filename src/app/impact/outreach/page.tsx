@@ -14,6 +14,7 @@ import {
   GENDERS, STATUSES, TREND_YEARS,
   type OutreachStudent, type Segment, type Gender,
 } from "./_data";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#042C53";
@@ -271,7 +272,7 @@ export default function OutreachPage() {
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Outreach &amp; Access</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Reach and inclusion across CHII&apos;s HEMP &amp; HENT programs</p>
-            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
           </div>
         </div>
       </header>
@@ -482,6 +483,8 @@ export default function OutreachPage() {
 
           </div>
         </div>
+
+        <FeaturedImpactStory />
       </div>
 
       <style>{`

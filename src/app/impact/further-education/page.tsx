@@ -9,6 +9,7 @@ import {
   Users, Heart, Info, Download, GraduationCap, BookOpen, Wallet,
   ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
 const NAVY = "#042C53";
@@ -218,8 +219,9 @@ export default function FurtherEducationPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Further Education</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>How ALU graduates continue learning beyond their degree</p>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>How do ALU graduates continue learning?</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>A view of who advances to further study, the qualifications and fields they pursue, how it&apos;s funded, and where they study.</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
           </div>
         </div>
       </header>
@@ -236,14 +238,6 @@ export default function FurtherEducationPage() {
             tooltip="Share of further-education graduates who are female." />
           <KpiCard label="Scholarship / Funded" value="61%" caption="funded share" Icon={Wallet}
             tooltip="Share of further-education graduates on a scholarship or funded place." />
-        </div>
-
-        {/* ── Section intro ────────────────────────────── */}
-        <div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: NAVY }}>How do ALU graduates continue learning?</p>
-          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 3 }}>
-            A view of who advances to further study, the qualifications and fields they pursue, how it&apos;s funded, and where they study.
-          </p>
         </div>
 
         {/* ── 2-column content grid ────────────────────── */}
@@ -338,6 +332,8 @@ export default function FurtherEducationPage() {
           </Panel>
 
         </div>
+
+        <FeaturedImpactStory />
       </div>
     </div>
   );

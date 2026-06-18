@@ -13,6 +13,7 @@ import {
   VENTURES, GENDERS, STATUSES, FUNDING_SOURCES, STAGES, PIPELINE,
   type Gender,
 } from "./_data";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
 const NAVY = "#042C53";
@@ -188,24 +189,6 @@ const TABS: { key: Tab; Icon: typeof Users }[] = [
   { key: "Sectors & Capital", Icon: Banknote },
   { key: "Outcomes & Support", Icon: LifeBuoy },
 ];
-const TAB_INTRO: Record<Tab, { q: string; e: string }> = {
-  "Ventures": {
-    q: "How healthy is the venture pipeline?",
-    e: "Where ventures sit in their journey, how they're funded, and the venture and founder profile.",
-  },
-  "Jobs & Inclusion": {
-    q: "What jobs are ventures creating, and for whom?",
-    e: "The volume, quality, and inclusiveness of jobs ventures generate.",
-  },
-  "Sectors & Capital": {
-    q: "Where do ventures concentrate, and what have they raised?",
-    e: "The sectors ventures cluster in, capital raised, and the biggest job creators.",
-  },
-  "Outcomes & Support": {
-    q: "Are founders better off, and is our support working?",
-    e: "Income gains, quality of life, venture impact, and how ALU's support is rated.",
-  },
-};
 
 /* ════════════════════════════════════════════════════════
    PAGE
@@ -428,7 +411,6 @@ export default function EntrepreneurshipPage() {
     return { indicators, income, household, interventionUptake, helpfulness, supportQuality, supportTotal, persistence };
   }, []);
 
-  const intro = TAB_INTRO[tab];
 
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
@@ -438,8 +420,9 @@ export default function EntrepreneurshipPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Entrepreneurship</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Ventures launched, jobs created, and enterprise growth</p>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>How healthy is the venture pipeline?</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Where ventures sit in their journey, how they&apos;re funded, and the venture and founder profile.</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
           </div>
         </div>
       </header>
@@ -471,12 +454,6 @@ export default function EntrepreneurshipPage() {
               </button>
             );
           })}
-        </div>
-
-        {/* ── Section intro ────────────────────────────── */}
-        <div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: NAVY }}>{intro.q}</p>
-          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 3 }}>{intro.e}</p>
         </div>
 
         {/* ── Tab content region ───────────────────────── */}
@@ -895,6 +872,8 @@ export default function EntrepreneurshipPage() {
           )}
 
         </div>
+
+        <FeaturedImpactStory />
       </div>
 
       <style>{`

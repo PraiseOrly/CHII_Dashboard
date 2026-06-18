@@ -199,6 +199,7 @@ export default function ImpactReportsPage() {
           <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.8)", maxWidth: 560 }}>
             Annual reports, key facts, and evaluations documenting CHII&apos;s impact across programmes.
           </p>
+          <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
 
           {/* meta pills */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
