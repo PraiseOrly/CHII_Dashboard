@@ -221,7 +221,7 @@ export default function FurtherEducationPage() {
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>How do ALU graduates continue learning?</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>A view of who advances to further study, the qualifications and fields they pursue, how it&apos;s funded, and where they study.</p>
-            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>
         </div>
       </header>
@@ -333,7 +333,7 @@ export default function FurtherEducationPage() {
 
         </div>
 
-        <FeaturedImpactStory />
+        <FeaturedImpactStory footer />
       </div>
     </div>
   );

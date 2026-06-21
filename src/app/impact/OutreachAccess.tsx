@@ -4,12 +4,21 @@ import { missionStudents } from "@/data/hemp/missionStudents";
 import { masterclasses } from "@/data/masterclasses";
 import { fieldVisits } from "@/data/fieldVisits";
 import { mentorshipPrograms } from "@/data/mentorships";
-import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
 type YearVal = typeof YEARS[number] | "all";
 
 function fmt(n: number) { return Math.round(n).toLocaleString(); }
+
+/* round an axis max up to a clean 1/2/5 × 10^n step */
+function niceCeil(n: number): number {
+  if (n <= 0) return 10;
+  const pow = Math.pow(10, Math.floor(Math.log10(n)));
+  const f = n / pow;
+  const nice = f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10;
+  return nice * pow;
+}
 
 const SEL: React.CSSProperties = {
   fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5,
@@ -61,6 +70,7 @@ export default function OutreachAccess() {
   }, [year]);
 
   const maxVal = Math.max(...stackData.map(d => d.total), 1);
+  const niceMax = niceCeil(maxVal * 1.1);
   const BR2 = Bar as any;
 
   return (
@@ -79,19 +89,22 @@ export default function OutreachAccess() {
           {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
         </select>
       </div>
-      <ResponsiveContainer width="100%" height={238}>
-        <BarChart layout="vertical" data={stackData} barSize={18} margin={{ top: 4, right: 52, bottom: 4, left: 4 }}>
+      <ResponsiveContainer width="100%" height={280}>
+        <BarChart layout="vertical" data={stackData} barSize={30} barCategoryGap="22%" margin={{ top: 8, right: 56, bottom: 8, left: 4 }}>
+          <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
           <XAxis
             type="number"
-            domain={[0, Math.ceil(maxVal * 1.18)]}
+            domain={[0, niceMax]}
+            tickCount={6}
+            allowDecimals={false}
             tick={{ fontSize: 9, fill: "#9CA3AF" }}
-            tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+            tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : String(v)}
             axisLine={false} tickLine={false}
           />
           <YAxis
             type="category" dataKey="name"
             tick={{ fontSize: 10, fill: "#374151" }}
-            width={136} axisLine={false} tickLine={false}
+            width={150} axisLine={false} tickLine={false}
           />
           <Tooltip
             cursor={{ fill: "rgba(0,33,71,0.04)" }}

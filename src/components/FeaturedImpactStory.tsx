@@ -9,6 +9,7 @@ export default function FeaturedImpactStory({
   location = "Nairobi, Kenya",
   quote = "From healthcare worker to health-tech founder in 18 months",
   body = "After completing the HEMP HealthX program, Amara used her clinical experience and newly acquired digital health skills to launch a telemedicine platform serving rural communities in East Africa. Her venture now employs 12 graduates from the same cohort and has served over 4,200 patients.",
+  footer = false,
 }: {
   eyebrow?: string;
   name?: string;
@@ -16,18 +17,21 @@ export default function FeaturedImpactStory({
   location?: string;
   quote?: string;
   body?: string;
+  footer?: boolean;
 } = {}) {
   return (
     <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/impact.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
       {/* Readability overlay */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
 
-      {/* Content (profile left + story right, centered in blue zone) */}
-      <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }} className="fis-content">
+      {/* Content (profile left + story right, centered in blue zone).
+          In footer mode the content is kept for layout but hidden, so the banner
+          stays the exact same size/shape while showing only the image. */}
+      <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 22, maxWidth: 500, margin: "0 auto", padding: "13px 20px", visibility: footer ? "hidden" : "visible" }} className="fis-content" aria-hidden={footer}>
         {/* Profile — left */}
-        <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-            <Users size={26} color="#85B7EB" />
+        <div style={{ textAlign: "center", flexShrink: 0, width: 130 }}>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+            <Users size={22} color="#85B7EB" />
           </div>
           <p style={{ fontSize: 11, color: "#85B7EB", fontWeight: 600 }}>{eyebrow}</p>
           <p style={{ fontSize: 15, color: "white", fontWeight: 700, marginTop: 5 }}>{name}</p>
@@ -40,10 +44,10 @@ export default function FeaturedImpactStory({
         {/* Story — right */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 10, fontWeight: 600, color: "#85B7EB", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Impact Story</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: "white", lineHeight: 1.35, marginBottom: 10 }}>
+          <p style={{ fontSize: 15, fontWeight: 700, color: "white", lineHeight: 1.3, marginBottom: 8 }}>
             &ldquo;{quote}&rdquo;
           </p>
-          <p style={{ fontSize: 12, color: "#B5D4F4", lineHeight: 1.6 }}>{body}</p>
+          <p style={{ fontSize: 12, color: "#B5D4F4", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{body}</p>
         </div>
       </div>
     </div>

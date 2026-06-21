@@ -19,7 +19,6 @@ import Link from "next/link";
 import AfricaChoropleth from "./AfricaChoropleth";
 import DignifiedWork from "./DignifiedWork";
 import OutreachAccess from "./OutreachAccess";
-import ProgramOutcomes from "./ProgramOutcomes";
 import ProgramImpactMatrix from "./ProgramImpactMatrix";
 import ProgramQuality from "./ProgramQuality";
 import StatsKpiCard from "./StatsKpiCard";
@@ -709,7 +708,7 @@ export default function ImpactDashboard() {
               Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
             </p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>
-              Last updated: 18 June 2026, 14:30 GMT
+              Last updated: 18 June 2026, 16:30 CAT
             </p>
           </div>
         </div>
@@ -718,12 +717,12 @@ export default function ImpactDashboard() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
         {/* L1 · KPI Strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
-          <StatsKpiCard label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — HEMP and HENT combined." />
-          <StatsKpiCard label="Women Reached" num={D.totalFem} sub={`${D.femalePct}% of cohort`} Icon={Heart} tooltip="Female participants across all programs. CHII targets 60%+ female representation across cohorts." />
-          <StatsKpiCard label="Countries Active" num={D.allCountries.length} sub="Pan-African reach" Icon={Globe} tooltip="Countries with active CHII program presence, reflecting combined geographic reach of HEMP and HENT." />
-          <StatsKpiCard label="Partner Institutions" num={D.totalPartners} sub="Ecosystem builders" Icon={Handshake} tooltip="Strategic partners including hospitals, NGOs, governments, and enterprises supporting program delivery." />
-          <StatsKpiCard label="In Employment" num={D.employmentOut} sub="75% within 6 months" Icon={Briefcase} tooltip="Graduates in formal employment or entrepreneurship within 6 months of completing a CHII program." />
-          <StatsKpiCard label="Ventures Launched" num={D.venturesTotal} sub="Alumni-led startups" Icon={TrendingUp} tooltip="Alumni-led startups and social enterprises created through or directly inspired by CHII programs." />
+          <StatsKpiCard label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — including HENT, HEMP, HECO and every other program under CHII." />
+          <StatsKpiCard label="Youth in Work" num={D.employmentOut} sub="In employment or enterprise" Icon={Briefcase} tooltip="Graduates in work — wage employment or running their own venture — within 12 months of completing school." />
+          <StatsKpiCard label="Wage Employment" num={D.msWageOnly} sub="In paid employment" Icon={Users} tooltip="Graduates in paid employment of any kind — formal and informal — with an employer." />
+          <StatsKpiCard label="Entrepreneurs" num={D.msEntOnly} sub="Running own venture" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own venture or enterprise." />
+          <StatsKpiCard label="Jobs Created" num={D.jobsFromVC} sub="Across all ventures" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led ventures." />
+          <StatsKpiCard label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
         </div>
 
         {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}
@@ -731,7 +730,16 @@ export default function ImpactDashboard() {
 
           <OutreachAccess />
 
-          <ProgramOutcomes />
+          {/* Geographic Reach */}
+          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+            <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Geographic Reach</p>
+            </div>
+            <div style={{ padding: "16px 24px 20px" }}>
+            <AfricaChoropleth />
+            </div>
+          </div>
         </div>
 
         {/* L3 · Employment & Enterprise + Pathway Growth */}
@@ -750,7 +758,11 @@ export default function ImpactDashboard() {
                 <AreaChart data={economicTrend} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: "#6B7280" }}
+                    allowDecimals={false}
+                    tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : String(v)}
+                  />
                   <Tooltip
                     contentStyle={{ fontSize: 11, borderRadius: 6, border: "1px solid rgba(0,33,71,0.1)" }}
                     formatter={(v: number, n: string) => [fmt(v), n]}
@@ -792,17 +804,6 @@ export default function ImpactDashboard() {
           <ProgramImpactMatrix />
 
           <ProgramQuality />
-        </div>
-
-        {/* L6 · Geographic Reach */}
-        <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-          <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
-            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Geographic Reach</p>
-          </div>
-          <div style={{ padding: "16px 24px 20px" }}>
-          <AfricaChoropleth />
-          </div>
         </div>
 
         {/* L7 · Strategic Insights */}
@@ -850,11 +851,11 @@ export default function ImpactDashboard() {
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
 
           {/* -- Content (profile left + story right, centered in blue zone) -- */}
-          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "30px 24px" }}>
+          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "18px 24px" }}>
             {/* Profile — left */}
             <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
-              <div style={{ width: 64, height: 64, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-                <Users size={26} color="#85B7EB" />
+              <div style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                <Users size={22} color="#85B7EB" />
               </div>
               <p style={{ fontSize: 11, color: "#85B7EB", fontWeight: 600 }}>Featured Graduate</p>
               <p style={{ fontSize: 15, color: "white", fontWeight: 700, marginTop: 5 }}>Amara Diallo</p>

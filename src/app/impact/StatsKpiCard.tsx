@@ -78,8 +78,8 @@ export default function StatsKpiCard({
               top: "calc(100% + 6px)",
               left: "50%",
               transform: "translateX(-50%)",
-              backgroundColor: "#042C53",
-              color: "white",
+              backgroundColor: "white",
+              color: "#042C53",
               fontSize: 10.5,
               lineHeight: 1.55,
               padding: "9px 12px",
@@ -94,24 +94,26 @@ export default function StatsKpiCard({
                 position: "absolute", top: -4, left: "50%",
                 transform: "translateX(-50%) rotate(45deg)",
                 width: 8, height: 8,
-                backgroundColor: "#042C53",
+                backgroundColor: "white",
               }} />
               {tooltip}
+              {sub && (
+                <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(4,44,83,0.12)", color: "#185FA5" }}>
+                  {sub}
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
       {/* Animated number + Icon */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 5 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
         <Icon size={22} style={{ color: lbl, flexShrink: 0, opacity: 0.8 }} />
         <p style={{ fontSize: 24, fontWeight: 700, color: numColor, lineHeight: 1 }}>
           {displayFmt(animated)}
         </p>
       </div>
-
-      {/* Sub text */}
-      <p style={{ fontSize: 10, color: "rgba(181,212,244,0.7)" }}>{sub}</p>
     </div>
   );
 }

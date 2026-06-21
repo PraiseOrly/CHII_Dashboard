@@ -1,40 +1,73 @@
 /* ════════════════════════════════════════════════════════
    Wage Employment — synthetic dataset
    Deterministic (seeded) so SSR and CSR render identically.
+
+   Scope: participants currently in WAGE EMPLOYMENT only.
+   (No "Unemployed" category — this dashboard profiles the
+   employed population: who they are, what work they do, which
+   programs produced them, and whether the work is meaningful.)
 ═══════════════════════════════════════════════════════ */
 
 export type Gender = "Female" | "Male" | "Other";
-export type EmploymentType = "Full-time" | "Part-time" | "Temporary" | "Unemployed";
+export type EmploymentType = "Full-time" | "Part-time" | "Temporary" | "Contract";
 export type RoleLevel = "Entry" | "Mid" | "Senior" | "Lead/Manager" | "Exec";
 export type Arrangement = "Remote" | "On-site" | "Hybrid";
+export type ParticipantType = "Alumni" | "Student";
 export type OrgType =
   | "Private company"
-  | "Public sector"
-  | "Government"
-  | "NGO/Nonprofit"
   | "Startup"
+  | "NGO/Nonprofit"
+  | "Government"
+  | "Public sector"
   | "Multinational";
-export type TimeBucket = "<3 months" | "3–6" | "6–12" | "12–18" | "18–24+";
 
 export interface Worker {
   id: number;
   gender: Gender;
+  participantType: ParticipantType;
+  program: string;          // academic program of study
   employmentType: EmploymentType;
   roleLevel: RoleLevel;
   arrangement: Arrangement;
   orgType: OrgType;
-  timeToEmployment: TimeBucket;
+  sector: string;
+  country: string;
+  year: number;             // year the employment was recorded
+  cohort: number;           // graduation cohort year
+  timeToEmployment: number; // months from graduation to first job
   inTech: boolean;
   decentWork: boolean;
-  salaryUSD: number; // monthly
+  salaryUSD: number;        // monthly
 }
 
 export const GENDERS: Gender[] = ["Female", "Male", "Other"];
-export const EMPLOYMENT_TYPES: EmploymentType[] = ["Full-time", "Part-time", "Temporary", "Unemployed"];
+export const EMPLOYMENT_TYPES: EmploymentType[] = ["Full-time", "Part-time", "Temporary", "Contract"];
 export const ROLE_LEVELS: RoleLevel[] = ["Entry", "Mid", "Senior", "Lead/Manager", "Exec"];
 export const ARRANGEMENTS: Arrangement[] = ["Remote", "On-site", "Hybrid"];
-export const ORG_TYPES: OrgType[] = ["Private company", "Public sector", "Government", "NGO/Nonprofit", "Startup", "Multinational"];
-export const TIME_BUCKETS: TimeBucket[] = ["<3 months", "3–6", "6–12", "12–18", "18–24+"];
+export const PARTICIPANT_TYPES: ParticipantType[] = ["Alumni", "Student"];
+export const ORG_TYPES: OrgType[] = ["Private company", "Startup", "NGO/Nonprofit", "Government", "Public sector", "Multinational"];
+
+export const SECTORS = [
+  "Technology", "Finance", "Consulting", "Education",
+  "Healthcare", "Manufacturing", "Retail", "Public sector",
+];
+
+export const COUNTRIES = [
+  "Rwanda", "Kenya", "Nigeria", "South Africa",
+  "Ghana", "Uganda", "Other Africa", "Diaspora",
+];
+
+export const YEARS = [2021, 2022, 2023, 2024, 2025];
+export const COHORTS = [2019, 2020, 2021, 2022, 2023, 2024];
+
+export interface ProgramMeta { name: string; employmentRate: number; }
+export const PROGRAMS: ProgramMeta[] = [
+  { name: "BSc Software Eng", employmentRate: 88 },
+  { name: "Computer Science", employmentRate: 85 },
+  { name: "Entrepreneurial Leadership", employmentRate: 80 },
+  { name: "International Business & Trade", employmentRate: 77 },
+];
+export const PROGRAM_NAMES = PROGRAMS.map(p => p.name);
 
 export const SALARY_BANDS: { label: string; min: number; max: number }[] = [
   { label: "<300", min: 0, max: 300 },
@@ -70,14 +103,24 @@ function buildWorkers(n: number): Worker[] {
   const r = rng(73);
   const out: Worker[] = [];
   for (let i = 0; i < n; i++) {
-    const employmentType = pick<EmploymentType>(r, [
-      ["Full-time", 0.58], ["Part-time", 0.16], ["Temporary", 0.14], ["Unemployed", 0.12],
+    const sector = pick<string>(r, [
+      ["Technology", 0.27], ["Finance", 0.16], ["Consulting", 0.13], ["Education", 0.12],
+      ["Healthcare", 0.11], ["Manufacturing", 0.08], ["Retail", 0.07], ["Public sector", 0.06],
     ]);
-    const employed = employmentType !== "Unemployed";
+    const cohort = pick<number>(r, [[2019, 0.12], [2020, 0.14], [2021, 0.17], [2022, 0.19], [2023, 0.2], [2024, 0.18]]);
+    const year = Math.min(2025, cohort + Math.floor(r() * 3));
+
     out.push({
       id: i + 1,
       gender: pick<Gender>(r, [["Female", 0.54], ["Male", 0.43], ["Other", 0.03]]),
-      employmentType,
+      participantType: pick<ParticipantType>(r, [["Alumni", 0.82], ["Student", 0.18]]),
+      program: pick<string>(r, [
+        ["BSc Software Eng", 0.3], ["Computer Science", 0.26], ["Entrepreneurial Leadership", 0.24],
+        ["International Business & Trade", 0.2],
+      ]),
+      employmentType: pick<EmploymentType>(r, [
+        ["Full-time", 0.62], ["Part-time", 0.16], ["Temporary", 0.12], ["Contract", 0.1],
+      ]),
       roleLevel: pick<RoleLevel>(r, [
         ["Entry", 0.4], ["Mid", 0.3], ["Senior", 0.17], ["Lead/Manager", 0.09], ["Exec", 0.04],
       ]),
@@ -86,15 +129,20 @@ function buildWorkers(n: number): Worker[] {
         ["Private company", 0.32], ["Startup", 0.2], ["NGO/Nonprofit", 0.16],
         ["Multinational", 0.13], ["Government", 0.1], ["Public sector", 0.09],
       ]),
-      timeToEmployment: pick<TimeBucket>(r, [
-        ["<3 months", 0.28], ["3–6", 0.31], ["6–12", 0.23], ["12–18", 0.12], ["18–24+", 0.06],
+      sector,
+      country: pick<string>(r, [
+        ["Rwanda", 0.2], ["Kenya", 0.18], ["Nigeria", 0.15], ["South Africa", 0.1],
+        ["Ghana", 0.08], ["Uganda", 0.07], ["Other Africa", 0.13], ["Diaspora", 0.09],
       ]),
-      inTech: r() < 0.38,
-      decentWork: employed && r() < 0.74,
-      salaryUSD: employed ? Math.round(250 + Math.pow(r(), 1.7) * 2200) : 0,
+      year,
+      cohort,
+      timeToEmployment: 1 + Math.floor(Math.pow(r(), 1.6) * 22),
+      inTech: sector === "Technology",
+      decentWork: r() < 0.74,
+      salaryUSD: Math.round(250 + Math.pow(r(), 1.7) * 2200),
     });
   }
   return out;
 }
 
-export const WORKERS: Worker[] = buildWorkers(620);
+export const WORKERS: Worker[] = buildWorkers(640);

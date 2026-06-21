@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Bar, BarChart, Cell, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 type Gender   = "all" | "Female" | "Male";
 type AgeGroup = "all" | "18-24" | "25-29" | "30-35";
@@ -16,21 +17,17 @@ interface DataPoint {
   program: "HENT" | "HEMP";
   cohort: "2021" | "2022" | "2023" | "2024";
   empType: "Employed" | "Entrepreneur" | "Freelance";
-  jobSatisfaction: number;
-  incomeImprovement: number;
-  skillsUtilization: number;
-  workStability: number;
-  careerProgression: number;
-  confidenceAgency: number;
+  reliableIncome: number;
+  senseOfPurpose: number;
+  reputation: number;
+  respectWorkplace: number;
 }
 
 const BENCHMARKS = {
-  jobSatisfaction:   72,
-  incomeImprovement: 60,
-  skillsUtilization: 68,
-  workStability:     65,
-  careerProgression: 58,
-  confidenceAgency:  70,
+  reliableIncome:   64,
+  senseOfPurpose:   71,
+  reputation:       66,
+  respectWorkplace: 69,
 };
 
 function seed(x: number): number {
@@ -54,22 +51,18 @@ const RAW: DataPoint[] = Array.from({ length: 300 }, (_, i) => {
     program:           PROGRAMS[Math.floor(seed(i * 11) * 2)],
     cohort:            COHORTS[Math.floor(seed(i * 13) * 4)],
     empType:           EMP_TYPES[Math.floor(seed(i * 17) * 3)],
-    jobSatisfaction:   r(1),
-    incomeImprovement: r(2),
-    skillsUtilization: r(3),
-    workStability:     r(4),
-    careerProgression: r(5),
-    confidenceAgency:  r(6),
+    reliableIncome:   r(1),
+    senseOfPurpose:   r(2),
+    reputation:       r(3),
+    respectWorkplace: r(4),
   };
 });
 
 const METRICS: { key: keyof typeof BENCHMARKS; label: string; color: string; icon: string }[] = [
-  { key: "jobSatisfaction",   label: "Job Satisfaction",    color: "#185FA5", icon: "★" },
-  { key: "incomeImprovement", label: "Income Improvement",  color: "#0F6E56", icon: "↑" },
-  { key: "skillsUtilization", label: "Skills Utilization",  color: "#7C3AED", icon: "◆" },
-  { key: "workStability",     label: "Work Stability",      color: "#D97706", icon: "▲" },
-  { key: "careerProgression", label: "Career Progression",  color: "#0891B2", icon: "→" },
-  { key: "confidenceAgency",  label: "Confidence & Agency", color: "#DB2777", icon: "●" },
+  { key: "reliableIncome",   label: "Reliable Income",          color: "#0F6E56", icon: "↑" },
+  { key: "senseOfPurpose",   label: "Sense of Purpose",         color: "#185FA5", icon: "★" },
+  { key: "reputation",       label: "Reputation",               color: "#7C3AED", icon: "◆" },
+  { key: "respectWorkplace", label: "Respect in the Workplace", color: "#D97706", icon: "●" },
 ];
 
 function avg(arr: number[]): number {
@@ -110,6 +103,18 @@ export default function DignifiedWork() {
       METRICS.map(m => [m.key, avg(filtered.map(d => d[m.key]))])
     ) as Record<keyof typeof BENCHMARKS, number>;
   }, [filtered]);
+
+  const chartData = useMemo(() => {
+    if (!scores) return [];
+    return METRICS.map(m => ({
+      name: m.label,
+      score: scores[m.key],
+      benchmark: BENCHMARKS[m.key],
+      color: m.color,
+    }));
+  }, [scores]);
+
+  const BR2 = Bar as any;
 
   return (
     <div>
@@ -159,65 +164,60 @@ export default function DignifiedWork() {
         </span>
       </div>
 
-      {/* Scorecard */}
+      {/* Score vs benchmark — horizontal bars */}
       {scores ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
-          {METRICS.map(m => {
-            const score = scores[m.key];
-            const benchmark = BENCHMARKS[m.key];
-            const delta = score - benchmark;
-
-            return (
-              <div key={m.key} style={{
-                backgroundColor: "white",
-                borderRadius: 8,
-                padding: "12px 14px",
-                border: "1px solid rgba(0,33,71,0.07)",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, color: m.color }}>{m.icon}</span>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "#1F2937", flex: 1, lineHeight: 1.2 }}>{m.label}</p>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 1 }}>
-                    <span style={{ fontSize: 18, fontWeight: 800, color: m.color, lineHeight: 1 }}>{score}</span>
-                    <span style={{ fontSize: 9, color: "#9CA3AF" }}>/100</span>
+        <>
+        <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 10 }}>Average score out of 100 — tick marks show the benchmark</p>
+        <ResponsiveContainer width="100%" height={232}>
+          <BarChart layout="vertical" data={chartData} barSize={20} barCategoryGap="28%" margin={{ top: 4, right: 44, bottom: 4, left: 4 }}>
+            <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
+            <XAxis
+              type="number" domain={[0, 100]} tickCount={6} allowDecimals={false}
+              tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+            />
+            <YAxis
+              type="category" dataKey="name"
+              tick={{ fontSize: 10, fill: "#374151" }}
+              width={150} axisLine={false} tickLine={false}
+            />
+            <Tooltip
+              cursor={{ fill: "rgba(0,33,71,0.04)" }}
+              content={({ active, payload }: any) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0].payload;
+                const delta = d.score - d.benchmark;
+                return (
+                  <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+                    <p style={{ fontWeight: 700, color: d.color, marginBottom: 4 }}>{d.name}</p>
+                    <p style={{ color: "#374151" }}>Score <b>{d.score}</b>/100</p>
+                    <p style={{ color: "#9CA3AF", fontSize: 9 }}>Benchmark {d.benchmark} · <span style={{ color: delta >= 0 ? "#0F6E56" : "#DC2626", fontWeight: 700 }}>{delta >= 0 ? "+" : ""}{delta}</span></p>
                   </div>
-                </div>
-
-                <div style={{ position: "relative", height: 6, borderRadius: 3, backgroundColor: "#F3F4F6", marginBottom: 6 }}>
-                  <div style={{
-                    position: "absolute", left: 0, top: 0, height: "100%",
-                    width: `${Math.min(score, 100)}%`,
-                    borderRadius: 3,
-                    backgroundColor: m.color,
-                    opacity: 0.8,
-                    transition: "width 0.4s ease",
-                  }} />
-                  <div style={{
-                    position: "absolute",
-                    left: `${Math.min(benchmark, 100)}%`,
-                    top: -2, width: 2, height: 10,
-                    backgroundColor: "#6B7280",
-                    borderRadius: 1,
-                    transform: "translateX(-50%)",
-                  }} />
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 9, color: "#9CA3AF" }}>Benchmark: {benchmark}</span>
-                  <span style={{
-                    fontSize: 9, fontWeight: 700,
-                    color: delta >= 0 ? "#0F6E56" : "#DC2626",
-                    backgroundColor: delta >= 0 ? "#ECFDF5" : "#FEF2F2",
-                    padding: "1px 5px", borderRadius: 8,
-                  }}>
-                    {delta >= 0 ? "+" : ""}{delta}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                );
+              }}
+            />
+            <BR2
+              dataKey="score" radius={[0, 3, 3, 0]} name="Score"
+              label={(props: any) => {
+                const { x, y, width, height: bh, index } = props;
+                if (index == null || !chartData[index]) return null;
+                const { score, benchmark } = chartData[index];
+                // derive plot width from the score bar geometry, then place benchmark tick
+                const bx = score > 0 ? x + (width * benchmark) / score : x;
+                return (
+                  <g>
+                    <rect x={bx - 1} y={y - 3} width={2} height={bh + 6} rx={1} fill="#6B7280" />
+                    <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                      {score}
+                    </text>
+                  </g>
+                );
+              }}
+            >
+              {chartData.map((d, i) => <Cell key={i} fill={d.color} />)}
+            </BR2>
+          </BarChart>
+        </ResponsiveContainer>
+        </>
       ) : (
         <div style={{ textAlign: "center", padding: "40px 0", color: "#9CA3AF", fontSize: 13 }}>
           No data for selected filters

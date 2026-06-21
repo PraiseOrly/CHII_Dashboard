@@ -1,40 +1,76 @@
 /* ════════════════════════════════════════════════════════
    Youth in Work — synthetic dataset
    Deterministic (seeded) so SSR and CSR render identically.
+
+   Tracks employment outcomes across the whole CHII ecosystem:
+   current students, alumni, and people employed by supported
+   ventures — plus the jobs those ventures create.
 ═══════════════════════════════════════════════════════ */
 
-export type Cohort = "Scholar" | "Non-Scholar";
 export type Gender = "Female" | "Male" | "Non-binary";
+export type Program = "HEMP" | "HENT" | "HECO";
+export type ParticipantType = "Student" | "Alumni" | "Venture Employee";
+
 export type Pathway =
   | "Wage Employment"
-  | "Ventures"
-  | "Wage & Ventures"
+  | "Internship"
+  | "Venture Founder"
+  | "Wage & Venture"
   | "Further Education"
+  | "Seeking Employment"
   | "Other";
 
-export interface Talent {
+export type EmploymentType = "Full-time" | "Part-time" | "Contract" | "None";
+
+export interface Youth {
   id: number;
+  participantType: ParticipantType;
+  program: Program;
   gender: Gender;
-  cohort: Cohort;
+  country: string;
   basedInAfrica: boolean;
   refugee: boolean;
   pwd: boolean;
-  primaryJob: boolean;   // holds a primary job
-  secondaryJob: boolean; // holds a secondary job (in addition to primary)
+  scholar: boolean;           // MCF scholar
   pathway: Pathway;
-  incomeUSD: number;     // monthly income, USD
-  satisfaction: number;  // 1–5 self-reported
+  year: number;               // year of latest recorded outcome
+  employmentType: EmploymentType;
+  permanent: boolean;         // permanent vs contract (employed only)
+  leadership: boolean;        // holds a leadership / management role
+  sector: string;
+  primaryJob: boolean;
+  secondaryJob: boolean;
+  jobsCreated: number;        // > 0 for founders (positions their venture created)
 }
+
+export const PROGRAMS: Program[] = ["HEMP", "HENT", "HECO"];
+export const GENDERS: Gender[] = ["Female", "Male", "Non-binary"];
+export const PARTICIPANT_TYPES: ParticipantType[] = ["Student", "Alumni", "Venture Employee"];
 
 export const PATHWAYS: Pathway[] = [
   "Wage Employment",
-  "Ventures",
-  "Wage & Ventures",
+  "Internship",
+  "Venture Founder",
+  "Wage & Venture",
   "Further Education",
+  "Seeking Employment",
   "Other",
 ];
 
-export const GENDERS: Gender[] = ["Female", "Male", "Non-binary"];
+export const EMPLOYMENT_TYPES: EmploymentType[] = ["Full-time", "Part-time", "Contract"];
+
+export const COUNTRIES = [
+  "Rwanda", "Kenya", "Nigeria", "Ghana", "Uganda",
+  "South Africa", "Ethiopia", "Other Africa", "Diaspora",
+];
+const AFRICA_COUNTRIES = new Set(COUNTRIES.filter(c => c !== "Diaspora"));
+
+export const SECTORS = [
+  "Technology", "Healthcare", "Education", "Finance",
+  "Agriculture", "Manufacturing", "Public / NGO", "Other",
+];
+
+export const YEARS = [2020, 2021, 2022, 2023, 2024, 2025];
 
 /* mulberry32 — small deterministic PRNG */
 function rng(seed: number) {
@@ -56,44 +92,80 @@ function pick<T>(r: () => number, weighted: [T, number][]): T {
   return weighted[weighted.length - 1][0];
 }
 
-function buildTalents(n: number): Talent[] {
+/* employment & venture pathway sets (shared by the page) */
+export const EMPLOYED_PATHWAYS: Pathway[] = ["Wage Employment", "Wage & Venture"];
+export const VENTURE_PATHWAYS: Pathway[] = ["Venture Founder", "Wage & Venture"];
+
+function buildYouth(n: number): Youth[] {
   const r = rng(42);
-  const out: Talent[] = [];
+  const out: Youth[] = [];
   for (let i = 0; i < n; i++) {
-    const gender = pick<Gender>(r, [["Female", 0.55], ["Male", 0.42], ["Non-binary", 0.03]]);
-    const cohort = pick<Cohort>(r, [["Scholar", 0.4], ["Non-Scholar", 0.6]]);
-    const pathway = pick<Pathway>(r, [
-      ["Wage Employment", 0.44],
-      ["Ventures", 0.18],
-      ["Wage & Ventures", 0.1],
-      ["Further Education", 0.16],
-      ["Other", 0.12],
+    const participantType = pick<ParticipantType>(r, [
+      ["Student", 0.42], ["Alumni", 0.42], ["Venture Employee", 0.16],
     ]);
+    const program = pick<Program>(r, [["HEMP", 0.4], ["HENT", 0.36], ["HECO", 0.24]]);
+    const gender = pick<Gender>(r, [["Female", 0.55], ["Male", 0.42], ["Non-binary", 0.03]]);
+    const scholar = r() < 0.4;
 
-    // a "primary job" exists for the work pathways
-    const primaryJob =
-      pathway === "Wage Employment" ||
-      pathway === "Ventures" ||
-      pathway === "Wage & Ventures" ||
-      (pathway === "Other" && r() < 0.3);
+    // pathway depends on where someone is in their journey
+    let pathway: Pathway;
+    if (participantType === "Student") {
+      pathway = pick<Pathway>(r, [
+        ["Internship", 0.4], ["Wage Employment", 0.14], ["Venture Founder", 0.12],
+        ["Further Education", 0.12], ["Seeking Employment", 0.16], ["Other", 0.06],
+      ]);
+    } else if (participantType === "Alumni") {
+      pathway = pick<Pathway>(r, [
+        ["Wage Employment", 0.46], ["Venture Founder", 0.16], ["Wage & Venture", 0.1],
+        ["Further Education", 0.12], ["Seeking Employment", 0.1], ["Other", 0.06],
+      ]);
+    } else {
+      // venture employees are, by definition, in wage work at a supported venture
+      pathway = "Wage Employment";
+    }
 
-    const secondaryJob = primaryJob && r() < 0.28;
+    const isFounder = pathway === "Venture Founder" || pathway === "Wage & Venture";
+    const jobsCreated = isFounder ? 1 + Math.floor(r() * 12) : 0;
+
+    const employed = pathway === "Wage Employment" || pathway === "Wage & Venture" || participantType === "Venture Employee";
+    const employmentType: EmploymentType = employed
+      ? pick<EmploymentType>(r, [["Full-time", 0.62], ["Part-time", 0.22], ["Contract", 0.16]])
+      : "None";
+
+    const primaryJob = employed || pathway === "Venture Founder";
+    const secondaryJob = primaryJob && r() < 0.24;
+
+    const country = pick<string>(r, [
+      ["Rwanda", 0.2], ["Kenya", 0.16], ["Nigeria", 0.14], ["Ghana", 0.1],
+      ["Uganda", 0.08], ["South Africa", 0.08], ["Ethiopia", 0.06],
+      ["Other Africa", 0.1], ["Diaspora", 0.08],
+    ]);
 
     out.push({
       id: i + 1,
+      participantType,
+      program,
       gender,
-      cohort,
-      basedInAfrica: r() < 0.82,
+      country,
+      basedInAfrica: AFRICA_COUNTRIES.has(country),
       refugee: r() < 0.12,
       pwd: r() < 0.06,
+      scholar,
+      pathway,
+      year: pick<number>(r, [[2020, 0.1], [2021, 0.13], [2022, 0.16], [2023, 0.19], [2024, 0.22], [2025, 0.2]]),
+      employmentType,
+      permanent: employed ? r() < 0.64 : false,
+      leadership: primaryJob && r() < 0.22,
+      sector: primaryJob ? pick<string>(r, [
+        ["Technology", 0.26], ["Healthcare", 0.16], ["Education", 0.12], ["Finance", 0.12],
+        ["Agriculture", 0.1], ["Manufacturing", 0.08], ["Public / NGO", 0.1], ["Other", 0.06],
+      ]) : "Other",
       primaryJob,
       secondaryJob,
-      pathway,
-      incomeUSD: Math.round(220 + r() * 1400),
-      satisfaction: 1 + Math.round(r() * 4),
+      jobsCreated,
     });
   }
   return out;
 }
 
-export const TALENTS: Talent[] = buildTalents(640);
+export const YOUTH: Youth[] = buildYouth(820);

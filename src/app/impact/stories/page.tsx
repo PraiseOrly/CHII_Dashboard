@@ -7,6 +7,7 @@ import {
   STORIES, SUMMARY, PROGRAMS, MISSION_AREAS, HUMANITARIAN, NATIONALITIES, DISABILITY, GENDERS,
   type Story,
 } from "./_data";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 const StoriesMap = dynamic(() => import("./StoriesMap"), { ssr: false, loading: () =>
   <div style={{ width: "100%", height: "100%", minHeight: 480, borderRadius: 10, backgroundColor: "#E9EEF4", display: "flex", alignItems: "center", justifyContent: "center", color: "#9CA3AF", fontSize: 12 }}>Loading map…</div>
@@ -110,7 +111,7 @@ export default function ImpactStoriesPage() {
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Impact stories</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.8)" }}>Graduate journeys and venture spotlights across Africa</p>
-            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 14:30 GMT</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginTop: 16 }}>
             <Kpi value={SUMMARY.stories.toLocaleString()} label="Stories" />
@@ -208,6 +209,10 @@ export default function ImpactStoriesPage() {
               <StoriesMap stories={filtered} cluster={cluster} onSelect={setSelected} />
             </div>
           </div>
+        </div>
+
+        <div style={{ marginTop: 16 }}>
+          <FeaturedImpactStory footer />
         </div>
       </div>
 

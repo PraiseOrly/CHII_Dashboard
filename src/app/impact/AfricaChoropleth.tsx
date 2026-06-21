@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { missionStudents } from "@/data/hemp/missionStudents";
 
 const GEO_URL =
@@ -63,6 +63,7 @@ const REGIONS: { key: Region; label: string }[] = [
 export default function AfricaChoropleth() {
   const [metric, setMetric] = useState<Metric>("enrolled");
   const [region, setRegion]  = useState<Region>("all");
+  const [zoom, setZoom] = useState(1);
   const [tooltip, setTooltip] = useState<{
     name: string; value: number; x: number; y: number;
   } | null>(null);
@@ -135,13 +136,34 @@ export default function AfricaChoropleth() {
           flex: 1, position: "relative", borderRadius: 8, overflow: "hidden",
           backgroundColor: "#EEF4FB",
         }}>
+          {/* Zoom controls — top left */}
+          <div style={{
+            position: "absolute", top: 8, left: 8, zIndex: 5,
+            display: "flex", flexDirection: "column", gap: 4,
+          }}>
+            {[
+              { label: "+", fn: () => setZoom(z => Math.min(z * 1.5, 8)) },
+              { label: "−", fn: () => setZoom(z => Math.max(z / 1.5, 1)) },
+            ].map(b => (
+              <button key={b.label} onClick={b.fn} style={{
+                width: 26, height: 26, borderRadius: 6,
+                border: "1px solid rgba(0,33,71,0.12)", backgroundColor: "white",
+                color: "#374151", fontSize: 16, fontWeight: 600, lineHeight: 1,
+                cursor: "pointer", display: "flex", alignItems: "center",
+                justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+              }}>
+                {b.label}
+              </button>
+            ))}
+          </div>
           <ComposableMap
             projection="geoMercator"
-            projectionConfig={{ center: [22, 2], scale: 270 }}
-            width={780}
-            height={420}
+            projectionConfig={{ center: [20, 2], scale: 400 }}
+            width={620}
+            height={560}
             style={{ display: "block", width: "100%", height: "auto" }}
           >
+            <ZoomableGroup zoom={zoom} center={[20, 2]} onMoveEnd={(p: { zoom: number }) => setZoom(p.zoom)} minZoom={1} maxZoom={8}>
             <Geographies geography={GEO_URL}>
               {({ geographies }) =>
                 geographies
@@ -186,6 +208,7 @@ export default function AfricaChoropleth() {
                   })
               }
             </Geographies>
+            </ZoomableGroup>
           </ComposableMap>
 
           {tooltip && (

@@ -28,7 +28,7 @@ export default function ImpactPageShell({ title, subtitle, bandLabel, Icon, chil
               {subtitle}
             </p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>
-              Last updated: 18 June 2026
+              Last updated: 18 June 2026, 16:30 CAT
             </p>
           </div>
         </div>

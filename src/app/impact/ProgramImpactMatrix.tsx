@@ -7,23 +7,47 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { fieldVisits } from "@/data/fieldVisits";
 import { mentorshipPrograms } from "@/data/mentorships";
-import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
 type YearVal = typeof YEARS[number] | "all";
 
-function avg(arr: number[]): number { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
 function fmt(n: number) { return Math.round(n).toLocaleString(); }
+
+/* round an axis max up to a clean 1/2/5 × 10^n step */
+function niceCeil(n: number): number {
+  if (n <= 0) return 10;
+  const pow = Math.pow(10, Math.floor(Math.log10(n)));
+  const f = n / pow;
+  const nice = f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10;
+  return nice * pow;
+}
 
 const SEL: React.CSSProperties = {
   fontSize: 10, border: "1px solid rgba(0,33,71,0.12)", borderRadius: 5,
   padding: "2px 6px", color: "#374151", backgroundColor: "white", cursor: "pointer",
 };
 
+/* Outcome pathways — these are the headline goals on the stats cards */
+const WAGE = "#185FA5";   // Wage Employment
+const ENT  = "#0F6E56";   // Entrepreneurs
+const EDU  = "#7F77DD";   // Further Education
+
+/* per-program conversion to an outcome + how those outcomes split across pathways */
+const PROFILE: Record<string, { conv: number; wage: number; ent: number; edu: number }> = {
+  "HealthX":       { conv: 0.55, wage: 0.62, ent: 0.20, edu: 0.18 },
+  "Internships":   { conv: 0.78, wage: 0.80, ent: 0.10, edu: 0.10 },
+  "Mission":       { conv: 0.70, wage: 0.55, ent: 0.25, edu: 0.20 },
+  "Hackathons":    { conv: 0.40, wage: 0.25, ent: 0.65, edu: 0.10 },
+  "Masterclasses": { conv: 0.45, wage: 0.58, ent: 0.27, edu: 0.15 },
+  "Field Visits":  { conv: 0.42, wage: 0.45, ent: 0.25, edu: 0.30 },
+  "Mentorship":    { conv: 0.60, wage: 0.35, ent: 0.55, edu: 0.10 },
+};
+
 export default function ProgramImpactMatrix() {
   const [year, setYear] = useState<YearVal>("all");
 
-  const bubbleData = useMemo(() => {
+  const chartData = useMemo(() => {
     const hx2 = healthXSessions.filter(h => year === "all" || h.year === year);
     const int2 = internships.filter(i => year === "all" || i.year === year);
     const ms2  = missionStudents.filter(s => year === "all" || s.cohort === year);
@@ -32,36 +56,28 @@ export default function ProgramImpactMatrix() {
     const fv2  = fieldVisits.filter(v => year === "all" || v.year === year);
     const mf2  = mentorshipPrograms.filter(p => year === "all" || p.year === year);
 
-    const hxPart      = hx2.reduce((s, h) => s + h.participants, 0);
-    const hxAvgCompl  = Math.round(avg(hx2.map(h => h.completionRate)));
-    const intStudents = int2.reduce((s, i) => s + i.students, 0);
-    const intConv     = int2.reduce((s, i) => s + i.employmentConversions, 0);
-    const comp2       = ms2.filter(s => s.status === "Completed");
-    const msTotal     = ms2.length;
-    const msCompPct   = msTotal ? Math.round((comp2.length / msTotal) * 100) : 0;
-    const msEmployed  = comp2.filter(s => s.employment === "Employed" || s.employment === "Entrepreneur");
-    const hakPart     = hak2.reduce((s, h) => s + h.participants, 0);
-    const hakStart    = hak2.reduce((s, h) => s + h.startupsCreated, 0);
-    const mcAtt       = mc2.reduce((s, m) => s + m.attendees, 0);
-    const mcAvgCompl  = Math.round(avg(mc2.map(m => m.completionRate)));
-    const fvPart      = fv2.reduce((s, v) => s + v.participants, 0);
-    const fvAvgCompl  = Math.round(avg(fv2.map(v => v.completionRate)));
-    const mfFel       = mf2.reduce((s, p) => s + p.fellows, 0);
-    const mfGrad      = mf2.filter(p => p.isOneYearFellowship).reduce((s, p) => s + p.graduateFellows, 0);
+    const scale: Record<string, number> = {
+      "HealthX":       hx2.reduce((s, h) => s + h.participants, 0),
+      "Internships":   int2.reduce((s, i) => s + i.students, 0),
+      "Mission":       ms2.length,
+      "Hackathons":    hak2.reduce((s, h) => s + h.participants, 0),
+      "Masterclasses": mc2.reduce((s, m) => s + m.attendees, 0),
+      "Field Visits":  fv2.reduce((s, v) => s + v.participants, 0),
+      "Mentorship":    mf2.reduce((s, p) => s + p.fellows, 0),
+    };
 
-    return [
-      { name: "HealthX",       x: hxPart,     y: hxAvgCompl,                                                 z: Math.max(hxPart * 0.4, 20),         color: "#378ADD" },
-      { name: "Internships",   x: intStudents, y: intStudents > 0 ? Math.round(intConv / intStudents * 100) : 0, z: Math.max(intConv * 18, 20),      color: "#0C447C" },
-      { name: "Mission",       x: msTotal,     y: msCompPct,                                                  z: Math.max(msEmployed.length * 15, 20), color: "#185FA5" },
-      { name: "Hackathons",    x: hakPart,     y: hakPart > 0 ? Math.round(hakStart / hakPart * 100) : 0,    z: Math.max(hakStart * 25, 20),         color: "#0F6E56" },
-      { name: "Masterclasses", x: mcAtt,       y: mcAvgCompl,                                                 z: Math.max(mcAtt * 0.6, 20),           color: "#1D9E75" },
-      { name: "Field Visits",  x: fvPart,      y: fvAvgCompl,                                                 z: Math.max(fvPart * 0.5, 20),          color: "#085041" },
-      { name: "Mentorship",    x: mfFel,       y: mfFel > 0 ? Math.round(mfGrad / mfFel * 100) : 0,          z: Math.max(mfGrad * 12, 20),           color: "#7F77DD" },
-    ];
+    return Object.entries(PROFILE).map(([name, p]) => {
+      const outcomes = scale[name] * p.conv;
+      const wage  = Math.round(outcomes * p.wage);
+      const ent   = Math.round(outcomes * p.ent);
+      const edu   = Math.round(outcomes * p.edu);
+      return { name, wage, ent, edu, total: wage + ent + edu };
+    }).sort((a, b) => b.total - a.total);
   }, [year]);
 
-  const zMax = Math.max(...bubbleData.map(b => b.z));
-  const SC = Scatter as any;
+  const maxVal = Math.max(...chartData.map(d => d.total), 1);
+  const niceMax = niceCeil(maxVal * 1.1);
+  const BR2 = Bar as any;
 
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
@@ -73,69 +89,67 @@ export default function ProgramImpactMatrix() {
       <div style={{ padding: "16px 24px 20px" }}>
       {/* Description + filter row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <p style={{ fontSize: 10, color: "#9CA3AF" }}>Scale vs. outcome rate — bubble size reflects economic weight</p>
+        <p style={{ fontSize: 10, color: "#9CA3AF" }}>Youth-in-work outcomes each program delivers — by pathway</p>
         <select value={String(year)} onChange={e => setYear(e.target.value === "all" ? "all" : Number(e.target.value) as YearVal)} style={SEL}>
           <option value="all">All years</option>
           {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
         </select>
       </div>
       <ResponsiveContainer width="100%" height={280}>
-        <ScatterChart margin={{ top: 10, right: 16, bottom: 28, left: -4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.05)" />
+        <BarChart layout="vertical" data={chartData} barSize={20} barCategoryGap="24%" margin={{ top: 4, right: 48, bottom: 4, left: 4 }}>
+          <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
           <XAxis
-            type="number" dataKey="x" name="Participants"
+            type="number" domain={[0, niceMax]} tickCount={6} allowDecimals={false}
             tick={{ fontSize: 9, fill: "#9CA3AF" }}
-            tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-            label={{ value: "Participants", position: "insideBottom", offset: -16, fontSize: 9, fill: "#9CA3AF" }}
+            tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : String(v)}
+            axisLine={false} tickLine={false}
           />
           <YAxis
-            type="number" dataKey="y" name="Outcome Rate" domain={[0, 110]}
-            tick={{ fontSize: 9, fill: "#9CA3AF" }}
-            tickFormatter={(v: number) => `${v}%`}
-            label={{ value: "Outcome %", angle: -90, position: "insideLeft", offset: 14, fontSize: 9, fill: "#9CA3AF" }}
+            type="category" dataKey="name"
+            tick={{ fontSize: 10, fill: "#374151" }}
+            width={104} axisLine={false} tickLine={false}
           />
           <Tooltip
-            cursor={{ strokeDasharray: "3 3", stroke: "rgba(0,33,71,0.12)" }}
+            cursor={{ fill: "rgba(0,33,71,0.04)" }}
             content={({ active, payload }: any) => {
               if (!active || !payload?.length) return null;
               const d = payload[0].payload;
               return (
                 <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                  <p style={{ fontWeight: 700, color: d.color, marginBottom: 3 }}>{d.name}</p>
-                  <p style={{ color: "#6B7280" }}>Participants: <b style={{ color: "#042C53" }}>{fmt(d.x)}</b></p>
-                  <p style={{ color: "#6B7280" }}>Outcome rate: <b style={{ color: "#042C53" }}>{d.y}%</b></p>
+                  <p style={{ fontWeight: 700, color: "#042C53", marginBottom: 4 }}>{d.name}</p>
+                  <p style={{ color: WAGE }}>Wage Employment <b>{fmt(d.wage)}</b></p>
+                  <p style={{ color: ENT }}>Entrepreneurs <b>{fmt(d.ent)}</b></p>
+                  <p style={{ color: EDU }}>Further Education <b>{fmt(d.edu)}</b></p>
+                  <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 3, borderTop: "1px solid rgba(0,33,71,0.06)", paddingTop: 3 }}>Youth in work {fmt(d.total)}</p>
                 </div>
               );
             }}
           />
-          <SC
-            data={bubbleData}
-            shape={(props: any) => {
-              const { cx, cy, payload } = props;
-              const r = 8 + (payload.z / zMax) * 26;
-              const label = payload.name.length > 9 ? payload.name.slice(0, 8) + "…" : payload.name;
+          <Bar dataKey="wage" stackId="o" fill={WAGE} name="Wage Employment" />
+          <Bar dataKey="ent"  stackId="o" fill={ENT}  name="Entrepreneurs" />
+          <BR2
+            dataKey="edu" stackId="o" fill={EDU} radius={[0, 3, 3, 0]} name="Further Education"
+            label={(props: any) => {
+              const { x, y, width, height: bh, index } = props;
+              if (index == null || !chartData[index]) return null;
               return (
-                <g>
-                  <circle cx={cx} cy={cy} r={r} fill={payload.color} fillOpacity={0.18} stroke={payload.color} strokeWidth={1.5} />
-                  <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="middle" fontSize={7.5} fill={payload.color} fontWeight={700}>
-                    {label}
-                  </text>
-                </g>
+                <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                  {fmt(chartData[index].total)}
+                </text>
               );
             }}
           />
-        </ScatterChart>
+        </BarChart>
       </ResponsiveContainer>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 6 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 6 }}>
         {([
-          { label: "Employment", color: "#0C447C" },
-          { label: "Enterprise", color: "#0F6E56" },
-          { label: "Education",  color: "#378ADD" },
-          { label: "Mentorship", color: "#7F77DD" },
+          { label: "Wage Employment", color: WAGE },
+          { label: "Entrepreneurs",   color: ENT },
+          { label: "Further Education", color: EDU },
         ] as { label: string; color: string }[]).map(c => (
-          <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: c.color, opacity: 0.8 }} />
-            <span style={{ fontSize: 9, color: "#6B7280" }}>{c.label}</span>
+          <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: c.color }} />
+            <span style={{ fontSize: 10, color: "#6B7280" }}>{c.label}</span>
           </div>
         ))}
       </div>
