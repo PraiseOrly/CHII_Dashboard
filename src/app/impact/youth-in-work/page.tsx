@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
-  Users, Heart, Briefcase, Accessibility, Shield, ShieldCheck,
+  Users, Heart, Briefcase, Accessibility, Shield, ShieldCheck, Layers,
   Download, Info, Hammer, SlidersHorizontal, X,
 } from "lucide-react";
 import {
@@ -96,6 +96,36 @@ function Panel({ title, subtitle, info, children }: {
         </button>
       </div>
       <div style={{ padding: "16px 18px 18px" }}>{children}</div>
+    </div>
+  );
+}
+
+/* white KPI card: blue border, consistent icon, info tooltip */
+function WhiteKpi({ Icon, label, value, tooltip }: {
+  Icon: typeof Users; label: string; value: string; tooltip: string;
+}) {
+  const [tip, setTip] = useState(false);
+  const ACCENT = "#185FA5";
+  return (
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${ACCENT}`, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+      <span style={{ width: 38, height: 38, borderRadius: 9, backgroundColor: `${ACCENT}1A`, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={19} color={ACCENT} />
+      </span>
+      <div style={{ minWidth: 0 }}>
+        <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
+          <span style={{ position: "relative", cursor: "pointer", display: "flex", flexShrink: 0 }}
+            onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+            <Info size={10} color="#9CA3AF" />
+            {tip && (
+              <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#021D38", color: "white", fontSize: 10, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "7px 10px", borderRadius: 6, width: 180, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                {tooltip}
+              </span>
+            )}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -362,8 +392,6 @@ export default function YouthInWorkPage() {
               tooltip="Total youth tracked across the CHII ecosystem — current students, alumni, and venture employees." />
             <StatsKpiCard label="In Employment" num={kpis.employed} sub="in wage employment" Icon={Briefcase}
               tooltip="Youth in wage employment, including those at supported ventures." />
-            <StatsKpiCard label="Jobs Created" num={kpis.jobsCreated} sub="by supported ventures" Icon={Hammer}
-              tooltip="Positions created by ventures that CHII participants founded." />
             <StatsKpiCard label="Female" num={kpis.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="of participants" Icon={Heart}
               tooltip="Share of female participants across the tracked workforce." />
             <StatsKpiCard label="Refugee / IDP" num={kpis.refugeePct} displayFmt={(n) => `${Math.round(n)}%`} sub="of participants" Icon={Shield}
@@ -374,32 +402,13 @@ export default function YouthInWorkPage() {
               tooltip="Share of working youth in roles meeting decent-work criteria (permanent / stable employment)." />
           </div>
 
-          {/* Filter bar */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: BAND, padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <SlidersHorizontal size={13} color="white" />
-                <p style={{ fontSize: 12, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
-              </div>
-              {isFiltered && (
-                <button onClick={reset}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "4px 9px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>
-                  <X size={10} /> Reset
-                </button>
-              )}
-            </div>
-            <div style={{ padding: "14px 16px", display: "flex", flexWrap: "wrap", gap: 14 }}>
-              <FilterSelect label="Program" value={program} onChange={setProgram}
-                options={[{ value: "all" as const, label: "All Programs" }, ...PROGRAMS.map(p => ({ value: p, label: p }))]} />
-              <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
-                options={[{ value: "all" as const, label: "All Types" }, ...PARTICIPANT_TYPES.map(p => ({ value: p, label: p }))]} />
-              <FilterSelect label="Country" value={country} onChange={setCountry}
-                options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
-              <FilterSelect label="Year" value={year} onChange={setYear}
-                options={[{ value: "all" as const, label: "All Years" }, ...YEARS.map(y => ({ value: y, label: String(y) }))]} />
-              <FilterSelect label="Pathway" value={pathway} onChange={setPathway}
-                options={[{ value: "all" as const, label: "All Pathways" }, ...PATHWAYS.map(p => ({ value: p, label: p }))]} />
-            </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+            <WhiteKpi Icon={Briefcase} label="Primary Jobs" value={fmt(5627)} tooltip="Youth whose venture or wage role is their primary source of income." />
+            <WhiteKpi Icon={Heart} label="Female Primary" value={fmt(2985)} tooltip="Female youth holding a primary job." />
+            <WhiteKpi Icon={Layers} label="Secondary Jobs" value={fmt(54657)} tooltip="Additional / secondary income-generating roles held alongside a primary activity." />
+            <WhiteKpi Icon={Heart} label="Female Secondary" value={fmt(27941)} tooltip="Female youth holding a secondary job." />
+            <WhiteKpi Icon={Shield} label="Refugee / IDP Primary" value={fmt(4200)} tooltip="Refugee or internally displaced youth holding a primary job." />
+            <WhiteKpi Icon={Accessibility} label="PwD Primary" value={fmt(2100)} tooltip="Youth with disabilities holding a primary job." />
           </div>
         </section>
 

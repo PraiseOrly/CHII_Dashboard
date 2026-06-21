@@ -377,36 +377,6 @@ export default function WageEmploymentPage() {
             <StatsKpiCard label="Median Time to Job" num={kpis.medMonths} displayFmt={(n) => `${Math.round(n)} mo`} sub="to first job" Icon={Clock}
               tooltip="Median number of months from completing a program to first wage employment." />
           </div>
-
-          {/* Filter bar */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: BAND, padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <SlidersHorizontal size={13} color="white" />
-                <p style={{ fontSize: 12, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
-              </div>
-              {isFiltered && (
-                <button onClick={reset}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "4px 9px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>
-                  <X size={10} /> Reset
-                </button>
-              )}
-            </div>
-            <div style={{ padding: "14px 16px", display: "flex", flexWrap: "wrap", gap: 14 }}>
-              <FilterSelect label="Year" value={year} onChange={setYear}
-                options={[{ value: "all" as const, label: "All Years" }, ...YEARS.map(y => ({ value: y, label: String(y) }))]} />
-              <FilterSelect label="Program" value={program} onChange={setProgram}
-                options={[{ value: "all", label: "All Programs" }, ...PROGRAM_NAMES.map(p => ({ value: p, label: p }))]} />
-              <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
-                options={[{ value: "all" as const, label: "All Types" }, { value: "Alumni" as const, label: "Alumni" }, { value: "Student" as const, label: "Student" }]} />
-              <FilterSelect label="Gender" value={gender} onChange={setGender}
-                options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
-              <FilterSelect label="Country" value={country} onChange={setCountry}
-                options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
-              <FilterSelect label="Graduation Cohort" value={cohort} onChange={setCohort}
-                options={[{ value: "all" as const, label: "All Cohorts" }, ...COHORTS.map(c => ({ value: c, label: String(c) }))]} />
-            </div>
-          </div>
         </section>
 
         {/* ════ SECTION 2 — WORKFORCE PROFILE ════ */}
