@@ -64,6 +64,8 @@ export default function AfricaChoropleth() {
   const [metric, setMetric] = useState<Metric>("enrolled");
   const [region, setRegion]  = useState<Region>("all");
   const [zoom, setZoom] = useState(1);
+  const [mapKey, setMapKey] = useState(0);
+  const resetView = () => { setZoom(1); setMapKey(k => k + 1); };
   const [tooltip, setTooltip] = useState<{
     name: string; value: number; x: number; y: number;
   } | null>(null);
@@ -155,6 +157,14 @@ export default function AfricaChoropleth() {
                 {b.label}
               </button>
             ))}
+            <button onClick={resetView} title="Reset map view" style={{
+              width: 26, height: 26, borderRadius: 6,
+              border: "1px solid rgba(0,33,71,0.12)", backgroundColor: "white",
+              color: "#374151", cursor: "pointer", display: "flex", alignItems: "center",
+              justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+            </button>
           </div>
           <ComposableMap
             projection="geoMercator"
@@ -163,7 +173,7 @@ export default function AfricaChoropleth() {
             height={560}
             style={{ display: "block", width: "100%", height: "auto" }}
           >
-            <ZoomableGroup zoom={zoom} center={[20, 2]} onMoveEnd={(p: { zoom: number }) => setZoom(p.zoom)} minZoom={1} maxZoom={8}>
+            <ZoomableGroup key={mapKey} zoom={zoom} center={[20, 2]} onMoveEnd={(p: { zoom: number }) => setZoom(p.zoom)} minZoom={1} maxZoom={8}>
             <Geographies geography={GEO_URL}>
               {({ geographies }) =>
                 geographies

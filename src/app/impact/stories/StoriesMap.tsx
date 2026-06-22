@@ -15,6 +15,9 @@ function pin(svg: string, bg: string) {
   return `<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${bg};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:2px solid white"><div style="transform:rotate(45deg);display:flex">${svg}</div></div>`;
 }
 
+const DEFAULT_CENTER: [number, number] = [1.5, 19];
+const DEFAULT_ZOOM = 3;
+
 export default function StoriesMap({ stories, cluster, onSelect }: {
   stories: Story[];
   cluster: boolean;
@@ -35,7 +38,7 @@ export default function StoriesMap({ stories, cluster, onSelect }: {
       await import("leaflet.markercluster");
       if (cancelled || !containerRef.current || mapRef.current) return;
       LRef.current = L;
-      const map = L.map(containerRef.current, { center: [1.5, 19], zoom: 3, scrollWheelZoom: true, zoomControl: true });
+      const map = L.map(containerRef.current, { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, scrollWheelZoom: true, zoomControl: true });
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors", maxZoom: 18,
       }).addTo(map);
@@ -75,5 +78,18 @@ export default function StoriesMap({ stories, cluster, onSelect }: {
 
   useEffect(() => { renderMarkers(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [stories, cluster]);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100%", minHeight: 480, borderRadius: 10 }} />;
+  const resetView = () => mapRef.current?.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 480 }}>
+      <div ref={containerRef} style={{ width: "100%", height: "100%", minHeight: 480, borderRadius: 10 }} />
+      <button onClick={resetView} title="Reset map view"
+        style={{ position: "absolute", top: 10, right: 10, zIndex: 500, display: "inline-flex", alignItems: "center", gap: 5,
+          fontSize: 11.5, fontWeight: 700, color: "#042C53", backgroundColor: "white", border: "1px solid rgba(0,33,71,0.15)",
+          borderRadius: 8, padding: "6px 11px", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.18)" }}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#042C53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+        Reset
+      </button>
+    </div>
+  );
 }
