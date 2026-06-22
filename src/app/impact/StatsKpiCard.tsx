@@ -1,6 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
-import type { LucideIcon } from "lucide-react";
+import { useState, useEffect, type ComponentType } from "react";
 
 function useCountUp(target: number, duration = 1000): number {
   const [val, setVal] = useState(0);
@@ -26,7 +25,7 @@ interface Props {
   fill?: string;
   lbl?: string;
   numColor?: string;
-  Icon: LucideIcon;
+  Icon: ComponentType<any>;
   tooltip: string;
 }
 

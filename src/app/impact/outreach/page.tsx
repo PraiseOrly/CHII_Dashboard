@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 import {
-  Users, Heart, Building2, GraduationCap,
+  Users, Building2, GraduationCap,
   SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility,
 } from "lucide-react";
 import {
@@ -188,9 +188,9 @@ function FilterSelect<T extends string | number>({ label, value, onChange, optio
 }
 
 /* ♀ woman / female symbol icon (lucide has no female glyph in this version) */
-function WomanIcon({ size = 20, color = "currentColor" }: { size?: number; color?: string }) {
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color ?? "currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
       <circle cx="12" cy="8" r="5" />
       <path d="M12 13v8M9 18h6" />
     </svg>
@@ -414,7 +414,7 @@ export default function OutreachPage() {
               tooltip="Distinct outreach interventions in scope (HealthX, Masterclasses, Mentorship, Hackathons, and more)." />
             <StatsKpiCard label="Institutions" num={kpis.institutionCount} sub="Partner institutions reached" Icon={Building2}
               tooltip="Number of partner institutions (ALU, ALX, ALCHE, Other) represented in the current scope." />
-            <StatsKpiCard label="Female Share" num={kpis.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={Heart}
+            <StatsKpiCard label="Female Share" num={kpis.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={WomanIcon}
               tooltip="Share of female participants across outreach interventions in scope." />
             <StatsKpiCard label="Mission Students" num={kpis.missionPct} displayFmt={(n) => `${Math.round(n)}%`} sub="Also degree / mission students" Icon={BookOpen}
               tooltip="Share of participants who are also mission (degree) students." />
