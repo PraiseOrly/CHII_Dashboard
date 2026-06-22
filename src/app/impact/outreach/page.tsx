@@ -331,7 +331,12 @@ export default function OutreachPage() {
   const completionByProgram = useMemo(() =>
     PILLARS.map(p => {
       const rows = scope.filter(s => s.pillar === p);
-      return { program: p, rate: share(rows.filter(s => s.status === "Completed").length, rows.length) };
+      const femaleRows = rows.filter(s => s.gender === "Female");
+      return {
+        program: p,
+        Overall: share(rows.filter(s => s.status === "Completed").length, rows.length),
+        Female: share(femaleRows.filter(s => s.status === "Completed").length, femaleRows.length),
+      };
     }),
   [scope]);
 
@@ -620,15 +625,16 @@ export default function OutreachPage() {
 
             <Panel title="Completion Rate by Program" subtitle="Completed engagements as a share of each pillar">
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={completionByProgram} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barCategoryGap="34%">
+                <BarChart data={completionByProgram} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barGap={6} barCategoryGap="34%">
                   <CartesianGrid vertical={false} stroke="rgba(0,33,71,0.08)" />
                   <XAxis dataKey="program" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={(v: number) => `${v}%`} axisLine={false} tickLine={false} />
                   <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="rate" name="Completion" barSize={52} radius={[4, 4, 0, 0]}
-                    label={{ position: "top", fontSize: 11, fill: NAVY, fontWeight: 700, formatter: (v: number) => `${v}%` }}>
-                    {completionByProgram.map(d => <Cell key={d.program} fill={PILLAR_COLOR[d.program as Pillar]} />)}
-                  </Bar>
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="Overall" name="Overall" fill="#0C447C" barSize={26} radius={[4, 4, 0, 0]}
+                    label={{ position: "top", fontSize: 10, fill: NAVY, fontWeight: 700, formatter: (v: number) => `${v}%` }} />
+                  <Bar dataKey="Female" name="Female" fill="#185FA5" barSize={26} radius={[4, 4, 0, 0]}
+                    label={{ position: "top", fontSize: 10, fill: NAVY, fontWeight: 700, formatter: (v: number) => `${v}%` }} />
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
