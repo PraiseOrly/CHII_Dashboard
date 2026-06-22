@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
-  Users, Heart, Info, Briefcase, Cpu, ShieldCheck,
+  Users, Info, Briefcase, Cpu, ShieldCheck,
   ArrowUpRight, Clock, SlidersHorizontal, X,
 } from "lucide-react";
 import {
@@ -41,6 +41,16 @@ const median = (arr: number[]) => {
   const m = Math.floor(s.length / 2);
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 };
+
+/* ♀ woman / female symbol icon */
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color ?? "currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+      <circle cx="12" cy="8" r="5" />
+      <path d="M12 13v8M9 18h6" />
+    </svg>
+  );
+}
 
 /* ════════════════════════════════════════════════════════
    Shared UI
@@ -348,7 +358,7 @@ export default function WageEmploymentPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(175px, 1fr))", gap: 12 }}>
             <StatsKpiCard label="Wage Employed" num={total} sub="participants in work" Icon={Briefcase}
               tooltip="Total CHII participants currently in wage employment within the active filters." />
-            <StatsKpiCard label="Female Wage Employed" num={kpis.female} sub={`${kpis.femalePct}% of employed`} Icon={Heart}
+            <StatsKpiCard label="Female Wage Employed" num={kpis.female} sub={`${kpis.femalePct}% of employed`} Icon={WomanIcon}
               tooltip="Number and share of female participants in wage employment." />
             <StatsKpiCard label="6-Month Placement" num={kpis.placePct} displayFmt={(n) => `${Math.round(n)}%`} sub="employed within 6 months" Icon={ArrowUpRight}
               tooltip="Share of participants placed into wage employment within six months." />
@@ -430,7 +440,8 @@ export default function WageEmploymentPage() {
             </Panel>
             <Panel title="Role Level" subtitle="Seniority ranked by volume"
               info="Employed participants grouped by seniority, from most to least common.">
-              <ResponsiveContainer width="100%" height={220}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", minHeight: 300 }}>
+              <ResponsiveContainer width="100%" height={260}>
                 <BarChart layout="vertical" data={roleData} margin={{ top: 4, right: 28, bottom: 0, left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={96} axisLine={false} tickLine={false} />
@@ -440,6 +451,7 @@ export default function WageEmploymentPage() {
                     label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }} />
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </Panel>
             <Panel title="Contract Type" subtitle="Full-time · Part-time · Temporary · Contract"
               info="Contract-type split across the employed population.">
@@ -447,7 +459,8 @@ export default function WageEmploymentPage() {
             </Panel>
             <Panel title="Employer Type & Working Arrangement" subtitle="Employer type, broken down by on-site · hybrid · remote"
               info="Each employer type split by working arrangement, so you can see both where participants are employed and how they work in a single view.">
-              <ResponsiveContainer width="100%" height={220}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", minHeight: 300 }}>
+              <ResponsiveContainer width="100%" height={260}>
                 <BarChart layout="vertical" data={orgByArr} margin={{ top: 4, right: 16, bottom: 0, left: 8 }}>
                   <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.06)" />
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
@@ -460,6 +473,7 @@ export default function WageEmploymentPage() {
                   ))}
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </Panel>
           </div>
         </section>
@@ -479,7 +493,7 @@ export default function WageEmploymentPage() {
                 <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} />
-                <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                 <Line type="monotone" dataKey="Total" stroke={C_TOTAL} strokeWidth={2.5} dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
                 <Line type="monotone" dataKey="Female" stroke={C_FEMALE} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3.5 }} activeDot={{ r: 5 }} />
               </LineChart>
@@ -493,7 +507,7 @@ export default function WageEmploymentPage() {
                 <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                 {EMPLOYMENT_TYPES.map((t, i) => (
                   <Bar key={t} dataKey={t} stackId="e" fill={EMP_COLOR[t]} barSize={48}
                     radius={i === EMPLOYMENT_TYPES.length - 1 ? [4, 4, 0, 0] : undefined} />
@@ -511,7 +525,7 @@ export default function WageEmploymentPage() {
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
                   <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<PctTip />} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Line type="monotone" dataKey="placeTotal" name="Overall" stroke={C_TOTAL} strokeWidth={2.5} dot={{ r: 3.5 }} />
                   <Line type="monotone" dataKey="placeFemale" name="Female" stroke={C_FEMALE} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3.5 }} />
                 </LineChart>
@@ -525,7 +539,7 @@ export default function WageEmploymentPage() {
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
                   <YAxis tickFormatter={usd} tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={56} />
                   <Tooltip content={<MoneyTip />} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Line type="monotone" dataKey="incomeTotal" name="Overall" stroke={C_TOTAL} strokeWidth={2.5} dot={{ r: 3.5 }} />
                   <Line type="monotone" dataKey="incomeFemale" name="Female" stroke={C_FEMALE} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3.5 }} />
                 </LineChart>
@@ -553,6 +567,7 @@ export default function WageEmploymentPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Employed" fill={C_FEMALE} radius={[0, 4, 4, 0]} barSize={16}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -575,6 +590,7 @@ export default function WageEmploymentPage() {
                 <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={190} axisLine={false} tickLine={false} />
                 <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Employment rate" fill={BAND} radius={[0, 4, 4, 0]} barSize={22}>
                   <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
                 </Bar>
@@ -638,6 +654,7 @@ export default function WageEmploymentPage() {
                 <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={200} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Respondents" fill={BAND} radius={[0, 4, 4, 0]} barSize={20}>
                   <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                 </Bar>
@@ -653,6 +670,7 @@ export default function WageEmploymentPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Respondents" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -668,6 +686,7 @@ export default function WageEmploymentPage() {
                     label={{ value: "Rating", position: "insideBottom", offset: -8, fontSize: 10, fill: "#9CA3AF" }} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Respondents" fill={BAND} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>

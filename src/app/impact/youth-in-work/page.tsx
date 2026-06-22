@@ -584,14 +584,14 @@ export default function YouthInWorkPage() {
           <Panel title="Employment Outcomes by Program" subtitle="Employment · Internships · Ventures across HEMP · HENT · HECO"
             info="Participant counts for each work outcome, stacked within each program.">
             <ResponsiveContainer width="100%" height={270}>
-              <BarChart data={byProgram} margin={{ top: 10, right: 12, bottom: 0, left: -12 }} barCategoryGap="34%">
+              <BarChart data={byProgram} margin={{ top: 26, right: 12, bottom: 0, left: -12 }} barCategoryGap="40%">
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                 <XAxis dataKey="program" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {(["Employment", "Internships", "Ventures"] as const).map((k, i) => (
-                  <Bar key={k} dataKey={k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={70} radius={i === 2 ? [4, 4, 0, 0] : undefined}>
+                  <Bar key={k} dataKey={k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={46} radius={i === 2 ? [4, 4, 0, 0] : undefined}>
                     {i === 2 && <LabelList dataKey="Total" position="top" fontSize={11} fill={NAVY} fontWeight={700} />}
                   </Bar>
                 ))}
