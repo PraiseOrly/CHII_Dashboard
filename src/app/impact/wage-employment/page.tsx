@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
-  Users, Heart, Info, Download, Briefcase, Cpu, ShieldCheck,
+  Users, Heart, Info, Briefcase, Cpu, ShieldCheck,
   ArrowUpRight, Clock, SlidersHorizontal, X,
 } from "lucide-react";
 import {
@@ -84,9 +84,6 @@ function Panel({ title, subtitle, info, children }: {
             <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 1 }}>{subtitle}</p>
           </div>
         </div>
-        <button title="Export" style={{ flexShrink: 0, color: "rgba(181,212,244,0.75)", display: "flex", padding: 3 }}>
-          <Download size={13} />
-        </button>
       </div>
       <div style={{ padding: "16px 18px 18px" }}>{children}</div>
     </div>
@@ -237,7 +234,8 @@ export default function WageEmploymentPage() {
 
   /* ── Section 3: employment trends (computed by year) ─ */
   const trends = useMemo(() => {
-    const yearly = YEARS.map(yr => {
+    const TREND_YEARS = [2022, 2023, 2024, 2025, 2026];
+    const yearly = TREND_YEARS.map(yr => {
       const rows = scope.filter(w => w.year === yr);
       const fem = rows.filter(w => w.gender === "Female");
       const placed = rows.filter(w => w.timeToEmployment <= 6);
@@ -437,6 +435,7 @@ export default function WageEmploymentPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={96} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Employed" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}
                     label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }} />
                 </BarChart>
@@ -471,6 +470,7 @@ export default function WageEmploymentPage() {
         {show(2) && (
         <section className="space-y-4">
           <SectionHeader title="Employment Trends & Sectors" blurb="How is wage employment growing, and where?" />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
           <Panel title="Yearly Wage Jobs Trend" subtitle="Total vs female, by year"
             info="Wage jobs recorded each year; total is solid, female dashed.">
             <ResponsiveContainer width="100%" height={250}>
@@ -501,6 +501,7 @@ export default function WageEmploymentPage() {
               </BarChart>
             </ResponsiveContainer>
           </Panel>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Six-Month Placement Rate" subtitle="Total vs female, % placed within 6 months"
               info="Share employed within six months of graduating, by year.">
@@ -620,20 +621,6 @@ export default function WageEmploymentPage() {
         {show(4) && (
         <section className="space-y-4">
           <SectionHeader title="Employment Quality & Impact" blurb="Is the work dignified, and is it improving lives?" />
-          <Panel title="Decent Work Indicators" subtitle="Share of participants reporting each, %"
-            info="Share of working participants reporting each decent-work indicator, on a fixed 0–100% scale.">
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={quality.indicators} margin={{ top: 20, right: 12, bottom: 0, left: -10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
-                <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                <Bar dataKey="value" name="Reporting" fill={BAND} radius={[4, 4, 0, 0]} barSize={64}>
-                  <LabelList position="top" fontSize={11} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Panel>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Dignified Work Status" subtitle="Accessing vs progressing"
               info="Participants accessing dignified work versus those progressing toward it.">
