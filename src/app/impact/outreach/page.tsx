@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, LabelList,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 import {
@@ -32,6 +32,27 @@ const GENDER_COLOR: Record<Gender, string> = { Female: C_FEMALE, Male: C_MALE, "
 const REACH_GENDERS: Gender[] = ["Female", "Male"];
 /* outreach reporting years: 2022 → 2026 */
 const OA_YEARS = [2022, 2023, 2024, 2025, 2026];
+
+/* Student-population reference data (academic programmes) */
+const POP_SUMMARY = [
+  { name: "All Students", value: 6482 },
+  { name: "MCF Scholars", value: 1643 },
+  { name: "Fee-Paying", value: 4839 },
+];
+const POP_BY_PROGRAM = [
+  { name: "BSc Software Eng", Graduated: 820, "Not graduated": 540 },
+  { name: "Computer Science", Graduated: 760, "Not graduated": 480 },
+  { name: "Entrepreneurial Leadership", Graduated: 690, "Not graduated": 520 },
+  { name: "International Business & Trade", Graduated: 610, "Not graduated": 430 },
+  { name: "Global Challenges", Graduated: 470, "Not graduated": 360 },
+];
+const POP_GENDER_BY_PROGRAM = [
+  { name: "BSc Software Eng", Female: 612, Male: 748 },
+  { name: "Computer Science", Female: 560, Male: 680 },
+  { name: "Entrepreneurial Leadership", Female: 640, Male: 570 },
+  { name: "International Business & Trade", Female: 540, Male: 500 },
+  { name: "Global Challenges", Female: 430, Male: 400 },
+];
 const STATUS_COLOR: Record<string, string> = {
   Completed: "#0F6E56", Active: "#185FA5", "In-progress": "#85B7EB", Dropped: "#C5D2E0",
 };
@@ -522,34 +543,52 @@ export default function OutreachPage() {
         {show(3) && (
         <section className="space-y-4">
           <SectionHeader title="Student Population Profile" blurb="The wider student body outreach draws from." />
-          <Panel title="Population Summary" subtitle="Total enrolment and inclusion by student population">
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                <thead>
-                  <tr style={{ textAlign: "left", color: "#6B7280" }}>
-                    {["Student Population", "Total", "Female", "Refugee / IDP", "PwD"].map((h, i) => (
-                      <th key={h} style={{ padding: "8px 12px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "right", borderBottom: "2px solid rgba(0,33,71,0.1)" }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { pop: "All Students", total: "6,482", f: "51%", r: "7%", p: "2%" },
-                    { pop: "MCF Scholars", total: "1,643", f: "67%", r: "24%", p: "3%" },
-                    { pop: "Fee-Paying", total: "4,839", f: "46%", r: "—", p: "—" },
-                  ].map(row => (
-                    <tr key={row.pop}>
-                      <td style={{ padding: "10px 12px", fontWeight: 700, color: NAVY, borderBottom: "1px solid rgba(0,33,71,0.06)" }}>{row.pop}</td>
-                      {[row.total, row.f, row.r, row.p].map((v, i) => (
-                        <td key={i} style={{ padding: "10px 12px", textAlign: "right", color: "#374151", borderBottom: "1px solid rgba(0,33,71,0.06)" }}>{v}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p style={{ fontSize: 10.5, color: "#9CA3AF", marginTop: 10 }}>MCF Scholars: V1 = 1,224 · V2 = 419</p>
+
+          <Panel title="Population Summary" subtitle="Total enrolment by student population">
+            <ResponsiveContainer width="100%" height={210}>
+              <BarChart data={POP_SUMMARY} margin={{ top: 18, right: 10, bottom: 0, left: -8 }} barCategoryGap="42%">
+                <CartesianGrid vertical={false} stroke="rgba(0,33,71,0.08)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Bar dataKey="value" name="Students" barSize={56} radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="value" position="top" fontSize={11} fill={NAVY} fontWeight={700} />
+                  {POP_SUMMARY.map((d, i) => <Cell key={d.name} fill={["#0C447C", "#185FA5", "#1D9E75"][i]} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <p style={{ fontSize: 10.5, color: "#9CA3AF", marginTop: 8 }}>MCF Scholars: V1 = 1,224 · V2 = 419</p>
           </Panel>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+            <Panel title="Population by Program — Graduation Status" subtitle="Graduated vs current students per programme">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart layout="vertical" data={POP_BY_PROGRAM} margin={{ top: 4, right: 28, bottom: 0, left: 8 }} barCategoryGap="26%">
+                  <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
+                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="Graduated" stackId="p" fill="#0F6E56" barSize={16} />
+                  <Bar dataKey="Not graduated" stackId="p" fill="#C5D2E0" barSize={16} radius={[0, 3, 3, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Panel>
+
+            <Panel title="Population by Program — Gender Split" subtitle="Female vs male per programme">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart layout="vertical" data={POP_GENDER_BY_PROGRAM} margin={{ top: 4, right: 28, bottom: 0, left: 8 }} barCategoryGap="26%">
+                  <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
+                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="Female" stackId="g" fill={C_FEMALE} barSize={16} />
+                  <Bar dataKey="Male" stackId="g" fill={C_MALE} barSize={16} radius={[0, 3, 3, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Panel>
+          </div>
         </section>
 
         )}
