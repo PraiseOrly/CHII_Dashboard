@@ -8,10 +8,11 @@ import {
 import {
   Users, Heart, Info, Download, Rocket, Star, Briefcase,
   Scale, LifeBuoy, AlertTriangle, Activity, ShieldCheck, Globe, TrendingUp, Lightbulb, Banknote,
+  SlidersHorizontal, X,
 } from "lucide-react";
 import {
   VENTURES, GENDERS, STATUSES, FUNDING_SOURCES, STAGES, PIPELINE,
-  type Gender,
+  type Gender, type Stage, type Status, type FundingSource,
 } from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import StatsKpiCard from "../StatsKpiCard";
@@ -167,6 +168,23 @@ function MiniKpi({ Icon, label, value }: { Icon: typeof Users; label: string; va
   );
 }
 
+function FilterSelect<T extends string | number>({ label, value, onChange, options }: {
+  label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 140px" }}>
+      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
+      <select value={String(value)} onChange={e => {
+        const match = options.find(o => String(o.value) === e.target.value);
+        if (match) onChange(match.value);
+      }}
+        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(0,33,71,0.15)", borderRadius: 6, padding: "7px 9px", color: NAVY, backgroundColor: "white", cursor: "pointer" }}>
+        {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
 /* ════════════════════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════════════════ */
@@ -182,10 +200,29 @@ const SECTIONS: { n: number; label: string }[] = [
 ];
 
 export default function EntrepreneurshipPage() {
-  const scope = VENTURES;
-  const total = scope.length;
+  const [year, setYear] = useState<"all" | number>("all");
+  const [gender, setGender] = useState<"all" | Gender>("all");
+  const [stage, setStage] = useState<"all" | Stage>("all");
+  const [status, setStatus] = useState<"all" | Status>("all");
+  const [funding, setFunding] = useState<"all" | FundingSource>("all");
   const [active, setActive] = useState<number | "all">("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const show = (n: number) => active === "all" || active === n;
+
+  const scope = useMemo(() =>
+    VENTURES.filter(x => {
+      if (year !== "all" && x.yearLaunched !== year) return false;
+      if (gender !== "all" && x.gender !== gender) return false;
+      if (stage !== "all" && x.stage !== stage) return false;
+      if (status !== "all" && x.status !== status) return false;
+      if (funding !== "all" && x.fundingSource !== funding) return false;
+      return true;
+    }),
+  [year, gender, stage, status, funding]);
+  const total = scope.length;
+
+  const activeCount = [year, gender, stage, status, funding].filter(v => v !== "all").length;
+  const reset = () => { setYear("all"); setGender("all"); setStage("all"); setStatus("all"); setFunding("all"); };
 
   /* ── Overview KPIs ─────────────────────────────────── */
   const kpis = useMemo(() => {
@@ -402,19 +439,59 @@ export default function EntrepreneurshipPage() {
               tooltip="Total capital raised by ventures across the portfolio." />
           </div>
 
-          {/* Section filter */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-            {[{ n: 0, label: "All Sections" }, ...SECTIONS].map(({ n, label }) => {
-              const on = n === 0 ? active === "all" : active === n;
-              return (
-                <button key={n} onClick={() => setActive(n === 0 ? "all" : n)}
-                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                    border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
-                    backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
-                  {label}
-                </button>
-              );
-            })}
+          {/* Section pills (left) + compact filters dropdown (right) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {[{ n: 0, label: "All Sections" }, ...SECTIONS].map(({ n, label }) => {
+                const on = n === 0 ? active === "all" : active === n;
+                return (
+                  <button key={n} onClick={() => setActive(n === 0 ? "all" : n)}
+                    style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                      border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                      backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <button onClick={() => setFiltersOpen(o => !o)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                  border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
+                  backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
+                <SlidersHorizontal size={13} />
+                Filters
+                {activeCount > 0 && (
+                  <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_ACCENT, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
+                )}
+              </button>
+              {filtersOpen && (
+                <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                  <div style={{ backgroundColor: BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {activeCount > 0 && (
+                        <button onClick={reset} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                      )}
+                      <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                    </div>
+                  </div>
+                  <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <FilterSelect label="Year Launched" value={year} onChange={setYear}
+                      options={[{ value: "all" as const, label: "All Years" }, ...YEARS.map(y => ({ value: y, label: String(y) }))]} />
+                    <FilterSelect label="Founder Gender" value={gender} onChange={setGender}
+                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                    <FilterSelect label="Stage" value={stage} onChange={setStage}
+                      options={[{ value: "all" as const, label: "All Stages" }, ...STAGES.map(s => ({ value: s, label: s }))]} />
+                    <FilterSelect label="Status" value={status} onChange={setStatus}
+                      options={[{ value: "all" as const, label: "All Statuses" }, ...STATUSES.map(s => ({ value: s, label: s }))]} />
+                    <FilterSelect label="Funding Source" value={funding} onChange={setFunding}
+                      options={[{ value: "all" as const, label: "All Sources" }, ...FUNDING_SOURCES.map(f => ({ value: f, label: f }))]} />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 

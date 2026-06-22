@@ -7,8 +7,12 @@ import {
 } from "recharts";
 import {
   Users, Heart, Info, Download, GraduationCap, BookOpen, Wallet,
-  ArrowUpRight, ArrowDownRight,
+  ArrowUpRight, ArrowDownRight, SlidersHorizontal, X,
 } from "lucide-react";
+import {
+  FE_STUDENTS, GENDERS, QUALIFICATIONS, FIELDS, FUNDING_SOURCES, DESTINATIONS, YEARS,
+  type Gender,
+} from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
@@ -145,71 +149,78 @@ function Donut({ data, colors, total, totalLabel }: {
   );
 }
 
+function FilterSelect<T extends string | number>({ label, value, onChange, options }: {
+  label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 140px" }}>
+      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
+      <select value={String(value)} onChange={e => {
+        const match = options.find(o => String(o.value) === e.target.value);
+        if (match) onChange(match.value);
+      }}
+        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(0,33,71,0.15)", borderRadius: 6, padding: "7px 9px", color: NAVY, backgroundColor: "white", cursor: "pointer" }}>
+        {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
+const countBy = (rows: { [k: string]: any }[], key: string, order: string[]) =>
+  order.map(name => ({ name, value: rows.filter(r => r[key] === name).length })).filter(d => d.value > 0);
+
 /* ════════════════════════════════════════════════════════
-   PAGE — Further Education (single view, no sub-tabs)
+   PAGE — Further Education
 ═══════════════════════════════════════════════════════ */
-const TOTAL = 206;
-
 export default function FurtherEducationPage() {
-  const data = useMemo(() => {
-    const gender = [
-      { name: "Female", value: 122 },
-      { name: "Male", value: 78 },
-      { name: "Other", value: 6 },
-    ];
+  const [gender, setGender] = useState<"all" | Gender>("all");
+  const [scholar, setScholar] = useState<"all" | "scholar" | "non">("all");
+  const [qualification, setQualification] = useState<string>("all");
+  const [field, setField] = useState<string>("all");
+  const [funding, setFunding] = useState<string>("all");
+  const [destination, setDestination] = useState<string>("all");
+  const [year, setYear] = useState<"all" | number>("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
+  const scope = useMemo(() =>
+    FE_STUDENTS.filter(s => {
+      if (gender !== "all" && s.gender !== gender) return false;
+      if (scholar === "scholar" && !s.scholar) return false;
+      if (scholar === "non" && s.scholar) return false;
+      if (qualification !== "all" && s.qualification !== qualification) return false;
+      if (field !== "all" && s.field !== field) return false;
+      if (funding !== "all" && s.funding !== funding) return false;
+      if (destination !== "all" && s.destination !== destination) return false;
+      if (year !== "all" && s.year !== year) return false;
+      return true;
+    }),
+  [gender, scholar, qualification, field, funding, destination, year]);
+
+  const TOTAL = scope.length;
+  const activeCount = [gender, scholar, qualification, field, funding, destination, year].filter(v => v !== "all").length;
+  const reset = () => { setGender("all"); setScholar("all"); setQualification("all"); setField("all"); setFunding("all"); setDestination("all"); setYear("all"); };
+
+  const kpis = useMemo(() => ({
+    enrolled: scope.filter(s => s.active).length,
+    femalePct: TOTAL ? Math.round(scope.filter(s => s.gender === "Female").length / TOTAL * 100) : 0,
+    fundedPct: TOTAL ? Math.round(scope.filter(s => s.funding === "Scholarship / funded").length / TOTAL * 100) : 0,
+  }), [scope, TOTAL]);
+
+  const data = useMemo(() => {
+    const gender = countBy(scope, "gender", GENDERS);
     const cohortRate = [
       { name: "All Talents", value: 7, pct: true },
       { name: "Scholars", value: 17, pct: true },
     ];
-
-    const qualification = [
-      { name: "Bachelor's top-up", value: 38 },
-      { name: "Postgraduate diploma", value: 44 },
-      { name: "Master's", value: 86 },
-      { name: "Doctorate", value: 14 },
-      { name: "Professional cert", value: 24 },
-    ];
-
-    const field = [
-      { name: "Business & Management", value: 58 },
-      { name: "Engineering & Tech", value: 49 },
-      { name: "Public Health / Policy", value: 38 },
-      { name: "Education", value: 27 },
-      { name: "Sciences", value: 21 },
-      { name: "Arts / Other", value: 13 },
-    ].sort((a, b) => b.value - a.value);
-
-    const funding = [
-      { name: "Scholarship / funded", value: 126 },
-      { name: "Self-funded", value: 48 },
-      { name: "Employer", value: 22 },
-      { name: "Loan", value: 10 },
-    ];
-
-    const destination = [
-      { name: "Within Africa", value: 121 },
-      { name: "Europe", value: 44 },
-      { name: "North America", value: 28 },
-      { name: "Asia / Other", value: 13 },
-    ].sort((a, b) => b.value - a.value);
-
-    const relevance = [
-      { name: "Directly related", value: 118 },
-      { name: "Somewhat related", value: 62 },
-      { name: "Different field", value: 26 },
-    ];
-
-    const trend = [
-      { year: 2020, value: 64 },
-      { year: 2021, value: 92 },
-      { year: 2022, value: 128 },
-      { year: 2023, value: 168 },
-      { year: 2024, value: 206 },
-    ];
-
+    const qualification = countBy(scope, "qualification", QUALIFICATIONS);
+    const field = countBy(scope, "field", FIELDS).sort((a, b) => b.value - a.value);
+    const funding = countBy(scope, "funding", FUNDING_SOURCES);
+    const destination = countBy(scope, "destination", DESTINATIONS).sort((a, b) => b.value - a.value);
+    const relevance = countBy(scope, "relevance", ["Directly related", "Somewhat related", "Different field"]);
+    let cumulative = 0;
+    const trend = YEARS.map(yr => { cumulative += scope.filter(s => s.year === yr).length; return { year: yr, value: cumulative }; });
     return { gender, cohortRate, qualification, field, funding, destination, relevance, trend };
-  }, []);
+  }, [scope]);
 
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
@@ -231,13 +242,58 @@ export default function FurtherEducationPage() {
         {/* ── KPI value cards ──────────────────────────── */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12 }}>
           <KpiCard label="In Further Education" value={fmt(TOTAL)} caption="graduates" Icon={GraduationCap}
-            tooltip="Graduates currently enrolled in further education." delta={{ v: 5, unit: "%" }} />
-          <KpiCard label="Currently Enrolled" value="113" caption="active students" Icon={BookOpen}
+            tooltip="Graduates in further education within the current filters." delta={{ v: 5, unit: "%" }} />
+          <KpiCard label="Currently Enrolled" value={fmt(kpis.enrolled)} caption="active students" Icon={BookOpen}
             tooltip="Graduates with an active further-education enrolment this cycle." />
-          <KpiCard label="Female Share" value="59%" caption="of cohort" Icon={Heart}
+          <KpiCard label="Female Share" value={`${kpis.femalePct}%`} caption="of cohort" Icon={Heart}
             tooltip="Share of further-education graduates who are female." />
-          <KpiCard label="Scholarship / Funded" value="61%" caption="funded share" Icon={Wallet}
+          <KpiCard label="Scholarship / Funded" value={`${kpis.fundedPct}%`} caption="funded share" Icon={Wallet}
             tooltip="Share of further-education graduates on a scholarship or funded place." />
+        </div>
+
+        {/* ── Compact filters (right) ──────────────────── */}
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <button onClick={() => setFiltersOpen(o => !o)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
+                backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
+              <SlidersHorizontal size={13} />
+              Filters
+              {activeCount > 0 && (
+                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_ACCENT, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
+              )}
+            </button>
+            {filtersOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                <div style={{ backgroundColor: BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {activeCount > 0 && (
+                      <button onClick={reset} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                    )}
+                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <FilterSelect label="Gender" value={gender} onChange={setGender}
+                    options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                  <FilterSelect label="Cohort" value={scholar} onChange={setScholar}
+                    options={[{ value: "all" as const, label: "All Cohorts" }, { value: "scholar" as const, label: "Scholars" }, { value: "non" as const, label: "Non-scholar" }]} />
+                  <FilterSelect label="Qualification" value={qualification} onChange={setQualification}
+                    options={[{ value: "all", label: "All Qualifications" }, ...QUALIFICATIONS.map(q => ({ value: q, label: q }))]} />
+                  <FilterSelect label="Field" value={field} onChange={setField}
+                    options={[{ value: "all", label: "All Fields" }, ...FIELDS.map(f => ({ value: f, label: f }))]} />
+                  <FilterSelect label="Funding" value={funding} onChange={setFunding}
+                    options={[{ value: "all", label: "All Funding" }, ...FUNDING_SOURCES.map(f => ({ value: f, label: f }))]} />
+                  <FilterSelect label="Destination" value={destination} onChange={setDestination}
+                    options={[{ value: "all", label: "All Destinations" }, ...DESTINATIONS.map(d => ({ value: d, label: d }))]} />
+                  <FilterSelect label="Year" value={year} onChange={setYear}
+                    options={[{ value: "all" as const, label: "All Years" }, ...YEARS.map(y => ({ value: y, label: String(y) }))]} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── 2-column content grid ────────────────────── */}

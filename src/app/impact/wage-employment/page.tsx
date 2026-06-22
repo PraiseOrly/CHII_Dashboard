@@ -44,10 +44,10 @@ const median = (arr: number[]) => {
 /* ════════════════════════════════════════════════════════
    Shared UI
 ═══════════════════════════════════════════════════════ */
-function SectionHeader({ n, title, blurb }: { n: number; title: string; blurb: string }) {
+function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 2 }}>
-      <span style={{ fontSize: 11, fontWeight: 800, color: "white", backgroundColor: NAVY, borderRadius: 999, width: 22, height: 22, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{n}</span>
+    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 2 }}>
+      <span style={{ width: 4, height: 16, borderRadius: 999, backgroundColor: TICK, flexShrink: 0, alignSelf: "center" }} />
       <div>
         <h2 style={{ fontSize: 14, fontWeight: 800, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
         <p style={{ fontSize: 11, color: "#6B7280", marginTop: 1 }}>{blurb}</p>
@@ -198,6 +198,13 @@ function FilterSelect<T extends string | number>({ label, value, onChange, optio
   );
 }
 
+const WE_SECTIONS: { n: number; label: string }[] = [
+  { n: 1, label: "Workforce Profile" },
+  { n: 2, label: "Employment Trends & Sectors" },
+  { n: 3, label: "Program Outcomes" },
+  { n: 4, label: "Quality & Impact" },
+];
+
 /* ════════════════════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════════════════ */
@@ -208,6 +215,9 @@ export default function WageEmploymentPage() {
   const [gender, setGender] = useState<"all" | Gender>("all");
   const [country, setCountry] = useState<string>("all");
   const [cohort, setCohort] = useState<"all" | number>("all");
+  const [activeSection, setActiveSection] = useState<number | "all">("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const show = (n: number) => activeSection === "all" || activeSection === n;
 
   const scope = useMemo(() =>
     WORKERS.filter(w => {
@@ -341,7 +351,7 @@ export default function WageEmploymentPage() {
   const CAREER_COLOR = ["#185FA5", "#1D9E75", "#7F77DD"];
   const QUALITY_COLORS: Record<string, string> = { "Employment Rate": C_TOTAL, "Decent Work": C_FEMALE, "6-Mo Placement": "#7F77DD" };
 
-  const isFiltered = year !== "all" || program !== "all" || ptype !== "all" || gender !== "all" || country !== "all" || cohort !== "all";
+  const activeCount = [year, program, ptype, gender, country, cohort].filter(v => v !== "all").length;
   const reset = () => { setYear("all"); setProgram("all"); setPtype("all"); setGender("all"); setCountry("all"); setCohort("all"); };
 
   return (
@@ -377,11 +387,69 @@ export default function WageEmploymentPage() {
             <StatsKpiCard label="Median Time to Job" num={kpis.medMonths} displayFmt={(n) => `${Math.round(n)} mo`} sub="to first job" Icon={Clock}
               tooltip="Median number of months from completing a program to first wage employment." />
           </div>
+
+          {/* Section pills (left) + compact filters dropdown (right) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {[{ n: 0, label: "All Sections" }, ...WE_SECTIONS].map(({ n, label }) => {
+                const on = n === 0 ? activeSection === "all" : activeSection === n;
+                return (
+                  <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                    style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                      border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                      backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <button onClick={() => setFiltersOpen(o => !o)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                  border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
+                  backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
+                <SlidersHorizontal size={13} />
+                Filters
+                {activeCount > 0 && (
+                  <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_TOTAL, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
+                )}
+              </button>
+              {filtersOpen && (
+                <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                  <div style={{ backgroundColor: BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {activeCount > 0 && (
+                        <button onClick={reset} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                      )}
+                      <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                    </div>
+                  </div>
+                  <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <FilterSelect label="Year" value={year} onChange={setYear}
+                      options={[{ value: "all" as const, label: "All Years" }, ...YEARS.map(y => ({ value: y, label: String(y) }))]} />
+                    <FilterSelect label="Program" value={program} onChange={setProgram}
+                      options={[{ value: "all", label: "All Programs" }, ...PROGRAM_NAMES.map(p => ({ value: p, label: p }))]} />
+                    <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
+                      options={[{ value: "all" as const, label: "All Types" }, { value: "Alumni" as const, label: "Alumni" }, { value: "Student" as const, label: "Student" }]} />
+                    <FilterSelect label="Gender" value={gender} onChange={setGender}
+                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                    <FilterSelect label="Country" value={country} onChange={setCountry}
+                      options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
+                    <FilterSelect label="Graduation Cohort" value={cohort} onChange={setCohort}
+                      options={[{ value: "all" as const, label: "All Cohorts" }, ...COHORTS.map(c => ({ value: c, label: String(c) }))]} />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
         {/* ════ SECTION 2 — WORKFORCE PROFILE ════ */}
+        {show(1) && (
         <section className="space-y-4">
-          <SectionHeader n={1} title="Workforce Profile" blurb="Who is employed?" />
+          <SectionHeader title="Workforce Profile" blurb="Who is employed?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 16 }} className="we-two">
             <style>{`@media (max-width: 720px){ .we-two{ grid-template-columns: 1fr !important; } }`}</style>
             <Panel title="Gender Distribution" subtitle="Female · Male · Other"
@@ -423,9 +491,12 @@ export default function WageEmploymentPage() {
           </div>
         </section>
 
+        )}
+
         {/* ════ SECTION 3 — EMPLOYMENT TRENDS ════ */}
+        {show(2) && (
         <section className="space-y-4">
-          <SectionHeader n={2} title="Employment Trends & Sectors" blurb="How is wage employment growing, and where?" />
+          <SectionHeader title="Employment Trends & Sectors" blurb="How is wage employment growing, and where?" />
           <Panel title="Yearly Wage Jobs Trend" subtitle="Total vs female, by year"
             info="Wage jobs recorded each year; total is solid, female dashed.">
             <ResponsiveContainer width="100%" height={250}>
@@ -516,9 +587,12 @@ export default function WageEmploymentPage() {
           </div>
         </section>
 
+        )}
+
         {/* ════ SECTION 5 — PROGRAM OUTCOMES ════ */}
+        {show(3) && (
         <section className="space-y-4">
-          <SectionHeader n={3} title="Program Outcomes" blurb="Which programs lead to the strongest employment?" />
+          <SectionHeader title="Program Outcomes" blurb="Which programs lead to the strongest employment?" />
           <Panel title="Employment Rate by Program" subtitle="Share employed, ranked"
             info="Employment rate for each academic program, sorted highest to lowest.">
             <ResponsiveContainer width="100%" height={Math.max(240, programOutcomes.count * 44)}>
@@ -566,9 +640,12 @@ export default function WageEmploymentPage() {
           </div>
         </section>
 
+        )}
+
         {/* ════ SECTION 6 — QUALITY & IMPACT ════ */}
+        {show(4) && (
         <section className="space-y-4">
-          <SectionHeader n={4} title="Employment Quality & Impact" blurb="Is the work dignified, and is it improving lives?" />
+          <SectionHeader title="Employment Quality & Impact" blurb="Is the work dignified, and is it improving lives?" />
           <Panel title="Decent Work Indicators" subtitle="Share of participants reporting each, %"
             info="Share of working participants reporting each decent-work indicator, on a fixed 0–100% scale.">
             <ResponsiveContainer width="100%" height={250}>
@@ -638,6 +715,7 @@ export default function WageEmploymentPage() {
             </Panel>
           </div>
         </section>
+        )}
 
         <FeaturedImpactStory footer />
       </div>

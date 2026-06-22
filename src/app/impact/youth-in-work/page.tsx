@@ -245,6 +245,7 @@ export default function YouthInWorkPage() {
   const [cohort, setCohort] = useState<"all" | number>("all");
   const [pathway, setPathway] = useState<"all" | Pathway>("all");
   const [activeSection, setActiveSection] = useState<number | "all">("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const show = (n: number) => activeSection === "all" || activeSection === n;
 
   const scope = useMemo(() =>
@@ -416,7 +417,7 @@ export default function YouthInWorkPage() {
     return { empType, indicators, dignified, dignifiedTotal: working.length, beforeAfter, sectors, employers };
   }, [scope]);
 
-  const isFiltered = program !== "all" || ptype !== "all" || gender !== "all" || country !== "all" || cohort !== "all" || pathway !== "all";
+  const activeCount = [program, ptype, gender, country, cohort, pathway].filter(v => v !== "all").length;
   const reset = () => { setProgram("all"); setPtype("all"); setGender("all"); setCountry("all"); setCohort("all"); setPathway("all"); };
 
   return (
@@ -455,49 +456,61 @@ export default function YouthInWorkPage() {
               tooltip="Share of youth currently based in Africa." />
           </div>
 
-          {/* Filter bar */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: BAND, padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <SlidersHorizontal size={13} color="white" />
-                <p style={{ fontSize: 12, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
-              </div>
-              {isFiltered && (
-                <button onClick={reset}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "4px 9px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>
-                  <X size={10} /> Reset
-                </button>
+          {/* Section pills (left) + compact filters dropdown (right) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {[{ n: 0, label: "All Sections" }, ...YIW_SECTIONS].map(({ n, label }) => {
+                const on = n === 0 ? activeSection === "all" : activeSection === n;
+                return (
+                  <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                    style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                      border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                      backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <button onClick={() => setFiltersOpen(o => !o)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                  border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
+                  backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
+                <SlidersHorizontal size={13} />
+                Filters
+                {activeCount > 0 && (
+                  <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_BLUE, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
+                )}
+              </button>
+              {filtersOpen && (
+                <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                  <div style={{ backgroundColor: BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {activeCount > 0 && (
+                        <button onClick={reset} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                      )}
+                      <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                    </div>
+                  </div>
+                  <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <FilterSelect label="Program" value={program} onChange={setProgram}
+                      options={[{ value: "all" as const, label: "All Programs" }, ...PROGRAMS.map(p => ({ value: p, label: p }))]} />
+                    <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
+                      options={[{ value: "all" as const, label: "All Types" }, ...PARTICIPANT_TYPES.map(p => ({ value: p, label: p }))]} />
+                    <FilterSelect label="Gender" value={gender} onChange={setGender}
+                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                    <FilterSelect label="Country" value={country} onChange={setCountry}
+                      options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
+                    <FilterSelect label="Cohort" value={cohort} onChange={setCohort}
+                      options={[{ value: "all" as const, label: "All Cohorts" }, ...COHORTS.map(c => ({ value: c, label: String(c) }))]} />
+                    <FilterSelect label="Employment Status" value={pathway} onChange={setPathway}
+                      options={[{ value: "all" as const, label: "All Pathways" }, ...PATHWAYS.map(p => ({ value: p, label: p }))]} />
+                  </div>
+                </div>
               )}
             </div>
-            <div style={{ padding: "14px 16px", display: "flex", flexWrap: "wrap", gap: 14 }}>
-              <FilterSelect label="Program" value={program} onChange={setProgram}
-                options={[{ value: "all" as const, label: "All Programs" }, ...PROGRAMS.map(p => ({ value: p, label: p }))]} />
-              <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
-                options={[{ value: "all" as const, label: "All Types" }, ...PARTICIPANT_TYPES.map(p => ({ value: p, label: p }))]} />
-              <FilterSelect label="Gender" value={gender} onChange={setGender}
-                options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
-              <FilterSelect label="Country" value={country} onChange={setCountry}
-                options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
-              <FilterSelect label="Cohort" value={cohort} onChange={setCohort}
-                options={[{ value: "all" as const, label: "All Cohorts" }, ...COHORTS.map(c => ({ value: c, label: String(c) }))]} />
-              <FilterSelect label="Employment Status" value={pathway} onChange={setPathway}
-                options={[{ value: "all" as const, label: "All Pathways" }, ...PATHWAYS.map(p => ({ value: p, label: p }))]} />
-            </div>
-          </div>
-
-          {/* Section filter */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-            {[{ n: 0, label: "All Sections" }, ...YIW_SECTIONS].map(({ n, label }) => {
-              const on = n === 0 ? activeSection === "all" : activeSection === n;
-              return (
-                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                    border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
-                    backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
-                  {label}
-                </button>
-              );
-            })}
           </div>
         </section>
 

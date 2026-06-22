@@ -128,16 +128,16 @@ function FilterSelect<T extends string | number>({ label, value, onChange, optio
   );
 }
 
-/* small inline KPI used inside demographic sections */
+/* small inline KPI used inside demographic sections — white card, blue border */
 function MiniKpi({ Icon, label, value }: { Icon: typeof Users; label: string; value: string }) {
   return (
-    <div style={{ backgroundColor: NAVY, borderRadius: 9, padding: "12px 14px", display: "flex", alignItems: "center", gap: 11 }}>
-      <span style={{ width: 34, height: 34, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.1)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={17} color="#B5D4F4" />
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_FEMALE}`, padding: "13px 15px", display: "flex", alignItems: "center", gap: 11 }}>
+      <span style={{ width: 36, height: 36, borderRadius: 9, backgroundColor: `${C_FEMALE}1A`, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={18} color={C_FEMALE} />
       </span>
       <div style={{ minWidth: 0 }}>
-        <p style={{ fontSize: 20, fontWeight: 800, color: "white", lineHeight: 1 }}>{value}</p>
-        <p style={{ fontSize: 10, color: "#B5D4F4", marginTop: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
+        <p style={{ fontSize: 21, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
+        <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
       </div>
     </div>
   );
@@ -160,6 +160,7 @@ export default function OutreachPage() {
   const [year, setYear] = useState<"all" | number>("all");
   const [intervention, setIntervention] = useState<string>("all");
   const [activeSection, setActiveSection] = useState<number | "all">("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const show = (n: number) => activeSection === "all" || activeSection === n;
 
   const scope = useMemo(() =>
@@ -273,36 +274,47 @@ export default function OutreachPage() {
     }).filter(d => (d.total as number) > 0).sort((a, b) => (b.total as number) - (a.total as number)),
   [scope]);
 
-  const isFiltered = program !== "All" || institution !== "all" || population !== "all" || year !== "all" || intervention !== "all";
+  const activeCount = [program !== "All", institution !== "all", population !== "all", year !== "all", intervention !== "all"].filter(Boolean).length;
   const reset = () => { setProgram("All"); setInstitution("all"); setPopulation("all"); setYear("all"); setIntervention("all"); };
 
-  /* filter bar rendered beneath each section header (shared state) */
+  /* compact filters dropdown (button + popover), placed in the section-pills row */
   const renderFilters = () => (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-      <div style={{ backgroundColor: BAND, padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <SlidersHorizontal size={13} color="white" />
-          <p style={{ fontSize: 12, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
-        </div>
-        {isFiltered && (
-          <button onClick={reset}
-            style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "4px 9px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>
-            <X size={10} /> Reset
-          </button>
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <button onClick={() => setFiltersOpen(o => !o)}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+          border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
+          backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
+        <SlidersHorizontal size={13} />
+        Filters
+        {activeCount > 0 && (
+          <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_FEMALE, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
         )}
-      </div>
-      <div style={{ padding: "14px 16px", display: "flex", flexWrap: "wrap", gap: 14 }}>
-        <FilterSelect label="Program" value={program} onChange={setProgram}
-          options={[{ value: "All", label: "All Programs" }, ...PILLARS.map(p => ({ value: p, label: p }))]} />
-        <FilterSelect label="Institution" value={institution} onChange={setInstitution}
-          options={[{ value: "all", label: "All Institutions" }, ...INSTITUTIONS.map(c => ({ value: c, label: c }))]} />
-        <FilterSelect label="Student Population" value={population} onChange={setPopulation}
-          options={[{ value: "all", label: "All Students" }, { value: "mission", label: "Mission Students" }, { value: "non", label: "Non-mission" }]} />
-        <FilterSelect label="Year" value={year} onChange={setYear}
-          options={[{ value: "all", label: "All Years" }, ...TREND_YEARS.map(y => ({ value: y, label: String(y) }))]} />
-        <FilterSelect label="Intervention" value={intervention} onChange={setIntervention}
-          options={[{ value: "all", label: "All Interventions" }, ...INTERVENTIONS.map(i => ({ value: i, label: i }))]} />
-      </div>
+      </button>
+      {filtersOpen && (
+        <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+          <div style={{ backgroundColor: BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {activeCount > 0 && (
+                <button onClick={reset} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+              )}
+              <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+            </div>
+          </div>
+          <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <FilterSelect label="Program" value={program} onChange={setProgram}
+              options={[{ value: "All", label: "All Programs" }, ...PILLARS.map(p => ({ value: p, label: p }))]} />
+            <FilterSelect label="Institution" value={institution} onChange={setInstitution}
+              options={[{ value: "all", label: "All Institutions" }, ...INSTITUTIONS.map(c => ({ value: c, label: c }))]} />
+            <FilterSelect label="Student Population" value={population} onChange={setPopulation}
+              options={[{ value: "all", label: "All Students" }, { value: "mission", label: "Mission Students" }, { value: "non", label: "Non-mission" }]} />
+            <FilterSelect label="Year" value={year} onChange={setYear}
+              options={[{ value: "all", label: "All Years" }, ...TREND_YEARS.map(y => ({ value: y, label: String(y) }))]} />
+            <FilterSelect label="Intervention" value={intervention} onChange={setIntervention}
+              options={[{ value: "all", label: "All Interventions" }, ...INTERVENTIONS.map(i => ({ value: i, label: i }))]} />
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -340,19 +352,22 @@ export default function OutreachPage() {
               tooltip="Participants who completed their outreach engagement as a share of those in scope." />
           </div>
 
-          {/* Section filter */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-            {[{ n: 0, label: "All Sections" }, ...OA_SECTIONS].map(({ n, label }) => {
-              const on = n === 0 ? activeSection === "all" : activeSection === n;
-              return (
-                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                    border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
-                    backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
-                  {label}
-                </button>
-              );
-            })}
+          {/* Section pills (left) + compact filters dropdown (right) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {[{ n: 0, label: "All Sections" }, ...OA_SECTIONS].map(({ n, label }) => {
+                const on = n === 0 ? activeSection === "all" : activeSection === n;
+                return (
+                  <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                    style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                      border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                      backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            {renderFilters()}
           </div>
         </section>
 
@@ -360,7 +375,6 @@ export default function OutreachPage() {
         {show(1) && (
         <section className="space-y-4">
           <SectionHeader title="Reach & Participation" blurb="How many people did we reach, and where did participation come from?" />
-          {renderFilters()}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Participants by Program" subtitle="HEMP · HENT · HECO, split by gender">
               <ResponsiveContainer width="100%" height={250}>
@@ -422,7 +436,6 @@ export default function OutreachPage() {
         {show(2) && (
         <section className="space-y-4">
           <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
-          {renderFilters()}
           <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="oa-grid">
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary">
               <div style={{ position: "relative" }}>
@@ -474,7 +487,6 @@ export default function OutreachPage() {
         {show(3) && (
         <section className="space-y-4">
           <SectionHeader title="Student Population Profile" blurb="The wider student body outreach draws from." />
-          {renderFilters()}
           <Panel title="Population Summary" subtitle="Total enrolment and inclusion by student population">
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
@@ -511,7 +523,6 @@ export default function OutreachPage() {
         {show(4) && (
         <section className="space-y-4">
           <SectionHeader title="Engagement Outcomes" blurb="What happened after people participated." />
-          {renderFilters()}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Engagement Status by Intervention" subtitle="Completed · Active · In-progress · Dropped">
               <ResponsiveContainer width="100%" height={250}>
