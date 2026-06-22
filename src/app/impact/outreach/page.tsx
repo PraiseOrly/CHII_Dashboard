@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 import {
-  Users, Building2, GraduationCap,
+  Users, Building2, GraduationCap, Info,
   SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility,
 } from "lucide-react";
 import {
@@ -118,13 +118,27 @@ function downloadChart(container: HTMLElement, name: string) {
   img.src = url;
 }
 
-function Panel({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+function Panel({ title, subtitle, info, children }: { title: string; subtitle: string; info?: string; children: React.ReactNode }) {
+  const [tip, setTip] = useState(false);
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
       <div style={{ backgroundColor: BAND, padding: "10px 18px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: TICK, flexShrink: 0 }} />
         <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+            {info && (
+              <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
+                onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+                <Info size={11} color="rgba(181,212,244,0.85)" />
+                {tip && (
+                  <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#021D38", color: "white", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                    {info}
+                  </span>
+                )}
+              </span>
+            )}
+          </div>
           <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 1 }}>{subtitle}</p>
         </div>
       </div>
@@ -270,8 +284,9 @@ export default function OutreachPage() {
   [scope]);
 
   // Participation by intervention, coloured by program
+  const EXCLUDED_INTERVENTIONS = ["Community Outreach", "STEM Clubs"];
   const byIntervention = useMemo(() =>
-    INTERVENTIONS.map(name => ({
+    INTERVENTIONS.filter(name => !EXCLUDED_INTERVENTIONS.includes(name)).map(name => ({
       name, value: scope.filter(s => s.intervention === name).length, pillar: PILLAR_OF[name],
     })).filter(d => d.value > 0).sort((a, b) => b.value - a.value),
   [scope]);
@@ -451,7 +466,8 @@ export default function OutreachPage() {
         <section className="space-y-4">
           <SectionHeader title="Reach & Participation" blurb="How many people did we reach, and where did participation come from?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Participants by Program" subtitle="HEMP · HENT · HECO, split by gender">
+            <Panel title="Participants by Program" subtitle="HEMP · HENT · HECO, split by gender"
+              info="Participant counts per program, split by gender (Female / Male).">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={byProgram} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                   <CartesianGrid vertical={false} stroke="rgba(0,33,71,0.08)" />
@@ -467,7 +483,8 @@ export default function OutreachPage() {
               </ResponsiveContainer>
             </Panel>
 
-            <Panel title="Participation by Intervention" subtitle="Reach per outreach program, coloured by pillar">
+            <Panel title="Participation by Intervention" subtitle="Reach per outreach program, coloured by pillar"
+              info="Reach per outreach intervention, coloured by the program (pillar) it belongs to.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={byIntervention} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
                   <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
@@ -490,7 +507,8 @@ export default function OutreachPage() {
             </Panel>
           </div>
 
-          <Panel title="Participation Trend" subtitle="Annual (engaged that year) vs cumulative (total reached by year), 2022–2026">
+          <Panel title="Participation Trend" subtitle="Annual (engaged that year) vs cumulative (total reached by year), 2022–2026"
+            info="Annual participants (engaged that year) versus cumulative reach (everyone reached up to that year).">
             <ResponsiveContainer width="100%" height={230}>
               <LineChart data={trend} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
@@ -512,7 +530,8 @@ export default function OutreachPage() {
         <section className="space-y-4">
           <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.45fr) minmax(0, 0.55fr)", gap: 16, alignItems: "stretch" }} className="oa-grid">
-            <Panel title="Gender Distribution" subtitle="Female · Male">
+            <Panel title="Gender Distribution" subtitle="Female · Male"
+              info="Share of participants by gender.">
               <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={360} legendPercent />
             </Panel>
 
@@ -524,7 +543,8 @@ export default function OutreachPage() {
                 <MiniKpi Icon={BookOpen} label="Mission Students" value={`${inclusion.mission}%`} />
               </div>
 
-              <Panel title="Inclusion by Program" subtitle="Share of each group within HEMP · HENT · HECO">
+              <Panel title="Inclusion by Program" subtitle="Share of each group within HEMP · HENT · HECO"
+                info="Share of each priority group within HEMP, HENT and HECO.">
                 <ResponsiveContainer width="100%" height={330}>
                   <BarChart layout="vertical" data={inclusionByProgram} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barCategoryGap="26%">
                     <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
@@ -549,7 +569,8 @@ export default function OutreachPage() {
         <section className="space-y-4">
           <SectionHeader title="Student Population Profile" blurb="The wider student body outreach draws from." />
 
-          <Panel title="Population Summary" subtitle="Total enrolment by student population">
+          <Panel title="Population Summary" subtitle="Total enrolment by student population"
+            info="Total enrolment and female count by student population.">
             <ResponsiveContainer width="100%" height={210}>
               <BarChart data={POP_SUMMARY} margin={{ top: 18, right: 10, bottom: 0, left: -8 }} barGap={6} barCategoryGap="34%">
                 <CartesianGrid vertical={false} stroke="rgba(0,33,71,0.08)" />
@@ -569,7 +590,8 @@ export default function OutreachPage() {
           </Panel>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Population by Program — Graduation Status" subtitle="Graduated vs current students per programme">
+            <Panel title="Population by Program — Graduation Status" subtitle="Graduated vs current students per programme"
+              info="Students per academic programme, split into graduated and current.">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart layout="vertical" data={POP_BY_PROGRAM} margin={{ top: 4, right: 28, bottom: 0, left: 8 }} barCategoryGap="26%">
                   <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
@@ -583,7 +605,8 @@ export default function OutreachPage() {
               </ResponsiveContainer>
             </Panel>
 
-            <Panel title="Population by Program — Gender Split" subtitle="Female vs male per programme">
+            <Panel title="Population by Program — Gender Split" subtitle="Female vs male per programme"
+              info="Female vs male students per academic programme.">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart layout="vertical" data={POP_GENDER_BY_PROGRAM} margin={{ top: 4, right: 28, bottom: 0, left: 8 }} barCategoryGap="26%">
                   <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
@@ -606,7 +629,8 @@ export default function OutreachPage() {
         <section className="space-y-4">
           <SectionHeader title="Engagement Outcomes" blurb="What happened after people participated." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Engagement Status by Intervention" subtitle="Completed · Active · In-progress · Dropped">
+            <Panel title="Engagement Status by Intervention" subtitle="Completed · Active · In-progress · Dropped"
+              info="Completed, active, in-progress and dropped engagements per intervention.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={byStatus} margin={{ top: 4, right: 12, bottom: 0, left: 8 }}>
                   <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
@@ -623,7 +647,8 @@ export default function OutreachPage() {
               </ResponsiveContainer>
             </Panel>
 
-            <Panel title="Completion Rate by Program" subtitle="Completed engagements as a share of each pillar">
+            <Panel title="Completion Rate by Program" subtitle="Completed engagements as a share of each pillar"
+              info="Overall and female completion rate for each program.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={completionByProgram} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barGap={6} barCategoryGap="34%">
                   <CartesianGrid vertical={false} stroke="rgba(0,33,71,0.08)" />
@@ -640,7 +665,8 @@ export default function OutreachPage() {
             </Panel>
           </div>
 
-          <Panel title="Intervention by Institution" subtitle="ALU · ALX · ALCHE · Other">
+          <Panel title="Intervention by Institution" subtitle="ALU · ALX · ALCHE · Other"
+            info="Interventions split across partner institutions.">
             <ResponsiveContainer width="100%" height={260}>
               <BarChart layout="vertical" data={byInstitution} margin={{ top: 4, right: 12, bottom: 0, left: 8 }}>
                 <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />

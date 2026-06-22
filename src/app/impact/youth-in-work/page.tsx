@@ -165,9 +165,10 @@ function WhiteKpi({ Icon, label, value, tooltip }: {
 }
 
 /* light section KPI strip card */
-function MiniKpi({ Icon, label, value }: { Icon: React.ComponentType<any>; label: string; value: string }) {
+function MiniKpi({ Icon, label, value, center }: { Icon: React.ComponentType<any>; label: string; value: string; center?: boolean }) {
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_BLUE}`, padding: "13px 15px", display: "flex", alignItems: "center", gap: 11 }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_BLUE}`, padding: "13px 15px", display: "flex",
+      flexDirection: center ? "column" : "row", alignItems: "center", justifyContent: "center", gap: center ? 6 : 11, textAlign: center ? "center" : "left" }}>
       <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         <Icon size={20} color={C_BLUE} />
       </span>
@@ -194,6 +195,23 @@ function ChartTip({ active, payload, label, pct }: any) {
   );
 }
 const PctTip = (props: any) => <ChartTip {...props} pct />;
+
+/* tooltip for single-series coloured bars: header + coloured swatch + bar name */
+function NamedBarTip({ active, payload, header, colorMap }: any) {
+  if (!active || !payload?.length) return null;
+  const name = payload[0]?.payload?.name;
+  const value = payload[0]?.value;
+  const color = (colorMap && colorMap[name]) || payload[0]?.color || payload[0]?.fill || "#9CA3AF";
+  return (
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      <p style={{ fontWeight: 700, color: NAVY, marginBottom: 4 }}>{header}</p>
+      <p style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5 }}>
+        <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: color, display: "inline-block" }} />
+        {name}: <b style={{ color: NAVY }}>{fmt(value)}</b>
+      </p>
+    </div>
+  );
+}
 
 function FilterSelect<T extends string | number>({ label, value, onChange, options }: {
   label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
@@ -538,7 +556,7 @@ export default function YouthInWorkPage() {
         {show(1) && (
         <section className="space-y-4">
           <SectionHeader title="Work Pathways" blurb="How are participants progressing into work?" />
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(320px, 440px) minmax(0, 1fr)", gap: 16, alignItems: "stretch" }} className="yiw-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.4fr) minmax(0, 0.6fr)", gap: 16, alignItems: "stretch" }} className="yiw-grid">
             <Panel title="Work Pathway Distribution" subtitle="Where are our youth today?"
               info="The mix of pathways youth follow: wage employment, internships, ventures, further education, and more.">
               <Donut data={pathwayDist} colors={PATHWAY_COLOR} total={kpis.total} totalLabel="Youth" height={300} legendPercent />
@@ -570,7 +588,9 @@ export default function YouthInWorkPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {(["Employment", "Internships", "Ventures"] as const).map((k, i) => (
-                  <Bar key={k} dataKey={k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={70} radius={i === 2 ? [4, 4, 0, 0] : undefined} />
+                  <Bar key={k} dataKey={k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={70} radius={i === 2 ? [4, 4, 0, 0] : undefined}>
+                    <LabelList dataKey={k} position="center" fontSize={9.5} fill="white" fontWeight={700} />
+                  </Bar>
                 ))}
               </BarChart>
             </ResponsiveContainer>
@@ -600,10 +620,10 @@ export default function YouthInWorkPage() {
         <section className="space-y-4">
           <SectionHeader title="Jobs Created" blurb="How many work opportunities are being created across the ecosystem, and how is it trending?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
-            <MiniKpi Icon={Briefcase} label="Primary Jobs" value={fmt(jobs.primary)} />
-            <MiniKpi Icon={Layers} label="Secondary Jobs" value={fmt(jobs.secondary)} />
-            <MiniKpi Icon={Hammer} label="Jobs by Ventures" value={fmt(jobs.jobsCreated)} />
-            <MiniKpi Icon={Users} label="Youth Employed by Ventures" value={fmt(jobs.youthEmployed)} />
+            <MiniKpi center Icon={Briefcase} label="Primary Jobs" value={fmt(jobs.primary)} />
+            <MiniKpi center Icon={Layers} label="Secondary Jobs" value={fmt(jobs.secondary)} />
+            <MiniKpi center Icon={Hammer} label="Jobs by Ventures" value={fmt(jobs.jobsCreated)} />
+            <MiniKpi center Icon={Users} label="Youth Employed by Ventures" value={fmt(jobs.youthEmployed)} />
           </div>
 
           {/* Primary & secondary jobs + job categories */}
@@ -633,7 +653,7 @@ export default function YouthInWorkPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Tooltip content={<NamedBarTip header="Jobs" colorMap={JOBCAT_COLOR} />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Bar dataKey="value" name="Youth" barSize={56} radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="value" position="top" fontSize={11} fill={NAVY} fontWeight={700} />
                   {jobs.jobCategories.map(d => <Cell key={d.name} fill={JOBCAT_COLOR[d.name]} />)}
@@ -767,7 +787,11 @@ export default function YouthInWorkPage() {
                   <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  {GENDER_2.map(g => <Bar key={g} dataKey={g} fill={GENDER_COLOR[g]} radius={[3, 3, 0, 0]} barSize={20} />)}
+                  {GENDER_2.map(g => (
+                    <Bar key={g} dataKey={g} fill={GENDER_COLOR[g]} radius={[3, 3, 0, 0]} barSize={20}>
+                      <LabelList dataKey={g} position="top" fontSize={9} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
+                    </Bar>
+                  ))}
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
@@ -841,7 +865,9 @@ export default function YouthInWorkPage() {
                 <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {([["Female", C_BLUE], ["Refugee / IDP", C_AMBER], ["PwD", C_VIOLET]] as const).map(([k, c]) => (
-                  <Bar key={k} dataKey={k} fill={c} radius={[3, 3, 0, 0]} barSize={24} />
+                  <Bar key={k} dataKey={k} fill={c} radius={[3, 3, 0, 0]} barSize={24}>
+                    <LabelList dataKey={k} position="top" fontSize={9} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
+                  </Bar>
                 ))}
               </BarChart>
             </ResponsiveContainer>
@@ -899,10 +925,10 @@ export default function YouthInWorkPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Employment Sector" subtitle="Where working participants are placed"
               info="Distribution of primary jobs across sectors, sorted from most to least.">
-              <ResponsiveContainer width="100%" height={Math.max(220, quality.sectors.length * 30)}>
+              <ResponsiveContainer width="100%" height={Math.max(260, quality.sectors.length * 30)}>
                 <BarChart layout="vertical" data={quality.sectors} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={110} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "#374151" }} width={200} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Bar dataKey="value" name="Youth" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />

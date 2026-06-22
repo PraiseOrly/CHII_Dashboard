@@ -82,8 +82,10 @@ export const COUNTRIES = [
 const AFRICA_COUNTRIES = new Set(COUNTRIES.filter(c => c !== "Diaspora"));
 
 export const SECTORS = [
-  "Technology", "Healthcare", "Education", "Finance",
-  "Agriculture", "Manufacturing", "Public / NGO", "Other",
+  "Digital Health", "MedTech", "Biotech & Pharma", "Mental Health & Wellness",
+  "Fitness & Preventive Health", "Healthcare Infrastructure & Operations",
+  "Personalized & Precision Medicine", "Public Health & Accessibility",
+  "Maternal Health", "Other",
 ];
 
 export const YEARS = [2020, 2021, 2022, 2023, 2024, 2025];
@@ -184,8 +186,10 @@ function buildYouth(n: number): Youth[] {
       permanent: employed ? r() < 0.64 : false,
       leadership: primaryJob && r() < 0.22,
       sector: primaryJob ? pick<string>(r, [
-        ["Technology", 0.26], ["Healthcare", 0.16], ["Education", 0.12], ["Finance", 0.12],
-        ["Agriculture", 0.1], ["Manufacturing", 0.08], ["Public / NGO", 0.1], ["Other", 0.06],
+        ["Digital Health", 0.2], ["MedTech", 0.14], ["Biotech & Pharma", 0.1], ["Mental Health & Wellness", 0.1],
+        ["Fitness & Preventive Health", 0.08], ["Healthcare Infrastructure & Operations", 0.1],
+        ["Personalized & Precision Medicine", 0.07], ["Public Health & Accessibility", 0.09],
+        ["Maternal Health", 0.07], ["Other", 0.05],
       ]) : "Other",
       primaryJob,
       secondaryJob,
