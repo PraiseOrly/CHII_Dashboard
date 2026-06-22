@@ -359,7 +359,7 @@ export default function OutreachPage() {
         {/* ════ SECTION 2 — REACH & PARTICIPATION ════ */}
         {show(1) && (
         <section className="space-y-4">
-          <SectionHeader n={1} title="Reach & Participation" blurb="How many people did we reach, and where did participation come from?" />
+          <SectionHeader title="Reach & Participation" blurb="How many people did we reach, and where did participation come from?" />
           {renderFilters()}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Participants by Program" subtitle="HEMP · HENT · HECO, split by gender">
@@ -421,7 +421,7 @@ export default function OutreachPage() {
         {/* ════ SECTION 3 — WHO ARE WE REACHING ════ */}
         {show(2) && (
         <section className="space-y-4">
-          <SectionHeader n={2} title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
+          <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
           {renderFilters()}
           <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="oa-grid">
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary">
@@ -473,7 +473,7 @@ export default function OutreachPage() {
         {/* ════ SECTION 4 — STUDENT POPULATION PROFILE ════ */}
         {show(3) && (
         <section className="space-y-4">
-          <SectionHeader n={3} title="Student Population Profile" blurb="The wider student body outreach draws from." />
+          <SectionHeader title="Student Population Profile" blurb="The wider student body outreach draws from." />
           {renderFilters()}
           <Panel title="Population Summary" subtitle="Total enrolment and inclusion by student population">
             <div style={{ overflowX: "auto" }}>
@@ -510,7 +510,7 @@ export default function OutreachPage() {
         {/* ════ SECTION 5 — ENGAGEMENT OUTCOMES ════ */}
         {show(4) && (
         <section className="space-y-4">
-          <SectionHeader n={4} title="Engagement Outcomes" blurb="What happened after people participated." />
+          <SectionHeader title="Engagement Outcomes" blurb="What happened after people participated." />
           {renderFilters()}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Engagement Status by Intervention" subtitle="Completed · Active · In-progress · Dropped">

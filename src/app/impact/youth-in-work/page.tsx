@@ -52,10 +52,10 @@ const isVenture = (y: Youth) => VENTURE_PATHWAYS.includes(y.pathway);
 /* ════════════════════════════════════════════════════════
    Shared UI
 ═══════════════════════════════════════════════════════ */
-function SectionHeader({ n, title, blurb }: { n: number; title: string; blurb: string }) {
+function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 2 }}>
-      <span style={{ fontSize: 11, fontWeight: 800, color: "white", backgroundColor: NAVY, borderRadius: 999, width: 22, height: 22, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{n}</span>
+    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 2 }}>
+      <span style={{ width: 4, height: 16, borderRadius: 999, backgroundColor: TICK, flexShrink: 0, alignSelf: "center" }} />
       <div>
         <h2 style={{ fontSize: 14, fontWeight: 800, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
         <p style={{ fontSize: 11, color: "#6B7280", marginTop: 1 }}>{blurb}</p>
@@ -189,6 +189,16 @@ function CompareTable({ headers, rows }: { headers: string[]; rows: (string | nu
   );
 }
 
+const YIW_SECTIONS: { n: number; label: string }[] = [
+  { n: 1, label: "Work Pathways" },
+  { n: 2, label: "Employment by Program" },
+  { n: 3, label: "Jobs Created" },
+  { n: 4, label: "Cohort Comparison" },
+  { n: 5, label: "Inclusion" },
+  { n: 6, label: "Employment Quality" },
+  { n: 7, label: "Trends" },
+];
+
 /* ════════════════════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════════════════ */
@@ -198,6 +208,8 @@ export default function YouthInWorkPage() {
   const [country, setCountry] = useState<string>("all");
   const [year, setYear] = useState<"all" | number>("all");
   const [pathway, setPathway] = useState<"all" | Pathway>("all");
+  const [activeSection, setActiveSection] = useState<number | "all">("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
 
   const scope = useMemo(() =>
     YOUTH.filter(y => {
@@ -410,11 +422,27 @@ export default function YouthInWorkPage() {
             <WhiteKpi Icon={Shield} label="Refugee / IDP Primary" value={fmt(4200)} tooltip="Refugee or internally displaced youth holding a primary job." />
             <WhiteKpi Icon={Accessibility} label="PwD Primary" value={fmt(2100)} tooltip="Youth with disabilities holding a primary job." />
           </div>
+
+          {/* Section filter */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+            {[{ n: 0, label: "All Sections" }, ...YIW_SECTIONS].map(({ n, label }) => {
+              const on = n === 0 ? activeSection === "all" : activeSection === n;
+              return (
+                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                    border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                    backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </section>
 
         {/* ════ SECTION 2 — WORK PATHWAYS ════ */}
+        {show(1) && (
         <section className="space-y-4">
-          <SectionHeader n={1} title="Work Pathways" blurb="Where are our youth today?" />
+          <SectionHeader title="Work Pathways" blurb="Where are our youth today?" />
           <div style={{ display: "grid", gridTemplateColumns: "minmax(300px, 420px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="yiw-grid">
             <Panel title="Work Pathway Distribution" subtitle="How youth split across pathways"
               info="The mix of pathways youth follow: wage employment, internships, ventures, further education, and more.">
@@ -445,9 +473,12 @@ export default function YouthInWorkPage() {
           </div>
         </section>
 
+        )}
+
         {/* ════ SECTION 3 — EMPLOYMENT BY PROGRAM ════ */}
+        {show(2) && (
         <section className="space-y-4">
-          <SectionHeader n={2} title="Employment by Program" blurb="Which programs drive each outcome?" />
+          <SectionHeader title="Employment by Program" blurb="Which programs drive each outcome?" />
           <Panel title="Outcomes by Program" subtitle="Employment · Internships · Ventures across HEMP · HENT · HECO"
             info="Participant counts for each work outcome, grouped by program, so leadership can see which program contributes most.">
             <ResponsiveContainer width="100%" height={280}>
@@ -467,9 +498,12 @@ export default function YouthInWorkPage() {
           </Panel>
         </section>
 
+        )}
+
         {/* ════ SECTION 4 — JOBS CREATED THROUGH VENTURES ════ */}
+        {show(3) && (
         <section className="space-y-4">
-          <SectionHeader n={3} title="Jobs Created Through Ventures" blurb="The indirect impact: ventures creating opportunities for others." />
+          <SectionHeader title="Jobs Created Through Ventures" blurb="The indirect impact: ventures creating opportunities for others." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Jobs Created by Program" subtitle="Positions attributable to each program's ventures"
               info="Total jobs created by ventures, grouped by the founder's program.">
@@ -502,18 +536,24 @@ export default function YouthInWorkPage() {
           </div>
         </section>
 
+        )}
+
         {/* ════ SECTION 5 — COHORT COMPARISON ════ */}
+        {show(4) && (
         <section className="space-y-4">
-          <SectionHeader n={4} title="Cohort Comparison" blurb="How the populations CHII serves compare." />
+          <SectionHeader title="Cohort Comparison" blurb="How the populations CHII serves compare." />
           <Panel title="Students vs Alumni vs Scholars" subtitle="Shared metrics, three groups"
             info="Each metric shows the % within that group. Scholars overlap with students and alumni.">
             <CompareTable headers={cohortCompare.headers} rows={cohortCompare.rows} />
           </Panel>
         </section>
 
+        )}
+
         {/* ════ SECTION 6 — INCLUSION ════ */}
+        {show(5) && (
         <section className="space-y-4">
-          <SectionHeader n={5} title="Inclusion" blurb="Who is accessing work opportunities?" />
+          <SectionHeader title="Inclusion" blurb="Who is accessing work opportunities?" />
           <Panel title="Inclusion by Work Pathway" subtitle="Priority-group share within Employment · Internships · Ventures"
             info="Share of each priority group within each work pathway, on a fixed 0–100% scale.">
             <ResponsiveContainer width="100%" height={250}>
@@ -531,9 +571,12 @@ export default function YouthInWorkPage() {
           </Panel>
         </section>
 
+        )}
+
         {/* ════ SECTION 7 — EMPLOYMENT QUALITY ════ */}
+        {show(6) && (
         <section className="space-y-4">
-          <SectionHeader n={6} title="Employment Quality" blurb="Not just how many jobs — what kind of work." />
+          <SectionHeader title="Employment Quality" blurb="Not just how many jobs — what kind of work." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Primary vs Secondary Jobs" subtitle="Job multiplicity across the workforce"
               info="Primary jobs are someone's main role; secondary jobs are additional income streams held alongside.">
@@ -586,9 +629,12 @@ export default function YouthInWorkPage() {
           </Panel>
         </section>
 
+        )}
+
         {/* ════ SECTION 8 — TRENDS ════ */}
+        {show(7) && (
         <section className="space-y-4">
-          <SectionHeader n={7} title="Trends" blurb="Are CHII's workforce outcomes growing over time?" />
+          <SectionHeader title="Trends" blurb="Are CHII's workforce outcomes growing over time?" />
           <Panel title="Workforce Outcomes Over Time" subtitle="Employment · Internships · Ventures · Jobs Created"
             info="Annual trajectory of each outcome, by recorded year.">
             <ResponsiveContainer width="100%" height={300}>
@@ -606,6 +652,7 @@ export default function YouthInWorkPage() {
             </ResponsiveContainer>
           </Panel>
         </section>
+        )}
 
         <FeaturedImpactStory footer />
       </div>
