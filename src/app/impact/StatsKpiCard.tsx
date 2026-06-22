@@ -25,6 +25,7 @@ interface Props {
   fill?: string;
   lbl?: string;
   numColor?: string;
+  border?: string;
   Icon: ComponentType<any>;
   tooltip: string;
 }
@@ -37,6 +38,7 @@ export default function StatsKpiCard({
   fill = "#042C53",
   lbl = "#B5D4F4",
   numColor = "#FFFFFF",
+  border = "none",
   Icon,
   tooltip,
 }: Props) {
@@ -46,6 +48,7 @@ export default function StatsKpiCard({
   return (
     <div style={{
       backgroundColor: fill,
+      border,
       borderRadius: 10,
       padding: "14px 16px",
       textAlign: "center",
@@ -64,10 +67,10 @@ export default function StatsKpiCard({
         >
           <div style={{
             width: 11, height: 11, borderRadius: "50%",
-            backgroundColor: "rgba(255,255,255,0.18)",
-            border: "1px solid rgba(255,255,255,0.35)",
+            backgroundColor: `${lbl}2E`,
+            border: `1px solid ${lbl}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 7, fontWeight: 800, color: "rgba(255,255,255,0.75)",
+            fontSize: 7, fontWeight: 800, color: lbl,
             lineHeight: 1, userSelect: "none",
           }}>i</div>
 
