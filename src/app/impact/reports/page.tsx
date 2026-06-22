@@ -192,26 +192,14 @@ export default function ImpactReportsPage() {
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
 
-      {/* ── Banner ─────────────────────────────────────── */}
+      {/* ── Header ─────────────────────────────────────── */}
       <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.6), rgba(4,44,83,0.25))", zIndex: 1, pointerEvents: "none" }} />
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7" style={{ position: "relative", zIndex: 10 }}>
-          <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Impact reports</h1>
-          <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.8)", maxWidth: 560 }}>
-            Annual reports, key facts, and evaluations documenting CHII&apos;s impact across programmes.
-          </p>
-          <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
-
-          {/* meta pills */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
-            {HERO_META.map(m => <Pill key={m}>{m}</Pill>)}
-          </div>
-
-          {/* quick-download / quick-jump pills */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
-            <Pill glyph onClick={() => jumpTo("annual")}>Annual Reports</Pill>
-            <Pill glyph onClick={() => jumpTo("keyfacts")}>Key Facts</Pill>
-            <Pill glyph onClick={() => jumpTo("evaluations")}>Evaluations</Pill>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+          <div style={{ textAlign: "center" }}>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Impact reports</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Annual reports, key facts, and evaluations documenting CHII&apos;s impact across programmes</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>
         </div>
       </header>
