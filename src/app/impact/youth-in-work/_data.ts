@@ -21,6 +21,7 @@ export type Pathway =
   | "Other";
 
 export type EmploymentType = "Full-time" | "Part-time" | "Contract" | "None";
+export type EmployerType = "Startup" | "Corporate" | "Public Sector" | "NGO" | "Self-employed";
 
 export interface Youth {
   id: number;
@@ -34,13 +35,25 @@ export interface Youth {
   scholar: boolean;           // MCF scholar
   pathway: Pathway;
   year: number;               // year of latest recorded outcome
+  cohort: number;             // graduation cohort year
   employmentType: EmploymentType;
+  employerType: EmployerType;
+  decentWork: boolean;        // meets dignified-work criteria
   permanent: boolean;         // permanent vs contract (employed only)
   leadership: boolean;        // holds a leadership / management role
   sector: string;
   primaryJob: boolean;
   secondaryJob: boolean;
   jobsCreated: number;        // > 0 for founders (positions their venture created)
+}
+
+/* A named venture supported by CHII, and the jobs it created. */
+export interface Venture {
+  name: string;
+  program: Program;
+  employees: number;
+  studentEmployees: number;
+  alumniEmployees: number;
 }
 
 export const PROGRAMS: Program[] = ["HEMP", "HENT", "HECO"];
@@ -58,6 +71,9 @@ export const PATHWAYS: Pathway[] = [
 ];
 
 export const EMPLOYMENT_TYPES: EmploymentType[] = ["Full-time", "Part-time", "Contract"];
+export const EMPLOYER_TYPES: EmployerType[] = ["Startup", "Corporate", "Public Sector", "NGO", "Self-employed"];
+export const WORK_CATEGORIES = ["Full-time", "Part-time", "Contract", "Internship", "Self-employed", "Founder"];
+export const COHORTS = [2019, 2020, 2021, 2022, 2023, 2024];
 
 export const COUNTRIES = [
   "Rwanda", "Kenya", "Nigeria", "Ghana", "Uganda",
@@ -141,6 +157,14 @@ function buildYouth(n: number): Youth[] {
       ["Other Africa", 0.1], ["Diaspora", 0.08],
     ]);
 
+    const year = pick<number>(r, [[2020, 0.1], [2021, 0.13], [2022, 0.16], [2023, 0.19], [2024, 0.22], [2025, 0.2]]);
+
+    const employerType: EmployerType = isFounder
+      ? "Self-employed"
+      : pick<EmployerType>(r, [
+          ["Startup", 0.3], ["Corporate", 0.32], ["NGO", 0.18], ["Public Sector", 0.14], ["Self-employed", 0.06],
+        ]);
+
     out.push({
       id: i + 1,
       participantType,
@@ -152,8 +176,11 @@ function buildYouth(n: number): Youth[] {
       pwd: r() < 0.06,
       scholar,
       pathway,
-      year: pick<number>(r, [[2020, 0.1], [2021, 0.13], [2022, 0.16], [2023, 0.19], [2024, 0.22], [2025, 0.2]]),
+      year,
+      cohort: Math.max(2019, year - Math.floor(r() * 3)),
       employmentType,
+      employerType,
+      decentWork: primaryJob && r() < 0.72,
       permanent: employed ? r() < 0.64 : false,
       leadership: primaryJob && r() < 0.22,
       sector: primaryJob ? pick<string>(r, [
@@ -169,3 +196,22 @@ function buildYouth(n: number): Youth[] {
 }
 
 export const YOUTH: Youth[] = buildYouth(820);
+
+/* ── Named ventures supported by CHII (top job creators) ── */
+function buildVentures(): Venture[] {
+  const names: [string, Program][] = [
+    ["Kasha Health", "HEMP"], ["AgriLink", "HECO"], ["MediTrack", "HEMP"],
+    ["PaySmart", "HENT"], ["EduReach", "HECO"], ["SolarGrid", "HENT"],
+    ["CareConnect", "HEMP"], ["FarmFlow", "HECO"], ["TradeBridge", "HENT"],
+    ["ClinicOS", "HEMP"], ["LearnHub", "HECO"], ["FinPesa", "HENT"],
+  ];
+  const r = rng(91);
+  return names.map(([name, program]) => {
+    const employees = 6 + Math.floor(r() * 44);
+    const studentEmployees = Math.round(employees * (0.2 + r() * 0.2));
+    const alumniEmployees = Math.round(employees * (0.3 + r() * 0.2));
+    return { name, program, employees, studentEmployees, alumniEmployees };
+  }).sort((a, b) => b.employees - a.employees);
+}
+
+export const VENTURES: Venture[] = buildVentures();
