@@ -223,7 +223,7 @@ export default function EntrepreneurshipPage() {
     const funding = FUNDING_SOURCES.map(f => ({ name: f, value: scope.filter(x => x.fundingSource === f).length })).sort((a, b) => b.value - a.value);
     const formalCount = scope.filter(x => x.formal).length;
     const formal = [{ name: "Formally registered", value: formalCount }, { name: "Informal", value: total - formalCount }];
-    const genderData = GENDERS.map(g => ({ name: g, value: scope.filter(x => x.gender === g).length })).filter(d => d.value > 0);
+    const genderData = (["Female", "Male"] as Gender[]).map(g => ({ name: g, value: scope.filter(x => x.gender === g).length })).filter(d => d.value > 0);
     const perYear = YEARS.map(y => ({ name: `${y}`, value: scope.filter(x => x.yearLaunched === y).length }));
     const survival = [{ name: "Year 1", value: 100 }, { name: "Year 3", value: 71 }, { name: "Year 5", value: 48 }];
     return { pipeline, stageDist, statusData, statusTotal, funding, formal, genderData, perYear, survival };
@@ -258,9 +258,8 @@ export default function EntrepreneurshipPage() {
       { name: "Persons w/ disability", value: Math.round(totalJobs * 0.07) },
     ].sort((a, b) => b.value - a.value);
     const byGender = [
-      { name: "Male", value: Math.round(totalJobs * 0.52) },
-      { name: "Female", value: Math.round(totalJobs * 0.45) },
-      { name: "Other", value: Math.round(totalJobs * 0.03) },
+      { name: "Female", value: Math.round(totalJobs * 0.46) },
+      { name: "Male", value: Math.round(totalJobs * 0.54) },
     ];
     const byType = [
       { name: "Full-time", value: Math.round(totalJobs * 0.54) },
@@ -300,7 +299,7 @@ export default function EntrepreneurshipPage() {
 
   /* ── Section 4: founder profile ────────────────────── */
   const founders = useMemo(() => {
-    const genderData = GENDERS.map(g => ({ name: g, value: scope.filter(x => x.gender === g).length })).filter(d => d.value > 0);
+    const genderData = (["Female", "Male"] as Gender[]).map(g => ({ name: g, value: scope.filter(x => x.gender === g).length })).filter(d => d.value > 0);
     const scholar = { count: 208, femalePct: 52.9, gender: [{ name: "Female", value: 110 }, { name: "Male", value: 98 }] };
     const scholarSplit = [
       { name: "Scholar founders", value: scholar.count },
@@ -455,7 +454,7 @@ export default function EntrepreneurshipPage() {
                     <FilterSelect label="Year Launched" value={year} onChange={setYear}
                       options={[{ value: "all" as const, label: "All Years" }, ...YEARS.map(y => ({ value: y, label: String(y) }))]} />
                     <FilterSelect label="Founder Gender" value={gender} onChange={setGender}
-                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                      options={[{ value: "all" as const, label: "All Genders" }, ...(["Female", "Male"] as Gender[]).map(g => ({ value: g, label: g }))]} />
                     <FilterSelect label="Stage" value={stage} onChange={setStage}
                       options={[{ value: "all" as const, label: "All Stages" }, ...STAGES.map(s => ({ value: s, label: s }))]} />
                     <FilterSelect label="Status" value={status} onChange={setStatus}

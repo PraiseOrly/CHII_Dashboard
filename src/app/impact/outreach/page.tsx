@@ -35,9 +35,9 @@ const OA_YEARS = [2022, 2023, 2024, 2025, 2026];
 
 /* Student-population reference data (academic programmes) */
 const POP_SUMMARY = [
-  { name: "All Students", value: 6482 },
-  { name: "MCF Scholars", value: 1643 },
-  { name: "Fee-Paying", value: 4839 },
+  { name: "All Students", Total: 6482, Female: 3306 },
+  { name: "MCF Scholars", Total: 1643, Female: 1101 },
+  { name: "Fee-Paying", Total: 4839, Female: 2226 },
 ];
 const POP_BY_PROGRAM = [
   { name: "BSc Software Eng", Graduated: 820, "Not graduated": 540 },
@@ -304,9 +304,9 @@ export default function OutreachPage() {
   const inclusionByProgram = useMemo(() => {
     const metrics: { key: string; pick: (s: OutreachParticipant) => boolean }[] = [
       { key: "Female", pick: s => s.gender === "Female" },
+      { key: "Male", pick: s => s.gender === "Male" },
       { key: "Refugee / IDP", pick: s => s.refugee },
       { key: "PwD", pick: s => s.pwd },
-      { key: "Non-binary", pick: s => s.gender === "Non-binary" },
     ];
     return metrics.map(m => {
       const rec: Record<string, number | string> = { metric: m.key };
@@ -546,14 +546,17 @@ export default function OutreachPage() {
 
           <Panel title="Population Summary" subtitle="Total enrolment by student population">
             <ResponsiveContainer width="100%" height={210}>
-              <BarChart data={POP_SUMMARY} margin={{ top: 18, right: 10, bottom: 0, left: -8 }} barCategoryGap="42%">
+              <BarChart data={POP_SUMMARY} margin={{ top: 18, right: 10, bottom: 0, left: -8 }} barGap={6} barCategoryGap="34%">
                 <CartesianGrid vertical={false} stroke="rgba(0,33,71,0.08)" />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                <Bar dataKey="value" name="Students" barSize={56} radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="value" position="top" fontSize={11} fill={NAVY} fontWeight={700} />
-                  {POP_SUMMARY.map((d, i) => <Cell key={d.name} fill={["#0C447C", "#185FA5", "#1D9E75"][i]} />)}
+                <Legend wrapperStyle={{ fontSize: 10 }} />
+                <Bar dataKey="Total" name="Total" fill="#0C447C" barSize={40} radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="Total" position="top" fontSize={10.5} fill={NAVY} fontWeight={700} />
+                </Bar>
+                <Bar dataKey="Female" name="Female" fill="#185FA5" barSize={40} radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="Female" position="top" fontSize={10.5} fill={NAVY} fontWeight={700} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

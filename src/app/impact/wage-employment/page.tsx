@@ -222,7 +222,7 @@ export default function WageEmploymentPage() {
   }, [scope, total]);
 
   /* ── Section 2: workforce profile ──────────────────── */
-  const genderData = useMemo(() => GENDERS.map(g => ({ name: g, value: scope.filter(w => w.gender === g).length })).filter(d => d.value > 0), [scope]);
+  const genderData = useMemo(() => (["Female", "Male"] as Gender[]).map(g => ({ name: g, value: scope.filter(w => w.gender === g).length })).filter(d => d.value > 0), [scope]);
   const roleData = useMemo(() => ROLE_LEVELS.map(rl => ({ name: rl, value: scope.filter(w => w.roleLevel === rl).length })).sort((a, b) => b.value - a.value), [scope]);
   const empTypeData = useMemo(() => EMPLOYMENT_TYPES.map(e => ({ name: e, value: scope.filter(w => w.employmentType === e).length })).filter(d => d.value > 0), [scope]);
   // employer type cross-tabbed by working arrangement (single combined chart)
@@ -408,7 +408,7 @@ export default function WageEmploymentPage() {
                     <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
                       options={[{ value: "all" as const, label: "All Types" }, { value: "Alumni" as const, label: "Alumni" }, { value: "Student" as const, label: "Student" }]} />
                     <FilterSelect label="Gender" value={gender} onChange={setGender}
-                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                      options={[{ value: "all" as const, label: "All Genders" }, ...(["Female", "Male"] as Gender[]).map(g => ({ value: g, label: g }))]} />
                     <FilterSelect label="Country" value={country} onChange={setCountry}
                       options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
                     <FilterSelect label="Graduation Cohort" value={cohort} onChange={setCohort}

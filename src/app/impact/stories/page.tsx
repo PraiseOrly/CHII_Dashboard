@@ -183,7 +183,7 @@ export default function ImpactStoriesPage() {
                 <Dropdown label="Humanitarian status" value={humanitarian} options={HUMANITARIAN} onChange={setHumanitarian} />
                 <Dropdown label="Nationality" value={nationality} options={NATIONALITIES} onChange={setNationality} />
                 <Dropdown label="Disability status" value={disability} options={DISABILITY} onChange={setDisability} />
-                <Dropdown label="Gender" value={gender} options={GENDERS} onChange={setGender} />
+                <Dropdown label="Gender" value={gender} options={["Female", "Male"]} onChange={setGender} />
               </div>
 
               <label style={{ display: "block", marginTop: 12 }}>

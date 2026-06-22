@@ -233,7 +233,7 @@ export default function FurtherEducationPage() {
     const within = scope.filter(s => s.destination === "Within Africa").length;
     const countriesOfStudy = new Set(scope.map(s => s.countryOfStudy)).size;
 
-    const genderData = countBy(scope, "gender", GENDERS);
+    const genderData = countBy(scope, "gender", ["Female", "Male"]);
     const cohortRate = [
       { name: "All Talents", value: 7, pct: true },
       { name: "Scholars", value: 17, pct: true },
@@ -308,7 +308,7 @@ export default function FurtherEducationPage() {
           </div>
           <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <FilterSelect label="Gender" value={gender} onChange={setGender}
-              options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+              options={[{ value: "all" as const, label: "All Genders" }, ...(["Female", "Male"] as Gender[]).map(g => ({ value: g, label: g }))]} />
             <FilterSelect label="Cohort" value={scholar} onChange={setScholar}
               options={[{ value: "all" as const, label: "All Cohorts" }, { value: "scholar" as const, label: "Scholars" }, { value: "non" as const, label: "Non-scholar" }]} />
             <FilterSelect label="Qualification" value={qualification} onChange={setQualification}

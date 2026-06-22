@@ -29,6 +29,8 @@ const C_AMBER = "#E0A458";
 
 const PROGRAM_COLOR: Record<Program, string> = { HEMP: "#185FA5", HENT: "#0F6E56", HECO: "#BA7517" };
 const GENDER_COLOR: Record<Gender, string> = { Female: "#185FA5", Male: "#1D9E75", "Non-binary": "#7F77DD" };
+/* gender splits report Female / Male only */
+const GENDER_2: Gender[] = ["Female", "Male"];
 const PATHWAY_COLOR: Record<Pathway, string> = {
   "Wage Employment": "#185FA5", "Internship": "#3FA7E0", "Venture Founder": "#1D9E75",
   "Wage & Venture": "#7F77DD", "Further Education": "#E0A458", "Seeking Employment": "#D17A86", "Other": "#C5D2E0",
@@ -373,7 +375,7 @@ export default function YouthInWorkPage() {
       { name: "Ventures", rows: scope.filter(isVenture) },
     ].map(g => {
       const rec: Record<string, number | string> = { pathway: g.name };
-      GENDERS.forEach(gd => { rec[gd] = share(g.rows.filter(y => y.gender === gd).length, g.rows.length); });
+      GENDER_2.forEach(gd => { rec[gd] = share(g.rows.filter(y => y.gender === gd).length, g.rows.length); });
       return rec;
     });
     const africaSplit = [
@@ -382,8 +384,12 @@ export default function YouthInWorkPage() {
     ];
     const topCountries = COUNTRIES.map(c => {
       const rows = scope.filter(y => y.country === c);
-      return { name: c === "Diaspora" ? "Diaspora / Outside" : c, Total: rows.length, Female: rows.filter(y => y.gender === "Female").length };
-    }).filter(d => d.Total > 0).sort((a, b) => b.Total - a.Total);
+      return {
+        name: c === "Diaspora" ? "Diaspora / Outside" : c,
+        Female: rows.filter(y => y.gender === "Female").length,
+        Male: rows.filter(y => y.gender === "Male").length,
+      };
+    }).filter(d => d.Female + d.Male > 0).sort((a, b) => (b.Female + b.Male) - (a.Female + a.Male));
     // primary-job holders by priority group
     const primaryRows = scope.filter(y => y.primaryJob);
     const secondaryRows = scope.filter(y => y.secondaryJob);
@@ -514,7 +520,7 @@ export default function YouthInWorkPage() {
                     <FilterSelect label="Participant Type" value={ptype} onChange={setPtype}
                       options={[{ value: "all" as const, label: "All Types" }, ...PARTICIPANT_TYPES.map(p => ({ value: p, label: p }))]} />
                     <FilterSelect label="Gender" value={gender} onChange={setGender}
-                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDERS.map(g => ({ value: g, label: g }))]} />
+                      options={[{ value: "all" as const, label: "All Genders" }, ...GENDER_2.map(g => ({ value: g, label: g }))]} />
                     <FilterSelect label="Country" value={country} onChange={setCountry}
                       options={[{ value: "all", label: "All Countries" }, ...COUNTRIES.map(c => ({ value: c, label: c }))]} />
                     <FilterSelect label="Cohort" value={cohort} onChange={setCohort}
@@ -745,13 +751,14 @@ export default function YouthInWorkPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={140} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Employed" fill={C_BLUE} radius={[0, 4, 4, 0]} barSize={20}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Gender Across Work Pathways" subtitle="Female · Male · Non-binary within each pathway"
+            <Panel title="Gender Across Work Pathways" subtitle="Female · Male within each pathway"
               info="Gender composition within Employment, Internships, and Ventures (each on a 0–100% scale).">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={inclusion.genderByPathway} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barGap={4} barCategoryGap="30%">
@@ -760,7 +767,7 @@ export default function YouthInWorkPage() {
                   <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  {GENDERS.map(g => <Bar key={g} dataKey={g} fill={GENDER_COLOR[g]} radius={[3, 3, 0, 0]} barSize={20} />)}
+                  {GENDER_2.map(g => <Bar key={g} dataKey={g} fill={GENDER_COLOR[g]} radius={[3, 3, 0, 0]} barSize={20} />)}
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
@@ -774,6 +781,7 @@ export default function YouthInWorkPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Primary jobs" fill={C_GREEN} radius={[0, 4, 4, 0]} barSize={20}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -794,6 +802,13 @@ export default function YouthInWorkPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", marginTop: 8, justifyContent: "center" }}>
+                {inclusion.femaleShare.map((d, i) => (
+                  <span key={d.name} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: [C_BLUE, C_GREEN][i] }} />{d.name}
+                  </span>
+                ))}
+              </div>
             </Panel>
           </div>
 
@@ -810,9 +825,8 @@ export default function YouthInWorkPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={120} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Youth" fill={BAND} radius={[0, 4, 4, 0]} barSize={15}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
-                  </Bar>
+                  <Bar dataKey="Female" name="Female" stackId="c" fill={GENDER_COLOR.Female} barSize={15} />
+                  <Bar dataKey="Male" name="Male" stackId="c" fill={GENDER_COLOR.Male} radius={[0, 4, 4, 0]} barSize={15} />
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
