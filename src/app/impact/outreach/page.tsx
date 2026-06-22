@@ -439,7 +439,7 @@ export default function OutreachPage() {
           <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
           <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="oa-grid">
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary">
-              <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={220} />
+              <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={340} legendPercent />
             </Panel>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

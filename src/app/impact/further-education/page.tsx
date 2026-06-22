@@ -416,7 +416,7 @@ export default function FurtherEducationPage() {
             </Panel>
             <Panel title="Active vs Completed Programmes" subtitle="Current enrolment status"
               info="Graduates with an active enrolment versus those who have completed their programme.">
-              <Donut data={d.activeCompleted} colors={["#185FA5", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" />
+              <Donut data={d.activeCompleted} colors={["#185FA5", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
           </div>
           <Panel title="Enrolment Trend by Year" subtitle="Cumulative enrolments over time"
@@ -452,7 +452,7 @@ export default function FurtherEducationPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Gender Distribution" subtitle="Female · Male · Other"
               info="Gender distribution of graduates in further education.">
-              <Donut data={d.genderData} colors={GENDER_COLOR} total={TOTAL} totalLabel="Graduates" />
+              <Donut data={d.genderData} colors={GENDER_COLOR} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Country of Origin" subtitle="Where graduates are from, ranked"
               info="Graduates' countries of origin, sorted from most to least.">
@@ -473,7 +473,7 @@ export default function FurtherEducationPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Qualification Level" subtitle="Type of qualification pursued"
               info="Qualification level graduates are pursuing.">
-              <Donut data={d.qualification} colors={PALETTE} total={TOTAL} totalLabel="Graduates" />
+              <Donut data={d.qualification} colors={PALETTE} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Field of Study" subtitle="Disciplines, ranked"
               info="Fields of study graduates pursue, sorted from most to least.">
@@ -482,7 +482,7 @@ export default function FurtherEducationPage() {
           </div>
           <Panel title="Relevance to ALU Degree" subtitle="How further study relates to the degree"
             info="How closely graduates' further study relates to their ALU degree.">
-            <Donut data={d.relevance} colors={["#185FA5", "#1D9E75", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" />
+            <Donut data={d.relevance} colors={["#185FA5", "#1D9E75", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
           </Panel>
         </section>
         )}
@@ -499,7 +499,7 @@ export default function FurtherEducationPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Study Destination" subtitle="Africa · Europe · North America · Asia"
               info="Region where graduates pursue further study.">
-              <Donut data={d.region} colors={PALETTE} total={TOTAL} totalLabel="Graduates" />
+              <Donut data={d.region} colors={PALETTE} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Country of Study" subtitle="Destination countries, ranked"
               info="Countries where graduates are studying, sorted from most to least.">
@@ -521,7 +521,7 @@ export default function FurtherEducationPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Funding Source" subtitle="How further study is paid for"
               info="How graduates fund their further education.">
-              <Donut data={d.fundingData} colors={FUNDING_COLOR} total={TOTAL} totalLabel="Graduates" />
+              <Donut data={d.fundingData} colors={FUNDING_COLOR} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Funding by Qualification Level" subtitle="Funding mix per qualification"
               info="How funding sources vary across qualification levels.">
@@ -550,7 +550,7 @@ export default function FurtherEducationPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Relevance to ALU Degree" subtitle="Directly · Somewhat · Different field"
               info="How closely further study aligns with the ALU degree.">
-              <Donut data={d.relevance} colors={["#185FA5", "#1D9E75", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" />
+              <Donut data={d.relevance} colors={["#185FA5", "#1D9E75", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Qualification by Degree Programme" subtitle="Qualification mix per programme"
               info="What qualifications graduates from each ALU programme pursue.">

@@ -493,14 +493,14 @@ export default function YouthInWorkPage() {
         {show(1) && (
         <section className="space-y-4">
           <SectionHeader title="Work Pathways" blurb="How are participants progressing into work?" />
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(300px, 400px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="yiw-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(380px, 540px) minmax(0, 1fr)", gap: 16, alignItems: "stretch" }} className="yiw-grid">
             <Panel title="Work Pathway Distribution" subtitle="Where are our youth today?"
               info="The mix of pathways youth follow: wage employment, internships, ventures, further education, and more.">
-              <Donut data={pathwayDist} colors={PATHWAY_COLOR} total={kpis.total} totalLabel="Youth" height={250} />
+              <Donut data={pathwayDist} colors={PATHWAY_COLOR} total={kpis.total} totalLabel="Youth" height={400} legendPercent />
             </Panel>
             <Panel title="Participant Group Comparison" subtitle="Students · Alumni · Scholars across key metrics"
               info="Each metric shows the % within that group. Scholars overlap with students and alumni.">
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={430}>
                 <BarChart data={participantCompare} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barGap={3} barCategoryGap="22%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="metric" tick={{ fontSize: 9.5, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
@@ -561,7 +561,7 @@ export default function YouthInWorkPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Primary vs Secondary Jobs" subtitle="Job multiplicity across the workforce"
               info="Primary jobs are someone's main role; secondary jobs are additional income streams.">
-              <Donut data={jobs.primarySecondary} colors={[C_BLUE, C_GREEN]} total={jobs.primary + jobs.secondary} totalLabel="Jobs" />
+              <Donut data={jobs.primarySecondary} colors={[C_BLUE, C_GREEN]} total={jobs.primary + jobs.secondary} totalLabel="Jobs" height={340} legendPercent />
             </Panel>
             <Panel title="Jobs by Category" subtitle="Full-time · Part-time · Contract · Internship · Founder"
               info="How work breaks down across employment categories.">
@@ -675,7 +675,7 @@ export default function YouthInWorkPage() {
           <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="yiw-grid">
             <Panel title="Geographic Distribution" subtitle="Africa vs outside Africa"
               info="Share of participants based in Africa versus the diaspora.">
-              <Donut data={inclusion.africaSplit} colors={[C_GREEN, "#C5D2E0"]} total={kpis.total} totalLabel="Youth" />
+              <Donut data={inclusion.africaSplit} colors={[C_GREEN, "#C5D2E0"]} total={kpis.total} totalLabel="Youth" height={340} legendPercent />
             </Panel>
             <Panel title="Top Countries" subtitle="Participants by country, ranked"
               info="Where participants are based, sorted from most to least.">
@@ -716,7 +716,7 @@ export default function YouthInWorkPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Employment Type" subtitle="Permanent · Contract · Internship · Freelance · Founder"
               info="Composition of how working participants are engaged.">
-              <Donut data={quality.empType} colors={WORKCAT_COLOR} total={quality.empType.reduce((s, d) => s + d.value, 0)} totalLabel="Working" />
+              <Donut data={quality.empType} colors={WORKCAT_COLOR} total={quality.empType.reduce((s, d) => s + d.value, 0)} totalLabel="Working" height={340} legendPercent />
             </Panel>
             <Panel title="Decent Work Indicators" subtitle="Share reporting each, %"
               info="Share of working participants reporting each decent-work indicator (0–100%).">
@@ -753,7 +753,7 @@ export default function YouthInWorkPage() {
             </Panel>
             <Panel title="Dignified Work Status" subtitle="Accessing vs progressing"
               info="Working participants accessing dignified work versus those still progressing toward it.">
-              <Donut data={quality.dignified} colors={[C_BLUE, "#C5D2E0"]} total={quality.dignifiedTotal} totalLabel="Working" height={230} labels labelOffset={34} />
+              <Donut data={quality.dignified} colors={[C_BLUE, "#C5D2E0"]} total={quality.dignifiedTotal} totalLabel="Working" height={340} legendPercent />
             </Panel>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
@@ -772,7 +772,7 @@ export default function YouthInWorkPage() {
             </Panel>
             <Panel title="Employer Type" subtitle="Startup · Corporate · Public · NGO · Self-employed"
               info="Type of employer for working participants.">
-              <Donut data={quality.employers} colors={EMPLOYER_PALETTE} total={quality.employers.reduce((s, d) => s + d.value, 0)} totalLabel="Working" />
+              <Donut data={quality.employers} colors={EMPLOYER_PALETTE} total={quality.employers.reduce((s, d) => s + d.value, 0)} totalLabel="Working" height={340} legendPercent />
             </Panel>
           </div>
         </section>

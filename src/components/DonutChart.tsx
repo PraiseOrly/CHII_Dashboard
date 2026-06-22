@@ -212,7 +212,7 @@ function ShareTip({ active, payload, total }: any) {
 ═══════════════════════════════════════════════════════ */
 export function DonutRing({
   data, colors, total, totalLabel, height = 230, labels = false,
-  innerRadius = 56, outerRadius = 86, labelOffset = 14,
+  innerRadius = 56, outerRadius = 86, labelOffset = 14, legendPercent = false,
 }: {
   data: { name: string; value: number }[];
   colors: Record<string, string> | string[];
@@ -220,6 +220,8 @@ export function DonutRing({
   height?: number; labels?: boolean; innerRadius?: number; outerRadius?: number;
   /** how far leader labels (and their lines) extend past the ring */
   labelOffset?: number;
+  /** fit mode: responsive radius + name + % shown in a dedicated legend row */
+  legendPercent?: boolean;
 }) {
   const [active, setActive] = useState<number | null>(null);
   const [firstRun, setFirstRun] = useState(true);
@@ -241,31 +243,71 @@ export function DonutRing({
       }
     : undefined;
 
+  /* "fit" mode: responsive radius + radial labels — each name sits just outside
+     its own slice with a short hook, anchored left/right by side. */
+  const ir = legendPercent ? "52%" : innerRadius;
+  const or = legendPercent ? "70%" : outerRadius;
+  const RAD = Math.PI / 180;
+
+  /* leader: short radial line out of the slice + a small hook into the label */
+  const renderPointer = (p: any) => {
+    const { cx, cy, midAngle, outerRadius: orr, name } = p;
+    const cos = Math.cos(-midAngle * RAD), sin = Math.sin(-midAngle * RAD);
+    const right = cos >= 0;
+    const sx = cx + orr * cos, sy = cy + orr * sin;            // ring edge
+    const lx = cx + (orr + 16) * cos, ly = cy + (orr + 16) * sin; // radial end
+    const ex = lx + (right ? 8 : -8);                          // small horizontal hook
+    return (
+      <g style={{ pointerEvents: "none" }}>
+        <polyline points={`${sx},${sy} ${lx},${ly} ${ex},${ly}`} stroke="#9CA3AF" strokeWidth={1} fill="none" />
+        <text x={ex + (right ? 4 : -4)} y={ly} textAnchor={right ? "start" : "end"}
+          dominantBaseline="central" fontSize={10.5} fontWeight={600} fill="#374151">{name}</text>
+      </g>
+    );
+  };
+
   return (
-    <div style={{ position: "relative" }}>
-      <ResponsiveContainer width="100%" height={height}>
-        <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="48%"
-            innerRadius={innerRadius} outerRadius={outerRadius} paddingAngle={2} stroke="none"
-            startAngle={90} endAngle={-270}
-            isAnimationActive={firstRun} animationBegin={0} animationDuration={1000} animationEasing="ease-out"
-            activeIndex={active ?? undefined} activeShape={ActiveShape}
-            label={renderLabel} labelLine={labels ? { stroke: "rgba(0,33,71,0.25)" } : false}
-            onMouseEnter={(_: any, i: number) => setActive(i)} onMouseLeave={() => setActive(null)}
-            className="donut-pie">
-            {data.map((d, i) => (
-              <Cell key={d.name} fill={colorFor(d.name, i)}
-                fillOpacity={active == null ? 1 : i === active ? 1 : 0.4} />
-            ))}
-          </Pie>
-          <Tooltip content={<ShareTip total={total} />} />
-          <Legend wrapperStyle={{ fontSize: 10 }} />
-        </PieChart>
-      </ResponsiveContainer>
-      <div style={{ position: "absolute", top: "40%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
-        <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{Math.round(centre).toLocaleString()}</p>
-        <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
+    <div>
+      <div style={{ position: "relative" }}>
+        <ResponsiveContainer width="100%" height={height}>
+          <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%"
+              innerRadius={ir} outerRadius={or} paddingAngle={2} stroke="none"
+              startAngle={90} endAngle={-270}
+              isAnimationActive={firstRun} animationBegin={0} animationDuration={1000} animationEasing="ease-out"
+              activeIndex={active ?? undefined} activeShape={ActiveShape}
+              label={legendPercent ? renderPointer : renderLabel}
+              labelLine={labels && !legendPercent ? { stroke: "rgba(0,33,71,0.25)" } : false}
+              onMouseEnter={(_: any, i: number) => setActive(i)} onMouseLeave={() => setActive(null)}
+              className="donut-pie">
+              {data.map((d, i) => (
+                <Cell key={d.name} fill={colorFor(d.name, i)}
+                  fillOpacity={active == null ? 1 : i === active ? 1 : 0.4} />
+              ))}
+            </Pie>
+            <Tooltip content={<ShareTip total={total} />} />
+            {!legendPercent && <Legend wrapperStyle={{ fontSize: 10 }} />}
+          </PieChart>
+        </ResponsiveContainer>
+        <div style={{ position: "absolute", top: legendPercent ? "50%" : "40%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
+          <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{Math.round(centre).toLocaleString()}</p>
+          <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
+        </div>
       </div>
+
+      {legendPercent && (
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px 16px", marginTop: 10 }}>
+          {data.map((dd, i) => (
+            <button key={dd.name} type="button"
+              onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", padding: 0,
+                opacity: active == null || active === i ? 1 : 0.45, transition: "opacity 180ms ease" }}>
+              <span style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: colorFor(dd.name, i), flexShrink: 0 }} />
+              <span style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>{dd.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
       <style>{`.donut-pie .recharts-sector { transition: fill-opacity 180ms ease; }`}</style>
     </div>
   );

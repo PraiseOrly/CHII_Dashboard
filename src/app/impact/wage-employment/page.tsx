@@ -428,7 +428,7 @@ export default function WageEmploymentPage() {
             <style>{`@media (max-width: 720px){ .we-two{ grid-template-columns: 1fr !important; } }`}</style>
             <Panel title="Gender Distribution" subtitle="Female · Male · Other"
               info="Distribution of employed participants by gender.">
-              <Donut data={genderData} colors={GENDER_COLOR} total={total} totalLabel="Employed" />
+              <Donut data={genderData} colors={GENDER_COLOR} total={total} totalLabel="Employed" height={340} legendPercent />
             </Panel>
             <Panel title="Role Level" subtitle="Seniority ranked by volume"
               info="Employed participants grouped by seniority, from most to least common.">
@@ -444,7 +444,7 @@ export default function WageEmploymentPage() {
             </Panel>
             <Panel title="Contract Type" subtitle="Full-time · Part-time · Temporary · Contract"
               info="Contract-type split across the employed population.">
-              <Donut data={empTypeData} colors={EMP_COLOR} total={total} totalLabel="Employed" />
+              <Donut data={empTypeData} colors={EMP_COLOR} total={total} totalLabel="Employed" height={340} legendPercent />
             </Panel>
             <Panel title="Employer Type & Working Arrangement" subtitle="Employer type, broken down by on-site · hybrid · remote"
               info="Each employer type split by working arrangement, so you can see both where participants are employed and how they work in a single view.">
@@ -637,11 +637,11 @@ export default function WageEmploymentPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Dignified Work Status" subtitle="Accessing vs progressing"
               info="Participants accessing dignified work versus those progressing toward it.">
-              <Donut data={quality.status} colors={STATUS_COLOR} total={total} totalLabel="Employed" height={250} labels labelOffset={34} />
+              <Donut data={quality.status} colors={STATUS_COLOR} total={total} totalLabel="Employed" height={340} legendPercent />
             </Panel>
             <Panel title="Work vs Before Joining CHII" subtitle="How participants' work changed"
               info="How current work compares to participants' situation before joining CHII — a new role, an additional income stream, or improved conditions.">
-              <Donut data={quality.career} colors={CAREER_COLOR} total={quality.careerTotal} totalLabel="Respondents" height={250} labels />
+              <Donut data={quality.career} colors={CAREER_COLOR} total={quality.careerTotal} totalLabel="Respondents" height={340} legendPercent />
             </Panel>
           </div>
           <Panel title="Household Impact" subtitle="Reported impact areas, ranked"

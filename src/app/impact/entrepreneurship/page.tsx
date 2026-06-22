@@ -507,7 +507,7 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Venture Status" subtitle="Current operating status"
               info="Breakdown of ventures by current status, from pre-seed through to non-operational.">
-              <Donut data={v.statusData} colors={PALETTE} total={v.statusTotal} totalLabel="Ventures" />
+              <Donut data={v.statusData} colors={PALETTE} total={v.statusTotal} totalLabel="Ventures" height={340} legendPercent />
             </Panel>
             <Panel title="Ventures Started per Year" subtitle="New ventures by year"
               info="Count of ventures launched each year, in chronological order.">
@@ -538,11 +538,11 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Formal vs Informal Ventures" subtitle="Registration status"
               info="Share of ventures that are formally registered versus operating informally.">
-              <Donut data={v.formal} colors={["#185FA5", "#C5D2E0"]} total={total} totalLabel="Ventures" />
+              <Donut data={v.formal} colors={["#185FA5", "#C5D2E0"]} total={total} totalLabel="Ventures" height={340} legendPercent />
             </Panel>
             <Panel title="Founder Gender" subtitle="Founder gender split"
               info="Gender distribution of venture founders.">
-              <Donut data={v.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" />
+              <Donut data={v.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
           </div>
         </section>
@@ -758,15 +758,15 @@ export default function EntrepreneurshipPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Founder Gender" subtitle="Founder gender split"
               info="Gender distribution of venture founders.">
-              <Donut data={founders.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" />
+              <Donut data={founders.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
             <Panel title="Scholar vs Non-scholar Founders" subtitle="Scholar share of founders"
               info="Ventures led by Mastercard Foundation scholars versus other founders.">
-              <Donut data={founders.scholarSplit} colors={["#185FA5", "#C5D2E0"]} total={total} totalLabel="Founders" />
+              <Donut data={founders.scholarSplit} colors={["#185FA5", "#C5D2E0"]} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
             <Panel title="Scholar Founder Gender" subtitle="Female · Male"
               info="Gender split among scholar-led ventures.">
-              <Donut data={founders.scholar.gender} colors={GENDER_COLOR} total={founders.scholar.count} totalLabel="Scholars" />
+              <Donut data={founders.scholar.gender} colors={GENDER_COLOR} total={founders.scholar.count} totalLabel="Scholars" height={340} legendPercent />
             </Panel>
             <Panel title="Founders by Country" subtitle="Where founders are based, ranked"
               info="Countries where founders are based, sorted from most to least.">
@@ -819,7 +819,7 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Technology vs Traditional" subtitle="Innovation profile of ventures"
               info="Share of ventures that are technology-enabled versus traditional businesses.">
-              <Donut data={sectors.techVsTraditional} colors={["#185FA5", "#E0A458"]} total={total} totalLabel="Ventures" />
+              <Donut data={sectors.techVsTraditional} colors={["#185FA5", "#E0A458"]} total={total} totalLabel="Ventures" height={340} legendPercent />
             </Panel>
           </div>
         </section>
@@ -866,7 +866,7 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Overall Support Rating" subtitle="How founders rate CHII support"
               info="Founders' overall rating of CHII's support, from excellent to poor.">
-              <Donut data={support.supportQuality} colors={PALETTE} total={support.supportTotal} totalLabel="Respondents" />
+              <Donut data={support.supportQuality} colors={PALETTE} total={support.supportTotal} totalLabel="Respondents" height={340} legendPercent />
             </Panel>
             <Panel title="Support by Venture Stage" subtitle="Supported ventures per stage"
               info="Number of CHII-supported ventures at each operating stage.">
