@@ -277,8 +277,10 @@ export default function OutreachPage() {
   const byProgram = useMemo(() =>
     PILLARS.map(p => {
       const rows = scope.filter(s => s.pillar === p);
-      const rec: Record<string, number | string> = { program: p, total: rows.length };
-      REACH_GENDERS.forEach(g => { rec[g] = rows.filter(s => s.gender === g).length; });
+      const rec: Record<string, number | string> = { program: p };
+      let total = 0;
+      REACH_GENDERS.forEach(g => { const n = rows.filter(s => s.gender === g).length; rec[g] = n; total += n; });
+      rec.Total = total;
       return rec;
     }),
   [scope]);
@@ -477,7 +479,9 @@ export default function OutreachPage() {
                   <Legend wrapperStyle={{ fontSize: 10 }} />
                   {REACH_GENDERS.map((g, i) => (
                     <Bar key={g} dataKey={g} stackId="g" fill={GENDER_COLOR[g]} barSize={46}
-                      radius={i === REACH_GENDERS.length - 1 ? [4, 4, 0, 0] : undefined} />
+                      radius={i === REACH_GENDERS.length - 1 ? [4, 4, 0, 0] : undefined}>
+                      {i === REACH_GENDERS.length - 1 && <LabelList dataKey="Total" position="top" fontSize={11} fill={NAVY} fontWeight={700} />}
+                    </Bar>
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -497,8 +501,8 @@ export default function OutreachPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap" }}>
-                {PILLARS.map(p => (
+              <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap", justifyContent: "center" }}>
+                {PILLARS.filter(p => byIntervention.some(d => d.pillar === p)).map(p => (
                   <span key={p} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
                     <span style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: PILLAR_COLOR[p] }} />{p}
                   </span>
@@ -586,7 +590,6 @@ export default function OutreachPage() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <p style={{ fontSize: 10.5, color: "#9CA3AF", marginTop: 8 }}>MCF Scholars: V1 = 1,224 · V2 = 419</p>
           </Panel>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>

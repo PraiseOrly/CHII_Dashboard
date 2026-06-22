@@ -42,6 +42,8 @@ const WORKCAT_COLOR: Record<string, string> = {
   "Permanent": "#185FA5", "Freelance": "#1D9E75",
 };
 const JOBCAT_COLOR: Record<string, string> = { New: "#185FA5", Additional: "#1D9E75", Improved: "#E0A458" };
+/* trend reporting window: 2022 → 2026 */
+const TREND_YEARS = [2022, 2023, 2024, 2025, 2026];
 const EMPLOYER_PALETTE = ["#185FA5", "#1D9E75", "#7F77DD", "#E0A458", "#0C447C"];
 
 /* ── helpers ─────────────────────────────────────────── */
@@ -306,17 +308,15 @@ export default function YouthInWorkPage() {
   const byProgram = useMemo(() =>
     PROGRAMS.map(p => {
       const rows = scope.filter(y => y.program === p);
-      return {
-        program: p,
-        Employment: rows.filter(isEmployed).length,
-        Internships: rows.filter(isInternship).length,
-        Ventures: rows.filter(isVenture).length,
-      };
+      const Employment = rows.filter(isEmployed).length;
+      const Internships = rows.filter(isInternship).length;
+      const Ventures = rows.filter(isVenture).length;
+      return { program: p, Employment, Internships, Ventures, Total: Employment + Internships + Ventures };
     }),
   [scope]);
 
   const pathwayTrend = useMemo(() =>
-    YEARS.map(yr => {
+    TREND_YEARS.map(yr => {
       const rows = scope.filter(y => y.year === yr);
       return {
         year: yr,
@@ -355,11 +355,11 @@ export default function YouthInWorkPage() {
     ];
 
     // trends
-    const youthTrend = YEARS.map(yr => {
+    const youthTrend = TREND_YEARS.map(yr => {
       const inw = scope.filter(y => y.year === yr && (y.primaryJob || y.secondaryJob));
       return { year: yr, Total: inw.length, Female: inw.filter(y => y.gender === "Female").length };
     });
-    const psTrend = YEARS.map(yr => {
+    const psTrend = TREND_YEARS.map(yr => {
       const rows = scope.filter(y => y.year === yr);
       return { year: yr, Primary: rows.filter(y => y.primaryJob).length, Secondary: rows.filter(y => y.secondaryJob).length };
     });
@@ -436,9 +436,12 @@ export default function YouthInWorkPage() {
   const quality = useMemo(() => {
     const working = scope.filter(y => qualityType(y) !== null);
     const empType = QUALITY_TYPES.map(c => ({ name: c, value: scope.filter(y => qualityType(y) === c).length })).filter(d => d.value > 0);
+    // dignified-work indicators — same four as the overview's Dignified Work chart.
     const indicators = [
-      { name: "Living wage", value: 68 }, { name: "Job security", value: 74 },
-      { name: "Benefits", value: 61 }, { name: "Skills match", value: 83 }, { name: "Career progression", value: 77 },
+      { name: "Reliable Income", Score: 71 },
+      { name: "Sense of Purpose", Score: 88 },
+      { name: "Reputation", Score: 84 },
+      { name: "Respect in the Workplace", Score: 90 },
     ];
     const accessing = scope.filter(y => y.decentWork).length;
     const dignified = [
@@ -589,7 +592,7 @@ export default function YouthInWorkPage() {
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {(["Employment", "Internships", "Ventures"] as const).map((k, i) => (
                   <Bar key={k} dataKey={k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={70} radius={i === 2 ? [4, 4, 0, 0] : undefined}>
-                    <LabelList dataKey={k} position="center" fontSize={9.5} fill="white" fontWeight={700} />
+                    {i === 2 && <LabelList dataKey="Total" position="top" fontSize={11} fill={NAVY} fontWeight={700} />}
                   </Bar>
                 ))}
               </BarChart>
@@ -620,10 +623,10 @@ export default function YouthInWorkPage() {
         <section className="space-y-4">
           <SectionHeader title="Jobs Created" blurb="How many work opportunities are being created across the ecosystem, and how is it trending?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
-            <MiniKpi center Icon={Briefcase} label="Primary Jobs" value={fmt(jobs.primary)} />
-            <MiniKpi center Icon={Layers} label="Secondary Jobs" value={fmt(jobs.secondary)} />
-            <MiniKpi center Icon={Hammer} label="Jobs by Ventures" value={fmt(jobs.jobsCreated)} />
-            <MiniKpi center Icon={Users} label="Youth Employed by Ventures" value={fmt(jobs.youthEmployed)} />
+            <MiniKpi Icon={Briefcase} label="Primary Jobs" value={fmt(jobs.primary)} />
+            <MiniKpi Icon={Layers} label="Secondary Jobs" value={fmt(jobs.secondary)} />
+            <MiniKpi Icon={Hammer} label="Jobs by Ventures" value={fmt(jobs.jobsCreated)} />
+            <MiniKpi Icon={Users} label="Youth Employed by Ventures" value={fmt(jobs.youthEmployed)} />
           </div>
 
           {/* Primary & secondary jobs + job categories */}
@@ -884,15 +887,17 @@ export default function YouthInWorkPage() {
               info="Composition of how working participants are engaged.">
               <Donut data={quality.empType} colors={WORKCAT_COLOR} total={quality.empType.reduce((s, d) => s + d.value, 0)} totalLabel="Working" height={340} legendPercent />
             </Panel>
-            <Panel title="Decent Work Indicators" subtitle="Share reporting each, %"
-              info="Share of working participants reporting each decent-work indicator (0–100%).">
-              <ResponsiveContainer width="100%" height={230}>
-                <BarChart layout="vertical" data={quality.indicators} margin={{ top: 4, right: 38, bottom: 0, left: 8 }}>
-                  <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={130} axisLine={false} tickLine={false} />
-                  <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="value" name="Reporting" fill={C_GREEN} radius={[0, 4, 4, 0]} barSize={18}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
+            <Panel title="Decent Work Indicators" subtitle="Average score out of 100"
+              info="How working participants score on each dignified-work indicator — reliable income, sense of purpose, reputation, and respect in the workplace.">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart layout="vertical" data={quality.indicators} margin={{ top: 4, right: 40, bottom: 0, left: 8 }} barCategoryGap="28%">
+                  <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.06)" />
+                  <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
+                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="Score" name="Score" fill={C_BLUE} radius={[0, 4, 4, 0]} barSize={20}>
+                    <LabelList dataKey="Score" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -930,7 +935,8 @@ export default function YouthInWorkPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "#374151" }} width={200} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="value" name="Youth" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}>
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="value" name="Youth in primary jobs" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>

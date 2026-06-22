@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Bar, BarChart, Cell, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, Cell, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 type Gender   = "all" | "Female" | "Male";
 type AgeGroup = "all" | "18-24" | "25-29" | "30-35";
@@ -195,6 +195,11 @@ export default function DignifiedWork() {
                 );
               }}
             />
+            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }}
+              payload={[
+                { value: "Score", type: "square", id: "score", color: "#185FA5" },
+                { value: "Benchmark", type: "line", id: "benchmark", color: "#6B7280" },
+              ]} />
             <BR2
               dataKey="score" radius={[0, 3, 3, 0]} name="Score"
               label={(props: any) => {
