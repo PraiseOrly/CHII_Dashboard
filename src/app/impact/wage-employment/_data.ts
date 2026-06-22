@@ -48,8 +48,9 @@ export const PARTICIPANT_TYPES: ParticipantType[] = ["Alumni", "Student"];
 export const ORG_TYPES: OrgType[] = ["Private company", "Startup", "NGO/Nonprofit", "Government", "Public sector", "Multinational"];
 
 export const SECTORS = [
-  "Technology", "Finance", "Consulting", "Education",
-  "Healthcare", "Manufacturing", "Retail", "Public sector",
+  "Digital Health", "MedTech", "Mental Health & Wellness", "Public Health & Accessibility",
+  "Healthcare Infrastructure & Operations", "Biotech & Pharma", "Maternal Health",
+  "Fitness & Preventive Health", "Personalized & Precision Medicine", "Other",
 ];
 
 export const COUNTRIES = [
@@ -104,8 +105,10 @@ function buildWorkers(n: number): Worker[] {
   const out: Worker[] = [];
   for (let i = 0; i < n; i++) {
     const sector = pick<string>(r, [
-      ["Technology", 0.27], ["Finance", 0.16], ["Consulting", 0.13], ["Education", 0.12],
-      ["Healthcare", 0.11], ["Manufacturing", 0.08], ["Retail", 0.07], ["Public sector", 0.06],
+      ["Digital Health", 0.20], ["MedTech", 0.14], ["Mental Health & Wellness", 0.10],
+      ["Public Health & Accessibility", 0.10], ["Healthcare Infrastructure & Operations", 0.10],
+      ["Biotech & Pharma", 0.10], ["Maternal Health", 0.08], ["Fitness & Preventive Health", 0.07],
+      ["Personalized & Precision Medicine", 0.06], ["Other", 0.05],
     ]);
     const cohort = pick<number>(r, [[2019, 0.12], [2020, 0.14], [2021, 0.17], [2022, 0.19], [2023, 0.2], [2024, 0.18]]);
     const year = Math.min(2025, cohort + Math.floor(r() * 3));
@@ -137,7 +140,7 @@ function buildWorkers(n: number): Worker[] {
       year,
       cohort,
       timeToEmployment: 1 + Math.floor(Math.pow(r(), 1.6) * 22),
-      inTech: sector === "Technology",
+      inTech: sector === "Digital Health",
       decentWork: r() < 0.74,
       salaryUSD: Math.round(250 + Math.pow(r(), 1.7) * 2200),
     });

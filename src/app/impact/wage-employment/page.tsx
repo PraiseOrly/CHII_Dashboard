@@ -219,7 +219,7 @@ export default function WageEmploymentPage() {
     const female = scope.filter(w => w.gender === "Female").length;
     const decent = scope.filter(w => w.decentWork).length;
     const tech = scope.filter(w => w.inTech).length;
-    const placed = scope.filter(w => w.timeToEmployment <= 6).length;
+    const placed = scope.filter(w => w.timeToEmployment <= 12).length;
     const medMonths = median(scope.map(w => w.timeToEmployment));
     return {
       female, femalePct: share(female, total),
@@ -248,8 +248,8 @@ export default function WageEmploymentPage() {
     const yearly = TREND_YEARS.map(yr => {
       const rows = scope.filter(w => w.year === yr);
       const fem = rows.filter(w => w.gender === "Female");
-      const placed = rows.filter(w => w.timeToEmployment <= 6);
-      const placedFem = fem.filter(w => w.timeToEmployment <= 6);
+      const placed = rows.filter(w => w.timeToEmployment <= 12);
+      const placedFem = fem.filter(w => w.timeToEmployment <= 12);
       const avg = (a: Worker[]) => a.length ? Math.round(a.reduce((s, w) => s + w.salaryUSD, 0) / a.length) : 0;
       const rec: Record<string, number> = { year: yr };
       EMPLOYMENT_TYPES.forEach(t => { rec[t] = rows.filter(w => w.employmentType === t).length; });
@@ -279,7 +279,7 @@ export default function WageEmploymentPage() {
         name: meta.name,
         employmentRate: meta.employmentRate,
         decent: share(ps.filter(w => w.decentWork).length, ps.length),
-        placement: share(ps.filter(w => w.timeToEmployment <= 6).length, ps.length),
+        placement: share(ps.filter(w => w.timeToEmployment <= 12).length, ps.length),
         avgIncome: ps.length ? Math.round(ps.reduce((s, w) => s + w.salaryUSD, 0) / ps.length) : 0,
         typeMix: Object.fromEntries(EMPLOYMENT_TYPES.map(t => [t, ps.filter(w => w.employmentType === t).length])),
       };
@@ -287,7 +287,7 @@ export default function WageEmploymentPage() {
     const rateData = [...rows].sort((a, b) => b.employmentRate - a.employmentRate).map(p => ({ name: p.name, value: p.employmentRate }));
     const typeData = [...rows].sort((a, b) => b.employmentRate - a.employmentRate).map(p => ({ name: p.name, ...p.typeMix }));
     const qualityData = [...rows].sort((a, b) => b.employmentRate - a.employmentRate).map(p => ({
-      name: p.name, "Employment Rate": p.employmentRate, "Decent Work": p.decent, "6-Mo Placement": p.placement,
+      name: p.name, "Employment Rate": p.employmentRate, "Decent Work": p.decent, "12-Mo Placement": p.placement,
     }));
     return { rateData, typeData, qualityData, count: rows.length };
   }, [scope]);
@@ -331,7 +331,7 @@ export default function WageEmploymentPage() {
 
   const STATUS_COLOR = ["#185FA5", "#1D9E75"];
   const CAREER_COLOR = ["#185FA5", "#1D9E75", "#7F77DD"];
-  const QUALITY_COLORS: Record<string, string> = { "Employment Rate": C_TOTAL, "Decent Work": C_FEMALE, "6-Mo Placement": "#7F77DD" };
+  const QUALITY_COLORS: Record<string, string> = { "Employment Rate": C_TOTAL, "Decent Work": C_FEMALE, "12-Mo Placement": "#7F77DD" };
 
   const activeCount = [year, program, ptype, gender, country, cohort].filter(v => v !== "all").length;
   const reset = () => { setYear("all"); setProgram("all"); setPtype("all"); setGender("all"); setCountry("all"); setCohort("all"); };
@@ -360,8 +360,8 @@ export default function WageEmploymentPage() {
               tooltip="Total CHII participants currently in wage employment within the active filters." />
             <StatsKpiCard label="Female Wage Employed" num={kpis.female} sub={`${kpis.femalePct}% of employed`} Icon={WomanIcon}
               tooltip="Number and share of female participants in wage employment." />
-            <StatsKpiCard label="6-Month Placement" num={kpis.placePct} displayFmt={(n) => `${Math.round(n)}%`} sub="employed within 6 months" Icon={ArrowUpRight}
-              tooltip="Share of participants placed into wage employment within six months." />
+            <StatsKpiCard label="12-Month Placement" num={kpis.placePct} displayFmt={(n) => `${Math.round(n)}%`} sub="employed within 12 months" Icon={ArrowUpRight}
+              tooltip="Share of participants placed into wage employment within twelve months." />
             <StatsKpiCard label="Decent Work Rate" num={kpis.decentPct} displayFmt={(n) => `${Math.round(n)}%`} sub="of employed" Icon={ShieldCheck}
               tooltip="Share of employed participants in roles meeting decent-work criteria." />
             <StatsKpiCard label="Tech Roles" num={kpis.techPct} displayFmt={(n) => `${Math.round(n)}%`} sub="of employed" Icon={Cpu}
@@ -517,8 +517,8 @@ export default function WageEmploymentPage() {
           </Panel>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Six-Month Placement Rate" subtitle="Total vs female, % placed within 6 months"
-              info="Share employed within six months of graduating, by year.">
+            <Panel title="12-Month Placement Rate" subtitle="Total vs female, % placed within 12 months"
+              info="Share employed within twelve months of graduating, by year.">
               <ResponsiveContainer width="100%" height={230}>
                 <LineChart data={trends} margin={{ top: 10, right: 16, bottom: 0, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
@@ -613,7 +613,7 @@ export default function WageEmploymentPage() {
               </BarChart>
             </ResponsiveContainer>
           </Panel>
-          <Panel title="Employment Quality by Program" subtitle="Employment Rate · Decent Work · 6-Month Placement"
+          <Panel title="Employment Quality by Program" subtitle="Employment Rate · Decent Work · 12-Month Placement"
             info="Side-by-side comparison of program performance across three quality metrics (all %).">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={programOutcomes.qualityData} margin={{ top: 16, right: 12, bottom: 8, left: -10 }} barGap={3} barCategoryGap="24%">
@@ -622,7 +622,7 @@ export default function WageEmploymentPage() {
                 <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
-                {(["Employment Rate", "Decent Work", "6-Mo Placement"] as const).map(k => (
+                {(["Employment Rate", "Decent Work", "12-Mo Placement"] as const).map(k => (
                   <Bar key={k} dataKey={k} fill={QUALITY_COLORS[k]} radius={[3, 3, 0, 0]} barSize={16} />
                 ))}
               </BarChart>
