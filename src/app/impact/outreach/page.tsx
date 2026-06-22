@@ -7,7 +7,7 @@ import {
 } from "recharts";
 import {
   Users, Heart, Building2, GraduationCap,
-  Download, SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility,
+  SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility,
 } from "lucide-react";
 import {
   OUTREACH_PARTICIPANTS, INSTITUTIONS, PILLARS, INTERVENTIONS,
@@ -28,6 +28,10 @@ const C_NB = "#7F77DD";
 
 const PILLAR_COLOR: Record<Pillar, string> = { HEMP: "#185FA5", HENT: "#0F6E56", HECO: "#BA7517" };
 const GENDER_COLOR: Record<Gender, string> = { Female: C_FEMALE, Male: C_MALE, "Non-binary": C_NB };
+/* Reach & Participation reports gender as Female / Male only */
+const REACH_GENDERS: Gender[] = ["Female", "Male"];
+/* outreach reporting years: 2022 → 2026 */
+const OA_YEARS = [2022, 2023, 2024, 2025, 2026];
 const STATUS_COLOR: Record<string, string> = {
   Completed: "#0F6E56", Active: "#185FA5", "In-progress": "#85B7EB", Dropped: "#C5D2E0",
 };
@@ -59,22 +63,55 @@ function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
   );
 }
 
+/* serialize the panel's chart SVG and download it as a PNG */
+function downloadChart(container: HTMLElement, name: string) {
+  const svg = container.querySelector("svg") as SVGSVGElement | null;
+  if (!svg) return;
+  const w = svg.clientWidth || 600;
+  const h = svg.clientHeight || 360;
+  const clone = svg.cloneNode(true) as SVGSVGElement;
+  clone.setAttribute("width", String(w));
+  clone.setAttribute("height", String(h));
+  const xml = new XMLSerializer().serializeToString(clone);
+  const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml;charset=utf-8" }));
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = w * 2; canvas.height = h * 2;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.scale(2, 2);
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(b => {
+        if (!b) return;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = `${name.replace(/[^\w]+/g, "-").toLowerCase()}.png`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    }
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
 function Panel({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-      <div style={{ backgroundColor: BAND, padding: "10px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: TICK, flexShrink: 0 }} />
-          <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
-            <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 1 }}>{subtitle}</p>
-          </div>
+      <div style={{ backgroundColor: BAND, padding: "10px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: TICK, flexShrink: 0 }} />
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+          <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 1 }}>{subtitle}</p>
         </div>
-        <button title="Download" style={{ flexShrink: 0, color: "rgba(181,212,244,0.75)", display: "flex", padding: 3 }}>
-          <Download size={13} />
-        </button>
       </div>
-      <div style={{ padding: "16px 18px 18px" }}>{children}</div>
+      <div style={{ padding: "16px 18px 18px" }}
+        onContextMenu={(e) => { e.preventDefault(); downloadChart(e.currentTarget as HTMLElement, title); }}
+        title="Right-click to download as PNG">
+        {children}
+      </div>
     </div>
   );
 }
@@ -129,12 +166,22 @@ function FilterSelect<T extends string | number>({ label, value, onChange, optio
   );
 }
 
+/* ♀ woman / female symbol icon (lucide has no female glyph in this version) */
+function WomanIcon({ size = 20, color = "currentColor" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="5" />
+      <path d="M12 13v8M9 18h6" />
+    </svg>
+  );
+}
+
 /* small inline KPI used inside demographic sections — white card, blue border */
-function MiniKpi({ Icon, label, value }: { Icon: typeof Users; label: string; value: string }) {
+function MiniKpi({ Icon, label, value }: { Icon: React.ComponentType<any>; label: string; value: string }) {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_FEMALE}`, padding: "13px 15px", display: "flex", alignItems: "center", gap: 11 }}>
-      <span style={{ width: 36, height: 36, borderRadius: 9, backgroundColor: `${C_FEMALE}1A`, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={18} color={C_FEMALE} />
+      <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={20} color={C_FEMALE} />
       </span>
       <div style={{ minWidth: 0 }}>
         <p style={{ fontSize: 21, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
@@ -196,7 +243,7 @@ export default function OutreachPage() {
     PILLARS.map(p => {
       const rows = scope.filter(s => s.pillar === p);
       const rec: Record<string, number | string> = { program: p, total: rows.length };
-      GENDERS.forEach(g => { rec[g] = rows.filter(s => s.gender === g).length; });
+      REACH_GENDERS.forEach(g => { rec[g] = rows.filter(s => s.gender === g).length; });
       return rec;
     }),
   [scope]);
@@ -208,8 +255,9 @@ export default function OutreachPage() {
     })).filter(d => d.value > 0).sort((a, b) => b.value - a.value),
   [scope]);
 
-  // Participation trend
-  const trend = useMemo(() => TREND_YEARS.map(y => ({
+  // Participation trend — from 2022 onward
+  // Annual = participants first engaged that year; Cumulative = total reached by that year.
+  const trend = useMemo(() => OA_YEARS.map(y => ({
     year: y,
     Cumulative: scope.filter(s => s.yearEngaged <= y).length,
     Annual: scope.filter(s => s.yearEngaged === y).length,
@@ -217,7 +265,7 @@ export default function OutreachPage() {
 
   /* ── Section 3: demographics ───────────────────────── */
   const genderData = useMemo(() =>
-    GENDERS.map(g => ({ name: g, value: scope.filter(s => s.gender === g).length })).filter(d => d.value > 0),
+    REACH_GENDERS.map(g => ({ name: g, value: scope.filter(s => s.gender === g).length })).filter(d => d.value > 0),
   [scope]);
   const genderTotal = genderData.reduce((s, d) => s + d.value, 0);
 
@@ -310,7 +358,7 @@ export default function OutreachPage() {
             <FilterSelect label="Student Population" value={population} onChange={setPopulation}
               options={[{ value: "all", label: "All Students" }, { value: "mission", label: "Mission Students" }, { value: "non", label: "Non-mission" }]} />
             <FilterSelect label="Year" value={year} onChange={setYear}
-              options={[{ value: "all", label: "All Years" }, ...TREND_YEARS.map(y => ({ value: y, label: String(y) }))]} />
+              options={[{ value: "all", label: "All Years" }, ...OA_YEARS.map(y => ({ value: y, label: String(y) }))]} />
             <FilterSelect label="Intervention" value={intervention} onChange={setIntervention}
               options={[{ value: "all", label: "All Interventions" }, ...INTERVENTIONS.map(i => ({ value: i, label: i }))]} />
           </div>
@@ -385,9 +433,9 @@ export default function OutreachPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  {GENDERS.map((g, i) => (
+                  {REACH_GENDERS.map((g, i) => (
                     <Bar key={g} dataKey={g} stackId="g" fill={GENDER_COLOR[g]} barSize={46}
-                      radius={i === GENDERS.length - 1 ? [4, 4, 0, 0] : undefined} />
+                      radius={i === REACH_GENDERS.length - 1 ? [4, 4, 0, 0] : undefined} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -416,7 +464,7 @@ export default function OutreachPage() {
             </Panel>
           </div>
 
-          <Panel title="Participation Trend" subtitle="Annual vs cumulative participation, 2019–2024">
+          <Panel title="Participation Trend" subtitle="Annual (engaged that year) vs cumulative (total reached by year), 2022–2026">
             <ResponsiveContainer width="100%" height={230}>
               <LineChart data={trend} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
@@ -437,21 +485,21 @@ export default function OutreachPage() {
         {show(2) && (
         <section className="space-y-4">
           <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="oa-grid">
-            <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary">
-              <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={340} legendPercent />
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.45fr) minmax(0, 0.55fr)", gap: 16, alignItems: "stretch" }} className="oa-grid">
+            <Panel title="Gender Distribution" subtitle="Female · Male">
+              <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={360} legendPercent />
             </Panel>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
-                <MiniKpi Icon={Heart} label="Female" value={`${inclusion.female}%`} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
+                <MiniKpi Icon={WomanIcon} label="Female" value={`${inclusion.female}%`} />
                 <MiniKpi Icon={Shield} label="Refugee / IDP" value={`${inclusion.refugee}%`} />
                 <MiniKpi Icon={Accessibility} label="Persons w/ Disability" value={`${inclusion.pwd}%`} />
                 <MiniKpi Icon={BookOpen} label="Mission Students" value={`${inclusion.mission}%`} />
               </div>
 
               <Panel title="Inclusion by Program" subtitle="Share of each group within HEMP · HENT · HECO">
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="100%" height={330}>
                   <BarChart layout="vertical" data={inclusionByProgram} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barCategoryGap="26%">
                     <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
                     <XAxis type="number" domain={[0, 100]} tickCount={6} tick={{ fontSize: 9, fill: "#9CA3AF" }} tickFormatter={(v: number) => `${v}%`} axisLine={false} tickLine={false} />
