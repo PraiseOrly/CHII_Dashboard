@@ -7,7 +7,7 @@ import {
 } from "recharts";
 import {
   Users, Briefcase, Accessibility, Shield, ShieldCheck, Layers,
-  Download, Info, Hammer, GraduationCap, Rocket, Globe, SlidersHorizontal, X,
+  Info, Hammer, GraduationCap, Rocket, Globe, SlidersHorizontal, X,
 } from "lucide-react";
 import {
   YOUTH, VENTURES, PATHWAYS, PROGRAMS, PARTICIPANT_TYPES, GENDERS, COUNTRIES, SECTORS,
@@ -116,9 +116,6 @@ function Panel({ title, subtitle, info, children }: {
             <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 1 }}>{subtitle}</p>
           </div>
         </div>
-        <button title="Export" style={{ flexShrink: 0, color: "rgba(181,212,244,0.75)", display: "flex", padding: 3 }}>
-          <Download size={13} />
-        </button>
       </div>
       <div style={{ padding: "16px 18px 18px" }}>{children}</div>
     </div>
@@ -143,8 +140,8 @@ function WhiteKpi({ Icon, label, value, tooltip }: {
   const ACCENT = "#185FA5";
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${ACCENT}`, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ width: 38, height: 38, borderRadius: 9, backgroundColor: `${ACCENT}1A`, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={19} color={ACCENT} />
+      <span style={{ width: 38, height: 38, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={21} color={ACCENT} />
       </span>
       <div style={{ minWidth: 0 }}>
         <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
@@ -169,8 +166,8 @@ function WhiteKpi({ Icon, label, value, tooltip }: {
 function MiniKpi({ Icon, label, value }: { Icon: React.ComponentType<any>; label: string; value: string }) {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_BLUE}`, padding: "13px 15px", display: "flex", alignItems: "center", gap: 11 }}>
-      <span style={{ width: 36, height: 36, borderRadius: 9, backgroundColor: `${C_BLUE}1A`, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={18} color={C_BLUE} />
+      <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={20} color={C_BLUE} />
       </span>
       <div style={{ minWidth: 0 }}>
         <p style={{ fontSize: 21, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
@@ -383,7 +380,10 @@ export default function YouthInWorkPage() {
       { name: "Based in Africa", value: scope.filter(y => y.basedInAfrica).length },
       { name: "Outside Africa", value: scope.filter(y => !y.basedInAfrica).length },
     ];
-    const topCountries = COUNTRIES.map(c => ({ name: c === "Diaspora" ? "Diaspora / Outside" : c, value: scope.filter(y => y.country === c).length })).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
+    const topCountries = COUNTRIES.map(c => {
+      const rows = scope.filter(y => y.country === c);
+      return { name: c === "Diaspora" ? "Diaspora / Outside" : c, Total: rows.length, Female: rows.filter(y => y.gender === "Female").length };
+    }).filter(d => d.Total > 0).sort((a, b) => b.Total - a.Total);
     // primary-job holders by priority group
     const primaryRows = scope.filter(y => y.primaryJob);
     const secondaryRows = scope.filter(y => y.secondaryJob);
@@ -797,14 +797,14 @@ export default function YouthInWorkPage() {
             </Panel>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.45fr) minmax(0, 0.55fr)", gap: 16, alignItems: "stretch" }} className="yiw-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Geographic Distribution" subtitle="Africa vs outside Africa"
               info="Share of participants based in Africa versus the diaspora.">
-              <Donut data={inclusion.africaSplit} colors={[C_GREEN, "#C5D2E0"]} total={kpis.total} totalLabel="Youth" height={340} legendPercent />
+              <Donut data={inclusion.africaSplit} colors={[C_GREEN, "#C5D2E0"]} total={kpis.total} totalLabel="Youth" height={300} legendPercent />
             </Panel>
             <Panel title="Top Countries" subtitle="Participants by country, ranked"
               info="Where participants are based, sorted from most to least.">
-              <ResponsiveContainer width="100%" height={Math.max(340, inclusion.topCountries.length * 30)}>
+              <ResponsiveContainer width="100%" height={Math.max(230, inclusion.topCountries.length * 28)}>
                 <BarChart layout="vertical" data={inclusion.topCountries} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={120} axisLine={false} tickLine={false} />
