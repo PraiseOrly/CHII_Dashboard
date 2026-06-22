@@ -16,6 +16,7 @@ import {
 } from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import StatsKpiCard from "../StatsKpiCard";
+import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#042C53";
@@ -122,33 +123,6 @@ function MoneyTip({ active, payload, label }: any) {
           {p.name}: <b style={{ color: NAVY }}>${fmt(p.value)}</b>
         </p>
       ))}
-    </div>
-  );
-}
-
-function Donut({ data, colors, total, totalLabel, height = 250, labels = true, innerRadius = 54, outerRadius = 84 }: {
-  data: { name: string; value: number }[];
-  colors: Record<string, string> | string[];
-  total: number; totalLabel: string; height?: number; labels?: boolean; innerRadius?: number; outerRadius?: number;
-}) {
-  const colorFor = (name: string, i: number) =>
-    Array.isArray(colors) ? colors[i % colors.length] : colors[name];
-  return (
-    <div style={{ position: "relative" }}>
-      <ResponsiveContainer width="100%" height={height}>
-        <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="48%" innerRadius={innerRadius} outerRadius={outerRadius} paddingAngle={2} stroke="none"
-            label={labels ? (({ name, percent }: any) => `${name} ${Math.round(percent * 100)}%`) : undefined} labelLine={labels}>
-            {data.map((d, i) => <Cell key={d.name} fill={colorFor(d.name, i)} />)}
-          </Pie>
-          <Tooltip content={<ChartTip />} />
-          <Legend wrapperStyle={{ fontSize: 10 }} />
-        </PieChart>
-      </ResponsiveContainer>
-      <div style={{ position: "absolute", top: "38%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
-        <p style={{ fontSize: 20, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{fmt(total)}</p>
-        <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
-      </div>
     </div>
   );
 }

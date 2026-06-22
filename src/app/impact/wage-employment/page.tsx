@@ -16,6 +16,7 @@ import {
 } from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import StatsKpiCard from "../StatsKpiCard";
+import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ──────────────────────────────────────────── */
 const NAVY = "#042C53";
@@ -131,33 +132,6 @@ function PctTip({ active, payload, label }: any) {
           {p.name}: <b style={{ color: NAVY }}>{Math.round(p.value)}%</b>
         </p>
       ))}
-    </div>
-  );
-}
-
-function Donut({ data, colors, total, totalLabel, height = 220, labels = false }: {
-  data: { name: string; value: number }[];
-  colors: Record<string, string> | string[];
-  total: number; totalLabel: string; height?: number; labels?: boolean;
-}) {
-  const colorFor = (name: string, i: number) =>
-    Array.isArray(colors) ? colors[i % colors.length] : colors[name];
-  return (
-    <div style={{ position: "relative" }}>
-      <ResponsiveContainer width="100%" height={height}>
-        <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="48%" innerRadius={54} outerRadius={84} paddingAngle={2} stroke="none"
-            label={labels ? (({ name, percent }: any) => `${name} ${Math.round(percent * 100)}%`) : undefined} labelLine={labels}>
-            {data.map((d, i) => <Cell key={d.name} fill={colorFor(d.name, i)} />)}
-          </Pie>
-          <Tooltip content={<ChartTip />} />
-          <Legend wrapperStyle={{ fontSize: 10 }} />
-        </PieChart>
-      </ResponsiveContainer>
-      <div style={{ position: "absolute", top: "38%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
-        <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{fmt(total)}</p>
-        <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
-      </div>
     </div>
   );
 }
@@ -663,7 +637,7 @@ export default function WageEmploymentPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
             <Panel title="Dignified Work Status" subtitle="Accessing vs progressing"
               info="Participants accessing dignified work versus those progressing toward it.">
-              <Donut data={quality.status} colors={STATUS_COLOR} total={total} totalLabel="Employed" height={250} labels />
+              <Donut data={quality.status} colors={STATUS_COLOR} total={total} totalLabel="Employed" height={250} labels labelOffset={34} />
             </Panel>
             <Panel title="Work vs Before Joining CHII" subtitle="How participants' work changed"
               info="How current work compares to participants' situation before joining CHII — a new role, an additional income stream, or improved conditions.">

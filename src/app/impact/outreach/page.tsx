@@ -16,6 +16,7 @@ import {
 } from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import StatsKpiCard from "../StatsKpiCard";
+import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#042C53";
@@ -438,21 +439,7 @@ export default function OutreachPage() {
           <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
           <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 360px) minmax(0, 1fr)", gap: 16, alignItems: "start" }} className="oa-grid">
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary">
-              <div style={{ position: "relative" }}>
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={58} outerRadius={88} paddingAngle={2} stroke="none">
-                      {genderData.map(d => <Cell key={d.name} fill={GENDER_COLOR[d.name as Gender]} />)}
-                    </Pie>
-                    <Tooltip content={<ChartTip />} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div style={{ position: "absolute", top: "40%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
-                  <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{fmt(genderTotal)}</p>
-                  <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total</p>
-                </div>
-              </div>
+              <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={220} />
             </Panel>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  PieChart, Pie, Cell, Sector, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Sector, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 
 /* ════════════════════════════════════════════════════════
@@ -190,16 +190,83 @@ function ShareTip({ active, payload, total }: any) {
   if (!active || !payload?.length) return null;
   const p = payload[0];
   const pct = total ? Math.round((p.value / total) * 100) : 0;
+  const swatch = p.payload?.color || p.color || p.payload?.fill || "#9CA3AF";
   return (
     <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 10px rgba(0,0,0,0.12)" }}>
       <p style={{ display: "flex", alignItems: "center", gap: 6, color: "#6B7280" }}>
-        <span style={{ width: 9, height: 9, borderRadius: 2, backgroundColor: p.payload.color, display: "inline-block" }} />
+        <span style={{ width: 9, height: 9, borderRadius: 2, backgroundColor: swatch, display: "inline-block" }} />
         <b style={{ color: NAVY }}>{p.name}</b>
       </p>
       <p style={{ color: "#6B7280", marginTop: 3 }}>
         <b style={{ color: NAVY, fontSize: 13 }}>{Number(p.value).toLocaleString()}</b>
         <span style={{ marginLeft: 6, color: "#9CA3AF" }}>{pct}% of total</span>
       </p>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════
+   DonutRing — card-less variant for dropping inside existing
+   Panels. Same behaviour (draw-on-load once, hover dim + pop-out,
+   share tooltip, centre total), with the legend below.
+═══════════════════════════════════════════════════════ */
+export function DonutRing({
+  data, colors, total, totalLabel, height = 230, labels = false,
+  innerRadius = 56, outerRadius = 86, labelOffset = 14,
+}: {
+  data: { name: string; value: number }[];
+  colors: Record<string, string> | string[];
+  total: number; totalLabel: string;
+  height?: number; labels?: boolean; innerRadius?: number; outerRadius?: number;
+  /** how far leader labels (and their lines) extend past the ring */
+  labelOffset?: number;
+}) {
+  const [active, setActive] = useState<number | null>(null);
+  const [firstRun, setFirstRun] = useState(true);
+  useEffect(() => { const t = setTimeout(() => setFirstRun(false), 1080); return () => clearTimeout(t); }, []);
+  const counted = useCountUp(total, 1000, firstRun);
+  const centre = firstRun ? counted : total;
+  const colorFor = (name: string, i: number) => Array.isArray(colors) ? colors[i % colors.length] : colors[name];
+
+  const renderLabel = labels
+    ? ({ cx, cy, midAngle, outerRadius: or, name }: any) => {
+        const RAD = Math.PI / 180;
+        const r = or + labelOffset;
+        const x = cx + r * Math.cos(-midAngle * RAD);
+        const y = cy + r * Math.sin(-midAngle * RAD);
+        return (
+          <text x={x} y={y} fill="#374151" fontSize={10} fontWeight={600}
+            textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">{name}</text>
+        );
+      }
+    : undefined;
+
+  return (
+    <div style={{ position: "relative" }}>
+      <ResponsiveContainer width="100%" height={height}>
+        <PieChart>
+          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="48%"
+            innerRadius={innerRadius} outerRadius={outerRadius} paddingAngle={2} stroke="none"
+            startAngle={90} endAngle={-270}
+            isAnimationActive={firstRun} animationBegin={0} animationDuration={1000} animationEasing="ease-out"
+            activeIndex={active ?? undefined} activeShape={ActiveShape}
+            label={renderLabel} labelLine={labels ? { stroke: "rgba(0,33,71,0.25)" } : false}
+            onMouseEnter={(_: any, i: number) => setActive(i)} onMouseLeave={() => setActive(null)}
+            className="donut-pie">
+            {data.map((d, i) => (
+              <Cell key={d.name} fill={colorFor(d.name, i)}
+                fillOpacity={active == null ? 1 : i === active ? 1 : 0.4} />
+            ))}
+          </Pie>
+          <Tooltip content={<ShareTip total={total} />} />
+          <Legend wrapperStyle={{ fontSize: 10 }} />
+        </PieChart>
+      </ResponsiveContainer>
+      <div style={{ position: "absolute", top: "40%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
+        <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{Math.round(centre).toLocaleString()}</p>
+        <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
+      </div>
+      <style>{`.donut-pie .recharts-sector { transition: fill-opacity 180ms ease; }`}</style>
     </div>
   );
 }

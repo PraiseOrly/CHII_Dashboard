@@ -15,6 +15,7 @@ import {
   type Gender,
 } from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
+import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#042C53";
@@ -151,31 +152,6 @@ function ChartTip({ active, payload, label }: any) {
   );
 }
 
-function Donut({ data, colors, total, totalLabel }: {
-  data: { name: string; value: number }[];
-  colors: Record<string, string> | string[];
-  total: number; totalLabel: string;
-}) {
-  const colorFor = (name: string, i: number) => Array.isArray(colors) ? colors[i % colors.length] : colors[name];
-  return (
-    <div style={{ position: "relative" }}>
-      <ResponsiveContainer width="100%" height={250}>
-        <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="48%" innerRadius={54} outerRadius={84} paddingAngle={2} stroke="none"
-            label={({ name, percent }: any) => `${name} ${Math.round(percent * 100)}%`} labelLine>
-            {data.map((d, i) => <Cell key={d.name} fill={colorFor(d.name, i)} />)}
-          </Pie>
-          <Tooltip content={<ChartTip />} />
-          <Legend wrapperStyle={{ fontSize: 10 }} />
-        </PieChart>
-      </ResponsiveContainer>
-      <div style={{ position: "absolute", top: "38%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
-        <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{fmt(total)}</p>
-        <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
-      </div>
-    </div>
-  );
-}
 
 function RankBar({ data, color = BAND, width = 130 }: { data: { name: string; value: number }[]; color?: string; width?: number }) {
   return (
