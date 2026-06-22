@@ -6,7 +6,7 @@ import {
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, FileText } from "lucide-react";
+import { Download } from "lucide-react";
 import HENTNav, { getActiveLabel } from "@/components/HENTNav";
 import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
@@ -187,11 +187,11 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
     <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden flex flex-col">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5 flex-shrink-0"
         style={{
-          backgroundColor: accent,
-          borderBottomColor: accent,
+          backgroundColor: "#0C447C",
+          borderBottomColor: "#0C447C",
         }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+          style={{ backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -252,10 +252,10 @@ function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded border px-2 py-2.5 text-center"
-      style={{ backgroundColor: clr, borderColor: clr }}>
-      <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5"
-        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+    <div className="rounded-[10px] px-4 py-3 text-center"
+      style={{ backgroundColor: NAVY }}>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.06em] leading-tight mb-1.5"
+        style={{ color: "#B5D4F4" }}>{label}</p>
       <div className="flex items-baseline gap-1 justify-center">
         <span className="text-xl font-black tabular-nums leading-none text-white">{displayFmt(animated)}</span>
         {denom !== undefined && (
@@ -452,28 +452,21 @@ export default function HENTPortfolio() {
       <HENTNav />
 
       {/* â”€â”€ TITLE + KPI strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-[1400px] mx-auto px-6">
-
-          <div className="flex items-end justify-between py-4">
-            <div>
-              <h1 className="text-xl font-bold" style={{ color: NAVY }}>{getActiveLabel(pathname)}</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">Data scope: 2026 Cohort  ·  Updated 28 May 2026</p>
-            </div>
-            <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export Data
-              </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded font-semibold text-white transition-colors shadow-sm"
-                style={{ backgroundColor: RED }}>
-                <FileText size={11} /> Custom Report
-              </button>
-            </div>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,33,71,0.62), rgba(0,33,71,0.28))", zIndex: 1, pointerEvents: "none" }} />
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+          <div style={{ textAlign: "center" }}>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>{getActiveLabel(pathname)}</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Data scope: 2026 Cohort · Updated 28 May 2026</p>
           </div>
+        </div>
+      </header>
 
-          {/* KPI strip  -  5 distinct tinted tiles */}
-          <div className="pb-5">
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+      {/* â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <div className="max-w-[1400px] mx-auto px-6 py-5 space-y-5">
+
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
               <KpiTile
                 label="Health Ventures"
                 num={ACTUALS.ventures}
@@ -507,13 +500,7 @@ export default function HENTPortfolio() {
                 displayFmt={n => `${n.toFixed(1)}%`}
                 sub={`Against ${Math.round(PACE * 100)}% expected`}
                 clr="#134E4A" pace={false} />
-            </div>
-          </div>
         </div>
-      </header>
-
-      {/* â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="max-w-[1400px] mx-auto px-6 py-5 space-y-5">
 
         {/* Filter row */}
         <div className="flex flex-wrap items-center justify-between gap-3">

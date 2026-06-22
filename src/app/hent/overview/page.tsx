@@ -6,7 +6,7 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Award, Download, FileText, Handshake, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
+import { Award, Download, Handshake, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Area,
@@ -192,11 +192,11 @@ const HEAT_COLS = ["Quality", "Usefulness", "Accessibility", "Relevance"] as con
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: PRIMARY }} />
+    <div className="flex items-center gap-2.5 mb-4">
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: PRIMARY }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
+        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
   );
@@ -219,11 +219,11 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
     <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
-          backgroundColor: accent,
-          borderBottomColor: accent,
+          backgroundColor: "#0C447C",
+          borderBottomColor: "#0C447C",
         }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+          style={{ backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -245,22 +245,26 @@ function ExecCard({ label, value, sub, color, note, icon: Icon, bg = "#ffffff" }
   note?: string; bg?: string; icon?: LucideIcon;
 }) {
   return (
-    <div className="rounded border p-3 shadow-sm text-center" style={{
-      backgroundColor: color,
-      borderColor: color,
+    <div className="rounded-[10px] p-3.5 text-center" style={{
+      backgroundColor: "#ffffff",
+      border: `1px solid ${color}`,
     }}>
-      <div className="flex items-start justify-between mb-2">
-        <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[9px] font-bold uppercase tracking-[0.06em] leading-none" style={{ color: "#6B7280" }}>{label}</p>
         {Icon && (
           <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-            <Icon size={11} style={{ color: "rgba(255,255,255,0.88)" }} />
+            style={{ backgroundColor: `${color}1A` }}>
+            <Icon size={11} style={{ color }} />
           </div>
         )}
       </div>
-      <p className="text-xl font-black tabular-nums leading-none text-white">{value}</p>
-      {sub  && <p className="text-[9px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.68)" }}>{sub}</p>}
-      {note && <p className="text-[9px] mt-1.5 pt-1.5" style={{ color: "rgba(255,255,255,0.55)", borderTop: "1px solid rgba(255,255,255,0.18)" }}>{note}</p>}
+      <p className="text-xl font-black tabular-nums leading-none" style={{ color: NAVY }}>{value}</p>
+      {/* progress / underline bar */}
+      <div className="mt-2 mb-1" style={{ height: 3, borderRadius: 999, backgroundColor: `${color}26`, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: "100%", backgroundColor: color, borderRadius: 999 }} />
+      </div>
+      {sub  && <p className="text-[9px] mt-1 font-medium" style={{ color: "#9CA3AF" }}>{sub}</p>}
+      {note && <p className="text-[9px] mt-1.5 pt-1.5" style={{ color: "#6B7280", borderTop: "1px solid rgba(0,33,71,0.10)" }}>{note}</p>}
     </div>
   );
 }
@@ -921,18 +925,20 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr }: {
+function KpiTile({ label, num, displayFmt, sub, clr, pct }: {
   label: string; num: number; displayFmt: (n: number) => string;
-  sub: string; clr: string;
+  sub: string; clr: string; pct?: number;
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded border px-2 py-2.5 text-center"
-      style={{ backgroundColor: clr, borderColor: clr }}>
-      <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-tight mb-1.5"
-        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-      <p className="text-[1.1rem] font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
-      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    <div style={{ backgroundColor: NAVY, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
+      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B5D4F4", marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{displayFmt(animated)}</p>
+      <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 4 }}>{sub}</p>
+      {/* progress / underline bar */}
+      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.14)", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${Math.max(8, Math.min(100, pct ?? 100))}%`, backgroundColor: clr, borderRadius: 999 }} />
+      </div>
     </div>
   );
 }
@@ -944,45 +950,31 @@ export default function ExecutiveDashboard() {
       <HENTNav />
 
       {/* â"€â"€ EXECUTIVE HEADER â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-      <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div className="max-w-[1440px] mx-auto px-6">
-
-          <div className="flex items-end justify-between py-5">
-            <div>
-              <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Overview</h1>
-              <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                All programmes  ·  2022 - 2026  ·  {TOTAL_PROGS} programmes tracked  ·  Updated June 2026
-              </p>
-            </div>
-            <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export Report
-              </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm transition-colors"
-                style={{ backgroundColor: PRIMARY }}>
-                <FileText size={11} /> Custom Report
-              </button>
-            </div>
-          </div>
-
-          {/* â"€â"€ KPI STRIP â"€â"€â"€ */}
-          <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2">
-              <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} sub="Participants"                              clr="#075985" />
-              <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          sub="In portfolio"                            clr="#5B21B6" />
-              <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            sub={`${TOTAL_FEM.toLocaleString()} people`}  clr="#9D174D" />
-              <KpiTile label="Programmes"       num={TOTAL_PROGS}          displayFmt={n => String(Math.round(n))}          sub="Delivered"                               clr="#9A3412" />
-              <KpiTile label="Avg Satisfaction" num={AVG_SAT}              displayFmt={n => `${n.toFixed(1)}/5`}           sub="Rated progs"                             clr="#115E59" />
-              <KpiTile label="Avg Completion"   num={AVG_COMP}             displayFmt={n => `${Math.round(n)}%`}            sub="Completion"                              clr="#065F46" />
-              <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          sub="Cross-sector"                            clr="#92400E" />
-              <KpiTile label="1-Yr Fellows"     num={mfGrad}               displayFmt={n => String(Math.round(n))}          sub="Grad fellows"                            clr="#3730A3" />
-            </div>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,33,71,0.62), rgba(0,33,71,0.28))", zIndex: 1, pointerEvents: "none" }} />
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+          <div style={{ textAlign: "center" }}>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>HENT executive summary — programme delivery, participation, ventures and impact</p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>All programmes · 2022–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026</p>
           </div>
         </div>
       </header>
 
       {/* â"€â"€ MAIN CONTENT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
+
+        {/* â"€â"€ KPI STRIP â"€â"€â"€ */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
+          <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} sub="Participants"                              clr="#0EA5E9" />
+          <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          sub="In portfolio"                            clr="#7C3AED" />
+          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            sub={`${TOTAL_FEM.toLocaleString()} people`}  clr="#EC4899" pct={FEMALE_PCT} />
+          <KpiTile label="Programmes"       num={TOTAL_PROGS}          displayFmt={n => String(Math.round(n))}          sub="Delivered"                               clr="#EA580C" />
+          <KpiTile label="Avg Satisfaction" num={AVG_SAT}              displayFmt={n => `${n.toFixed(1)}/5`}           sub="Rated progs"                             clr="#14B8A6" pct={(AVG_SAT / 5) * 100} />
+          <KpiTile label="Avg Completion"   num={AVG_COMP}             displayFmt={n => `${Math.round(n)}%`}            sub="Completion"                              clr="#22C55E" pct={AVG_COMP} />
+          <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          sub="Cross-sector"                            clr="#F59E0B" />
+          <KpiTile label="1-Yr Fellows"     num={mfGrad}               displayFmt={n => String(Math.round(n))}          sub="Grad fellows"                            clr="#4338CA" />
+        </div>
 
         {/* â"€â"€ HERO EXEC CARDS â"€â"€â"€ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

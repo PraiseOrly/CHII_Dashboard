@@ -4,7 +4,7 @@ import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, FileText, Star, MapPin, Users, Handshake } from "lucide-react";
+import { Download, Star, MapPin, Users, Handshake } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
 import {
   fieldVisits, VISIT_TYPES, FV_CRITERIA, FV_REGIONS,
@@ -13,7 +13,6 @@ import {
 
 // â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#002147"; // footer bg only
-const RED     = "#D4264A";
 const ACCENT  = "#059669"; // page identity  -  field visits = emerald/green
 const SKY     = "#0EA5E9";
 const VIOLET  = "#8B5CF6";
@@ -116,11 +115,11 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: ACCENT }} />
+    <div className="flex items-center gap-2.5 mb-4">
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: ACCENT }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
+        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
   );
@@ -143,11 +142,11 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
     <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
         style={{
-          backgroundColor: accent,
-          borderBottomColor: accent,
+          backgroundColor: "#0C447C",
+          borderBottomColor: "#0C447C",
         }}>
         <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+          style={{ backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -290,12 +289,13 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded border px-2 py-2.5 text-center"
-      style={{ backgroundColor: clr, borderColor: clr }}>
-      <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
-        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-      <p className="text-[1.1rem] font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
-      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    <div style={{ backgroundColor: NAVY, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
+      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B5D4F4", marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 22, fontWeight: 700, color: "white", lineHeight: 1 }}>{displayFmt(animated)}</p>
+      <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 4 }}>{sub}</p>
+      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.14)", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: "100%", backgroundColor: clr, borderRadius: 999 }} />
+      </div>
     </div>
   );
 }
@@ -450,40 +450,26 @@ export default function FieldVisitsPage() {
       <HENTNav />
 
       {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <header className="bg-white border-b border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div className="max-w-[1440px] mx-auto px-6">
-          <div className="flex items-end justify-between py-5">
-            <div>
-              <h1 className="text-[1.6rem] font-black text-gray-900 leading-none">Field Visits</h1>
-              <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Industry excursions  ·  2022 - 2026  ·  {fieldVisits.length} visits tracked
-              </p>
-            </div>
-            <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export Report
-              </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm transition-colors"
-                style={{ backgroundColor: RED }}>
-                <FileText size={11} /> Custom Report
-              </button>
-            </div>
-          </div>
-
-          {/* KPI strip  -  7 distinct tinted tiles */}
-          <div className="pb-5">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {KPI_TILES.map(({ label, clr }, i) => (
-                <KpiTile key={label} label={label} num={kpiValues[i].num}
-                  displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
-              ))}
-            </div>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,33,71,0.62), rgba(0,33,71,0.28))", zIndex: 1, pointerEvents: "none" }} />
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+          <div style={{ textAlign: "center" }}>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Field Visits</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Industry excursions · 2022–2026 · {fieldVisits.length} visits tracked</p>
           </div>
         </div>
       </header>
 
       {/* â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
+
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {KPI_TILES.map(({ label, clr }, i) => (
+            <KpiTile key={label} label={label} num={kpiValues[i].num}
+              displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
+          ))}
+        </div>
 
         {/* FILTERS */}
         <div className="bg-white rounded shadow-sm border border-gray-100 px-4 py-2.5">
