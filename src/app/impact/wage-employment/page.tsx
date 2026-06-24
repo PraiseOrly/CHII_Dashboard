@@ -20,7 +20,7 @@ import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ──────────────────────────────────────────── */
 const NAVY = "#14306B";
-const BAND = "#0C447C";
+const BAND = "#14306B";
 const TICK = "#D17A86";
 const C_TOTAL = "#185FA5";
 const C_FEMALE = "#1D9E75";

@@ -16,7 +16,7 @@ const StoriesMap = dynamic(() => import("./StoriesMap"), { ssr: false, loading: 
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#14306B";
-const BAND = "#0C447C";
+const BAND = "#14306B";
 const TICK = "#D17A86";
 
 /* ── KPI strip card ──────────────────────────────────── */

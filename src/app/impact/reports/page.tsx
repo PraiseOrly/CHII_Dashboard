@@ -6,7 +6,7 @@ import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
 const NAVY = "#14306B";
-const BAND = "#0C447C";
+const BAND = "#14306B";
 const TICK = "#D17A86";
 const ACCENT = "#185FA5";
 
