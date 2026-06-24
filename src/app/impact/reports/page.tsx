@@ -8,7 +8,7 @@ import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
-const ACCENT = "#185FA5";
+const ACCENT = "#102C5E";
 
 /* ════════════════════════════════════════════════════════
    TYPES + DATA
@@ -129,7 +129,7 @@ function Card({ card }: { card: ResourceCard }) {
 
       {/* header strip */}
       <div style={{ padding: "13px 15px 12px",
-        background: coming ? "#E9EDF2" : isNew ? "linear-gradient(135deg, #0C447C, #185FA5)" : BAND }}>
+        background: coming ? "#E9EDF2" : isNew ? "linear-gradient(135deg, #102C5E, #102C5E)" : BAND }}>
         <p style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em",
           color: coming ? "#6B7280" : "rgba(181,212,244,0.85)" }}>{card.eyebrow}</p>
         <p style={{ fontSize: 14, fontWeight: 800, lineHeight: 1.25, marginTop: 3, color: coming ? "#374151" : "white" }}>{card.title}</p>

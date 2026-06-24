@@ -22,11 +22,11 @@ import { DonutRing as Donut } from "@/components/DonutChart";
 const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
-const C_FEMALE = "#185FA5";
-const C_MALE = "#1D9E75";
-const C_NB = "#7F77DD";
+const C_FEMALE = "#102C5E";
+const C_MALE = "#479BD6";
+const C_NB = "#D45F2C";
 
-const PILLAR_COLOR: Record<Pillar, string> = { HEMP: "#185FA5", HENT: "#0F6E56", HECO: "#BA7517" };
+const PILLAR_COLOR: Record<Pillar, string> = { HEMP: "#102C5E", HENT: "#A81B2D", HECO: "#D45F2C" };
 const GENDER_COLOR: Record<Gender, string> = { Female: C_FEMALE, Male: C_MALE, "Non-binary": C_NB };
 /* Reach & Participation reports gender as Female / Male only */
 const REACH_GENDERS: Gender[] = ["Female", "Male"];
@@ -54,7 +54,7 @@ const POP_GENDER_BY_PROGRAM = [
   { name: "Global Challenges", Female: 430, Male: 400 },
 ];
 const STATUS_COLOR: Record<string, string> = {
-  Completed: "#0F6E56", Active: "#185FA5", "In-progress": "#85B7EB", Dropped: "#C5D2E0",
+  Completed: "#A81B2D", Active: "#102C5E", "In-progress": "#85B7EB", Dropped: "#C5D2E0",
 };
 
 /* ── helpers ─────────────────────────────────────────── */
@@ -487,27 +487,18 @@ export default function OutreachPage() {
               </ResponsiveContainer>
             </Panel>
 
-            <Panel title="Participation by Intervention" subtitle="Reach per outreach program, coloured by pillar"
-              info="Reach per outreach intervention, coloured by the program (pillar) it belongs to.">
+            <Panel title="Participation by Intervention" subtitle="Reach per outreach program"
+              info="Reach per outreach intervention.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={byIntervention} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
                   <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
                   <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={104} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="value" name="Participants" radius={[0, 4, 4, 0]}
-                    label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }}>
-                    {byIntervention.map((d, i) => <Cell key={i} fill={PILLAR_COLOR[d.pillar]} />)}
-                  </Bar>
+                  <Bar dataKey="value" name="Participants" fill="#D45F2C" radius={[0, 4, 4, 0]}
+                    label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }} />
                 </BarChart>
               </ResponsiveContainer>
-              <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap", justifyContent: "center" }}>
-                {PILLARS.filter(p => byIntervention.some(d => d.pillar === p)).map(p => (
-                  <span key={p} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
-                    <span style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: PILLAR_COLOR[p] }} />{p}
-                  </span>
-                ))}
-              </div>
             </Panel>
           </div>
 
@@ -582,10 +573,10 @@ export default function OutreachPage() {
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="Total" name="Total" fill="#0C447C" barSize={40} radius={[4, 4, 0, 0]}>
+                <Bar dataKey="Total" name="Total" fill="#102C5E" barSize={40} radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="Total" position="top" fontSize={10.5} fill={NAVY} fontWeight={700} />
                 </Bar>
-                <Bar dataKey="Female" name="Female" fill="#185FA5" barSize={40} radius={[4, 4, 0, 0]}>
+                <Bar dataKey="Female" name="Female" fill="#102C5E" barSize={40} radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="Female" position="top" fontSize={10.5} fill={NAVY} fontWeight={700} />
                 </Bar>
               </BarChart>
@@ -602,7 +593,7 @@ export default function OutreachPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="Graduated" stackId="p" fill="#0F6E56" barSize={16} />
+                  <Bar dataKey="Graduated" stackId="p" fill="#A81B2D" barSize={16} />
                   <Bar dataKey="Not graduated" stackId="p" fill="#C5D2E0" barSize={16} radius={[0, 3, 3, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -659,9 +650,9 @@ export default function OutreachPage() {
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={(v: number) => `${v}%`} axisLine={false} tickLine={false} />
                   <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="Overall" name="Overall" fill="#0C447C" barSize={26} radius={[4, 4, 0, 0]}
+                  <Bar dataKey="Overall" name="Overall" fill="#102C5E" barSize={26} radius={[4, 4, 0, 0]}
                     label={{ position: "top", fontSize: 10, fill: NAVY, fontWeight: 700, formatter: (v: number) => `${v}%` }} />
-                  <Bar dataKey="Female" name="Female" fill="#185FA5" barSize={26} radius={[4, 4, 0, 0]}
+                  <Bar dataKey="Female" name="Female" fill="#102C5E" barSize={26} radius={[4, 4, 0, 0]}
                     label={{ position: "top", fontSize: 10, fill: NAVY, fontWeight: 700, formatter: (v: number) => `${v}%` }} />
                 </BarChart>
               </ResponsiveContainer>
@@ -679,7 +670,7 @@ export default function OutreachPage() {
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {INSTITUTIONS.map((inst, i) => (
                   <Bar key={inst} dataKey={inst} stackId="i" barSize={15}
-                    fill={["#0C447C", "#185FA5", "#1D9E75", "#C5D2E0"][i]}
+                    fill={["#102C5E", "#102C5E", "#479BD6", "#C5D2E0"][i]}
                     radius={i === INSTITUTIONS.length - 1 ? [0, 4, 4, 0] : undefined} />
                 ))}
               </BarChart>

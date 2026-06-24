@@ -63,7 +63,7 @@ export default function StoriesMap({ stories, cluster, onSelect }: {
 
     stories.forEach(s => {
       const icon = L.divIcon({
-        html: pin(s.type === "Video story" ? VIDEO_SVG : TEXT_SVG, s.type === "Video story" ? "#7C3AED" : "#185FA5"),
+        html: pin(s.type === "Video story" ? VIDEO_SVG : TEXT_SVG, s.type === "Video story" ? "#D45F2C" : "#102C5E"),
         className: "story-pin", iconSize: [28, 28], iconAnchor: [14, 28],
       });
       const m = L.marker([s.lat, s.lng], { icon });

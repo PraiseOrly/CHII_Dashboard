@@ -22,10 +22,10 @@ import { DonutRing as Donut } from "@/components/DonutChart";
 const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
-const PALETTE = ["#185FA5", "#1D9E75", "#7F77DD", "#E0A458", "#0C447C", "#D17A86", "#C5D2E0"];
-const GENDER_COLOR: Record<Gender, string> = { Female: "#185FA5", Male: "#1D9E75", Other: "#7F77DD" };
-const C_ACCENT = "#185FA5";
-const C_FEMALE = "#1D9E75";
+const PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E", "#D17A86", "#C5D2E0"];
+const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", Other: "#D45F2C" };
+const C_ACCENT = "#102C5E";
+const C_FEMALE = "#479BD6";
 
 /* ── helpers ─────────────────────────────────────────── */
 const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
@@ -519,7 +519,7 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Formal vs Informal Ventures" subtitle="Registration status"
               info="Share of ventures that are formally registered versus operating informally.">
-              <Donut data={v.formal} colors={["#185FA5", "#C5D2E0"]} total={total} totalLabel="Ventures" height={340} legendPercent />
+              <Donut data={v.formal} colors={["#102C5E", "#C5D2E0"]} total={total} totalLabel="Ventures" height={340} legendPercent />
             </Panel>
             <Panel title="Founder Gender" subtitle="Founder gender split"
               info="Gender distribution of venture founders.">
@@ -742,7 +742,7 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Scholar vs Non-scholar Founders" subtitle="Scholar share of founders"
               info="Ventures led by Mastercard Foundation scholars versus other founders.">
-              <Donut data={founders.scholarSplit} colors={["#185FA5", "#C5D2E0"]} total={total} totalLabel="Founders" height={340} legendPercent />
+              <Donut data={founders.scholarSplit} colors={["#102C5E", "#C5D2E0"]} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
             <Panel title="Scholar Founder Gender" subtitle="Female · Male"
               info="Gender split among scholar-led ventures.">
@@ -833,7 +833,7 @@ export default function EntrepreneurshipPage() {
             </Panel>
             <Panel title="Technology vs Traditional" subtitle="Innovation profile of ventures"
               info="Share of ventures that are technology-enabled versus traditional businesses.">
-              <Donut data={sectors.techVsTraditional} colors={["#185FA5", "#E0A458"]} total={total} totalLabel="Ventures" height={340} legendPercent />
+              <Donut data={sectors.techVsTraditional} colors={["#102C5E", "#A81B2D"]} total={total} totalLabel="Ventures" height={340} legendPercent />
             </Panel>
           </div>
         </section>
@@ -933,7 +933,7 @@ export default function EntrepreneurshipPage() {
                 {insights.map((text, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                     <span style={{ width: 26, height: 26, borderRadius: 7, backgroundColor: "rgba(224,164,88,0.16)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Lightbulb size={14} color="#E0A458" />
+                      <Lightbulb size={14} color="#A81B2D" />
                     </span>
                     <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.5 }}>{text}</p>
                   </div>

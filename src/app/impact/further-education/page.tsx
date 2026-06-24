@@ -21,11 +21,11 @@ import { DonutRing as Donut } from "@/components/DonutChart";
 const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
-const PALETTE = ["#185FA5", "#1D9E75", "#7F77DD", "#E0A458", "#0C447C", "#D17A86", "#C5D2E0"];
-const GENDER_COLOR: Record<string, string> = { Female: "#185FA5", Male: "#1D9E75", Other: "#7F77DD" };
-const C_ACCENT = "#185FA5";
+const PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E", "#D17A86", "#C5D2E0"];
+const GENDER_COLOR: Record<string, string> = { Female: "#102C5E", Male: "#479BD6", Other: "#D45F2C" };
+const C_ACCENT = "#102C5E";
 const FUNDING_COLOR: Record<string, string> = {
-  "Scholarship / funded": "#185FA5", "Self-funded": "#1D9E75", "Employer": "#7F77DD", "Loan": "#E0A458",
+  "Scholarship / funded": "#102C5E", "Self-funded": "#479BD6", "Employer": "#D45F2C", "Loan": "#A81B2D",
 };
 
 /* ── helpers ─────────────────────────────────────────── */
@@ -416,7 +416,7 @@ export default function FurtherEducationPage() {
             </Panel>
             <Panel title="Active vs Completed Programmes" subtitle="Current enrolment status"
               info="Graduates with an active enrolment versus those who have completed their programme.">
-              <Donut data={d.activeCompleted} colors={["#185FA5", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
+              <Donut data={d.activeCompleted} colors={["#102C5E", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
           </div>
           <Panel title="Enrolment Trend by Year" subtitle="Cumulative enrolments over time"
@@ -482,7 +482,7 @@ export default function FurtherEducationPage() {
           </div>
           <Panel title="Relevance to ALU Degree" subtitle="How further study relates to the degree"
             info="How closely graduates' further study relates to their ALU degree.">
-            <Donut data={d.relevance} colors={["#185FA5", "#1D9E75", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
+            <Donut data={d.relevance} colors={["#102C5E", "#479BD6", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
           </Panel>
         </section>
         )}
@@ -550,7 +550,7 @@ export default function FurtherEducationPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Relevance to ALU Degree" subtitle="Directly · Somewhat · Different field"
               info="How closely further study aligns with the ALU degree.">
-              <Donut data={d.relevance} colors={["#185FA5", "#1D9E75", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
+              <Donut data={d.relevance} colors={["#102C5E", "#479BD6", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Qualification by Degree Programme" subtitle="Qualification mix per programme"
               info="What qualifications graduates from each ALU programme pursue.">
@@ -582,7 +582,7 @@ export default function FurtherEducationPage() {
               {insights.map((text, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                   <span style={{ width: 26, height: 26, borderRadius: 7, backgroundColor: "rgba(224,164,88,0.16)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Lightbulb size={14} color="#E0A458" />
+                    <Lightbulb size={14} color="#A81B2D" />
                   </span>
                   <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.5 }}>{text}</p>
                 </div>

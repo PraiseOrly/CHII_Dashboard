@@ -22,14 +22,14 @@ import { DonutRing as Donut } from "@/components/DonutChart";
 const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
-const C_TOTAL = "#185FA5";
-const C_FEMALE = "#1D9E75";
+const C_TOTAL = "#102C5E";
+const C_FEMALE = "#479BD6";
 
-const GENDER_COLOR: Record<Gender, string> = { Female: "#185FA5", Male: "#1D9E75", Other: "#7F77DD" };
+const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", Other: "#D45F2C" };
 const EMP_COLOR: Record<string, string> = {
-  "Full-time": "#185FA5", "Part-time": "#1D9E75", "Temporary": "#E0A458", "Contract": "#7F77DD",
+  "Full-time": "#102C5E", "Part-time": "#479BD6", "Temporary": "#A81B2D", "Contract": "#D45F2C",
 };
-const ARR_COLOR: Record<string, string> = { Remote: "#185FA5", "On-site": "#1D9E75", Hybrid: "#7F77DD" };
+const ARR_COLOR: Record<string, string> = { Remote: "#102C5E", "On-site": "#479BD6", Hybrid: "#D45F2C" };
 
 /* ── helpers ─────────────────────────────────────────── */
 const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
@@ -329,9 +329,9 @@ export default function WageEmploymentPage() {
     return { indicators, status, career, careerTotal, household, contribution, helpfulness };
   }, [scope, total]);
 
-  const STATUS_COLOR = ["#185FA5", "#1D9E75"];
-  const CAREER_COLOR = ["#185FA5", "#1D9E75", "#7F77DD"];
-  const QUALITY_COLORS: Record<string, string> = { "Employment Rate": C_TOTAL, "Decent Work": C_FEMALE, "12-Mo Placement": "#7F77DD" };
+  const STATUS_COLOR = ["#102C5E", "#479BD6"];
+  const CAREER_COLOR = ["#102C5E", "#479BD6", "#D45F2C"];
+  const QUALITY_COLORS: Record<string, string> = { "Employment Rate": C_TOTAL, "Decent Work": C_FEMALE, "12-Mo Placement": "#D45F2C" };
 
   const activeCount = [year, program, ptype, gender, country, cohort].filter(v => v !== "all").length;
   const reset = () => { setYear("all"); setProgram("all"); setPtype("all"); setGender("all"); setCountry("all"); setCohort("all"); };

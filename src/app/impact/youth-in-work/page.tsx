@@ -22,29 +22,29 @@ import { DonutRing as Donut } from "@/components/DonutChart";
 const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
-const C_BLUE = "#185FA5";
-const C_GREEN = "#1D9E75";
-const C_VIOLET = "#7F77DD";
-const C_AMBER = "#E0A458";
+const C_BLUE = "#102C5E";
+const C_GREEN = "#479BD6";
+const C_VIOLET = "#D45F2C";
+const C_AMBER = "#A81B2D";
 
-const PROGRAM_COLOR: Record<Program, string> = { HEMP: "#185FA5", HENT: "#0F6E56", HECO: "#BA7517" };
-const GENDER_COLOR: Record<Gender, string> = { Female: "#185FA5", Male: "#1D9E75", "Non-binary": "#7F77DD" };
+const PROGRAM_COLOR: Record<Program, string> = { HEMP: "#102C5E", HENT: "#A81B2D", HECO: "#D45F2C" };
+const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
 /* gender splits report Female / Male only */
 const GENDER_2: Gender[] = ["Female", "Male"];
 const PATHWAY_COLOR: Record<Pathway, string> = {
-  "Wage Employment": "#185FA5", "Internship": "#3FA7E0", "Venture Founder": "#1D9E75",
-  "Wage & Venture": "#7F77DD", "Further Education": "#E0A458", "Seeking Employment": "#D17A86", "Other": "#C5D2E0",
+  "Wage Employment": "#102C5E", "Internship": "#3FA7E0", "Venture Founder": "#479BD6",
+  "Wage & Venture": "#D45F2C", "Further Education": "#A81B2D", "Seeking Employment": "#D17A86", "Other": "#C5D2E0",
 };
 const OUTCOME_COLOR: Record<string, string> = { Employment: C_BLUE, Internships: "#3FA7E0", Ventures: C_GREEN };
 const WORKCAT_COLOR: Record<string, string> = {
-  "Full-time": "#185FA5", "Part-time": "#1D9E75", "Contract": "#7F77DD",
-  "Internship": "#3FA7E0", "Self-employed": "#E0A458", "Founder": "#0F6E56",
-  "Permanent": "#185FA5", "Freelance": "#1D9E75",
+  "Full-time": "#102C5E", "Part-time": "#479BD6", "Contract": "#D45F2C",
+  "Internship": "#3FA7E0", "Self-employed": "#A81B2D", "Founder": "#A81B2D",
+  "Permanent": "#102C5E", "Freelance": "#479BD6",
 };
-const JOBCAT_COLOR: Record<string, string> = { New: "#185FA5", Additional: "#1D9E75", Improved: "#E0A458" };
+const JOBCAT_COLOR: Record<string, string> = { New: "#102C5E", Additional: "#479BD6", Improved: "#A81B2D" };
 /* trend reporting window: 2022 → 2026 */
 const TREND_YEARS = [2022, 2023, 2024, 2025, 2026];
-const EMPLOYER_PALETTE = ["#185FA5", "#1D9E75", "#7F77DD", "#E0A458", "#0C447C"];
+const EMPLOYER_PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E"];
 
 /* ── helpers ─────────────────────────────────────────── */
 const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
@@ -141,7 +141,7 @@ function WhiteKpi({ Icon, label, value, tooltip }: {
   Icon: React.ComponentType<any>; label: string; value: string; tooltip: string;
 }) {
   const [tip, setTip] = useState(false);
-  const ACCENT = "#185FA5";
+  const ACCENT = "#102C5E";
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${ACCENT}`, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
       <span style={{ width: 38, height: 38, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
