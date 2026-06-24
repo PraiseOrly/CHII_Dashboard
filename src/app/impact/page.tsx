@@ -849,7 +849,7 @@ export default function ImpactDashboard() {
         </div>
 
         {/* L8 · Featured Impact Story */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/impact.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/footer.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
 
           {/* Readability overlay */}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
