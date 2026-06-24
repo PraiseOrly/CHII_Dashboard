@@ -82,7 +82,7 @@ export default function ProgramImpactMatrix() {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
       {/* Navy heading band */}
-      <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ backgroundColor: "#14306B", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
         <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Program Impact Matrix</p>
       </div>
@@ -116,7 +116,7 @@ export default function ProgramImpactMatrix() {
               const d = payload[0].payload;
               return (
                 <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                  <p style={{ fontWeight: 700, color: "#042C53", marginBottom: 4 }}>{d.name}</p>
+                  <p style={{ fontWeight: 700, color: "#14306B", marginBottom: 4 }}>{d.name}</p>
                   <p style={{ color: WAGE }}>Wage Employment <b>{fmt(d.wage)}</b></p>
                   <p style={{ color: ENT }}>Entrepreneurs <b>{fmt(d.ent)}</b></p>
                   <p style={{ color: EDU }}>Further Education <b>{fmt(d.edu)}</b></p>

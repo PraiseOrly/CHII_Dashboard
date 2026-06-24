@@ -85,7 +85,7 @@ export default function StoriesMap({ stories, cluster, onSelect }: {
       <div ref={containerRef} style={{ width: "100%", height: "100%", minHeight: 480, borderRadius: 10 }} />
       <button onClick={resetView} title="Reset map view"
         style={{ position: "absolute", top: 10, right: 10, zIndex: 500, display: "inline-flex", alignItems: "center", gap: 5,
-          fontSize: 11.5, fontWeight: 700, color: "#042C53", backgroundColor: "white", border: "1px solid rgba(0,33,71,0.15)",
+          fontSize: 11.5, fontWeight: 700, color: "#14306B", backgroundColor: "white", border: "1px solid rgba(0,33,71,0.15)",
           borderRadius: 8, padding: "6px 11px", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.18)" }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#042C53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
         Reset

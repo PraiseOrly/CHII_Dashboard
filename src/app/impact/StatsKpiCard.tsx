@@ -81,7 +81,7 @@ export default function StatsKpiCard({
               left: "50%",
               transform: "translateX(-50%)",
               backgroundColor: "white",
-              color: "#042C53",
+              color: "#14306B",
               fontSize: 10.5,
               lineHeight: 1.55,
               padding: "9px 12px",

@@ -36,7 +36,7 @@ const B200  = "#85B7EB";  // Blue 200
 const B400  = "#378ADD";  // Blue 400
 const B600  = "#185FA5";  // Blue 600  — hero fill · access label · section bar
 const B800  = "#0C447C";  // Blue 800  — ACCESS number text
-const B900  = "#042C53";  // Blue 900  — chart headers · deep anchors
+const B900  = "#14306B";  // Blue 900  — chart headers · deep anchors
 const KPI_NAVY = "#14306B";  // Executive KPI card fill (brand navy)
 const T50   = "#E1F5EE";  // Teal  50  — OUTCOME card fill
 const T400  = "#1D9E75";  // Teal 400
@@ -694,7 +694,7 @@ export default function ImpactDashboard() {
         }
       `}</style>
       {/* -- Page header -- */}
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/header_blue.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
 
         {/* Readability overlay */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1, pointerEvents: "none" }} />
@@ -736,7 +736,7 @@ export default function ImpactDashboard() {
 
           {/* Geographic Reach */}
           <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ backgroundColor: "#14306B", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Geographic Reach</p>
             </div>
@@ -751,7 +751,7 @@ export default function ImpactDashboard() {
 
           {/* Right — Jobs & Enterprise Trend (Stacked Area) */}
           <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ backgroundColor: "#14306B", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Jobs &amp; Enterprise Trend</p>
             </div>
@@ -793,7 +793,7 @@ export default function ImpactDashboard() {
           </div>
 
           <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ backgroundColor: "#14306B", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Dignified Work Indicators</p>
             </div>
@@ -814,7 +814,7 @@ export default function ImpactDashboard() {
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-[3px] h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "#042C53" }} />
-            <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "#042C53" }}>Strategic Insights</p>
+            <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "#14306B" }}>Strategic Insights</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
             <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>

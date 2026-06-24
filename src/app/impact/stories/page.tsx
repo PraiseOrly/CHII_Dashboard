@@ -15,7 +15,7 @@ const StoriesMap = dynamic(() => import("./StoriesMap"), { ssr: false, loading: 
 });
 
 /* ── palette ─────────────────────────────────────────── */
-const NAVY = "#042C53";
+const NAVY = "#14306B";
 const BAND = "#0C447C";
 const TICK = "#D17A86";
 

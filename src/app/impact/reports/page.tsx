@@ -5,7 +5,7 @@ import { Search, Download, ArrowRight, FileText } from "lucide-react";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
-const NAVY = "#042C53";
+const NAVY = "#14306B";
 const BAND = "#0C447C";
 const TICK = "#D17A86";
 const ACCENT = "#185FA5";

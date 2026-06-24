@@ -55,7 +55,7 @@ export default function ProgramOutcomes() {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
       {/* Navy heading band */}
-      <div style={{ backgroundColor: "#0C447C", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ backgroundColor: "#14306B", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
         <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Program Outcomes</p>
       </div>
@@ -98,7 +98,7 @@ export default function ProgramOutcomes() {
               return (
                 <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 12px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
                   <p style={{ fontWeight: 700, color: d.color, marginBottom: 2 }}>{d.name}</p>
-                  <p style={{ color: "#042C53", fontWeight: 600 }}>{fmt(d.value)}</p>
+                  <p style={{ color: "#14306B", fontWeight: 600 }}>{fmt(d.value)}</p>
                   <p style={{ color: "#9CA3AF", fontSize: 9, marginTop: 1 }}>{Math.round(d.value / maxVal * 100)}% of largest outcome</p>
                 </div>
               );

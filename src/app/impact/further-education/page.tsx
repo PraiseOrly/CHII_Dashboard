@@ -18,7 +18,7 @@ import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ─────────────────────────────────────────── */
-const NAVY = "#042C53";
+const NAVY = "#14306B";
 const BAND = "#0C447C";
 const TICK = "#D17A86";
 const PALETTE = ["#185FA5", "#1D9E75", "#7F77DD", "#E0A458", "#0C447C", "#D17A86", "#C5D2E0"];

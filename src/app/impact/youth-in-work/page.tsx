@@ -19,7 +19,7 @@ import StatsKpiCard from "../StatsKpiCard";
 import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ──────────────────────────────────────────── */
-const NAVY = "#042C53";
+const NAVY = "#14306B";
 const BAND = "#0C447C";
 const TICK = "#D17A86";
 const C_BLUE = "#185FA5";
