@@ -76,23 +76,10 @@ export default function ImpactNav() {
     <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-16 gap-2 sm:gap-3">
 
-        {/* Logo + wordmark */}
+        {/* Logo */}
         <Link href="/impact" className="flex items-center gap-2.5 flex-shrink-0 group">
-          <svg viewBox="0 0 200 200" width="32" height="32" aria-label="CHII">
-            <rect width="200" height="200" rx="22" fill={NAVY} />
-            <text x="100" y="95" textAnchor="middle" fill="white"
-              fontFamily="Inter, ui-sans-serif, sans-serif" fontWeight="900" fontSize="82">ALU</text>
-            <text x="100" y="118" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-              fontFamily="Inter, ui-sans-serif, sans-serif" fontSize="11.5">CENTRE FOR HEALTH</text>
-            <text x="100" y="134" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-              fontFamily="Inter, ui-sans-serif, sans-serif" fontSize="11.5">INNOVATION &amp;</text>
-            <text x="100" y="150" textAnchor="middle" fill="rgba(255,255,255,0.6)"
-              fontFamily="Inter, ui-sans-serif, sans-serif" fontSize="11.5">IMPACT</text>
-          </svg>
-          <div className="hidden xl:block">
-            <p className="text-[12px] font-black leading-none" style={{ color: NAVY }}>Executive</p>
-            <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wide">CHII Analytics</p>
-          </div>
+          <img src="/logos/CHII Logo (CLR).png" alt="CHII" width={24} height={24}
+            style={{ height: 24, width: "auto", objectFit: "contain" }} />
         </Link>
 
         {/* Divider */}

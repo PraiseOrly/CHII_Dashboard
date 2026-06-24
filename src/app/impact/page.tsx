@@ -37,6 +37,7 @@ const B400  = "#378ADD";  // Blue 400
 const B600  = "#185FA5";  // Blue 600  — hero fill · access label · section bar
 const B800  = "#0C447C";  // Blue 800  — ACCESS number text
 const B900  = "#042C53";  // Blue 900  — chart headers · deep anchors
+const KPI_NAVY = "#14306B";  // Executive KPI card fill (brand navy)
 const T50   = "#E1F5EE";  // Teal  50  — OUTCOME card fill
 const T400  = "#1D9E75";  // Teal 400
 const T600  = "#0F6E56";  // Teal 600  — OUTCOME label · section bar
@@ -701,7 +702,10 @@ export default function ImpactDashboard() {
         {/* Content */}
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
+            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "rgba(181,212,244,0.85)" }}>
+              Executive &middot; CHII Analytics
+            </p>
+            <h1 className="text-lg font-black leading-tight mt-1" style={{ color: "white", letterSpacing: "0.01em" }}>
               Pan-African Impact Overview
             </h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
@@ -717,12 +721,12 @@ export default function ImpactDashboard() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
         {/* L1 · KPI Strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
-          <StatsKpiCard label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — including HENT, HEMP, HECO and every other program under CHII." />
-          <StatsKpiCard label="Youth in Work" num={D.employmentOut} sub="In employment or enterprise" Icon={Briefcase} tooltip="Graduates in work — wage employment or running their own venture — within 12 months of completing school." />
-          <StatsKpiCard label="Wage Employment" num={D.msWageOnly} sub="In paid employment" Icon={Users} tooltip="Graduates in paid employment of any kind — formal and informal — with an employer." />
-          <StatsKpiCard label="Entrepreneurs" num={D.msEntOnly} sub="Running own venture" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own venture or enterprise." />
-          <StatsKpiCard label="Jobs Created" num={D.jobsFromVC} sub="Across all ventures" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led ventures." />
-          <StatsKpiCard label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
+          <StatsKpiCard fill={KPI_NAVY} label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — including HENT, HEMP, HECO and every other program under CHII." />
+          <StatsKpiCard fill={KPI_NAVY} label="Youth in Work" num={D.employmentOut} sub="In employment or enterprise" Icon={Briefcase} tooltip="Graduates in work — wage employment or running their own venture — within 12 months of completing school." />
+          <StatsKpiCard fill={KPI_NAVY} label="Wage Employment" num={D.msWageOnly} sub="In paid employment" Icon={Users} tooltip="Graduates in paid employment of any kind — formal and informal — with an employer." />
+          <StatsKpiCard fill={KPI_NAVY} label="Entrepreneurs" num={D.msEntOnly} sub="Running own venture" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own venture or enterprise." />
+          <StatsKpiCard fill={KPI_NAVY} label="Jobs Created" num={D.jobsFromVC} sub="Across all ventures" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led ventures." />
+          <StatsKpiCard fill={KPI_NAVY} label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
         </div>
 
         {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}

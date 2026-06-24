@@ -56,7 +56,7 @@ function KpiCard({ label, value, caption, Icon, tooltip, delta }: {
   const [tip, setTip] = useState(false);
   const up = (delta?.v ?? 0) >= 0;
   return (
-    <div style={{ backgroundColor: NAVY, borderRadius: 10, padding: "16px 16px 14px", position: "relative" }}>
+    <div style={{ backgroundColor: "#14306B", borderRadius: 10, padding: "16px 16px 14px", position: "relative", textAlign: "center" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 8 }}>
         <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "#B5D4F4" }}>{label}</p>
         <div style={{ position: "relative", cursor: "pointer", display: "flex" }}

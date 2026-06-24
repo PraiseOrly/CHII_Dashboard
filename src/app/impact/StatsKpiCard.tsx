@@ -35,7 +35,7 @@ export default function StatsKpiCard({
   num,
   displayFmt = (n) => Math.round(n).toLocaleString(),
   sub,
-  fill = "#042C53",
+  fill = "#14306B",
   lbl = "#B5D4F4",
   numColor = "#FFFFFF",
   border = "none",
