@@ -477,7 +477,7 @@ export default function EntrepreneurshipPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={96} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={22}>
                     <LabelList dataKey="value" position="right" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -496,7 +496,7 @@ export default function EntrepreneurshipPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Ventures" fill={BAND} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -565,7 +565,7 @@ export default function EntrepreneurshipPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Founders" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={34}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -580,7 +580,7 @@ export default function EntrepreneurshipPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} height={40} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={30}>
                     <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -595,7 +595,7 @@ export default function EntrepreneurshipPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} height={40} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Ventures" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={26}>
                     <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -856,7 +856,7 @@ export default function EntrepreneurshipPage() {
             <SectionKpi label="Incubated" num={118} sub="ventures incubated" Icon={Rocket}
               tooltip="Ventures that went through incubation." />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             <Panel title="Intervention Uptake" subtitle="CHII support used, ranked"
               info="CHII support interventions founders used, sorted by uptake. Same order as the helpfulness panel.">
               <ResponsiveContainer width="100%" height={Math.max(240, support.interventionUptake.length * 32)}>
