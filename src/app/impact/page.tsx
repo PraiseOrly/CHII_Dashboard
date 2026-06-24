@@ -702,11 +702,8 @@ export default function ImpactDashboard() {
         {/* Content */}
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
           <div style={{ textAlign: "center" }}>
-            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "rgba(181,212,244,0.85)" }}>
-              Executive &middot; CHII Analytics
-            </p>
-            <h1 className="text-lg font-black leading-tight mt-1" style={{ color: "white", letterSpacing: "0.01em" }}>
-              Pan-African Impact Overview
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
+              CHII Impact Overview
             </h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
               Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
@@ -855,7 +852,7 @@ export default function ImpactDashboard() {
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
 
           {/* -- Content (profile left + story right, centered in blue zone) -- */}
-          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", gap: 28, maxWidth: 660, margin: "0 auto", padding: "18px 24px" }}>
+          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 24, maxWidth: 520, margin: "0 auto", padding: "20px 24px", boxSizing: "border-box" }}>
             {/* Profile — left */}
             <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
               <div style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
@@ -876,7 +873,7 @@ export default function ImpactDashboard() {
                 &ldquo;From healthcare worker to health-tech founder in 18 months&rdquo;
               </p>
               <p style={{ fontSize: 12, color: "#B5D4F4", lineHeight: 1.6 }}>
-                After completing the HEMP HealthX program, Amara used her clinical experience and newly acquired digital health skills to launch a telemedicine platform serving rural communities in East Africa. Her venture now employs 12 graduates from the same cohort and has served over 4,200 patients.
+                After completing HEMP HealthX, Amara launched a telemedicine platform for rural communities in East Africa. The venture now employs 12 fellow graduates and has served over 4,200 patients.
               </p>
             </div>
           </div>

@@ -8,7 +8,7 @@ export default function FeaturedImpactStory({
   meta = "HEMP · Cohort 2024",
   location = "Nairobi, Kenya",
   quote = "From healthcare worker to health-tech founder in 18 months",
-  body = "After completing the HEMP HealthX program, Amara used her clinical experience and newly acquired digital health skills to launch a telemedicine platform serving rural communities in East Africa. Her venture now employs 12 graduates from the same cohort and has served over 4,200 patients.",
+  body = "After completing HEMP HealthX, Amara launched a telemedicine platform for rural communities in East Africa. The venture now employs 12 fellow graduates and has served over 4,200 patients.",
   footer = false,
   mission = "Africa's Oasis for Health & Education Transformation",
   dataSynced = "18 June 2026, 16:30 CAT",
