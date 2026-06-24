@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Search, Download, ArrowRight, FileText } from "lucide-react";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
+import HeaderDesign from "@/components/HeaderDesign";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
 const NAVY = "#14306B";
@@ -193,9 +194,10 @@ export default function ImpactReportsPage() {
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header_blue.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <HeaderDesign />
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Impact reports</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Annual reports, key facts, and evaluations documenting CHII&apos;s impact across programmes</p>
@@ -203,6 +205,7 @@ export default function ImpactReportsPage() {
           </div>
         </div>
       </header>
+      </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-9">
 

@@ -1,4 +1,5 @@
 import { Users } from "lucide-react";
+import HeaderDesign from "@/components/HeaderDesign";
 
 /* Featured impact story banner — shared "impact section" used as the
    last section across the executive impact pages. */
@@ -28,9 +29,9 @@ export default function FeaturedImpactStory({
   analystEmail?: string;
 } = {}) {
   return (
-    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/footer.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
-      {/* Readability overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
+    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#102C5E" }}>
+      {/* Brand header design — design elements, centre-blue & triangle pattern */}
+      <HeaderDesign />
 
       {/* Content (profile left + story right, centered in blue zone).
           In footer mode the content is kept for layout but hidden, so the banner

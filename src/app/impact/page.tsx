@@ -22,6 +22,7 @@ import OutreachAccess from "./OutreachAccess";
 import ProgramImpactMatrix from "./ProgramImpactMatrix";
 import ProgramQuality from "./ProgramQuality";
 import StatsKpiCard from "./StatsKpiCard";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -698,13 +699,23 @@ export default function ImpactDashboard() {
         }
       `}</style>
       {/* -- Page header -- */}
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/header_blue.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
-        {/* Readability overlay */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1, pointerEvents: "none" }} />
+        {/* Faint triangle pattern across the whole header */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+        {/* Full design elements anchored to the left & right edges (natural aspect ratio) */}
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design2.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+        {/* Center-blue overlay — keeps the title area solid navy & readable */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
 
         {/* Content */}
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
               CHII Impact Overview
@@ -718,6 +729,7 @@ export default function ImpactDashboard() {
           </div>
         </div>
       </header>
+      </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
         {/* L1 · KPI Strip */}
@@ -849,39 +861,8 @@ export default function ImpactDashboard() {
           </div>
         </div>
 
-        {/* L8 · Featured Impact Story */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#042C53", backgroundImage: "url('/images/footer.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
-
-          {/* Readability overlay */}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.45), rgba(4,44,83,0.15))", zIndex: 1 }} />
-
-          {/* -- Content (profile left + story right, centered in blue zone) -- */}
-          <div style={{ position: "relative", zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 24, maxWidth: 520, margin: "0 auto", padding: "20px 24px", boxSizing: "border-box" }}>
-            {/* Profile — left */}
-            <div style={{ textAlign: "center", flexShrink: 0, width: 150 }}>
-              <div style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: "rgba(133,183,235,0.15)", border: "2px solid rgba(133,183,235,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
-                <Users size={22} color="#85B7EB" />
-              </div>
-              <p style={{ fontSize: 11, color: "#85B7EB", fontWeight: 600 }}>Featured Graduate</p>
-              <p style={{ fontSize: 15, color: "white", fontWeight: 700, marginTop: 5 }}>Amara Diallo</p>
-              <p style={{ fontSize: 10, color: "#B5D4F4", marginTop: 3, lineHeight: 1.5 }}>HEMP &middot; Cohort 2024<br/>Nairobi, Kenya</p>
-            </div>
-
-            {/* Divider */}
-            <div style={{ width: 1, alignSelf: "stretch", background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)", flexShrink: 0 }} />
-
-            {/* Story — right */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 10, fontWeight: 600, color: "#85B7EB", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Impact Story</p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: "white", lineHeight: 1.35, marginBottom: 10 }}>
-                &ldquo;From healthcare worker to health-tech founder in 18 months&rdquo;
-              </p>
-              <p style={{ fontSize: 12, color: "#B5D4F4", lineHeight: 1.6 }}>
-                After completing HEMP HealthX, Amara launched a telemedicine platform for rural communities in East Africa. The venture now employs 12 fellow graduates and has served over 4,200 patients.
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* L8 · Footer */}
+        <FeaturedImpactStory footer />
 
       </div>
     </div>

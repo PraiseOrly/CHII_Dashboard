@@ -6,8 +6,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
-  Users, Heart, Info, Download, GraduationCap, BookOpen, Wallet,
-  ArrowUpRight, ArrowDownRight, SlidersHorizontal, X, Globe, MapPin, TrendingUp, Lightbulb,
+  Users, Info, Download, GraduationCap, BookOpen, Wallet,
+  SlidersHorizontal, X, Globe, MapPin, TrendingUp, Lightbulb,
 } from "lucide-react";
 import {
   FE_STUDENTS, GENDERS, QUALIFICATIONS, FIELDS, FUNDING_SOURCES, DESTINATIONS,
@@ -15,6 +15,8 @@ import {
   type Gender,
 } from "./_data";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
+import HeaderDesign from "@/components/HeaderDesign";
+import StatsKpiCard from "../StatsKpiCard";
 import { DonutRing as Donut } from "@/components/DonutChart";
 
 /* ── palette ─────────────────────────────────────────── */
@@ -34,6 +36,16 @@ const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
 const countBy = (rows: { [k: string]: any }[], key: string, order: string[]) =>
   order.map(name => ({ name, value: rows.filter(r => r[key] === name).length })).filter(d => d.value > 0);
 
+/* ♀ woman / female symbol icon — matches the Entrepreneurship page */
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color ?? "currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+      <circle cx="12" cy="8" r="5" />
+      <path d="M12 13v8M9 18h6" />
+    </svg>
+  );
+}
+
 /* ════════════════════════════════════════════════════════
    Shared UI
 ═══════════════════════════════════════════════════════ */
@@ -49,45 +61,9 @@ function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
   );
 }
 
-function KpiCard({ label, value, caption, Icon, tooltip, delta }: {
-  label: string; value: string; caption: string;
-  Icon: typeof Users; tooltip: string; delta?: { v: number; unit: "%" | "pp" };
-}) {
-  const [tip, setTip] = useState(false);
-  const up = (delta?.v ?? 0) >= 0;
-  return (
-    <div style={{ backgroundColor: "#14306B", borderRadius: 10, padding: "16px 16px 14px", position: "relative", textAlign: "center" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "#B5D4F4" }}>{label}</p>
-        <div style={{ position: "relative", cursor: "pointer", display: "flex" }}
-          onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
-          <Info size={11} color="rgba(181,212,244,0.7)" />
-          {tip && (
-            <div style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#021D38", color: "white", fontSize: 10.5, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
-              {tooltip}
-            </div>
-          )}
-        </div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 9 }}>
-        <Icon size={22} color="#B5D4F4" style={{ opacity: 0.8, flexShrink: 0 }} />
-        <p style={{ fontSize: 26, fontWeight: 800, color: "white", lineHeight: 1 }}>{value}</p>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8 }}>
-        <p style={{ fontSize: 10, color: "rgba(181,212,244,0.7)" }}>{caption}</p>
-        {delta && (
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 1, fontSize: 9.5, fontWeight: 700, color: up ? "#5FD3A6" : "#E69AA4" }}>
-            {up ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
-            {Math.abs(delta.v)}{delta.unit}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
 
 /* light section KPI strip card — white, blue border */
-function MiniKpi({ Icon, label, value, center }: { Icon: typeof Users; label: string; value: string; center?: boolean }) {
+function MiniKpi({ Icon, label, value, center }: { Icon: React.ComponentType<any>; label: string; value: string; center?: boolean }) {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_ACCENT}`, padding: "13px 15px", display: "flex", flexDirection: center ? "column" : "row", alignItems: "center", justifyContent: "center", gap: center ? 7 : 11, textAlign: center ? "center" : "left" }}>
       <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -339,9 +315,10 @@ export default function FurtherEducationPage() {
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header_blue.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(4,44,83,0.55), rgba(4,44,83,0.2))", zIndex: 1, pointerEvents: "none" }} />
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <HeaderDesign />
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Further Study</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Graduates who continue their education, the qualifications they pursue, where they study, and how they finance lifelong learning</p>
@@ -349,23 +326,24 @@ export default function FurtherEducationPage() {
           </div>
         </div>
       </header>
+      </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
 
         {/* ════ OVERVIEW ════ */}
         <section className="space-y-4">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(175px, 1fr))", gap: 12 }}>
-            <KpiCard label="In Further Study" value={fmt(TOTAL)} caption="graduates" Icon={GraduationCap}
-              tooltip="Graduates in further education within the current filters." delta={{ v: 5, unit: "%" }} />
-            <KpiCard label="Currently Enrolled" value={fmt(d.enrolled)} caption="active students" Icon={BookOpen}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
+            <StatsKpiCard label="In Further Study" num={TOTAL} sub="graduates" Icon={GraduationCap}
+              tooltip="Graduates in further education within the current filters." />
+            <StatsKpiCard label="Currently Enrolled" num={d.enrolled} sub="active students" Icon={BookOpen}
               tooltip="Graduates with an active further-education enrolment this cycle." />
-            <KpiCard label="Further Study Rate" value="5%" caption="of all graduates" Icon={TrendingUp}
+            <StatsKpiCard label="Further Study Rate" num={5} displayFmt={(n) => `${Math.round(n)}%`} sub="of all graduates" Icon={TrendingUp}
               tooltip="Share of CHII graduates who progress to further study." />
-            <KpiCard label="Female Share" value={`${d.femalePct}%`} caption="of cohort" Icon={Heart}
+            <StatsKpiCard label="Female Share" num={d.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="of cohort" Icon={WomanIcon}
               tooltip="Share of further-education graduates who are female." />
-            <KpiCard label="Scholarship / Funded" value={`${d.fundedPct}%`} caption="funded share" Icon={Wallet}
+            <StatsKpiCard label="Scholarship / Funded" num={d.fundedPct} displayFmt={(n) => `${Math.round(n)}%`} sub="funded share" Icon={Wallet}
               tooltip="Share on a scholarship or otherwise funded place." />
-            <KpiCard label="Countries of Study" value={fmt(d.countriesOfStudy)} caption="destinations" Icon={Globe}
+            <StatsKpiCard label="Countries of Study" num={d.countriesOfStudy} sub="destinations" Icon={Globe}
               tooltip="Distinct countries where graduates pursue further study." />
           </div>
 
@@ -445,7 +423,7 @@ export default function FurtherEducationPage() {
         <section className="space-y-4">
           <SectionHeader title="Student Profile" blurb="Who are the learners?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi center Icon={Heart} label="Female Participation" value={`${d.femalePct}%`} />
+            <MiniKpi center Icon={WomanIcon} label="Female Participation" value={`${d.femalePct}%`} />
             <MiniKpi center Icon={Users} label="Male Participation" value={`${d.malePct}%`} />
             <MiniKpi center Icon={Globe} label="Countries Represented" value={fmt(d.countriesRepresented)} />
           </div>
