@@ -59,10 +59,10 @@ const RAW: DataPoint[] = Array.from({ length: 300 }, (_, i) => {
 });
 
 const METRICS: { key: keyof typeof BENCHMARKS; label: string; color: string; icon: string }[] = [
-  { key: "reliableIncome",   label: "Reliable Income",          color: "#0F6E56", icon: "↑" },
-  { key: "senseOfPurpose",   label: "Sense of Purpose",         color: "#185FA5", icon: "★" },
-  { key: "reputation",       label: "Reputation",               color: "#7C3AED", icon: "◆" },
-  { key: "respectWorkplace", label: "Respect in the Workplace", color: "#D97706", icon: "●" },
+  { key: "reliableIncome",   label: "Reliable Income",          color: "#102C5E", icon: "↑" },
+  { key: "senseOfPurpose",   label: "Sense of Purpose",         color: "#479BD6", icon: "★" },
+  { key: "reputation",       label: "Reputation",               color: "#A81B2D", icon: "◆" },
+  { key: "respectWorkplace", label: "Respect in the Workplace", color: "#D45F2C", icon: "●" },
 ];
 
 function avg(arr: number[]): number {

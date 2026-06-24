@@ -87,11 +87,11 @@ function KpiCard({ label, value, caption, Icon, tooltip, delta }: {
 }
 
 /* light section KPI strip card — white, blue border */
-function MiniKpi({ Icon, label, value }: { Icon: typeof Users; label: string; value: string }) {
+function MiniKpi({ Icon, label, value, center }: { Icon: typeof Users; label: string; value: string; center?: boolean }) {
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_ACCENT}`, padding: "13px 15px", display: "flex", alignItems: "center", gap: 11 }}>
-      <span style={{ width: 36, height: 36, borderRadius: 9, backgroundColor: `${C_ACCENT}1A`, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={18} color={C_ACCENT} />
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_ACCENT}`, padding: "13px 15px", display: "flex", flexDirection: center ? "column" : "row", alignItems: "center", justifyContent: "center", gap: center ? 7 : 11, textAlign: center ? "center" : "left" }}>
+      <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={20} color={C_ACCENT} />
       </span>
       <div style={{ minWidth: 0 }}>
         <p style={{ fontSize: 21, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
@@ -445,9 +445,9 @@ export default function FurtherEducationPage() {
         <section className="space-y-4">
           <SectionHeader title="Student Profile" blurb="Who are the learners?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi Icon={Heart} label="Female Participation" value={`${d.femalePct}%`} />
-            <MiniKpi Icon={Users} label="Male Participation" value={`${d.malePct}%`} />
-            <MiniKpi Icon={Globe} label="Countries Represented" value={fmt(d.countriesRepresented)} />
+            <MiniKpi center Icon={Heart} label="Female Participation" value={`${d.femalePct}%`} />
+            <MiniKpi center Icon={Users} label="Male Participation" value={`${d.malePct}%`} />
+            <MiniKpi center Icon={Globe} label="Countries Represented" value={fmt(d.countriesRepresented)} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Gender Distribution" subtitle="Female · Male · Other"
@@ -492,9 +492,9 @@ export default function FurtherEducationPage() {
         <section className="space-y-4">
           <SectionHeader title="Study Destinations" blurb="Where do graduates continue their education?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi Icon={MapPin} label="Studying Within Africa" value={fmt(d.within)} />
-            <MiniKpi Icon={Globe} label="Studying Abroad" value={fmt(d.abroad)} />
-            <MiniKpi Icon={MapPin} label="Destination Countries" value={fmt(d.countriesOfStudy)} />
+            <MiniKpi center Icon={MapPin} label="Studying Within Africa" value={fmt(d.within)} />
+            <MiniKpi center Icon={Globe} label="Studying Abroad" value={fmt(d.abroad)} />
+            <MiniKpi center Icon={MapPin} label="Destination Countries" value={fmt(d.countriesOfStudy)} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Study Destination" subtitle="Africa · Europe · North America · Asia"
@@ -514,9 +514,9 @@ export default function FurtherEducationPage() {
         <section className="space-y-4">
           <SectionHeader title="Funding & Access" blurb="How are graduates financing further education?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi Icon={Wallet} label="Scholarship Recipients" value={fmt(d.fundedCount)} />
-            <MiniKpi Icon={Wallet} label="Self-funded Students" value={fmt(d.selfFunded)} />
-            <MiniKpi Icon={Wallet} label="Employer-sponsored" value={fmt(d.employer)} />
+            <MiniKpi center Icon={Wallet} label="Scholarship Recipients" value={fmt(d.fundedCount)} />
+            <MiniKpi center Icon={Wallet} label="Self-funded Students" value={fmt(d.selfFunded)} />
+            <MiniKpi center Icon={Wallet} label="Employer-sponsored" value={fmt(d.employer)} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Funding Source" subtitle="How further study is paid for"

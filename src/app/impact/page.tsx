@@ -49,6 +49,10 @@ const G50   = "#F1EFE8";  // Gray  50  — QUALITY card fill
 const G600  = "#5F5E5A";  // Gray 600  — QUALITY label
 const G900  = "#2C2C2A";  // Gray 900  — QUALITY number
 const EXEC_BG = "#F8F9FA"; // Page background — very pale neutral
+// Brand theme palette — chart bars & trend series
+const TH_ORANGE = "#D45F2C";
+const TH_NAVY   = "#102C5E";
+const TH_BLUE   = "#479BD6";
 // Semantic aliases (keep chart/data references working)
 const NAVY   = B900;
 const TEAL   = T400;
@@ -768,17 +772,17 @@ export default function ImpactDashboard() {
                     contentStyle={{ fontSize: 11, borderRadius: 6, border: "1px solid rgba(0,33,71,0.1)" }}
                     formatter={(v: number, n: string) => [fmt(v), n]}
                   />
-                  <Area type="monotone" dataKey="Employment" stackId="1" stroke="#0F6E56" fill="#0F6E5628" strokeWidth={2} name="Employment Conversions" />
-                  <Area type="monotone" dataKey="Enterprise" stackId="1" stroke="#185FA5" fill="#185FA528" strokeWidth={2} name="Enterprise Startups" />
-                  <Area type="monotone" dataKey="Placements" stackId="1" stroke="#1D9E75" fill="#1D9E7528" strokeWidth={2} name="Graduate Placements" />
+                  <Area type="monotone" dataKey="Employment" stackId="1" stroke={TH_NAVY} fill={TH_NAVY + "28"} strokeWidth={2} name="Employment Conversions" />
+                  <Area type="monotone" dataKey="Enterprise" stackId="1" stroke={TH_BLUE} fill={TH_BLUE + "28"} strokeWidth={2} name="Enterprise Startups" />
+                  <Area type="monotone" dataKey="Placements" stackId="1" stroke={TH_ORANGE} fill={TH_ORANGE + "28"} strokeWidth={2} name="Graduate Placements" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
             <div style={{ display: "flex", gap: 14, marginTop: 10 }}>
               {([
-                { label: "Employment Conversions", color: "#0F6E56" },
-                { label: "Enterprise Startups",    color: "#185FA5" },
-                { label: "Graduate Placements",    color: "#1D9E75" },
+                { label: "Employment Conversions", color: TH_NAVY },
+                { label: "Enterprise Startups",    color: TH_BLUE },
+                { label: "Graduate Placements",    color: TH_ORANGE },
               ] as { label: string; color: string }[]).map(l => (
                 <span key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
                   <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: 3, backgroundColor: l.color + "50", border: `1.5px solid ${l.color}`, flexShrink: 0 }} />

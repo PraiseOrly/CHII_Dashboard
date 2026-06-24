@@ -447,7 +447,7 @@ export default function WageEmploymentPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={96} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Employed" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}
+                  <Bar dataKey="value" name="Employed" fill={C_TOTAL} radius={[0, 4, 4, 0]} barSize={16}
                     label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }} />
                 </BarChart>
               </ResponsiveContainer>

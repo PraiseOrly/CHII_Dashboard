@@ -121,9 +121,9 @@ export default function OutreachAccess() {
               );
             }}
           />
-          <Bar dataKey="female" stackId="g" fill="#185FA5" name="Women" />
+          <Bar dataKey="female" stackId="g" fill="#102C5E" name="Women" />
           <BR2
-            dataKey="male" stackId="g" fill="#1D9E75" radius={[0, 3, 3, 0]} name="Men"
+            dataKey="male" stackId="g" fill="#479BD6" radius={[0, 3, 3, 0]} name="Men"
             label={(props: any) => {
               const { x, y, width, height: bh, index } = props;
               if (index == null || !stackData[index]) return null;
@@ -139,11 +139,11 @@ export default function OutreachAccess() {
       </ResponsiveContainer>
       <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
         <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
-          <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#185FA5" }} />
+          <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#102C5E" }} />
           Women
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
-          <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#1D9E75" }} />
+          <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, backgroundColor: "#479BD6" }} />
           Men
         </span>
       </div>

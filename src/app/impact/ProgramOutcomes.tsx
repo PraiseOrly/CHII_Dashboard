@@ -41,11 +41,11 @@ export default function ProgramOutcomes() {
     const jobsFromVC    = vc2.reduce((s, v) => s + (v.jobsTotal ?? v.jobs6m ?? 0), 0);
 
     return ([
-      { name: "Youth in Work",     value: employmentOut,           color: "#1D9E75" },
-      { name: "Jobs Created",      value: jobsFromVC,              color: "#185FA5" },
-      { name: "Wage Employment",   value: msWageOnly + intConv2,   color: "#0C447C" },
-      { name: "Entrepreneurs",     value: msEntOnly + hakStart,    color: "#0F6E56" },
-      { name: "Further Education", value: msFurther,               color: "#7F77DD" },
+      { name: "Youth in Work",     value: employmentOut,           color: "#102C5E" },
+      { name: "Jobs Created",      value: jobsFromVC,              color: "#479BD6" },
+      { name: "Wage Employment",   value: msWageOnly + intConv2,   color: "#D45F2C" },
+      { name: "Entrepreneurs",     value: msEntOnly + hakStart,    color: "#A81B2D" },
+      { name: "Further Education", value: msFurther,               color: "#85B7EB" },
     ] as { name: string; value: number; color: string }[]).sort((a, b) => b.value - a.value);
   }, [year, gender]);
 

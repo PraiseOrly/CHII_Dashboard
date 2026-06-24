@@ -32,10 +32,10 @@ const CONV: Record<string, number> = {
 };
 
 function scoreColor(s: number): string {
-  if (s >= 80) return "#0F6E56";
-  if (s >= 70) return "#185FA5";
-  if (s >= 60) return "#7F77DD";
-  return "#BA7517";
+  if (s >= 80) return "#102C5E";
+  if (s >= 70) return "#479BD6";
+  if (s >= 60) return "#D45F2C";
+  return "#A81B2D";
 }
 
 export default function ProgramQuality() {

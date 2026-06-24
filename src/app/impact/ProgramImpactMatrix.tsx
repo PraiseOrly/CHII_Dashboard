@@ -29,9 +29,9 @@ const SEL: React.CSSProperties = {
 };
 
 /* Outcome pathways — these are the headline goals on the stats cards */
-const WAGE = "#185FA5";   // Wage Employment
-const ENT  = "#0F6E56";   // Entrepreneurs
-const EDU  = "#7F77DD";   // Further Education
+const WAGE = "#102C5E";   // Wage Employment  — theme navy
+const ENT  = "#479BD6";   // Entrepreneurs    — theme light blue
+const EDU  = "#D45F2C";   // Further Education — theme orange
 
 /* per-program conversion to an outcome + how those outcomes split across pathways */
 const PROFILE: Record<string, { conv: number; wage: number; ent: number; edu: number }> = {

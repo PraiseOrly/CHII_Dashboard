@@ -497,7 +497,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Ventures" fill={BAND} radius={[4, 4, 0, 0]} barSize={40}>
+                  <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -710,7 +710,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Jobs" fill={BAND} radius={[0, 4, 4, 0]} barSize={20}>
+                  <Bar dataKey="value" name="Jobs" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={20}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -758,7 +758,7 @@ export default function EntrepreneurshipPage() {
                 <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="value" name="Reporting" fill={BAND} radius={[4, 4, 0, 0]} barSize={64}>
+                <Bar dataKey="value" name="Reporting" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={64}>
                   <LabelList dataKey="value" position="top" fontSize={11} fill="#374151" fontWeight={700} formatter={(val: number) => `${val}%`} />
                 </Bar>
               </BarChart>
@@ -773,7 +773,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={160} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Respondents" fill={BAND} radius={[0, 4, 4, 0]} barSize={18}>
+                  <Bar dataKey="value" name="Respondents" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={18}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -810,7 +810,7 @@ export default function EntrepreneurshipPage() {
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="value" name="Ventures" fill={BAND} radius={[0, 4, 4, 0]} barSize={18}>
+                <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={18}>
                   <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                 </Bar>
               </BarChart>
