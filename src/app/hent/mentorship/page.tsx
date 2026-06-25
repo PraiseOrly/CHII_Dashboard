@@ -4,7 +4,7 @@ import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, Star, Award, Users, Target } from "lucide-react";
+import { Download, Star, Award, Users, Target, Zap, Briefcase } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
 import {
   mentorshipPrograms, MF_CRITERIA, MF_QUAL_AREAS,
@@ -454,15 +454,36 @@ export default function MentorshipPage() {
       <HENTNav />
 
       {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,33,71,0.62), rgba(0,33,71,0.28))", zIndex: 1, pointerEvents: "none" }} />
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+
+        {/* Faint triangle pattern across the whole header */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+        {/* Full design elements anchored to the left & right edges */}
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+        {/* Center overlay */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+
+        {/* Content */}
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Briefcase size={11} style={{ color: "#34D399" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#34D399" }}>HENT</span>
+              </span>
+            </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Capacity-building &amp; fellowship tracks · 2022–2026 · {mentorshipPrograms.length} programmes tracked</p>
           </div>
         </div>
       </header>
+      </div>
 
       {/* â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">

@@ -6,7 +6,7 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Award, Download, Handshake, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
+import { Award, Briefcase, Download, Handshake, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Area,
@@ -950,16 +950,37 @@ export default function ExecutiveDashboard() {
       <HENTNav />
 
       {/* â"€â"€ EXECUTIVE HEADER â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: NAVY, backgroundImage: "url('/images/header.png')", backgroundSize: "cover", backgroundPosition: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,33,71,0.62), rgba(0,33,71,0.28))", zIndex: 1, pointerEvents: "none" }} />
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10 }}>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+
+        {/* Faint triangle pattern across the whole header */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+        {/* Full design elements anchored to the left & right edges (natural aspect ratio) */}
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+        {/* Center overlay — keeps the title area solid & readable */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+
+        {/* Content */}
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Briefcase size={11} style={{ color: "#34D399" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#34D399" }}>HENT</span>
+              </span>
+            </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>HENT executive summary — programme delivery, participation, ventures and impact</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>All programmes · 2022–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026</p>
           </div>
         </div>
       </header>
+      </div>
 
       {/* â"€â"€ MAIN CONTENT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">

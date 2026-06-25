@@ -10,6 +10,7 @@ import {
   Mic,
   Package,
   Users,
+  Briefcase,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -256,9 +257,15 @@ export default function MissionStudentsPage() {
 
           <div className="flex items-end justify-between py-5">
             <div>
-              <h1 className="text-[1.55rem] font-black leading-none" style={{ color: NAVY }}>
-                Mission Students
-              </h1>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <h1 className="text-[1.55rem] font-black leading-none" style={{ color: NAVY }}>
+                  Mission Students
+                </h1>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <Briefcase size={12} style={{ color: "#F59E0B" }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
+                </span>
+              </div>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
                 Mentorship  ·  Guest Faculty  ·  Mission Curator  -  three pillars of student support in HEMP
               </p>

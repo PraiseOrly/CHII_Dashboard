@@ -1,7 +1,7 @@
 ﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
-import { Download, FileText } from "lucide-react";
+import { Briefcase, Download, FileText } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import {
   Area,
@@ -292,27 +292,42 @@ export default function InternshipsPage() {
       <HEMPNav />
 
       {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-end justify-between py-4">
-            <div>
-              <h1 className="text-xl font-black" style={{ color: NAVY }}>Internships</h1>
-              <p className="text-[11px] text-gray-400 mt-0.5">
-                Workplace placements  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {total.orgs} organisations  ·  {total.students} students placed
-              </p>
-            </div>
-            <div className="flex gap-2 pb-0.5">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-1.5 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export Data
-              </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded font-semibold text-white transition-colors shadow-sm"
-                style={{ backgroundColor: AMBER }}>
-                <FileText size={11} /> Custom Report
-              </button>
-            </div>
-          </div>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
-          <div className="pb-5">
+        {/* Faint triangle pattern across the whole header */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+        {/* Full design elements anchored to the left & right edges */}
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+        {/* Center overlay */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+
+        {/* Content */}
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internships</h1>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Briefcase size={11} style={{ color: "#F59E0B" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
+              </span>
+            </div>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              Workplace placements  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {total.orgs} organisations  ·  {total.students} students placed
+            </p>
+          </div>
+        </div>
+      </header>
+      </div>
+
+      {/* â”€â”€ KPI STRIP â”€â”€â”€ */}
+      <div className="max-w-[1400px] mx-auto px-6 pt-5">
+          <div className="pb-1">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {KPI_TILES.map(({ label, clr }, i) => (
                 <KpiTile key={label} label={label} num={kpiValues[i].num}
@@ -320,8 +335,7 @@ export default function InternshipsPage() {
               ))}
             </div>
           </div>
-        </div>
-      </header>
+      </div>
 
       {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">

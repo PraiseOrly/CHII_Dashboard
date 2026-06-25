@@ -8,7 +8,7 @@ import {
 import {
   Users, Info, Rocket, Star, Briefcase,
   Scale, LifeBuoy, Activity, ShieldCheck, Globe, TrendingUp, Lightbulb, Banknote,
-  SlidersHorizontal, X,
+  SlidersHorizontal, X, PieChart as PieChartIcon,
 } from "lucide-react";
 import {
   VENTURES, STATUSES, FUNDING_SOURCES, STAGES,
@@ -386,7 +386,13 @@ export default function EntrepreneurshipPage() {
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Entrepreneurship</h1>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Entrepreneurship</h1>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <PieChartIcon size={11} style={{ color: "rgba(181,212,244,0.9)" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(181,212,244,0.9)" }}>Executive</span>
+              </span>
+            </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>The journey from founder to venture growth, jobs created, and long-term economic impact</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>

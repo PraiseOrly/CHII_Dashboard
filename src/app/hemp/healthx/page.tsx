@@ -4,7 +4,7 @@ import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, FileText, MapPin, Handshake, Users } from "lucide-react";
+import { Briefcase, Download, FileText, MapPin, Handshake, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 
@@ -189,26 +189,41 @@ export default function HealthXPage() {
       <HEMPNav />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
-      <header className="bg-white border-b border-gray-200" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div className="max-w-[1440px] mx-auto px-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
-          <div className="flex items-end justify-between py-5">
-            <div>
-              <h1 className="text-[1.55rem] font-black leading-none" style={{ color: NAVY }}>HealthX</h1>
-              <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Field-based learning  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {visitsCompleted} sessions  ·  {countries.length} countries
-              </p>
+        {/* Faint triangle pattern across the whole header */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+        {/* Full design elements anchored to the left & right edges */}
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+        {/* Center overlay */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+
+        {/* Content */}
+        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX</h1>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Briefcase size={11} style={{ color: "#F59E0B" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
+              </span>
             </div>
-            <div className="flex gap-2">
-              <button className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-600 px-3.5 py-2 rounded hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <Download size={11} /> Export
-              </button>
-              <button className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded font-semibold text-white shadow-sm"
-                style={{ backgroundColor: TEAL }}>
-                <FileText size={11} /> Report
-              </button>
-            </div>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              Field-based learning  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {visitsCompleted} sessions  ·  {countries.length} countries
+            </p>
           </div>
+        </div>
+      </header>
+      </div>
+
+      {/* â”€â”€ THREE HEADLINE METRICS â”€â”€â”€ */}
+      <div className="max-w-[1440px] mx-auto px-6 pt-6">
 
           {/* â”€â”€ THREE HEADLINE METRICS â”€â”€â”€ */}
           <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
