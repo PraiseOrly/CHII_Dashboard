@@ -10,19 +10,20 @@ import HENTNav from "@/components/HENTNav";
 import { hackathons, PROJECT_CATEGORIES } from "@/data/hackathons";
 
 // â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const NAVY   = "#002147"; // footer bg only
-const ORANGE = "#EA580C";
-const SKY    = "#0EA5E9";
-const VIOLET = "#8B5CF6";
-const TEAL   = "#0D9488";
-const EMERALD = "#10B981";
-const PURPLE = "#7C3AED";
-const ROSE   = "#F43F5E";
-const AMBER  = "#F59E0B";
-const INDIGO = "#4338CA";
+// Cool-only palette sampled from design1.png (no warm tones)
+const NAVY   = "#0B2D71"; // footer bg only
+const ORANGE = "#0B2D71";
+const SKY    = "#3FA0D8";
+const VIOLET = "#5C2D91";
+const TEAL   = "#009CA6";
+const EMERALD = "#00A07A";
+const PURPLE = "#5C2D91";
+const ROSE   = "#5C2D91";
+const AMBER  = "#3FA0D8";
+const INDIGO = "#5C2D91";
 
 // Project-category donut colours (one per category)
-const CAT_COLORS = [SKY, EMERALD, VIOLET, AMBER, ROSE];
+const CAT_COLORS = [SKY, EMERALD, VIOLET, TEAL, NAVY];
 
 // â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmt(n: number) {
@@ -136,7 +137,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-2.5 mb-4">
       <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#0E4633", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -157,16 +158,11 @@ function ChartCard({ title, sub, accent = ORANGE, children }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
-        style={{
-          backgroundColor: "#0C447C",
-          borderBottomColor: "#0C447C",
-        }}>
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "#D17A86" }} />
+    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
         <button onClick={handleDownload} title="Download chart"
@@ -225,12 +221,12 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: NAVY, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B5D4F4", marginBottom: 8 }}>{label}</p>
-      <p style={{ fontSize: 22, fontWeight: 700, color: "white", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 4 }}>{sub}</p>
-      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.14)", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: "100%", backgroundColor: clr, borderRadius: 999 }} />
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
+      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
+      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
+      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
       </div>
     </div>
   );
@@ -276,6 +272,8 @@ const KPI_TILES = [
 // â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HackathonsPage() {
   const [trendTab, setTrendTab] = useState<"participants" | "projects" | "winners" | "startups">("participants");
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
 
   // â”€â”€ per-year trend data â”€â”€
   const participantsTrend = YEARS.map(yr => {
@@ -368,7 +366,7 @@ export default function HackathonsPage() {
 
       {/* â”€â”€ TITLE + KPI STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -380,18 +378,12 @@ export default function HackathonsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Hackathons</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#34D399" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#34D399" }}>HENT</span>
-              </span>
-            </div>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Hackathons</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Innovation events · {YEARS[0]}–{YEARS[YEARS.length - 1]} · {total.events} hackathons tracked</p>
           </div>
         </div>
@@ -410,7 +402,20 @@ export default function HackathonsPage() {
         </div>
 
         {/* â”€â”€ SECTION 1: PARTICIPANT PROFILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <section>
+        {/* Section pills */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {[{ n: 0, label: "All Sections" }, { n: 1, label: "Profiles" }, { n: 2, label: "Per Year" }, { n: 3, label: "Trends" }, { n: 4, label: "Categories" }].map(({ n, label }) => {
+            const on = n === 0 ? activeSection === "all" : activeSection === n;
+            return (
+              <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Participant Profiles"
             sub={`${total.participants.toLocaleString()} participants across all hackathons`} />
 
@@ -483,7 +488,7 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ SECTION 2: HACKATHONS PER YEAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Hackathons Conducted Per Year"
             sub="Event frequency and participant reach by year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -531,7 +536,7 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ SECTION 3: HACKATHON TRENDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Hackathon Trends"
             sub="Year-on-year trends with male vs female comparison" />
 
@@ -596,7 +601,7 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ SECTION 4: PARTICIPATION & PROJECT CATEGORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader title="Participation & Project Categories"
             sub={`${total.participants.toLocaleString()} participants  ·  ${total.projects} projects`} />
 
@@ -654,26 +659,20 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
-            {([
-              { value: String(total.participants), label: "Total Participants",    clr: "#1E3A8A" },
-              { value: `${femalePct}%`,            label: "Female Participation", clr: "#9D174D" },
-              { value: String(total.startups),     label: "Startups Created",     clr: "#064E3B" },
-              { value: String(total.partnerships), label: "Partnerships Secured", clr: "#0891B2" },
-            ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
-                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HENT  ·  Hackathons  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}
-            </p>
-            <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 28 May 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Hackathons M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+            </div>
           </div>
         </div>
 

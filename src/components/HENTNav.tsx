@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LayoutGrid, ChevronDown, Sun, Moon, Download } from "lucide-react";
 
-const NAVY = "#042C53";
+const GREEN = "#0E4633";
 
 function useTheme(): [boolean, () => void] {
   const [dark, setDark] = useState(false);
@@ -67,10 +67,15 @@ export default function HENTNav() {
     <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-16 gap-2 sm:gap-3">
 
-        {/* Logo */}
+        {/* Logo lockup */}
         <Link href="/hent/overview" className="flex items-center gap-2.5 flex-shrink-0 group">
-          <img src="/logos/CHII Logo (CLR).png" alt="CHII" width={24} height={24}
-            style={{ height: 24, width: "auto", objectFit: "contain" }} />
+          <span className="flex items-center gap-1.5" style={{ color: "#0E4633" }}>
+            <span className="text-[30px] font-semibold tracking-tight leading-none">HEALTH</span>
+            <span className="flex flex-col leading-tight">
+              <span className="text-[13px] font-medium tracking-tight whitespace-nowrap">ENTREPRENEURSHIP</span>
+              <span className="text-[13px] font-medium tracking-tight">PILLAR</span>
+            </span>
+          </span>
         </Link>
 
         {/* Divider */}
@@ -85,7 +90,7 @@ export default function HENTNav() {
                 key={label}
                 href={href}
                 className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-16 transition-colors group flex-shrink-0"
-                style={{ color: isActive ? NAVY : "rgba(4,44,83,0.45)" }}
+                style={{ color: isActive ? GREEN : "rgba(14,70,51,0.5)" }}
               >
                 {!isActive && (
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -94,7 +99,7 @@ export default function HENTNav() {
                 <span className="relative text-[12px] font-bold leading-tight whitespace-nowrap">{label}</span>
                 {isActive && (
                   <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full"
-                    style={{ backgroundColor: NAVY }} />
+                    style={{ backgroundColor: GREEN }} />
                 )}
               </Link>
             );

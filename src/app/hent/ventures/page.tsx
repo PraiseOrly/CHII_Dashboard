@@ -6,7 +6,7 @@ import {
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Briefcase, Download, Zap } from "lucide-react";
+import { Banknote, Briefcase, Download, Info, Rocket, SlidersHorizontal, Target, Users, X, Zap, type LucideIcon } from "lucide-react";
 import HENTNav, { getActiveLabel } from "@/components/HENTNav";
 import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
@@ -15,20 +15,28 @@ import { founders, PROGRAM_EVENTS_LIST } from "@/data/founders";
 import { labVentures } from "@/data/ventureLabs";
 
 // â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const NAVY    = "#002147"; // footer only
-const RED     = "#D4264A";
-const PRIMARY = "#2F6FED";
-const TEAL    = "#14B8A6";
-const PURPLE  = "#7C3AED";
-const GREEN   = "#22C55E";
-const INDIGO  = "#6366F1";
-const ORANGE  = "#EA580C";
-const SKY     = "#0EA5E9";
-const EMERALD = "#10B981";
-const AMBER   = "#F59E0B";
-const VIOLET  = "#8B5CF6";
+// â”€â”€ Palette sampled from design1.png (brand header artwork) â”€â”€
+const D1_NAVY    = "#0B2D71"; // deep blue
+const D1_TEAL    = "#009CA6"; // teal / cyan
+const D1_PURPLE  = "#5C2D91"; // purple
+const D1_GREEN   = "#00A07A"; // emerald green
+const D1_SKY     = "#3FA0D8"; // light blue
 
-const BAR_COLORS = [PRIMARY, TEAL, ORANGE, PURPLE, AMBER, GREEN, INDIGO, "#EC4899", SKY, EMERALD];
+const NAVY    = D1_NAVY;    // footer only
+const RED     = D1_TEAL;
+const PRIMARY = D1_NAVY;
+const TEAL    = D1_TEAL;
+const PURPLE  = D1_PURPLE;
+const GREEN   = D1_GREEN;
+const INDIGO  = D1_PURPLE;
+const ORANGE  = D1_TEAL;
+const SKY     = D1_SKY;
+const EMERALD = D1_GREEN;
+const AMBER   = D1_GREEN;
+const VIOLET  = D1_PURPLE;
+
+// Balanced corporate order — cool palette only (no warm tones)
+const BAR_COLORS = [D1_NAVY, D1_TEAL, D1_GREEN, D1_PURPLE, D1_SKY];
 
 // â”€â”€â”€ constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PACE    = 5 / 12;
@@ -184,16 +192,11 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-      <div className="px-5 py-3.5 border-b flex items-start gap-2.5 flex-shrink-0"
-        style={{
-          backgroundColor: "#0C447C",
-          borderBottomColor: "#0C447C",
-        }}>
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "#D17A86" }} />
+    <div ref={cardRef} className="overflow-hidden flex flex-col" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5 flex-shrink-0" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
         <button onClick={handleDownload} title="Download chart"
@@ -211,10 +214,10 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
 // Pace bar designed for light tinted backgrounds
 function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }) {
   return (
-    <div className="h-1 rounded-sm relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(255,255,255,0.22)" }}>
+    <div className="h-1 rounded-sm relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(14,70,51,0.12)" }}>
       <div className="h-full"
         style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
-      <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: "rgba(255,255,255,0.55)" }} />
+      <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: "rgba(14,70,51,0.4)" }} />
     </div>
   );
 }
@@ -239,7 +242,7 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }: {
+function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT, Icon }: {
   label: string;
   num: number;
   displayFmt: (n: number) => string;
@@ -249,22 +252,26 @@ function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT }
   pace: boolean;
   paceA?: number;
   paceT?: number;
+  Icon?: LucideIcon;
 }) {
   const animated = useCountUp(num);
   return (
     <div className="rounded-[10px] px-4 py-3 text-center"
-      style={{ backgroundColor: NAVY }}>
+      style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
       <p className="text-[10px] font-semibold uppercase tracking-[0.06em] leading-tight mb-1.5"
-        style={{ color: "#B5D4F4" }}>{label}</p>
-      <div className="flex items-baseline gap-1 justify-center">
-        <span className="text-xl font-black tabular-nums leading-none text-white">{displayFmt(animated)}</span>
-        {denom !== undefined && (
-          <span className="text-[10px] font-normal" style={{ color: "rgba(255,255,255,0.52)" }}>/ {denom}</span>
-        )}
+        style={{ color: "rgba(14,70,51,0.55)" }}>{label}</p>
+      <div className="flex items-center gap-2 justify-center">
+        {Icon && <Icon size={18} style={{ color: "#0E4633", opacity: 0.85, flexShrink: 0 }} />}
+        <div className="flex items-baseline gap-1">
+          <span className="text-xl font-black tabular-nums leading-none" style={{ color: "#0E4633" }}>{displayFmt(animated)}</span>
+          {denom !== undefined && (
+            <span className="text-[10px] font-normal" style={{ color: "rgba(14,70,51,0.45)" }}>/ {denom}</span>
+          )}
+        </div>
       </div>
       {pace && <LightPaceBar a={paceA!} t={paceT!} clr={clr} />}
       {!pace && <div className="mt-1.5" />}
-      <p className="text-[8px] font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+      <p className="text-[8px] font-medium" style={{ color: "rgba(14,70,51,0.55)" }}>{sub}</p>
     </div>
   );
 }
@@ -351,9 +358,9 @@ function StackedHBar({ name, expose, build, scale, max }: {
     <div className="flex items-center gap-2 mb-1.5">
       <div className="w-32 text-[11px] text-gray-600 truncate text-right flex-shrink-0" title={name}>{name}</div>
       <div className="flex-1 h-3 bg-gray-100 rounded-sm overflow-hidden flex">
-        {expose > 0 && <div style={{ width: w(expose), backgroundColor: SKY    }} title={`Expose: ${expose}`} />}
-        {build  > 0 && <div style={{ width: w(build),  backgroundColor: PRIMARY }} title={`Build: ${build}`} />}
-        {scale  > 0 && <div style={{ width: w(scale),  backgroundColor: INDIGO  }} title={`Scale: ${scale}`} />}
+        {expose > 0 && <div style={{ width: w(expose), backgroundColor: SKY   }} title={`Expose: ${expose}`} />}
+        {build  > 0 && <div style={{ width: w(build),  backgroundColor: AMBER }} title={`Build: ${build}`} />}
+        {scale  > 0 && <div style={{ width: w(scale),  backgroundColor: PURPLE }} title={`Scale: ${scale}`} />}
       </div>
       <div className="w-6 text-[11px] text-gray-400 text-right flex-shrink-0">{expose + build + scale}</div>
     </div>
@@ -384,12 +391,72 @@ function DivBar({ name, mcf, nm, max }: { name: string; mcf: number; nm: number;
   );
 }
 
+// â”€â”€â”€ Youth-in-Work-style structural components (green theme) â”€â”€â”€
+const G_BAND = "#0E4633";
+const G_HEAD = "#0E4633";
+const G_TICK = "#D17A86";
+
+function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 2 }}>
+      <span style={{ width: 4, height: 16, borderRadius: 999, backgroundColor: G_TICK, flexShrink: 0, alignSelf: "center" }} />
+      <div>
+        <h2 style={{ fontSize: 14, fontWeight: 800, color: G_HEAD, letterSpacing: "0.01em" }}>{title}</h2>
+        <p style={{ fontSize: 11, color: "#6B7280", marginTop: 1 }}>{blurb}</p>
+      </div>
+    </div>
+  );
+}
+
+function Panel({ title, subtitle, info, children }: {
+  title: string; subtitle: string; info?: string; children: React.ReactNode;
+}) {
+  const [tip, setTip] = useState(false);
+  return (
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+      <div style={{ backgroundColor: G_BAND, padding: "10px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: G_TICK, flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+              {info && (
+                <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
+                  onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+                  <Info size={11} color="rgba(190,228,214,0.85)" />
+                  {tip && (
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#04241A", color: "white", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                      {info}
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(190,228,214,0.7)", marginTop: 1 }}>{subtitle}</p>
+          </div>
+        </div>
+      </div>
+      <div style={{ padding: "16px 18px 18px" }}>{children}</div>
+    </div>
+  );
+}
+
+const VEN_SECTIONS = [
+  { n: 1, label: "Growth & Jobs" },
+  { n: 2, label: "Portfolio Composition" },
+  { n: 3, label: "Geography & Engagement" },
+] as const;
+
 // â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HENTPortfolio() {
   const pathname = usePathname();
   const { filters } = useFilterStore();
   const [stageFilter, setStageFilter] = useState<"All" | "Expose" | "Build" | "Scale">("All");
   const [nationFilter, setNationFilter] = useState<"ALL" | "MCF" | "NON-MCF" | "FLAGGED">("ALL");
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const filtersActive = (stageFilter !== "All" ? 1 : 0) + (nationFilter !== "ALL" ? 1 : 0);
 
   const fv = useMemo(() => {
     const base = filterVentures(ALL_VENTURES, filters);
@@ -453,7 +520,7 @@ export default function HENTPortfolio() {
 
       {/* â”€â”€ TITLE + KPI strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -465,18 +532,12 @@ export default function HENTPortfolio() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>{getActiveLabel(pathname)}</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#34D399" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#34D399" }}>HENT</span>
-              </span>
-            </div>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>{getActiveLabel(pathname)}</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Data scope: 2026 Cohort · Updated 28 May 2026</p>
           </div>
         </div>
@@ -494,6 +555,7 @@ export default function HENTPortfolio() {
                 displayFmt={n => String(Math.round(n))}
                 denom={TARGETS.ventures}
                 sub="Scout 9 ventures/qtr to close gap"
+                Icon={Rocket}
                 clr="#0C4A6E" pace paceA={ACTUALS.ventures} paceT={TARGETS.ventures} />
               <KpiTile
                 label="Jobs Created"
@@ -501,6 +563,7 @@ export default function HENTPortfolio() {
                 displayFmt={n => String(Math.round(n))}
                 denom={TARGETS.jobs.toLocaleString()}
                 sub="Prioritise scale-stage ventures"
+                Icon={Briefcase}
                 clr="#14532D" pace paceA={ACTUALS.jobs} paceT={TARGETS.jobs} />
               <KpiTile
                 label="Funds Deployed"
@@ -508,126 +571,102 @@ export default function HENTPortfolio() {
                 displayFmt={n => fmt$(Math.round(n))}
                 denom={fmt$(TARGETS.funds)}
                 sub="Review grant disbursement pipeline"
+                Icon={Banknote}
                 clr="#164E63" pace paceA={ACTUALS.funds} paceT={TARGETS.funds} />
               <KpiTile
                 label="Active Founders"
                 num={48}
                 displayFmt={n => String(Math.round(n))}
                 sub={`${Math.round((femCount / founders.length) * 100)}% female  ·  ${founders.length} total`}
+                Icon={Users}
                 clr="#155E75" pace={false} />
               <KpiTile
                 label="Pace of Target"
                 num={5.5}
                 displayFmt={n => `${n.toFixed(1)}%`}
                 sub={`Against ${Math.round(PACE * 100)}% expected`}
+                Icon={Target}
                 clr="#134E4A" pace={false} />
         </div>
 
-        {/* Filter row */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Show:</span>
-            {(["All", "Expose", "Build", "Scale"] as const).map(s => (
-              <button key={s} onClick={() => setStageFilter(s)}
-                className="text-xs px-3 py-1.5 rounded font-medium transition-colors"
-                style={stageFilter === s
-                  ? { backgroundColor: PRIMARY, color: "white" }
-                  : { backgroundColor: "white", color: "#6b7280", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }}>
-                {s === "All" ? "All Stages" : s}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-0.5 bg-white rounded shadow-sm px-1 py-1">
-            {(["ALL", "MCF", "NON-MCF", "FLAGGED"] as const).map(n => {
-              const label = n === "ALL" ? "All Nations" : n === "MCF" ? "MCF Scholars" : n === "NON-MCF" ? "Non-MCF" : "Flagged";
-              const active = nationFilter === n;
+        {/* Section pills (left) + Filters dropdown (right) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[{ n: 0, label: "All Sections" }, ...VEN_SECTIONS].map(({ n, label }) => {
+              const on = n === 0 ? activeSection === "all" : activeSection === n;
               return (
-                <button key={n} onClick={() => setNationFilter(n)}
-                  className="text-xs px-3 py-1 rounded font-medium transition-colors"
-                  style={active
-                    ? { color: RED, borderBottom: `2px solid ${RED}`, backgroundColor: "transparent" }
-                    : { color: "#9ca3af", borderBottom: "2px solid transparent" }}>
+                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                    border: `1px solid ${on ? G_HEAD : "rgba(14,70,51,0.18)"}`,
+                    backgroundColor: on ? G_HEAD : "white", color: on ? "white" : "#6B7280" }}>
                   {label}
                 </button>
               );
             })}
           </div>
+
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <button onClick={() => setFiltersOpen(o => !o)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                border: `1px solid ${filtersActive || filtersOpen ? G_HEAD : "rgba(14,70,51,0.18)"}`,
+                backgroundColor: filtersOpen ? G_HEAD : "white", color: filtersOpen ? "white" : "#374151" }}>
+              <SlidersHorizontal size={13} />
+              Filters
+              {filtersActive > 0 && (
+                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : G_HEAD, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{filtersActive}</span>
+              )}
+            </button>
+            {filtersOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 300, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(14,70,51,0.14)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                <div style={{ backgroundColor: G_BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {filtersActive > 0 && (
+                      <button onClick={() => { setStageFilter("All"); setNationFilter("ALL"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                    )}
+                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Stage</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {(["All", "Expose", "Build", "Scale"] as const).map(s => (
+                        <button key={s} onClick={() => setStageFilter(s)}
+                          style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7, cursor: "pointer",
+                            border: `1px solid ${stageFilter === s ? G_HEAD : "rgba(14,70,51,0.18)"}`,
+                            backgroundColor: stageFilter === s ? G_HEAD : "white", color: stageFilter === s ? "white" : "#6B7280" }}>
+                          {s === "All" ? "All Stages" : s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Cohort</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {(["ALL", "MCF", "NON-MCF", "FLAGGED"] as const).map(n => {
+                        const label = n === "ALL" ? "All" : n === "MCF" ? "MCF Scholars" : n === "NON-MCF" ? "Non-MCF" : "Flagged";
+                        return (
+                          <button key={n} onClick={() => setNationFilter(n)}
+                            style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7, cursor: "pointer",
+                              border: `1px solid ${nationFilter === n ? G_HEAD : "rgba(14,70,51,0.18)"}`,
+                              backgroundColor: nationFilter === n ? G_HEAD : "white", color: nationFilter === n ? "white" : "#6B7280" }}>
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Main grid: sidebar + charts */}
-        <div className="flex gap-5 items-start">
-
-          {/* â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-          <div className="w-64 flex-shrink-0 bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-
-            <SectionLabel label="All Ventures" color={PRIMARY} />
-            <MCard label="Total Ventures" big={ACTUALS.ventures} denom={TARGETS.ventures}
-              barType="T" bA={ACTUALS.ventures} bT={TARGETS.ventures}
-              color={PRIMARY} sub="+ 11% YoY"
-              chips={[
-                { label: `Exp ${expN}`,   color: SKY    },
-                { label: `Bld ${buildN}`, color: PRIMARY },
-                { label: `Scl ${scaleN}`, color: INDIGO  },
-              ]}
-            />
-            <MCard label="Active Founders" big={48}
-              barType="none" color={ORANGE} sub="+ 8% YoY"
-              chips={[
-                { label: `F ${Math.round((femCount / founders.length) * 100)}%`,                     color: PURPLE  },
-                { label: `M ${Math.round(((founders.length - femCount) / founders.length) * 100)}%`, color: SKY     },
-              ]}
-            />
-            <MCard label="Total Jobs Created" big={ACTUALS.jobs} denom={TARGETS.jobs.toLocaleString()}
-              barType="T" bA={ACTUALS.jobs} bT={TARGETS.jobs}
-              color={GREEN} sub="+ 14% YoY"
-            />
-
-            <SectionLabel label="MCF Scholars" color={PURPLE} />
-            <MCard label="MCF Scholar Ventures" big={mcfVentures.length} denom={ALL_VENTURES.length}
-              barType="R" bA={mcfVentures.length} bTotal={ALL_VENTURES.length}
-              color={PURPLE}
-              sub={`${Math.round((mcfVentures.length / ALL_VENTURES.length) * 100)}% of portfolio`}
-              chips={[
-                { label: `F ${Math.round((mcfFemCount / Math.max(mcfFounders, 1)) * 100)}%`, color: PURPLE },
-              ]}
-            />
-            <MCard label="MCF Funding Deployed" big={fmt$(mcfFunding)}
-              barType="R" bA={mcfFunding} bTotal={Math.max(ACTUALS.funds, 1)}
-              color={VIOLET}
-              sub={`${Math.round((mcfFunding / Math.max(ACTUALS.funds, 1)) * 100)}% of total deployed`}
-            />
-
-            <SectionLabel label="The Cohort" color={TEAL} />
-            <MCard label="Female Founders" big={femCount} denom={founders.length}
-              barType="R" bA={femCount} bTotal={founders.length}
-              color="#BE185D"
-              sub={`${Math.round((femCount / founders.length) * 100)}% representation`}
-            />
-            <MCard label="PWD Founders" big={pwdCount}
-              barType="none" color={TEAL}
-              gap={pwdCount === 0 ? "Data not yet captured" : undefined}
-              sub={pwdCount > 0 ? `${Math.round((pwdCount / founders.length) * 100)}% representation` : undefined}
-            />
-            <MCard label="Refugee Founders" big={refCount}
-              barType="none" color={AMBER}
-              gap={refCount === 0 ? "Data not yet captured" : undefined}
-              sub={refCount > 0 ? `${Math.round((refCount / founders.length) * 100)}% representation` : undefined}
-            />
-            <MCard label="Venture Labs Cohort" big={labVentures.length} denom={ALL_VENTURES.length}
-              barType="R" bA={labVentures.length} bTotal={ALL_VENTURES.length}
-              color={EMERALD}
-              chips={[{ label: `Avg ${avgLabScore}`, color: EMERALD }]}
-            />
-
-            <div className="px-4 py-3">
-              <button className="w-full text-xs text-gray-400 border border-dashed border-gray-300 rounded py-2 hover:border-gray-400 hover:text-gray-600 transition-colors">
-                + Add Metric Card
-              </button>
-            </div>
-          </div>
-
-          {/* â”€â”€ CHART GRID (2 Ã— 4) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-          <div className="flex-1 min-w-0 grid grid-cols-2 gap-4">
+        {show(1) && (
+        <section className="space-y-3">
+          <SectionHeader title="Growth & Jobs" blurb="Founder onboarding momentum and jobs created through 2026" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Engagement Trend */}
             <ChartCard title="Engagement Trend" sub="Monthly founder onboarding  ·  2026" accent={SKY}>
@@ -661,9 +700,17 @@ export default function HENTPortfolio() {
               </ResponsiveContainer>
             </ChartCard>
 
+          </div>
+        </section>
+        )}
+
+        {show(2) && (
+        <section className="space-y-3">
+          <SectionHeader title="Portfolio Composition" blurb="Sector mix and founder gender across the portfolio" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ventures by Sector */}
             <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures  ·  current filter`} accent={PRIMARY}>
-              <ColorBarList data={secData} colors={BAR_COLORS} />
+              <ColorBarList data={secData} colors={[TEAL]} />
             </ChartCard>
 
             {/* Gender Distribution */}
@@ -687,6 +734,14 @@ export default function HENTPortfolio() {
               </div>
             </ChartCard>
 
+          </div>
+        </section>
+        )}
+
+        {show(3) && (
+        <section className="space-y-3">
+          <SectionHeader title="Geography & Engagement" blurb="Geographic spread, jobs by country, stage mix, and event participation" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ventures by Country  -  MCF vs Non-MCF diverging */}
             <ChartCard title="Ventures by Country" sub="MCF (blue) vs Non-MCF (red)" accent={PRIMARY}>
               <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
@@ -704,7 +759,7 @@ export default function HENTPortfolio() {
 
             {/* Jobs by Country */}
             <ChartCard title="Jobs by Country" sub="Total jobs created per country" accent="#F43F5E">
-              <ColorBarList data={jobsCtryData} colors={BAR_COLORS} />
+              <ColorBarList data={jobsCtryData} colors={[TEAL]} />
             </ChartCard>
 
             {/* Sector Ã— Stage */}
@@ -713,7 +768,7 @@ export default function HENTPortfolio() {
                 {(["Expose","Build","Scale"] as const).map((l, i) => (
                   <span key={l} className="flex items-center gap-1">
                     <span className="w-3 h-2 rounded-sm inline-block"
-                      style={{ backgroundColor: [SKY, PRIMARY, INDIGO][i] }} />
+                      style={{ backgroundColor: [SKY, AMBER, PURPLE][i] }} />
                     {l}
                   </span>
                 ))}
@@ -731,31 +786,44 @@ export default function HENTPortfolio() {
 
             {/* Programme Events Attendance */}
             <ChartCard title="Programme Events Attendance" sub="Founders per event" accent={VIOLET}>
-              <ColorBarList data={evData} colors={BAR_COLORS} />
+              <ColorBarList data={evData} colors={[TEAL]} />
             </ChartCard>
 
           </div>
-        </div>
+        </section>
+        )}
 
-        {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
-            {([
-              { value: fmt$(totalFunding),                                      label: "Total Funding Raised",    bg: "#F0FDF4", clr: "#14532D" },
-              { value: `${Math.round((femCount / founders.length) * 100)}%`,    label: "Female Founders",         bg: "#CFFAFE", clr: "#164E63" },
-              { value: `${avgLabScore}/100`,                                     label: "Venture Labs Avg Score",  bg: "#ECFEFF", clr: "#155E75" },
-              { value: `${PROGRAM_EVENTS_LIST.length}`,                          label: "Programme Events Hosted", bg: "#E0F2FE", clr: "#0C4A6E" },
-            ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
-                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT . VENTURES  ·  2023 - 2026</p>
-            <p className="text-[10px] text-gray-400">Last updated: 28 May 2026 EAT</p>
+        {/* â”€â”€ FOOTER (executive style, HENT green header design) â”€â”€â”€ */}
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+
+          {/* Faint triangle pattern */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+          {/* Design elements anchored to the left & right edges */}
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+          {/* Center overlay */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+
+          {/* Content */}
+          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}>
+                <span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 28 May 2026, EAT
+              </span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}>
+                <span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Ventures M&amp;E
+              </span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
+                Contact Analyst
+              </a>
+            </div>
           </div>
         </div>
 

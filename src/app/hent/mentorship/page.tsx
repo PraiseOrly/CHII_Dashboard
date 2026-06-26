@@ -4,7 +4,7 @@ import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Download, Star, Award, Users, Target, Zap, Briefcase } from "lucide-react";
+import { Download, Star, Award, Users, Target, Zap, Briefcase, SlidersHorizontal, X } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
 import {
   mentorshipPrograms, MF_CRITERIA, MF_QUAL_AREAS,
@@ -12,18 +12,19 @@ import {
 } from "@/data/mentorships";
 
 // â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const NAVY    = "#002147"; // footer bg + testimonial border only
-const ACCENT  = "#7C3AED"; // page identity  -  mentorship/fellowship = purple
-const SKY     = "#0EA5E9";
-const VIOLET  = "#8B5CF6";
-const TEAL    = "#14B8A6";
-const EMERALD = "#10B981";
-const INDIGO  = "#4338CA";
-const AMBER   = "#F59E0B";
-const ROSE    = "#F43F5E";
-const PRIMARY = "#2F6FED";
+// Cool-only palette sampled from design1.png (no warm tones)
+const NAVY    = "#0B2D71"; // footer bg + testimonial border only
+const ACCENT  = "#5C2D91"; // page identity  -  mentorship/fellowship = purple
+const SKY     = "#3FA0D8";
+const VIOLET  = "#5C2D91";
+const TEAL    = "#009CA6";
+const EMERALD = "#00A07A";
+const INDIGO  = "#5C2D91";
+const AMBER   = "#3FA0D8";
+const ROSE    = "#00A07A";
+const PRIMARY = "#0B2D71";
 
-const BAR_COLORS = [PRIMARY, TEAL, ACCENT, AMBER, EMERALD, ROSE, INDIGO, SKY];
+const BAR_COLORS = [PRIMARY, TEAL, EMERALD, ACCENT, SKY];
 
 const RATING_COLORS: Record<string, string> = {
   "Very High": EMERALD, High: PRIMARY, Moderate: AMBER, Low: ROSE,
@@ -124,7 +125,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-2.5 mb-4">
       <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#0E4633", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -145,16 +146,11 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
-        style={{
-          backgroundColor: "#0C447C",
-          borderBottomColor: "#0C447C",
-        }}>
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "#D17A86" }} />
+    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
         <button onClick={handleDownload} title="Download chart"
@@ -295,12 +291,12 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: NAVY, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B5D4F4", marginBottom: 8 }}>{label}</p>
-      <p style={{ fontSize: 22, fontWeight: 700, color: "white", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 4 }}>{sub}</p>
-      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.14)", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: "100%", backgroundColor: clr, borderRadius: 999 }} />
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
+      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
+      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
+      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
       </div>
     </div>
   );
@@ -335,10 +331,29 @@ type TypeVal  = "All" | "Mentorship" | "Fellowship" | "One-Year Fellowship" | "A
 type GenderVal = "All" | "Female" | "Male";
 
 // â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Youth-in-Work-style filter select (green theme)
+function FilterSelect<T extends string>({ label, value, onChange, options }: {
+  label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 130px" }}>
+      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
+      <select value={value} onChange={e => onChange(e.target.value as T)}
+        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(14,70,51,0.18)", borderRadius: 6, padding: "7px 9px", color: "#0E4633", backgroundColor: "white", cursor: "pointer" }}>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
 export default function MentorshipPage() {
   const [yearFilter,  setYearFilter]  = useState<YearVal>("All");
   const [typeFilter,  setTypeFilter]  = useState<TypeVal>("All");
   const [genderView,  setGenderView]  = useState<GenderVal>("All");
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersActive = (yearFilter !== "All" ? 1 : 0) + (typeFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
   const filtered = useMemo(() => mentorshipPrograms.filter(p => {
     if (yearFilter !== "All" && p.year !== Number(yearFilter)) return false;
@@ -455,7 +470,7 @@ export default function MentorshipPage() {
 
       {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -467,18 +482,12 @@ export default function MentorshipPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#34D399" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#34D399" }}>HENT</span>
-              </span>
-            </div>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Capacity-building &amp; fellowship tracks · 2022–2026 · {mentorshipPrograms.length} programmes tracked</p>
           </div>
         </div>
@@ -496,54 +505,57 @@ export default function MentorshipPage() {
           ))}
         </div>
 
-        {/* FILTERS */}
-        <div className="bg-white rounded shadow-sm border border-gray-100 px-4 py-2.5">
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Year</label>
-              <select value={yearFilter} onChange={e => setYearFilter(e.target.value as YearVal)}
-                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm">
-                <option value="All">All Years</option>
-                {(["2022","2023","2024","2025","2026"] as const).map(y => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Type</label>
-              <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as TypeVal)}
-                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm min-w-[160px]">
-                <option value="All">All Types</option>
-                <option value="Mentorship">Mentorship</option>
-                <option value="Fellowship">Fellowship</option>
-                <option value="One-Year Fellowship">One-Year Fellowship</option>
-                <option value="Advisory">Advisory Program</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Gender</label>
-              <select value={genderView} onChange={e => setGenderView(e.target.value as GenderVal)}
-                className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none cursor-pointer shadow-sm">
-                <option value="All">All Genders</option>
-                <option value="Female">Female-majority</option>
-                <option value="Male">Male-majority</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
-              <span className="text-[10px] text-gray-400">
-                {filtered.length} of {mentorshipPrograms.length} programmes
-              </span>
-              {isFiltered && (
-                <button onClick={() => { setYearFilter("All"); setTypeFilter("All"); setGenderView("All"); }}
-                  className="text-[10px] font-medium underline underline-offset-2 transition-colors"
-                  style={{ color: ACCENT }}>
-                  Clear
+
+        {/* S1: VENTURE RATINGS */}
+        {/* Section pills (left) + Filters dropdown (right) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[{ n: 0, label: "All Sections" }, { n: 1, label: "Ratings" }, { n: 2, label: "Satisfaction" }, { n: 3, label: "Demographics" }, { n: 4, label: "Heatmap" }, { n: 5, label: "Engagement" }, { n: 6, label: "Top Rated" }, { n: 7, label: "Outcomes" }, { n: 8, label: "Completion" }].map(({ n, label }) => {
+              const on = n === 0 ? activeSection === "all" : activeSection === n;
+              return (
+                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
+                  {label}
                 </button>
+              );
+            })}
+          </div>
+
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <button onClick={() => setFiltersOpen(o => !o)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${filtersActive || filtersOpen ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: filtersOpen ? "#0E4633" : "white", color: filtersOpen ? "white" : "#374151" }}>
+              <SlidersHorizontal size={13} />
+              Filters
+              {filtersActive > 0 && (
+                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : "#0E4633", borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{filtersActive}</span>
               )}
-            </div>
+            </button>
+            {filtersOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(14,70,51,0.14)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                <div style={{ backgroundColor: "#0E4633", padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {filtersActive > 0 && (
+                      <button onClick={() => { setYearFilter("All"); setTypeFilter("All"); setGenderView("All"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                    )}
+                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <FilterSelect label="Year" value={yearFilter} onChange={setYearFilter}
+                    options={[{ value: "All", label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
+                  <FilterSelect label="Type" value={typeFilter} onChange={setTypeFilter}
+                    options={[{ value: "All", label: "All Types" }, { value: "Mentorship", label: "Mentorship" }, { value: "Fellowship", label: "Fellowship" }, { value: "One-Year Fellowship", label: "One-Year Fellowship" }, { value: "Advisory", label: "Advisory Program" }]} />
+                  <FilterSelect label="Gender" value={genderView} onChange={setGenderView}
+                    options={[{ value: "All", label: "All Genders" }, { value: "Female", label: "Female-majority" }, { value: "Male", label: "Male-majority" }]} />
+                </div>
+                <div style={{ padding: "0 14px 12px", fontSize: 10.5, color: "#6B7280" }}>{filtered.length} of {mentorshipPrograms.length} programmes</div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* S1: VENTURE RATINGS */}
-        <section>
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Venture Ratings of Mentorship &amp; Fellowship Support"
             sub={`${filtered.length} programmes rated across Quality, Usefulness, Accessibility, Relevance`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -593,7 +605,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S2: SATISFACTION */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Fellow Satisfaction &amp; Qualitative Feedback"
             sub={`${avgHighSat}% average high/very-high satisfaction across filtered programmes`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -658,7 +670,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S3: DEMOGRAPHICS */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -732,7 +744,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S4: HEATMAP */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader title="Satisfaction Heatmap"
             sub="Score per criterion across top-rated programmes" />
           <ChartCard title="Programme Ã— Criterion Satisfaction Matrix"
@@ -790,7 +802,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S5: TRENDS */}
-        <section>
+        <section style={{ display: show(5) ? undefined : "none" }}>
           <SecHeader title="Participation &amp; Engagement Trends"
             sub="Fellow counts, gender breakdown, venture-stage distribution, and cumulative growth" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
@@ -873,7 +885,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S6: TOP + TESTIMONIALS */}
-        <section>
+        <section style={{ display: show(6) ? undefined : "none" }}>
           <SecHeader title="Top Rated Programmes &amp; Success Stories"
             sub="Ranked by average fellow feedback  -  voices from the field" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -947,7 +959,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S7: FELLOWSHIP OUTCOMES */}
-        <section>
+        <section style={{ display: show(7) ? undefined : "none" }}>
           <SecHeader title="Fellowship Outcomes &amp; Impact"
             sub="One-year fellowship graduate participation, mentor ratios, and partnership outcomes" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1011,7 +1023,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* S8: COMPLETION */}
-        <section>
+        <section style={{ display: show(8) ? undefined : "none" }}>
           <SecHeader title="Participation &amp; Completion Analytics"
             sub="Engagement and completion rates across all mentorship and fellowship programmes" />
           <ChartCard title="Completion Rate by Programme"
@@ -1049,24 +1061,20 @@ export default function MentorshipPage() {
         </section>
 
         {/* FOOTER */}
-        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
-            {([
-              { value: String(tot.programs + tot.fellowships), label: "Programmes Delivered", clr: "#6D28D9" },
-              { value: tot.fellows.toLocaleString(),            label: "Total Fellows",        clr: "#1E3A8A" },
-              { value: `${femalePct}%`,                         label: "Female Participation", clr: "#9D174D" },
-              { value: `${tot.completion}%`,                    label: "Avg Completion Rate",  clr: "#059669" },
-            ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
-                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">HENT  ·  Mentorship &amp; Fellowships  ·  2022 - 2026</p>
-            <p className="text-[10px] text-gray-400">Last updated: 01 Jun 2026 EAT</p>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 01 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Mentorship M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+            </div>
           </div>
         </div>
 

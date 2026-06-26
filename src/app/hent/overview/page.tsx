@@ -23,18 +23,18 @@ import {
 import type { Stage, Sector, FundingStatus } from "@/types";
 
 // â"€â"€â"€ Color palette â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-const NAVY    = "#002147";
-const PRIMARY = "#2F6FED";
-const TEAL    = "#14B8A6";
-const PURPLE  = "#7C3AED";
-const AMBER   = "#F59E0B";
-const GREEN   = "#22C55E";
-const INDIGO  = "#4338CA";
-const ORANGE  = "#EA580C";
+// Cool-only palette sampled from design1.png (no warm tones)
+const NAVY    = "#0B2D71";
+const PRIMARY = "#0B2D71";
+const TEAL    = "#009CA6";
+const PURPLE  = "#5C2D91";
+const AMBER   = "#3FA0D8";
+const GREEN   = "#00A07A";
+const INDIGO  = "#5C2D91";
+const ORANGE  = "#0B2D71";
 
-// Tremor-matched hex values for chart colours (purple-500, sky-500)
-const C_PURPLE = "#A855F7";
-const C_SKY    = "#0EA5E9";
+const C_PURPLE = "#5C2D91";
+const C_SKY    = "#3FA0D8";
 
 // Per-programme identity colours (used consistently across all charts)
 const PROG: Record<string, string> = {
@@ -57,7 +57,7 @@ function heatColor(v: number): string {
   if (v >= 4.5) return TEAL;
   if (v >= 4.0) return PRIMARY;
   if (v >= 3.5) return AMBER;
-  return "#EF4444";
+  return PURPLE;
 }
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
@@ -195,7 +195,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-2.5 mb-4">
       <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: NAVY, letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#0E4633", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -216,16 +216,11 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
-        style={{
-          backgroundColor: "#0C447C",
-          borderBottomColor: "#0C447C",
-        }}>
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "#D17A86" }} />
+    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
         <button onClick={handleDownload} title="Download chart"
@@ -480,12 +475,12 @@ function ImpChartCard({ title, sub, accent = PRIMARY, children, headerRight }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 flex items-start justify-between gap-3" style={{ backgroundColor: accent }}>
-        <div className="flex items-start gap-2.5">
-          <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center justify-between gap-3" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
             {sub && <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
           </div>
         </div>
@@ -931,13 +926,13 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: NAVY, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B5D4F4", marginBottom: 8 }}>{label}</p>
-      <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 4 }}>{sub}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
+      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 24, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
+      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
       {/* progress / underline bar */}
-      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.14)", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${Math.max(8, Math.min(100, pct ?? 100))}%`, backgroundColor: clr, borderRadius: 999 }} />
+      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${Math.max(8, Math.min(100, pct ?? 100))}%`, backgroundColor: "#0E4633", borderRadius: 999 }} />
       </div>
     </div>
   );
@@ -945,13 +940,15 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct }: {
 
 // â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 export default function ExecutiveDashboard() {
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
 
       {/* â"€â"€ EXECUTIVE HEADER â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -963,18 +960,12 @@ export default function ExecutiveDashboard() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay — keeps the title area solid & readable */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#34D399" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#34D399" }}>HENT</span>
-              </span>
-            </div>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>HENT executive summary — programme delivery, participation, ventures and impact</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>All programmes · 2022–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026</p>
           </div>
@@ -1018,7 +1009,20 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* â"€â"€ SECTION 1: PROGRAMME ACTIVITY â"€â"€â"€ */}
-        <section>
+        {/* Section pills */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {[{ n: 0, label: "All Sections" }, { n: 1, label: "Delivery" }, { n: 2, label: "Participation" }, { n: 3, label: "Performance" }, { n: 4, label: "Ventures" }, { n: 5, label: "Impact" }].map(({ n, label }) => {
+            const on = n === 0 ? activeSection === "all" : activeSection === n;
+            return (
+              <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Programme Delivery Timeline"
             sub="Activity count and participant volume across all programme types" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1070,7 +1074,7 @@ export default function ExecutiveDashboard() {
         </section>
 
         {/* â"€â"€ SECTION 2: PARTICIPATION & GENDER â"€â"€â"€ */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Participation &amp; Diversity"
             sub="Gender representation, geographic reach, and social inclusion across programmes" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -1133,7 +1137,7 @@ export default function ExecutiveDashboard() {
         </section>
 
         {/* â"€â"€ SECTION 3: PROGRAMME PERFORMANCE â"€â"€â"€ */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Programme Performance Analysis"
             sub="Satisfaction scores across quality dimensions  -  compared across programme types" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1243,7 +1247,7 @@ export default function ExecutiveDashboard() {
         </section>
 
         {/* â"€â"€ SECTION 4: VENTURE ECOSYSTEM â"€â"€â"€ */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader title="Venture Ecosystem"
             sub={`${ALL_VENTURES.length} ventures  ·  ${TOTAL_JOBS.toLocaleString()} jobs created  ·  ${fmt$(TOTAL_FUNDING)} deployed`} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -1325,34 +1329,41 @@ export default function ExecutiveDashboard() {
         </section>
 
         {/* ── IMPACT ANALYTICS (from Impact Dashboard) ─────────────────── */}
-        <section>
+        <section style={{ display: show(5) ? undefined : "none" }}>
           <HENTImpactAnalytics />
         </section>
 
         {/* â"€â"€ FOOTER STRIP â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-gray-100">
-            {([
-              { icon: Users,      value: TOTAL_PART.toLocaleString(), label: "Total Reach",         bg: "#BAE6FD", clr: "#075985" },
-              { icon: Zap,        value: String(TOTAL_PROGS),          label: "Programmes Delivered", bg: "#99F6E4", clr: "#115E59" },
-              { icon: Award,      value: `${AVG_SAT}/5`,               label: "Avg Satisfaction",     bg: "#DDD6FE", clr: "#5B21B6" },
-              { icon: Target,     value: `${AVG_COMP}%`,               label: "Avg Completion",       bg: "#A7F3D0", clr: "#065F46" },
-              { icon: Handshake,  value: String(TOTAL_PSHIP),          label: "Partnerships",         bg: "#FED7AA", clr: "#9A3412" },
-              { icon: TrendingUp, value: fmt$(TOTAL_FUNDING),          label: "Funding Deployed",     bg: "#BBF7D0", clr: "#166534" },
-            ] as const).map(({ icon: Icon, value, label, bg, clr }) => (
-              <div key={label} className="px-5 py-5 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${clr}` }}>
-                <Icon size={15} className="mx-auto mb-2" style={{ color: "rgba(255,255,255,0.72)" }} />
-                <p className="text-2xl font-black tabular-nums text-white">{value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HENT . OVERVIEW  ·  2023 - 2026
-            </p>
-            <p className="text-[10px] text-gray-400">Last updated: 01 Jun 2026 EAT</p>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+
+          {/* Faint triangle pattern */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+
+          {/* Design elements anchored to the left & right edges */}
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+
+          {/* Center overlay */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+
+          {/* Content */}
+          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}>
+                <span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 01 Jun 2026, EAT
+              </span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}>
+                <span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Programmes M&amp;E
+              </span>
+              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
+                Contact Analyst
+              </a>
+            </div>
           </div>
         </div>
 

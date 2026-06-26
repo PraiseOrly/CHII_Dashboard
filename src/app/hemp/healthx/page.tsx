@@ -196,10 +196,10 @@ export default function HealthXPage() {
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
 
         {/* Full design elements anchored to the left & right edges */}
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
         <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
@@ -283,8 +283,7 @@ export default function HealthXPage() {
             </div>
 
           </div>
-        </div>
-      </header>
+      </div>
 
       {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
