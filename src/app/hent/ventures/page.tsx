@@ -55,9 +55,13 @@ function sg(stage: string): "Expose" | "Build" | "Scale" {
   if (stage === "Prototype/MVP" || stage === "Early Growth") return "Build";
   return "Scale";
 }
+// Red → amber → green based on progress against the expected pace (benchmark)
 function paceColor(a: number, t: number): string {
-  const r = a / t;
-  return r >= PACE * 0.9 ? EMERALD : r >= PACE * 0.5 ? AMBER : RED;
+  const r = t > 0 ? (a / t) / PACE : 1;
+  if (r >= 1)    return "#16A34A"; // green  - on or ahead of pace
+  if (r >= 0.95) return "#84CC16"; // lime
+  if (r >= 0.8)  return "#F59E0B"; // amber
+  return "#DC2626";                // red    - behind pace
 }
 function fmt$(n: number): string {
   return n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `$${Math.round(n / 1e3)}K` : `$${n}`;
@@ -217,7 +221,7 @@ function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }
     <div className="h-1 rounded-sm relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(14,70,51,0.12)" }}>
       <div className="h-full"
         style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
-      <div className="absolute top-0 bottom-0 w-px" style={{ left: `${PACE * 100}%`, backgroundColor: "rgba(14,70,51,0.4)" }} />
+      <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${PACE * 100}%`, backgroundColor: "#0E4633", borderRadius: 1 }} />
     </div>
   );
 }

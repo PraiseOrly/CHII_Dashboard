@@ -215,9 +215,18 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr }: {
+// Red → amber → green based on progress against benchmark
+function benchColor(pct: number, bench: number): string {
+  const r = bench > 0 ? pct / bench : 1;
+  if (r >= 1)    return "#16A34A";
+  if (r >= 0.95) return "#84CC16";
+  if (r >= 0.8)  return "#F59E0B";
+  return "#DC2626";
+}
+
+function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
   label: string; num: number; displayFmt: (n: number) => string;
-  sub: string; clr: string;
+  sub: string; clr: string; pct?: number; bench?: number;
 }) {
   const animated = useCountUp(num);
   return (
@@ -225,9 +234,18 @@ function KpiTile({ label, num, displayFmt, sub, clr }: {
       <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
       <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
       <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
-      <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
-      </div>
+      {pct !== undefined ? (
+        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(14,70,51,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
+          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#0E4633", borderRadius: 4 }} />
+          {bench !== undefined && (
+            <div className="absolute" style={{ top: -2, bottom: -2, width: 1.5, left: `${Math.min(100, bench)}%`, backgroundColor: "rgba(14,70,51,0.6)" }} />
+          )}
+        </div>
+      ) : (
+        <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
+          <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
+        </div>
+      )}
     </div>
   );
 }
