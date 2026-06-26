@@ -145,29 +145,27 @@ function heatColor(v: number): string {
   return ROSE;
 }
 
-function SecHeader({ title, sub, accent = TEAL }: { title: string; sub?: string; accent?: string }) {
+function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
   return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: accent }} />
+    <div className="flex items-center gap-2.5 mb-4">
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: accent }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#4C1D95", letterSpacing: "0.01em" }}>{title}</h2>
+        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
   );
 }
 
-function Card({ accent = TEAL, title, sub, children }: {
+function Card({ title, sub, children }: {
   accent?: string; title: string; sub?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 flex items-start gap-2.5"
-        style={{ backgroundColor: accent }}>
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+    <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#4C1D95", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+        <div className="flex-1 min-w-0">
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
       </div>
@@ -190,7 +188,7 @@ export default function HealthXPage() {
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#4C1D95", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -202,7 +200,7 @@ export default function HealthXPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(76,29,149,0) 0%, #4C1D95 34%, #4C1D95 66%, rgba(76,29,149,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -650,27 +648,20 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
-            {([
-              { value: String(visitsCompleted),      label: "Hub Visits",            clr: TEAL_DEEP  },
-              { value: String(totalPships),           label: "Partnerships (MOUs)",   clr: TEAL_MID   },
-              { value: hxPart.toLocaleString(),       label: "Students Reached",      clr: BLUE       },
-              { value: `${femalePct}%`,              label: "Female Participation",  clr: "#9D174D"  },
-            ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
-                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP  ·  HealthX  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}
-            </p>
-            <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#4C1D95", minHeight: 116, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(76,29,149,0) 0%, #4C1D95 34%, #4C1D95 66%, rgba(76,29,149,0) 100%)" }} />
+          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.85)" }}><span style={{ color: "#C4B5FD", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.85)" }}><span style={{ color: "#C4B5FD", fontWeight: 600 }}>Source:</span> HEMP HealthX M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(221,214,254,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+            </div>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 ﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
-import { Briefcase, Download, FileText } from "lucide-react";
+import { Briefcase, Download, FileText, type LucideIcon } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import {
   Area,
@@ -142,27 +142,47 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr }: {
+// Red → amber → green based on progress against benchmark
+function benchColor(pct: number, bench: number): string {
+  const r = bench > 0 ? pct / bench : 1;
+  if (r >= 1)    return "#16A34A";
+  if (r >= 0.95) return "#84CC16";
+  if (r >= 0.8)  return "#F59E0B";
+  return "#DC2626";
+}
+
+function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
   label: string; num: number; displayFmt: (n: number) => string; sub: string; clr: string;
+  pct?: number; bench?: number; Icon?: LucideIcon;
 }) {
   const animated = useCountUp(num);
   return (
-    <div className="rounded border px-2 py-2.5 text-center" style={{ backgroundColor: clr, borderColor: clr }}>
-      <p className="text-[8px] font-bold uppercase tracking-[0.1em] leading-tight mb-1.5"
-        style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-      <p className="text-lg font-black tabular-nums leading-none text-white">{displayFmt(animated)}</p>
-      <p className="text-[8px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.62)" }}>{sub}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "12px 14px", textAlign: "center", border: "1px solid rgba(76,29,149,0.12)", borderLeft: "5px solid #4C1D95" }}>
+      <p style={{ fontSize: 9.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(76,29,149,0.55)", marginBottom: 6 }}>{label}</p>
+      <div className="flex items-center justify-center gap-1.5">
+        {Icon && <Icon size={16} style={{ color: "#4C1D95", opacity: 0.85, flexShrink: 0 }} />}
+        <p style={{ fontSize: 18, fontWeight: 800, color: "#4C1D95", lineHeight: 1 }}>{displayFmt(animated)}</p>
+      </div>
+      <p style={{ fontSize: 9, color: "rgba(76,29,149,0.55)", marginTop: 3 }}>{sub}</p>
+      {pct !== undefined && (
+        <div className="relative" style={{ marginTop: 8, height: 4, borderRadius: 4, backgroundColor: "rgba(76,29,149,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
+          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#4C1D95", borderRadius: 4 }} />
+          {bench !== undefined && (
+            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#4C1D95", borderRadius: 1 }} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: AMBER }} />
+    <div className="flex items-center gap-2.5 mb-4">
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: AMBER }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-1 font-medium">{sub}</p>}
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#4C1D95", letterSpacing: "0.01em" }}>{title}</h2>
+        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
   );
@@ -182,13 +202,11 @@ function ChartCard({ title, sub, accent = AMBER, children }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b flex items-start gap-2.5"
-        style={{ backgroundColor: accent, borderBottomColor: accent }}>
-        <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0"
-          style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
+    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#4C1D95", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
         <button onClick={handleDownload} title="Download chart"
@@ -293,7 +311,7 @@ export default function InternshipsPage() {
 
       {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#4C1D95", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -305,7 +323,7 @@ export default function InternshipsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(76,29,149,0) 0%, #4C1D95 34%, #4C1D95 66%, rgba(76,29,149,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -829,26 +847,20 @@ export default function InternshipsPage() {
 
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div className="rounded overflow-hidden border border-gray-100 shadow-sm">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
-            {([
-              { value: String(total.students),    label: "Students Placed",         clr: "#4C1D95" },
-              { value: `${femalePct}%`,           label: "Female Students",         clr: "#9D174D" },
-              { value: String(total.conversions), label: "Employment Conversions",  clr: "#065F46" },
-              { value: `${avgSat}/5`,             label: "Avg Satisfaction",        clr: "#B45309" },
-            ] as const).map(tile => (
-              <div key={tile.label} className="px-6 py-6 text-center"
-                style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.10) 100%), ${tile.clr}` }}>
-                <p className="text-2xl font-black tabular-nums text-white">{tile.value}</p>
-                <p className="text-[10px] font-semibold mt-1.5 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.65)" }}>{tile.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              HEMP  ·  Internships  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}
-            </p>
-            <p className="text-[10px] text-gray-400">Last updated: 04 Jun 2026 EAT</p>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#4C1D95", minHeight: 116, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(76,29,149,0) 0%, #4C1D95 34%, #4C1D95 66%, rgba(76,29,149,0) 100%)" }} />
+          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.85)" }}><span style={{ color: "#C4B5FD", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.85)" }}><span style={{ color: "#C4B5FD", fontWeight: 600 }}>Source:</span> HEMP Internships M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(221,214,254,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+            </div>
           </div>
         </div>
 
