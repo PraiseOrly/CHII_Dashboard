@@ -34,13 +34,14 @@ const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6
 const GENDER_2: Gender[] = ["Female", "Male"];
 const PATHWAY_COLOR: Record<Pathway, string> = {
   "Wage Employment": "#102C5E", "Internship": "#3FA7E0", "Venture Founder": "#479BD6",
-  "Wage & Venture": "#D45F2C", "Further Education": "#A81B2D", "Seeking Employment": "#D17A86", "Other": "#C5D2E0",
+  "Entrepreneurship": "#D45F2C", "Further Education": "#A81B2D", "Seeking Employment": "#D17A86", "Other": "#C5D2E0",
 };
 const OUTCOME_COLOR: Record<string, string> = { Employment: C_BLUE, Internships: "#3FA7E0", Ventures: C_GREEN };
 const WORKCAT_COLOR: Record<string, string> = {
   "Full-time": "#102C5E", "Part-time": "#479BD6", "Contract": "#D45F2C",
   "Internship": "#3FA7E0", "Self-employed": "#A81B2D", "Founder": "#A81B2D",
   "Permanent": "#102C5E", "Freelance": "#479BD6",
+  "Wage Employment": "#102C5E", "Entrepreneurship": "#A81B2D",
 };
 const JOBCAT_COLOR: Record<string, string> = { New: "#102C5E", Additional: "#479BD6", Improved: "#A81B2D" };
 /* trend reporting window: 2022 → 2026 */
@@ -68,16 +69,14 @@ function workCategory(y: Youth): string | null {
 }
 /* derived employment type (quality view) */
 function qualityType(y: Youth): string | null {
-  if (isVenture(y)) return "Founder";
-  if (isInternship(y)) return "Internship";
-  if (y.participantType === "Venture Employee" || isEmployed(y)) {
+  if (isVenture(y)) return "Entrepreneurship";
+  if (y.participantType === "Venture Employee" || isEmployed(y) || isInternship(y)) {
     if (y.employmentType === "Part-time") return "Freelance";
-    if (y.employmentType === "Contract") return "Contract";
-    return y.permanent ? "Permanent" : "Contract";
+    return "Wage Employment";
   }
   return null;
 }
-const QUALITY_TYPES = ["Permanent", "Contract", "Internship", "Freelance", "Founder"];
+const QUALITY_TYPES = ["Wage Employment", "Freelance", "Entrepreneurship"];
 
 /* ════════════════════════════════════════════════════════
    Shared UI
@@ -127,12 +126,13 @@ function Panel({ title, subtitle, info, children }: {
   );
 }
 
-/* ♀ woman / female symbol icon (lucide has no female glyph in this version) */
+/* woman-in-a-dress icon (lucide has no female glyph in this version) */
 function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color ?? "currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
-      <circle cx="12" cy="8" r="5" />
-      <path d="M12 13v8M9 18h6" />
+      <circle cx="12" cy="4.5" r="2.5" />
+      <path d="M9 9.5 7 18h10L15 9.5Z" />
+      <path d="M12 12v6" />
     </svg>
   );
 }
@@ -617,7 +617,7 @@ export default function YouthInWorkPage() {
                 <Tooltip content={<ChartTip />} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 <Line type="monotone" dataKey="Employment" stroke={C_BLUE} strokeWidth={2.5} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="Internships" stroke="#3FA7E0" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Internships" stroke="#1D9E75" strokeWidth={2} dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="Ventures" stroke={C_GREEN} strokeWidth={2} dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="Further Ed." stroke={C_AMBER} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3 }} />
               </LineChart>
@@ -892,11 +892,11 @@ export default function YouthInWorkPage() {
         <section className="space-y-4">
           <SectionHeader title="Quality of Work" blurb="Are participants accessing meaningful and sustainable work?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
-            <Panel title="Employment Type" subtitle="Permanent · Contract · Internship · Freelance · Founder"
+            <Panel title="Employment Type" subtitle="Entrepreneurship · Wage Employment · Freelance"
               info="Composition of how working participants are engaged.">
               <Donut data={quality.empType} colors={WORKCAT_COLOR} total={quality.empType.reduce((s, d) => s + d.value, 0)} totalLabel="Working" height={340} legendPercent />
             </Panel>
-            <Panel title="Decent Work Indicators" subtitle="Average score out of 100"
+            <Panel title="Dignified and Fulfilling Work Indicators" subtitle="Average score out of 100"
               info="How working participants score on each dignified-work indicator — reliable income, sense of purpose, reputation, and respect in the workplace.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={quality.indicators} margin={{ top: 4, right: 40, bottom: 0, left: 8 }} barCategoryGap="28%">
@@ -931,7 +931,7 @@ export default function YouthInWorkPage() {
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Dignified Work Status" subtitle="Accessing vs progressing"
+            <Panel title="Dignified and Fulfilling Work Status" subtitle="Accessing vs progressing"
               info="Working participants accessing dignified work versus those still progressing toward it.">
               <Donut data={quality.dignified} colors={[C_BLUE, "#C5D2E0"]} total={quality.dignifiedTotal} totalLabel="Working" height={340} legendPercent />
             </Panel>

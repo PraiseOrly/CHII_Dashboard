@@ -15,7 +15,7 @@ export type Pathway =
   | "Wage Employment"
   | "Internship"
   | "Venture Founder"
-  | "Wage & Venture"
+  | "Entrepreneurship"
   | "Further Education"
   | "Seeking Employment"
   | "Other";
@@ -64,7 +64,7 @@ export const PATHWAYS: Pathway[] = [
   "Wage Employment",
   "Internship",
   "Venture Founder",
-  "Wage & Venture",
+  "Entrepreneurship",
   "Further Education",
   "Seeking Employment",
   "Other",
@@ -111,8 +111,8 @@ function pick<T>(r: () => number, weighted: [T, number][]): T {
 }
 
 /* employment & venture pathway sets (shared by the page) */
-export const EMPLOYED_PATHWAYS: Pathway[] = ["Wage Employment", "Wage & Venture"];
-export const VENTURE_PATHWAYS: Pathway[] = ["Venture Founder", "Wage & Venture"];
+export const EMPLOYED_PATHWAYS: Pathway[] = ["Wage Employment", "Entrepreneurship"];
+export const VENTURE_PATHWAYS: Pathway[] = ["Venture Founder", "Entrepreneurship"];
 
 function buildYouth(n: number): Youth[] {
   const r = rng(42);
@@ -134,7 +134,7 @@ function buildYouth(n: number): Youth[] {
       ]);
     } else if (participantType === "Alumni") {
       pathway = pick<Pathway>(r, [
-        ["Wage Employment", 0.46], ["Venture Founder", 0.16], ["Wage & Venture", 0.1],
+        ["Wage Employment", 0.46], ["Venture Founder", 0.16], ["Entrepreneurship", 0.1],
         ["Further Education", 0.12], ["Seeking Employment", 0.1], ["Other", 0.06],
       ]);
     } else {
@@ -142,10 +142,10 @@ function buildYouth(n: number): Youth[] {
       pathway = "Wage Employment";
     }
 
-    const isFounder = pathway === "Venture Founder" || pathway === "Wage & Venture";
+    const isFounder = pathway === "Venture Founder" || pathway === "Entrepreneurship";
     const jobsCreated = isFounder ? 1 + Math.floor(r() * 12) : 0;
 
-    const employed = pathway === "Wage Employment" || pathway === "Wage & Venture" || participantType === "Venture Employee";
+    const employed = pathway === "Wage Employment" || pathway === "Entrepreneurship" || participantType === "Venture Employee";
     const employmentType: EmploymentType = employed
       ? pick<EmploymentType>(r, [["Full-time", 0.62], ["Part-time", 0.22], ["Contract", 0.16]])
       : "None";
