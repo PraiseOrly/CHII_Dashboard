@@ -162,7 +162,7 @@ function FilterSelect<T extends string | number>({ label, value, onChange, optio
    PAGE
 ═══════════════════════════════════════════════════════ */
 const SECTIONS: { n: number; label: string }[] = [
-  { n: 1, label: "Venture Portfolio" },
+  { n: 1, label: "Enterprise Portfolio" },
   { n: 2, label: "Business Growth" },
   { n: 3, label: "Employment Created" },
   { n: 4, label: "Founder Profile & Outcomes" },
@@ -212,7 +212,7 @@ export default function EntrepreneurshipPage() {
     };
   }, [scope, total]);
 
-  /* ── Section 1: venture portfolio ──────────────────── */
+  /* ── Section 1: enterprise portfolio ──────────────────── */
   const v = useMemo(() => {
     const stageDist = STAGES.map(s => ({ name: s, value: scope.filter(x => x.stage === s).length })).sort((a, b) => b.value - a.value);
     const statusData = STATUSES.map(s => ({ name: s, value: scope.filter(x => x.status === s).length })).filter(d => d.value > 0);
@@ -371,9 +371,9 @@ export default function EntrepreneurshipPage() {
   }, []);
 
   const insights = [
-    "Agriculture employs the largest number of youth across the venture portfolio.",
-    `Female-led ventures account for ${share(kpis.female, total)}% of all businesses.`,
-    "CHII-supported ventures create roughly 1.8× more jobs than unsupported ones.",
+    "Agriculture employs the largest number of youth across the enterprise portfolio.",
+    `Female-led enterprises account for ${share(kpis.female, total)}% of all businesses.`,
+    "CHII-supported enterprises create roughly 1.8× more jobs than unsupported ones.",
     "Formally registered businesses survive longer than informal businesses.",
   ];
 
@@ -393,7 +393,7 @@ export default function EntrepreneurshipPage() {
                 <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(181,212,244,0.9)" }}>Executive</span>
               </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>The journey from founder to venture growth, jobs created, and long-term economic impact</p>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>The journey from founder to enterprise growth, jobs created, and long-term economic impact</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>
         </div>
@@ -407,14 +407,14 @@ export default function EntrepreneurshipPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <StatsKpiCard label="Entrepreneurs" num={1580} sub="founders tracked" Icon={Rocket}
               tooltip="Total entrepreneurs (founders) tracked across the portfolio." />
-            <StatsKpiCard label="Active Ventures" num={1386} sub="still operating" Icon={Activity}
-              tooltip="Ventures still trading (not closed or non-operational)." />
+            <StatsKpiCard label="Active Enterprises" num={1386} sub="still operating" Icon={Activity}
+              tooltip="Enterprises still trading (not closed or non-operational)." />
             <StatsKpiCard label="Jobs Created" num={54700} displayFmt={(n) => `${(n / 1000).toFixed(1)}K`} sub="opportunities" Icon={Briefcase}
-              tooltip="Jobs and opportunities created across all ventures." />
-            <StatsKpiCard label="Female-led" num={62} displayFmt={(n) => `${Math.round(n)}%`} sub="of ventures" Icon={WomanIcon}
-              tooltip="Share of ventures led by female founders." />
+              tooltip="Jobs and opportunities created across all enterprises." />
+            <StatsKpiCard label="Female-led" num={62} displayFmt={(n) => `${Math.round(n)}%`} sub="of enterprises" Icon={WomanIcon}
+              tooltip="Share of enterprises led by female founders." />
             <StatsKpiCard label="Capital Secured" num={7900000} displayFmt={(n) => `$${(n / 1000000).toFixed(1)}M`} sub="raised to date" Icon={Banknote}
-              tooltip="Total capital raised by ventures across the portfolio." />
+              tooltip="Total capital raised by enterprises across the portfolio." />
           </div>
 
           {/* Section pills (left) + compact filters dropdown (right) */}
@@ -476,10 +476,10 @@ export default function EntrepreneurshipPage() {
         {/* ════ SECTION 1 — VENTURE PORTFOLIO ════ */}
         {show(1) && (
         <section className="space-y-4">
-          <SectionHeader title="Venture Portfolio" blurb="How large and healthy is the entrepreneurship portfolio?" />
+          <SectionHeader title="Enterprise Portfolio" blurb="How large and healthy is the entrepreneurship portfolio?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            <Panel title="Venture Stage Distribution" subtitle="Ventures per stage"
-              info="Number of ventures in each stage, sorted by magnitude.">
+            <Panel title="Enterprise Stage Distribution" subtitle="Enterprises per stage"
+              info="Number of enterprises in each stage, sorted by magnitude.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={v.stageDist} margin={{ top: 4, right: 36, bottom: 0, left: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" horizontal={false} />
@@ -487,18 +487,18 @@ export default function EntrepreneurshipPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={96} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={22}>
+                  <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={22}>
                     <LabelList dataKey="value" position="right" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Venture Status" subtitle="Current operating status"
-              info="Breakdown of ventures by current status, from pre-seed through to non-operational.">
-              <Donut data={v.statusData} colors={PALETTE} total={v.statusTotal} totalLabel="Ventures" height={340} legendPercent />
+            <Panel title="Enterprise Status" subtitle="Current operating status"
+              info="Breakdown of enterprises by current status, from pre-seed through to non-operational.">
+              <Donut data={v.statusData} colors={PALETTE} total={v.statusTotal} totalLabel="Enterprises" height={340} legendPercent />
             </Panel>
-            <Panel title="Ventures Started per Year" subtitle="New ventures by year"
-              info="Count of ventures launched each year, in chronological order.">
+            <Panel title="Enterprises Started per Year" subtitle="New enterprises by year"
+              info="Count of enterprises launched each year, in chronological order.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={v.perYear} margin={{ top: 18, right: 10, bottom: 0, left: -18 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -506,14 +506,14 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={40}>
+                  <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Venture Survival Rate" subtitle="% surviving over time"
-              info="Share of ventures still operating at year 1, 3, and 5 after launch.">
+            <Panel title="Enterprise Survival Rate" subtitle="% surviving over time"
+              info="Share of enterprises still operating at year 1, 3, and 5 after launch.">
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={v.survival} margin={{ top: 10, right: 16, bottom: 14, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
@@ -526,12 +526,12 @@ export default function EntrepreneurshipPage() {
                 </LineChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Formal vs Informal Ventures" subtitle="Registration status"
-              info="Share of ventures that are formally registered versus operating informally.">
-              <Donut data={v.formal} colors={["#102C5E", "#C5D2E0"]} total={total} totalLabel="Ventures" height={340} legendPercent />
+            <Panel title="Formal vs Informal Enterprises" subtitle="Registration status"
+              info="Share of enterprises that are formally registered versus operating informally.">
+              <Donut data={v.formal} colors={["#102C5E", "#C5D2E0"]} total={total} totalLabel="Enterprises" height={340} legendPercent />
             </Panel>
             <Panel title="Founder Gender" subtitle="Founder gender split"
-              info="Gender distribution of venture founders.">
+              info="Gender distribution of enterprise founders.">
               <Donut data={v.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
           </div>
@@ -542,17 +542,17 @@ export default function EntrepreneurshipPage() {
         {/* ════ SECTION 2 — BUSINESS GROWTH & SUSTAINABILITY ════ */}
         {show(2) && (
         <section className="space-y-4">
-          <SectionHeader title="Business Growth & Sustainability" blurb="Are ventures becoming sustainable businesses?" />
+          <SectionHeader title="Business Growth & Sustainability" blurb="Are enterprises becoming sustainable businesses?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <SectionKpi label="Capital Secured" num={7900000} displayFmt={(n) => `$${(n / 1000000).toFixed(1)}M`} sub="raised to date" Icon={Banknote}
-              tooltip="Total capital raised by ventures across the portfolio." />
-            <SectionKpi label="Revenue Growth" num={500} sub="ventures growing revenue" Icon={TrendingUp}
-              tooltip="Ventures reporting year-on-year revenue growth." />
+              tooltip="Total capital raised by enterprises across the portfolio." />
+            <SectionKpi label="Revenue Growth" num={500} sub="enterprises growing revenue" Icon={TrendingUp}
+              tooltip="Enterprises reporting year-on-year revenue growth." />
             <SectionKpi label="Market Expansion" num={400} sub="entered new markets" Icon={Globe}
-              tooltip="Ventures that expanded into new markets or geographies." />
+              tooltip="Enterprises that expanded into new markets or geographies." />
           </div>
           <Panel title="Capital Raised Over Time" subtitle="Total raised by year (USD)"
-            info="Total capital raised by ventures each year, in USD. Hover a point for the exact amount.">
+            info="Total capital raised by enterprises each year, in USD. Hover a point for the exact amount.">
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={growth.capital} margin={{ top: 10, right: 16, bottom: 14, left: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
@@ -581,8 +581,8 @@ export default function EntrepreneurshipPage() {
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Funding Sources" subtitle="How ventures are funded"
-              info="Primary funding source per venture, sorted by magnitude.">
+            <Panel title="Funding Sources" subtitle="How enterprises are funded"
+              info="Primary funding source per enterprise, sorted by magnitude.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={v.funding} margin={{ top: 18, right: 10, bottom: 0, left: -18 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -590,14 +590,14 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={30}>
+                  <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={30}>
                     <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Venture Growth by Stage" subtitle="Ventures across operating stages"
-              info="Distribution of operating ventures across stages, idea through scaling.">
+            <Panel title="Enterprise Growth by Stage" subtitle="Enterprises across operating stages"
+              info="Distribution of operating enterprises across stages, idea through scaling.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={growth.byStage} margin={{ top: 18, right: 10, bottom: 0, left: -18 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -605,7 +605,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Ventures" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={26}>
+                  <Bar dataKey="value" name="Enterprises" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={26}>
                     <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -619,16 +619,16 @@ export default function EntrepreneurshipPage() {
         {/* ════ SECTION 3 — EMPLOYMENT CREATED ════ */}
         {show(3) && (
         <section className="space-y-4">
-          <SectionHeader title="Employment Created" blurb="How much work are these ventures creating?" />
+          <SectionHeader title="Employment Created" blurb="How much work are these enterprises creating?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <SectionKpi label="Total Jobs" num={ji.totalJobs} sub="opportunities created" Icon={Briefcase}
-              tooltip="Total jobs and opportunities created across all ventures." />
-            <SectionKpi label="Avg Jobs / Venture" num={4} displayFmt={(n) => n.toFixed(1)} sub="per venture" Icon={Scale}
-              tooltip="Average number of jobs created per venture." />
+              tooltip="Total jobs and opportunities created across all enterprises." />
+            <SectionKpi label="Avg Jobs / Enterprise" num={4} displayFmt={(n) => n.toFixed(1)} sub="per enterprise" Icon={Scale}
+              tooltip="Average number of jobs created per enterprise." />
             <SectionKpi label="Full-time Jobs" num={ji.fullTime} sub="full-time roles" Icon={Briefcase}
-              tooltip="Full-time jobs created by ventures." />
+              tooltip="Full-time jobs created by enterprises." />
             <SectionKpi label="Part-time Jobs" num={ji.partTime} sub="part-time roles" Icon={Briefcase}
-              tooltip="Part-time jobs created by ventures." />
+              tooltip="Part-time jobs created by enterprises." />
             <SectionKpi label="Jobs for Women" num={ji.womenJobs} sub="held by women" Icon={WomanIcon}
               tooltip="Jobs created that are held by women." />
             <SectionKpi label="Jobs for Youth" num={ji.youthJobs} sub="held by youth" Icon={Users}
@@ -650,7 +650,7 @@ export default function EntrepreneurshipPage() {
             </ResponsiveContainer>
           </Panel>
           <Panel title="Job Quality Indicators" subtitle="Decent-work dimensions"
-            info="Quality of venture-created jobs across reliable income, reputation, respect, sense of purpose, and other.">
+            info="Quality of enterprise-created jobs across reliable income, reputation, respect, sense of purpose, and other.">
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={ji.quality} margin={{ top: 18, right: 12, bottom: 0, left: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -667,7 +667,7 @@ export default function EntrepreneurshipPage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             <Panel title="Jobs by Employment Type" subtitle="Full-time · Part-time · Temporary"
-              info="Contract-type split of jobs created by ventures.">
+              info="Contract-type split of jobs created by enterprises.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={ji.byType} margin={{ top: 18, right: 12, bottom: 0, left: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -682,7 +682,7 @@ export default function EntrepreneurshipPage() {
               </ResponsiveContainer>
             </Panel>
             <Panel title="Direct vs Indirect Jobs" subtitle="By job category"
-              info="How venture-created jobs break down across direct, indirect/part-time, and secondary/seasonal roles.">
+              info="How enterprise-created jobs break down across direct, indirect/part-time, and secondary/seasonal roles.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={ji.composition} margin={{ top: 18, right: 12, bottom: 0, left: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -697,7 +697,7 @@ export default function EntrepreneurshipPage() {
               </ResponsiveContainer>
             </Panel>
             <Panel title="Jobs by Gender" subtitle="Male · Female · Other"
-              info="Gender distribution of jobs created by ventures.">
+              info="Gender distribution of jobs created by enterprises.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={ji.byGender} margin={{ top: 18, right: 12, bottom: 0, left: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -736,7 +736,7 @@ export default function EntrepreneurshipPage() {
           <SectionHeader title="Founder Profile & Outcomes" blurb="Who are the entrepreneurs, and how has entrepreneurship changed their lives?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <SectionKpi label="Female Entrepreneurs" num={662} sub="female founders" Icon={WomanIcon}
-              tooltip="Number of female venture founders tracked." />
+              tooltip="Number of female enterprise founders tracked." />
             <SectionKpi label="Scholar Entrepreneurs" num={founders.scholar.count} sub="MCF scholar founders" Icon={Star}
               tooltip="Founders who are Mastercard Foundation scholars." />
             <SectionKpi label="Female Scholars" num={founders.scholar.gender[0].value} sub="female scholar founders" Icon={WomanIcon}
@@ -746,19 +746,19 @@ export default function EntrepreneurshipPage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Founder Gender" subtitle="Founder gender split"
-              info="Gender distribution of venture founders.">
+              info="Gender distribution of enterprise founders.">
               <Donut data={founders.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
             <Panel title="Scholar vs Non-scholar Founders" subtitle="Scholar share of founders"
-              info="Ventures led by Mastercard Foundation scholars versus other founders.">
+              info="Enterprises led by Mastercard Foundation scholars versus other founders.">
               <Donut data={founders.scholarSplit} colors={["#102C5E", "#C5D2E0"]} total={total} totalLabel="Founders" height={340} legendPercent />
             </Panel>
             <Panel title="Scholar Founder Gender" subtitle="Female · Male"
-              info="Gender split among scholar-led ventures.">
+              info="Gender split among scholar-led enterprises.">
               <Donut data={founders.scholar.gender} colors={GENDER_COLOR} total={founders.scholar.count} totalLabel="Scholars" height={340} legendPercent />
             </Panel>
           </div>
-          <Panel title="Venture Work Indicators" subtitle="Share of founders reporting each, %"
+          <Panel title="Enterprise Work Indicators" subtitle="Share of founders reporting each, %"
             info="Share of founders reporting each decent-work indicator, on a fixed 0–100% scale.">
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={outcomes.indicators} margin={{ top: 20, right: 12, bottom: 0, left: -10 }}>
@@ -775,7 +775,7 @@ export default function EntrepreneurshipPage() {
           </Panel>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Household Improvements" subtitle="Reported impact areas, ranked"
-              info="How venture income improved founder households, sorted from most to least reported.">
+              info="How enterprise income improved founder households, sorted from most to least reported.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={outcomes.household} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
@@ -789,7 +789,7 @@ export default function EntrepreneurshipPage() {
               </ResponsiveContainer>
             </Panel>
             <Panel title="Reasons Founders Continue" subtitle="Why founders keep trading, ranked"
-              info="Top reasons founders continue running their ventures, sorted from most to least cited.">
+              info="Top reasons founders continue running their enterprises, sorted from most to least cited.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart layout="vertical" data={outcomes.persistence} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
@@ -810,39 +810,39 @@ export default function EntrepreneurshipPage() {
         {/* ════ SECTION 5 — SECTORS & INNOVATION ════ */}
         {show(5) && (
         <section className="space-y-4">
-          <SectionHeader title="Sectors & Innovation" blurb="Where are ventures creating value?" />
-          <Panel title="Ventures by Sector" subtitle="Sectors, ranked"
-            info="Sectors where ventures concentrate, sorted from most to least.">
+          <SectionHeader title="Sectors & Innovation" blurb="Where are enterprises creating value?" />
+          <Panel title="Enterprises by Sector" subtitle="Sectors, ranked"
+            info="Sectors where enterprises concentrate, sorted from most to least.">
             <ResponsiveContainer width="100%" height={Math.max(240, sectors.topSectors.length * 34)}>
               <BarChart layout="vertical" data={sectors.topSectors} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
                 <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={18}>
+                <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={18}>
                   <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </Panel>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Ventures by Industry" subtitle="Industries, ranked"
-              info="Finer-grained industry breakdown of ventures, sorted from most to least.">
+            <Panel title="Enterprises by Industry" subtitle="Industries, ranked"
+              info="Finer-grained industry breakdown of enterprises, sorted from most to least.">
               <ResponsiveContainer width="100%" height={Math.max(240, sectors.industries.length * 32)}>
                 <BarChart layout="vertical" data={sectors.industries} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={120} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Ventures" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={16}>
+                  <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={16}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Technology vs Traditional" subtitle="Innovation profile of ventures"
-              info="Share of ventures that are technology-enabled versus traditional businesses.">
-              <Donut data={sectors.techVsTraditional} colors={["#102C5E", "#A81B2D"]} total={total} totalLabel="Ventures" height={340} legendPercent />
+            <Panel title="Technology vs Traditional" subtitle="Innovation profile of enterprises"
+              info="Share of enterprises that are technology-enabled versus traditional businesses.">
+              <Donut data={sectors.techVsTraditional} colors={["#102C5E", "#A81B2D"]} total={total} totalLabel="Enterprises" height={340} legendPercent />
             </Panel>
           </div>
         </section>
@@ -854,16 +854,16 @@ export default function EntrepreneurshipPage() {
         <section className="space-y-4">
           <SectionHeader title="CHII Support & Ecosystem" blurb="How is CHII helping founders succeed?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
-            <SectionKpi label="Receiving Support" num={kpis.enablerCount} sub="ventures supported" Icon={LifeBuoy}
-              tooltip="Ventures receiving CHII support or enabler services." />
+            <SectionKpi label="Receiving Support" num={kpis.enablerCount} sub="enterprises supported" Icon={LifeBuoy}
+              tooltip="Enterprises receiving CHII support or enabler services." />
             <SectionKpi label="Mentorship" num={184} sub="founders mentored" Icon={Users}
               tooltip="Founders who accessed mentorship support." />
             <SectionKpi label="Training" num={156} sub="founders trained" Icon={ShieldCheck}
               tooltip="Founders who accessed training support." />
             <SectionKpi label="Seed Funding" num={142} sub="founders funded" Icon={Star}
               tooltip="Founders who received seed funding." />
-            <SectionKpi label="Incubated" num={118} sub="ventures incubated" Icon={Rocket}
-              tooltip="Ventures that went through incubation." />
+            <SectionKpi label="Incubated" num={118} sub="enterprises incubated" Icon={Rocket}
+              tooltip="Enterprises that went through incubation." />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             <Panel title="Intervention Uptake" subtitle="CHII support used, ranked"
@@ -898,8 +898,8 @@ export default function EntrepreneurshipPage() {
               info="Founders' overall rating of CHII's support, from excellent to poor.">
               <Donut data={support.supportQuality} colors={PALETTE} total={support.supportTotal} totalLabel="Respondents" height={340} legendPercent />
             </Panel>
-            <Panel title="Support by Venture Stage" subtitle="Supported ventures per stage"
-              info="Number of CHII-supported ventures at each operating stage.">
+            <Panel title="Support by Enterprise Stage" subtitle="Supported enterprises per stage"
+              info="Number of CHII-supported enterprises at each operating stage.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={support.byStage} margin={{ top: 18, right: 10, bottom: 0, left: -18 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -907,7 +907,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Supported ventures" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={26}>
+                  <Bar dataKey="value" name="Supported enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={26}>
                     <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -923,8 +923,8 @@ export default function EntrepreneurshipPage() {
         <section className="space-y-4">
           <SectionHeader title="Insights & Leaders" blurb="Standout performance and emerging trends." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Top Performing Ventures" subtitle="By jobs created"
-              info="The strongest job-creating ventures in the portfolio.">
+            <Panel title="Top Performing Enterprises" subtitle="By jobs created"
+              info="The strongest job-creating enterprises in the portfolio.">
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {ji.topVentures.slice(0, 6).map((row, i) => (
                   <div key={row.name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -937,7 +937,7 @@ export default function EntrepreneurshipPage() {
               </div>
             </Panel>
             <Panel title="Emerging Insights" subtitle="Key trends from the portfolio"
-              info="Notable patterns observed across the venture portfolio.">
+              info="Notable patterns observed across the enterprise portfolio.">
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {insights.map((text, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>

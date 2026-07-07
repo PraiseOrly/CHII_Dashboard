@@ -334,7 +334,7 @@ export default function HENTImpactPage() {
             <div>
               <h1 className="text-2xl font-black text-gray-900 leading-none">HENT Impact Analytics</h1>
               <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
-                Entrepreneurship Pillar  ·  Ventures  ·  Hackathons  ·  Masterclasses  ·  Field Visits  ·  Mentorship & Fellowships  ·  {D.countries.length} countries
+                Entrepreneurship Pillar  ·  Enterprises  ·  Hackathons  ·  Masterclasses  ·  Field Visits  ·  Mentorship & Fellowships  ·  {D.countries.length} countries
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -350,7 +350,7 @@ export default function HENTImpactPage() {
           {/* KPI tiles */}
           <div className="pb-5">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-              <KpiTile label="Portfolio Ventures"   num={D.vc.length}      displayFmt={fmt}  sub="Filtered cohorts"    clr={VIOLET}  />
+              <KpiTile label="Portfolio Enterprises"   num={D.vc.length}      displayFmt={fmt}  sub="Filtered cohorts"    clr={VIOLET}  />
               <KpiTile label="Hackathon Participants" num={D.hakPart}       displayFmt={fmt}  sub="Sprint innovators"  clr={ORANGE}  />
               <KpiTile label="Projects Built"        num={D.hakProj}       displayFmt={fmt}  sub="Designed solutions" clr={AMBER}   />
               <KpiTile label="Startups Created"      num={D.hakStart}      displayFmt={fmt}  sub="From hackathons"    clr={ROSE}    />
@@ -367,11 +367,11 @@ export default function HENTImpactPage() {
 
         {/* â”€â”€ Venture Portfolio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
-          <SecHeader title="Venture Portfolio Analytics" sub="Stage progression, sector distribution, and funding status of HENT ventures" accent={VIOLET} />
+          <SecHeader title="Enterprise Portfolio Analytics" sub="Stage progression, sector distribution, and funding status of HENT enterprises" accent={VIOLET} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Stage Distribution"
-              sub={portfolioGender === "all" ? `${D.vc.length} ventures  -  all team types` : `${portfolioGender}-led ventures by stage`}
+              sub={portfolioGender === "all" ? `${D.vc.length} enterprises  -  all team types` : `${portfolioGender}-led enterprises by stage`}
               accent={VIOLET}
               headerRight={
                 <div className="flex flex-col items-end gap-1.5">
@@ -390,7 +390,7 @@ export default function HENTImpactPage() {
                     contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid #E5E7EB" }}
                     formatter={(v: number, _: string, props: { payload?: { total: number } }) => [
                       portfolioGender === "all" ? v : `${v} of ${props.payload?.total ?? v} total`,
-                      portfolioGender === "all" ? "Ventures" : `${portfolioGender}-led`,
+                      portfolioGender === "all" ? "Enterprises" : `${portfolioGender}-led`,
                     ]}
                   />
                   <Bar dataKey="value" radius={[0, 4, 4, 0]}>
@@ -402,7 +402,7 @@ export default function HENTImpactPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Sector Distribution" sub="Ventures by health sector focus" accent={TEAL}
+            <ChartCard title="Sector Distribution" sub="Enterprises by health sector focus" accent={TEAL}
               headerRight={<HeaderDropdown options={sectorOpts} value={sectorFilter} onChange={(v) => setSectorFilter(v)} />}>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={D.sectorDist.filter((s) => s.value > 0)} layout="vertical">
@@ -413,7 +413,7 @@ export default function HENTImpactPage() {
                     content={({ active, payload }) => active && payload?.length ? (
                       <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-[11px] shadow">
                         <p className="font-bold">{(payload[0].payload as { full: string }).full}</p>
-                        <p style={{ color: TEAL }}>{payload[0].value} ventures</p>
+                        <p style={{ color: TEAL }}>{payload[0].value} enterprises</p>
                       </div>
                     ) : null}
                   />
@@ -427,7 +427,7 @@ export default function HENTImpactPage() {
             </ChartCard>
 
             <ChartCard title="Funding Status"
-              sub={fundingStage === "all" ? "Funding type across all venture stages" : `Funding profile for ${fundingStage} ventures`}
+              sub={fundingStage === "all" ? "Funding type across all enterprise stages" : `Funding profile for ${fundingStage} enterprises`}
               accent={GREEN}
               headerRight={<HeaderDropdown options={[{ label: "All Stages", value: "all" }, ...VENTURE_STAGES.map((s) => ({ label: s, value: s }))]} value={fundingStage} onChange={setFundingStage} />}>
               <div className="space-y-3 mt-1">

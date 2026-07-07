@@ -302,7 +302,7 @@ export default function YouthInWorkPage() {
       { metric: "In Africa", pick: y => y.basedInAfrica },
       { metric: "Employment", pick: isEmployed },
       { metric: "Internships", pick: isInternship },
-      { metric: "Ventures", pick: isVenture },
+      { metric: "Enterprise", pick: isVenture },
       { metric: "Further Ed.", pick: y => y.pathway === "Further Education" },
     ];
     return metrics.map(m => {
@@ -397,7 +397,7 @@ export default function YouthInWorkPage() {
     const genderByPathway = [
       { name: "Employment", rows: employed },
       { name: "Internships", rows: scope.filter(isInternship) },
-      { name: "Ventures", rows: scope.filter(isVenture) },
+      { name: "Enterprise", rows: scope.filter(isVenture) },
     ].map(g => {
       const rec: Record<string, number | string> = { pathway: g.name };
       GENDER_2.forEach(gd => { rec[gd] = share(g.rows.filter(y => y.gender === gd).length, g.rows.length); });
@@ -499,13 +499,13 @@ export default function YouthInWorkPage() {
             <StatsKpiCard label="Participants" num={kpis.total} sub="students + alumni" Icon={Users}
               tooltip="Total youth tracked across the CHII ecosystem." />
             <StatsKpiCard label="In Employment" num={kpis.employed} sub="primary employment" Icon={Briefcase}
-              tooltip="Youth in wage employment, including those at supported ventures." />
+              tooltip="Youth in wage employment, including those at supported enterprises." />
             <StatsKpiCard label="In Internships" num={kpis.interns} sub="active internships" Icon={GraduationCap}
               tooltip="Youth currently in internship placements." />
-            <StatsKpiCard label="Enterprise" num={kpis.founders} sub="running ventures" Icon={Rocket}
-              tooltip="Participants founding or co-running a venture." />
-            <StatsKpiCard label="Jobs Created" num={kpis.jobsCreated} sub="by supported ventures" Icon={Hammer}
-              tooltip="Positions created by ventures CHII participants founded." />
+            <StatsKpiCard label="Enterprise" num={kpis.founders} sub="running enterprises" Icon={Rocket}
+              tooltip="Participants founding or co-running an enterprise." />
+            <StatsKpiCard label="Jobs Created" num={kpis.jobsCreated} sub="by supported enterprises" Icon={Hammer}
+              tooltip="Positions created by enterprises CHII participants founded." />
             <StatsKpiCard label="Female" num={kpis.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="of participants" Icon={WomanIcon}
               tooltip="Share of female participants." />
             <StatsKpiCard label="Based in Africa" num={kpis.africaPct} displayFmt={(n) => `${Math.round(n)}%`} sub="on the continent" Icon={Globe}
@@ -576,7 +576,7 @@ export default function YouthInWorkPage() {
           <SectionHeader title="Work Pathways" blurb="How are participants progressing into work?" />
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.4fr) minmax(0, 0.6fr)", gap: 16, alignItems: "stretch" }} className="yiw-grid">
             <Panel title="Work Pathway Distribution" subtitle="Where are our youth today?"
-              info="The mix of pathways youth follow: wage employment, internships, ventures, further education, and more.">
+              info="The mix of pathways youth follow: wage employment, internships, enterprises, further education, and more.">
               <Donut data={pathwayDist} colors={PATHWAY_COLOR} total={kpis.total} totalLabel="Youth" height={300} legendPercent />
             </Panel>
             <Panel title="Participant Group Comparison" subtitle="Students · Alumni · Scholars across key metrics"
@@ -596,7 +596,7 @@ export default function YouthInWorkPage() {
             </Panel>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-          <Panel title="Employment Outcomes by Program" subtitle="Employment · Internships · Ventures across HEMP · HENT · HECO"
+          <Panel title="Employment Outcomes by Program" subtitle="Employment · Internships · Enterprise across HEMP · HENT · HECO"
             info="Participant counts for each work outcome, stacked within each program.">
             <ResponsiveContainer width="100%" height={270}>
               <BarChart data={byProgram} margin={{ top: 26, right: 12, bottom: 0, left: -12 }} barCategoryGap="40%">
@@ -606,7 +606,7 @@ export default function YouthInWorkPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {(["Employment", "Internships", "Ventures"] as const).map((k, i) => (
-                  <Bar key={k} dataKey={k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={46} radius={i === 2 ? [4, 4, 0, 0] : undefined}>
+                  <Bar key={k} dataKey={k} name={k === "Ventures" ? "Enterprise" : k} stackId="o" fill={OUTCOME_COLOR[k]} barSize={46} radius={i === 2 ? [4, 4, 0, 0] : undefined}>
                     {i === 2 && <LabelList dataKey="Total" position="top" fontSize={11} fill={NAVY} fontWeight={700} />}
                   </Bar>
                 ))}
@@ -624,7 +624,7 @@ export default function YouthInWorkPage() {
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 <Line type="monotone" dataKey="Employment" stroke="#102C5E" strokeWidth={2.5} dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="Internships" stroke="#479BD6" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="Ventures" stroke="#D17A86" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Ventures" name="Enterprise" stroke="#D17A86" strokeWidth={2} dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="Further Ed." stroke="#E0A458" strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -640,8 +640,8 @@ export default function YouthInWorkPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <MiniKpi Icon={Briefcase} label="Primary Jobs" value={fmt(jobs.primary)} />
             <MiniKpi Icon={Layers} label="Secondary Jobs" value={fmt(jobs.secondary)} />
-            <MiniKpi Icon={Hammer} label="Jobs by Ventures" value={fmt(jobs.jobsCreated)} />
-            <MiniKpi Icon={Users} label="Youth Employed by Ventures" value={fmt(jobs.youthEmployed)} />
+            <MiniKpi Icon={Hammer} label="Jobs by Enterprises" value={fmt(jobs.jobsCreated)} />
+            <MiniKpi Icon={Users} label="Youth Employed by Enterprises" value={fmt(jobs.youthEmployed)} />
           </div>
 
           {/* Primary & secondary jobs + job categories */}
@@ -712,8 +712,8 @@ export default function YouthInWorkPage() {
                 ))}
               </div>
             </Panel>
-            <Panel title="Jobs Created by Program" subtitle="Positions attributable to each program's ventures"
-              info="Total jobs created by ventures, grouped by the founder's program.">
+            <Panel title="Jobs Created by Program" subtitle="Positions attributable to each program's enterprises"
+              info="Total jobs created by enterprises, grouped by the founder's program.">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={jobs.createdByProgram} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barCategoryGap="38%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -797,7 +797,7 @@ export default function YouthInWorkPage() {
               </ResponsiveContainer>
             </Panel>
             <Panel title="Gender Across Work Pathways" subtitle="Female · Male within each pathway"
-              info="Gender composition within Employment, Internships, and Ventures (each on a 0–100% scale).">
+              info="Gender composition within Employment, Internships, and Enterprise (each on a 0–100% scale).">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={inclusion.genderByPathway} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barGap={4} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />

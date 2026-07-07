@@ -410,7 +410,7 @@ export default function HEMPImpactPage() {
               <KpiTile label="Emp. Conversions"      num={D.intConv}       displayFmt={fmt}  sub="Post-internship"      clr={GREEN}  />
               <KpiTile label="Mission Students"      num={D.msTotal}       displayFmt={fmt}  sub={`${D.ms.length} enrolled`} clr={VIOLET} />
               <KpiTile label="Mission Completions"   num={D.msCompPct}     displayFmt={pct}  sub="Completion rate"      clr={INDIGO} />
-              <KpiTile label="Ventures Created"      num={D.msVentures}    displayFmt={fmt}  sub="By mission students"  clr={ORANGE} />
+              <KpiTile label="Enterprises Created"      num={D.msVentures}    displayFmt={fmt}  sub="By mission students"  clr={ORANGE} />
             </div>
           </div>
         </div>
@@ -576,7 +576,7 @@ export default function HEMPImpactPage() {
 
         {/* ── Mission Students ─────────────────────────────────────────────── */}
         <section>
-          <SecHeader title="Mission Students Outcomes" sub="Cohort progression, track distribution, employment, and venture creation" accent={VIOLET} />
+          <SecHeader title="Mission Students Outcomes" sub="Cohort progression, track distribution, employment, and enterprise creation" accent={VIOLET} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Cohort Enrolment"
@@ -629,7 +629,7 @@ export default function HEMPImpactPage() {
               </div>
               <div className="mt-4 space-y-1.5 pt-3 border-t border-gray-100">
                 <StatRow label="Employed / Entrepreneur" value={fmt(D.msEmployed.length)}  color={GREEN}  />
-                <StatRow label="Ventures created"        value={fmt(D.msVentures)}         color={ORANGE} />
+                <StatRow label="Enterprises created"        value={fmt(D.msVentures)}         color={ORANGE} />
                 <StatRow label="Total completions"       value={fmt(D.msCompleted.length)} color={VIOLET} />
               </div>
             </ChartCard>
