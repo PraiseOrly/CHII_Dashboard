@@ -6,7 +6,7 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Award, Briefcase, Download, Handshake, Rocket, Sparkles, Star, Target, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
+import { Award, Briefcase, Handshake, Lightbulb, Rocket, Sparkles, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Area,
@@ -91,8 +91,6 @@ const TOTAL_FEM     = hackFem  + mcFem  + fvFem  + mfFem;
 const FEMALE_PCT    = Math.round((TOTAL_FEM / TOTAL_PART) * 100);
 const TOTAL_PROGS   = hackathons.length + masterclasses.length + fieldVisits.length + mentorshipPrograms.length;
 const TOTAL_PSHIP   = hackPship + fvPship;
-const AVG_COMP      = Math.round(avg([mcComp, fvComp, mfComp]));
-const AVG_SAT       = parseFloat(avg([mcSat, fvSat, mfSat]).toFixed(1));
 const TOTAL_FUNDING = ALL_VENTURES.reduce((s, v) => s + v.funding, 0);
 const TOTAL_JOBS    = ALL_VENTURES.reduce((s, v) => s + v.jobsTotal, 0);
 const FOUNDER_FEM   = Math.round(founders.filter(f => f.gender === "Female").length / founders.length * 100);
@@ -143,13 +141,18 @@ const stageData = [
 ];
 const STAGE_HEX = [PRIMARY, "#10B981", "#D946EF"];
 
-const countryData = Object.entries(
-  ALL_VENTURES.reduce<Record<string, number>>((a, v) => {
-    a[v.country] = (a[v.country] || 0) + 1; return a;
-  }, {})
-).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 
 const COUNTRY_HEX = [PRIMARY, TEAL, ORANGE, C_PURPLE, AMBER, GREEN, C_SKY, "#EC4899", "#10B981", "#F43F5E"];
+
+// Country → region grouping (used by the Geographic Reach filter)
+const COUNTRY_REGION: Record<string, string> = {
+  Kenya: "East Africa", Rwanda: "East Africa", Ethiopia: "East Africa", Uganda: "East Africa", Tanzania: "East Africa",
+  Nigeria: "West Africa", Ghana: "West Africa", Senegal: "West Africa", "Côte d'Ivoire": "West Africa",
+  "South Africa": "Southern Africa", Zimbabwe: "Southern Africa", Zambia: "Southern Africa",
+};
+const GEO_REGIONS = Array.from(new Set(Object.values(COUNTRY_REGION)));
+const GEO_COUNTRIES = Array.from(new Set(ALL_VENTURES.map(v => v.country))).sort();
+const GEO_YEARS = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort();
 
 const satCompare = [
   { name: "Masterclasses", value: mcSat  },
@@ -255,51 +258,50 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
     a.href = canvas.toDataURL();
     a.click();
   }
+  function handleContextMenu(e: React.MouseEvent) {
+    e.preventDefault();
+    handleDownload();
+  }
   return (
-    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+    <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
+      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
       <div className="flex items-center gap-2.5" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
         <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
         </div>
-        <button onClick={handleDownload} title="Download chart"
-          style={{ color: "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center", flexShrink: 0 }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "white"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}>
-          <Download size={12} />
-        </button>
       </div>
       <div className="p-5">{children}</div>
     </div>
   );
 }
 
-function ExecCard({ label, value, sub, color, note, icon: Icon, bg = "#ffffff" }: {
-  label: string; value: string | number; sub?: string; color: string;
+function ExecCard({ label, value, sub, note, icon: Icon }: {
+  label: string; value: string | number; sub?: string; color?: string;
   note?: string; bg?: string; icon?: LucideIcon;
 }) {
+  const GREEN_BRAND = "#0E4633";
   return (
-    <div className="rounded-[10px] p-3.5 text-center" style={{
+    <div className="rounded-[10px]" style={{
       backgroundColor: "#ffffff",
-      border: `1px solid ${color}`,
+      border: `1px solid ${GREEN_BRAND}`,
+      padding: "13px 15px",
+      display: "flex",
+      alignItems: "center",
+      gap: 11,
     }}>
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-[9px] font-bold uppercase tracking-[0.06em] leading-none" style={{ color: "#6B7280" }}>{label}</p>
-        {Icon && (
-          <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: `${color}1A` }}>
-            <Icon size={11} style={{ color }} />
-          </div>
-        )}
+      {Icon && (
+        <span className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 36 }}>
+          <Icon size={20} style={{ color: GREEN_BRAND }} />
+        </span>
+      )}
+      <div style={{ minWidth: 0 }}>
+        <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: GREEN_BRAND, lineHeight: 1.05 }}>{value}</p>
+        <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 2 }}>{label}</p>
+        {sub  && <p style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{sub}</p>}
+        {note && <p className="mt-1.5 pt-1.5" style={{ fontSize: 9, color: "#6B7280", borderTop: "1px solid rgba(0,33,71,0.10)" }}>{note}</p>}
       </div>
-      <p className="text-xl font-black tabular-nums leading-none" style={{ color: NAVY }}>{value}</p>
-      {/* progress / underline bar */}
-      <div className="mt-2 mb-1" style={{ height: 3, borderRadius: 999, backgroundColor: `${color}26`, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: "100%", backgroundColor: color, borderRadius: 999 }} />
-      </div>
-      {sub  && <p className="text-[9px] mt-1 font-medium" style={{ color: "#9CA3AF" }}>{sub}</p>}
-      {note && <p className="text-[9px] mt-1.5 pt-1.5" style={{ color: "#6B7280", borderTop: "1px solid rgba(0,33,71,0.10)" }}>{note}</p>}
     </div>
   );
 }
@@ -362,7 +364,7 @@ const PROG_LEGEND = [
 
 function ChartLegend() {
   return (
-    <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
+    <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
       {PROG_LEGEND.map(([l, c]) => (
         <span key={l} className="flex items-center gap-1.5">
           <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
@@ -436,10 +438,12 @@ function CustomDonut({
 // â"€â"€â"€ Restructured-overview widgets â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function QuickCard({ label, count, sub }: { label: string; count: number; sub: string }) {
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 6 }}>{label}</p>
-      <p style={{ fontSize: 26, fontWeight: 800, color: "#0E4633", lineHeight: 1 }}>{count}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
+    <div className="flex items-center gap-3" style={{ background: "linear-gradient(135deg, #0E4633 0%, #145A42 100%)", borderRadius: 10, padding: "14px 16px" }}>
+      <p style={{ fontSize: 30, fontWeight: 800, color: "white", lineHeight: 1, flexShrink: 0 }}>{count}</p>
+      <div className="min-w-0">
+        <p style={{ fontSize: 11, fontWeight: 700, color: "white", lineHeight: 1.15 }}>{label}</p>
+        <p style={{ fontSize: 9.5, color: "rgba(190,228,214,0.75)", marginTop: 3 }}>{sub}</p>
+      </div>
     </div>
   );
 }
@@ -498,6 +502,21 @@ function CompareTable({ rows }: { rows: { name: string; reach: number; sat: numb
         </tbody>
       </table>
     </div>
+  );
+}
+
+function FilterSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[];
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+      {label}
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
+        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
   );
 }
 
@@ -573,6 +592,19 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
 export default function ExecutiveDashboard() {
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+
+  // Geographic Reach filters
+  const [geoRegion, setGeoRegion]   = useState("All Regions");
+  const [geoCountry, setGeoCountry] = useState("All Countries");
+  const [geoYear, setGeoYear]       = useState("All Years");
+  const geoCountryData = useMemo(() => {
+    const counts = ALL_VENTURES
+      .filter(v => geoRegion === "All Regions" || COUNTRY_REGION[v.country] === geoRegion)
+      .filter(v => geoCountry === "All Countries" || v.country === geoCountry)
+      .filter(v => geoYear === "All Years" || String(v.cohort) === geoYear)
+      .reduce<Record<string, number>>((a, v) => { a[v.country] = (a[v.country] || 0) + 1; return a; }, {});
+    return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [geoRegion, geoCountry, geoYear]);
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
@@ -608,13 +640,10 @@ export default function ExecutiveDashboard() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* â"€â"€ KPI STRIP â"€â"€â"€ */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} sub="Participants"                              clr="#0EA5E9" Icon={Users} />
           <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          sub="In portfolio"                            clr="#7C3AED" Icon={Rocket} />
-          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            sub={`${TOTAL_FEM.toLocaleString()} people`}  clr="#EC4899" pct={FEMALE_PCT} bench={50} Icon={Sparkles} />
-          <KpiTile label="Programmes"       num={TOTAL_PROGS}          displayFmt={n => String(Math.round(n))}          sub="Delivered"                               clr="#EA580C" Icon={Zap} />
-          <KpiTile label="Avg Satisfaction" num={AVG_SAT}              displayFmt={n => `${n.toFixed(1)}/5`}           sub="Rated progs"                             clr="#14B8A6" pct={(AVG_SAT / 5) * 100} bench={80} Icon={Star} />
-          <KpiTile label="Avg Completion"   num={AVG_COMP}             displayFmt={n => `${Math.round(n)}%`}            sub="Completion"                              clr="#22C55E" pct={AVG_COMP} bench={85} Icon={Target} />
+          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            sub={`${TOTAL_FEM.toLocaleString()} people`}  clr="#EC4899" Icon={Sparkles} />
           <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          sub="Cross-sector"                            clr="#F59E0B" Icon={Handshake} />
           <KpiTile label="Jobs Created"     num={TOTAL_JOBS}           displayFmt={n => Math.round(n).toLocaleString()} sub="By ventures"                             clr="#4338CA" Icon={Briefcase} />
         </div>
@@ -644,11 +673,10 @@ export default function ExecutiveDashboard() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Programmes Delivered per Year"
-              sub="Count of sessions / events by programme type"
+            <ChartCard title="Programmes per Year"
+              sub="By programme type"
               accent={ORANGE}>
-              <ChartLegend />
-              <ResponsiveContainer width="100%" height={208}>
+              <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={activityByYear} barCategoryGap="30%" barGap={2}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
@@ -659,13 +687,13 @@ export default function ExecutiveDashboard() {
                   ))}
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend />
             </ChartCard>
 
-            <ChartCard title="Participant Volume per Year"
-              sub="Total participants across all programme types  -  year by year"
+            <ChartCard title="Participants per Year"
+              sub="By programme type"
               accent={TEAL}>
-              <ChartLegend />
-              <ResponsiveContainer width="100%" height={208}>
+              <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={participantsByYear}>
                   <defs>
                     {([ORANGE, TEAL, C_PURPLE, C_SKY] as const).map((hex, i) => (
@@ -686,6 +714,7 @@ export default function ExecutiveDashboard() {
                   ))}
                 </AreaChart>
               </ResponsiveContainer>
+              <ChartLegend />
             </ChartCard>
           </div>
         </section>
@@ -694,10 +723,10 @@ export default function ExecutiveDashboard() {
         <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Participant Reach"
             sub="Who are we reaching — gender parity, programme reach, and geographic spread" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Gender Parity by Programme"
-              sub="Female (purple) vs Male proportion per programme"
+            <ChartCard title="Gender Parity"
+              sub="Female vs male share by programme"
               accent={PURPLE}>
               <div className="flex items-center gap-5 text-[10px] text-gray-400 mb-5">
                 <span className="flex items-center gap-1.5">
@@ -722,18 +751,40 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <ChartCard title="Participants by Programme"
-              sub="Total reach contributed by each programme type"
+              sub="Reach by programme type"
               accent={C_SKY}>
               <ColorBarList data={participantsByProgData} colors={COUNTRY_HEX} />
-              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
-                {TOTAL_PART.toLocaleString()} total participants · {FEMALE_PCT}% female · {countryData.length} countries represented
-              </p>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {participantsByProgData.map((d, i) => (
+                  <span key={d.name} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: COUNTRY_HEX[i % COUNTRY_HEX.length] }} />{d.name}
+                  </span>
+                ))}
+              </div>
             </ChartCard>
+          </div>
 
+          {/* Geographic reach moved to its own row, with filters */}
+          <div className="mt-4">
             <ChartCard title="Geographic Reach"
-              sub="Distribution of portfolio ventures by country"
+              sub="Ventures by country"
               accent={GREEN}>
-              <ColorBarList data={countryData} colors={COUNTRY_HEX} />
+              <div className="flex flex-wrap gap-2 mb-4">
+                <FilterSelect label="Region" value={geoRegion} onChange={setGeoRegion}
+                  options={["All Regions", ...GEO_REGIONS]} />
+                <FilterSelect label="Country" value={geoCountry} onChange={setGeoCountry}
+                  options={["All Countries", ...GEO_COUNTRIES]} />
+                <FilterSelect label="Year" value={geoYear} onChange={setGeoYear}
+                  options={["All Years", ...GEO_YEARS.map(String)]} />
+              </div>
+              {geoCountryData.length ? (
+                <ColorBarList data={geoCountryData} colors={COUNTRY_HEX} />
+              ) : (
+                <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filters.</p>
+              )}
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+                {geoCountryData.reduce((s, d) => s + d.value, 0)} ventures · {geoCountryData.length} countries
+              </p>
             </ChartCard>
           </div>
         </section>
@@ -744,8 +795,8 @@ export default function ExecutiveDashboard() {
             sub="Are programmes delivering a high-quality experience? Satisfaction and completion compared across types" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Satisfaction Heatmap  -  Programme Ã— Dimension"
-              sub="Avg score per dimension  ·  Teal â‰¥4.5  ·  Blue â‰¥4.0  ·  Amber â‰¥3.5  ·  Red <3.5"
+            <ChartCard title="Satisfaction by Dimension"
+              sub="Average score per dimension"
               accent={TEAL}>
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
@@ -801,8 +852,8 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <div className="space-y-4">
-              <ChartCard title="Avg Satisfaction by Programme"
-                sub="Overall satisfaction rating (1 - 5) across key rated programmes"
+              <ChartCard title="Satisfaction by Programme"
+                sub="Rating out of 5"
                 accent={PRIMARY}>
                 <div className="space-y-3">
                   {satCompare.map(d => (
@@ -823,8 +874,8 @@ export default function ExecutiveDashboard() {
                 </div>
               </ChartCard>
 
-              <ChartCard title="Completion Rate by Programme"
-                sub="Percentage of enrolled participants who completed each programme type"
+              <ChartCard title="Completion by Programme"
+                sub="Share who completed"
                 accent={GREEN}>
                 <div className="space-y-3">
                   {compCompare.map(d => (
@@ -847,7 +898,7 @@ export default function ExecutiveDashboard() {
             </div>
           </div>
           <div className="mt-4">
-            <ChartCard title="Programme Comparison" sub="Reach, satisfaction and completion side by side — hackathons are not satisfaction-rated" accent={PRIMARY}>
+            <ChartCard title="Programme Comparison" sub="Reach, satisfaction and completion" accent={PRIMARY}>
               <CompareTable rows={PROG_COMPARE} />
             </ChartCard>
           </div>
@@ -858,7 +909,7 @@ export default function ExecutiveDashboard() {
           <SecHeader title="Innovation Pipeline"
             sub="How hackathons convert participants into projects, startups and portfolio ventures" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Innovation Funnel" sub="Hackathon participants → projects → startups → portfolio ventures" accent={PRIMARY}>
+            <ChartCard title="Innovation Funnel" sub="Participants to ventures" accent={PRIMARY}>
               <Funnel steps={[
                 { label: "Hackathon Participants", value: hackPart },
                 { label: "Projects Developed",     value: hackProjects },
@@ -866,19 +917,12 @@ export default function ExecutiveDashboard() {
                 { label: "Portfolio Ventures",      value: ALL_VENTURES.length },
               ]} />
             </ChartCard>
-            <ChartCard title="Innovation Output" sub="Key conversion metrics from idea to venture" accent={GREEN}>
+            <ChartCard title="Innovation Output" sub="Idea-to-venture metrics" accent={GREEN}>
               <div className="grid grid-cols-2 gap-3">
-                {([
-                  { label: "Hackathon Participants", value: hackPart.toLocaleString() },
-                  { label: "Projects Developed",     value: String(hackProjects) },
-                  { label: "Startups Created",        value: String(hackStart) },
-                  { label: "Project → Startup",       value: `${Math.round(hackStart / hackProjects * 100)}%` },
-                ] as const).map(m => (
-                  <div key={m.label} className="rounded-lg p-3 text-center" style={{ border: "1px solid rgba(14,70,51,0.12)", borderLeft: "4px solid #0E4633" }}>
-                    <p className="text-2xl font-black" style={{ color: "#0E4633" }}>{m.value}</p>
-                    <p className="text-[9.5px] text-gray-500 mt-1 font-medium leading-tight">{m.label}</p>
-                  </div>
-                ))}
+                <ExecCard label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
+                <ExecCard label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
+                <ExecCard label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
+                <ExecCard label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
               </div>
             </ChartCard>
           </div>
@@ -897,12 +941,12 @@ export default function ExecutiveDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <ChartCard title="Venture Stage Pipeline"
-              sub="Distribution across Expose  ·  Build  ·  Scale development stages"
+              sub="Expose · Build · Scale"
               accent={PRIMARY}>
               <CustomDonut
                 data={stageData}
                 colors={STAGE_HEX}
-                className="h-40"
+                className="h-52"
                 label={`${ALL_VENTURES.length}`}
                 valueFormatter={(v: number) => `${v} ventures`}
               />
@@ -918,7 +962,7 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <ChartCard title="Startups &amp; Outcomes"
-              sub="Key output metrics from hackathons and venture support"
+              sub="Key output metrics"
               accent={GREEN}>
               <div className="space-y-3 mt-1">
                 {([
@@ -941,12 +985,12 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <ChartCard title="Sector Distribution"
-              sub="Venture portfolio breakdown by health sector"
+              sub="Ventures by sector"
               accent={GREEN}>
               <CustomDonut
                 data={sectorData}
                 colors={SECTOR_HEX}
-                className="h-40"
+                className="h-52"
                 valueFormatter={(v: number) => `${v}`}
               />
               <div className="mt-3 space-y-1">
