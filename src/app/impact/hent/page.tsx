@@ -646,7 +646,7 @@ export default function HENTImpactPage() {
 
         <footer className="border-t border-gray-200 pt-6 pb-10">
           <p className="text-[10px] text-gray-400">
-            HENT Impact  ·  {yearFilter === "all" ? "2022 - 2026" : String(yearFilter)}  ·  {D.vcAll.length} portfolio ventures  ·  {fmt(D.totalPart)} programme participants
+            HENT Impact  ·  {yearFilter === "all" ? "2022 - 2026" : String(yearFilter)}  ·  {D.vcAll.length} portfolio enterprises  ·  {fmt(D.totalPart)} programme participants
           </p>
         </footer>
       </div>

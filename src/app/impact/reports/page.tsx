@@ -62,8 +62,8 @@ const SECTIONS: Section[] = [
     range: "Health Entrepreneurship",
     cards: [
       { eyebrow: "HENT", title: "Hackathon report", tags: [fmtTag("PDF"), stTag("New")], desc: "Participation and outcomes from HENT hackathons.", href: "#", state: "new" },
-      { eyebrow: "HENT", title: "Funding report", tags: [fmtTag("PDF")], desc: "Funding raised and disbursed across ventures.", href: "#", state: "default" },
-      { eyebrow: "HENT", title: "Venture portfolio report", tags: [stTag("In Progress"), stTag("Due Q4 2026")], desc: "Health of the venture portfolio and growth metrics.", href: "#", state: "coming", statusLabel: "In progress – due Q4 2026" },
+      { eyebrow: "HENT", title: "Funding report", tags: [fmtTag("PDF")], desc: "Funding raised and disbursed across enterprises.", href: "#", state: "default" },
+      { eyebrow: "HENT", title: "Enterprise portfolio report", tags: [stTag("In Progress"), stTag("Due Q4 2026")], desc: "Health of the enterprise portfolio and growth metrics.", href: "#", state: "coming", statusLabel: "In progress – due Q4 2026" },
       { eyebrow: "HENT", title: "Masterclasses report", tags: [fmtTag("PDF")], desc: "Attendance and impact of masterclass sessions.", href: "#", state: "default" },
       { eyebrow: "HENT", title: "Mentorship report", tags: [fmtTag("PDF")], desc: "Mentorship engagement and outcomes.", href: "#", state: "default" },
       { eyebrow: "HENT", title: "Application & selection report", tags: [fmtTag("PDF")], desc: "Application volumes and selection outcomes.", href: "#", state: "default" },

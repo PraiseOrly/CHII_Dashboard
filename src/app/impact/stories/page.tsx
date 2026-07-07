@@ -119,7 +119,7 @@ export default function ImpactStoriesPage() {
                 <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(181,212,244,0.9)" }}>Executive</span>
               </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.8)" }}>Graduate journeys and venture spotlights across Africa</p>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.8)" }}>Graduate journeys and enterprise spotlights across Africa</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>
         </div>

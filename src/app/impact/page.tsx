@@ -621,7 +621,7 @@ export default function ImpactDashboard() {
       return {
         Year: String(yr),
         "Health Ed.": hemp,
-        "Venture Eco.": hent,
+        "Enterprise Eco.": hent,
         Total: hemp + hent,
         "Completion %": complVals.length ? Math.round(avg(complVals)) : 0,
         "Satisfaction ÃƒÆ’Ã¢â‚¬â€20": satVals.length ? Math.round(avg(satVals) * 20) : 0,
@@ -741,10 +741,10 @@ export default function ImpactDashboard() {
         {/* L1 · KPI Strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
           <StatsKpiCard fill={KPI_NAVY} label="Total Beneficiaries" num={D.grandTotal} sub={yoyReach ? `+${yoyReach}% vs 2024` : "Across all programs"} Icon={Users} tooltip="Total individuals reached across all CHII programs — including HENT, HEMP, HECO and every other program under CHII." />
-          <StatsKpiCard fill={KPI_NAVY} label="Youth in Work" num={D.employmentOut} sub="In employment or enterprise" Icon={Briefcase} tooltip="Graduates in work — wage employment or running their own venture — within 12 months of completing school." />
+          <StatsKpiCard fill={KPI_NAVY} label="Youth in Work" num={D.employmentOut} sub="In employment or enterprise" Icon={Briefcase} tooltip="Graduates in work — wage employment or running their own enterprise — within 12 months of completing school." />
           <StatsKpiCard fill={KPI_NAVY} label="Wage Employment" num={D.msWageOnly} sub="In paid employment" Icon={Users} tooltip="Graduates in paid employment of any kind — formal and informal — with an employer." />
-          <StatsKpiCard fill={KPI_NAVY} label="Entrepreneurs" num={D.msEntOnly} sub="Running own venture" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own venture or enterprise." />
-          <StatsKpiCard fill={KPI_NAVY} label="Jobs Created" num={D.jobsFromVC} sub="Across all ventures" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led ventures." />
+          <StatsKpiCard fill={KPI_NAVY} label="Entrepreneurs" num={D.msEntOnly} sub="Running own enterprise" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own enterprise." />
+          <StatsKpiCard fill={KPI_NAVY} label="Jobs Created" num={D.jobsFromVC} sub="Across all enterprises" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led enterprises." />
           <StatsKpiCard fill={KPI_NAVY} label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
         </div>
 
@@ -841,14 +841,14 @@ export default function ImpactDashboard() {
                 <Heart size={16} color="#185FA5" />
               </div>
               <p style={{ fontSize: 12, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Women Lead Outcomes</p>
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Female graduates show 12% higher employment conversion, with 3x greater likelihood of launching health-adjacent ventures.</p>
+              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Female graduates show 12% higher employment conversion, with 3x greater likelihood of launching health-adjacent enterprises.</p>
             </div>
             <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#1D9E7514", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
                 <TrendingUp size={16} color="#1D9E75" />
               </div>
               <p style={{ fontSize: 12, fontWeight: 700, color: "#111827", marginBottom: 6 }}>HENT Multiplies Impact</p>
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Each HENT participant creates an average of 1.4 downstream opportunities through peer mentorship and venture job creation.</p>
+              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Each HENT participant creates an average of 1.4 downstream opportunities through peer mentorship and enterprise job creation.</p>
             </div>
             <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#7F77DD14", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
