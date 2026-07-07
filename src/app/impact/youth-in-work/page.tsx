@@ -32,20 +32,19 @@ const PROGRAM_COLOR: Record<Program, string> = { HEMP: "#102C5E", HENT: "#A81B2D
 const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
 /* gender splits report Female / Male only */
 const GENDER_2: Gender[] = ["Female", "Male"];
-const PATHWAY_COLOR: Record<Pathway, string> = {
-  "Wage Employment": "#102C5E", "Internship": "#3FA7E0", "Venture Founder": "#479BD6",
-  "Wage & Venture": "#D45F2C", "Further Education": "#A81B2D", "Seeking Employment": "#D17A86", "Other": "#C5D2E0",
+const PATHWAY_COLOR: Record<string, string> = {
+  "Wage Employment": "#102C5E", "Enterprise": "#479BD6", "Freelance": "#D17A86",
 };
-const OUTCOME_COLOR: Record<string, string> = { Employment: C_BLUE, Internships: "#3FA7E0", Ventures: C_GREEN };
+const OUTCOME_COLOR: Record<string, string> = { Employment: "#102C5E", Internships: "#479BD6", Ventures: "#D17A86" };
 const WORKCAT_COLOR: Record<string, string> = {
   "Full-time": "#102C5E", "Part-time": "#479BD6", "Contract": "#D45F2C",
-  "Internship": "#3FA7E0", "Self-employed": "#A81B2D", "Founder": "#A81B2D",
+  "Internship": "#E0A458", "Self-employed": "#D17A86", "Enterprise": "#A81B2D",
   "Permanent": "#102C5E", "Freelance": "#479BD6",
 };
 const JOBCAT_COLOR: Record<string, string> = { New: "#102C5E", Additional: "#479BD6", Improved: "#A81B2D" };
 /* trend reporting window: 2022 → 2026 */
 const TREND_YEARS = [2022, 2023, 2024, 2025, 2026];
-const EMPLOYER_PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E"];
+const EMPLOYER_PALETTE = ["#102C5E", "#479BD6", "#D17A86", "#E0A458", "#A81B2D"];
 
 /* ── helpers ─────────────────────────────────────────── */
 const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
@@ -57,7 +56,7 @@ const isVenture = (y: Youth) => VENTURE_PATHWAYS.includes(y.pathway);
 
 /* derived work category (jobs-by-category view) */
 function workCategory(y: Youth): string | null {
-  if (isVenture(y)) return "Founder";
+  if (isVenture(y)) return "Enterprise";
   if (isInternship(y)) return "Internship";
   if (y.participantType === "Venture Employee" || isEmployed(y)) {
     if (y.employmentType === "Part-time") return "Part-time";
@@ -68,7 +67,7 @@ function workCategory(y: Youth): string | null {
 }
 /* derived employment type (quality view) */
 function qualityType(y: Youth): string | null {
-  if (isVenture(y)) return "Founder";
+  if (isVenture(y)) return "Enterprise";
   if (isInternship(y)) return "Internship";
   if (y.participantType === "Venture Employee" || isEmployed(y)) {
     if (y.employmentType === "Part-time") return "Freelance";
@@ -77,7 +76,7 @@ function qualityType(y: Youth): string | null {
   }
   return null;
 }
-const QUALITY_TYPES = ["Permanent", "Contract", "Internship", "Freelance", "Founder"];
+const QUALITY_TYPES = ["Permanent", "Contract", "Internship", "Freelance", "Enterprise"];
 
 /* ════════════════════════════════════════════════════════
    Shared UI
@@ -281,9 +280,16 @@ export default function YouthInWorkPage() {
   }, [scope]);
 
   /* ── Section 1: work pathways ──────────────────────── */
-  const pathwayDist = useMemo(() =>
-    PATHWAYS.map(p => ({ name: p, value: scope.filter(y => y.pathway === p).length })).filter(d => d.value > 0),
-  [scope]);
+  const pathwayDist = useMemo(() => {
+    const enterprise = scope.filter(y => isVenture(y)).length;
+    const freelance = scope.filter(y => !isVenture(y) && y.employmentType === "Contract").length;
+    const wage = scope.filter(y => !isVenture(y) && y.employmentType !== "Contract" && isEmployed(y)).length;
+    return [
+      { name: "Wage Employment", value: wage },
+      { name: "Enterprise", value: enterprise },
+      { name: "Freelance", value: freelance },
+    ].filter(d => d.value > 0);
+  }, [scope]);
 
   const participantCompare = useMemo(() => {
     const groups: { name: string; rows: Youth[] }[] = [
@@ -496,7 +502,7 @@ export default function YouthInWorkPage() {
               tooltip="Youth in wage employment, including those at supported ventures." />
             <StatsKpiCard label="In Internships" num={kpis.interns} sub="active internships" Icon={GraduationCap}
               tooltip="Youth currently in internship placements." />
-            <StatsKpiCard label="Venture Founders" num={kpis.founders} sub="running ventures" Icon={Rocket}
+            <StatsKpiCard label="Enterprise" num={kpis.founders} sub="running ventures" Icon={Rocket}
               tooltip="Participants founding or co-running a venture." />
             <StatsKpiCard label="Jobs Created" num={kpis.jobsCreated} sub="by supported ventures" Icon={Hammer}
               tooltip="Positions created by ventures CHII participants founded." />
@@ -616,10 +622,10 @@ export default function YouthInWorkPage() {
                 <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTip />} />
                 <Legend wrapperStyle={{ fontSize: 10 }} />
-                <Line type="monotone" dataKey="Employment" stroke={C_BLUE} strokeWidth={2.5} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="Internships" stroke="#3FA7E0" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="Ventures" stroke={C_GREEN} strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="Further Ed." stroke={C_AMBER} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Employment" stroke="#102C5E" strokeWidth={2.5} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Internships" stroke="#479BD6" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Ventures" stroke="#D17A86" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Further Ed." stroke="#E0A458" strokeWidth={2} strokeDasharray="5 4" dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </Panel>
@@ -684,7 +690,7 @@ export default function YouthInWorkPage() {
 
           {/* Jobs by category + jobs created by program (with legends) */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Jobs by Category" subtitle="Full-time · Part-time · Contract · Internship · Founder"
+            <Panel title="Jobs by Category" subtitle="Full-time · Part-time · Contract · Internship · Enterprise"
               info="How work breaks down across employment categories.">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={jobs.byCategory} margin={{ top: 16, right: 10, bottom: 0, left: -16 }} barCategoryGap="26%">
@@ -892,7 +898,7 @@ export default function YouthInWorkPage() {
         <section className="space-y-4">
           <SectionHeader title="Quality of Work" blurb="Are participants accessing meaningful and sustainable work?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
-            <Panel title="Employment Type" subtitle="Permanent · Contract · Internship · Freelance · Founder"
+            <Panel title="Employment Type" subtitle="Permanent · Contract · Internship · Freelance · Enterprise"
               info="Composition of how working participants are engaged.">
               <Donut data={quality.empType} colors={WORKCAT_COLOR} total={quality.empType.reduce((s, d) => s + d.value, 0)} totalLabel="Working" height={340} legendPercent />
             </Panel>

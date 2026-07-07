@@ -8,6 +8,7 @@ const VIOLET = "#7C3AED";
 
 export const HEMP_NAV_ITEMS = [
   { label: "Overview",         href: "/hemp"                  },
+  { label: "Pipeline",         href: "/hemp/pipeline"         },
   { label: "HealthX",          href: "/hemp/healthx"          },
   { label: "Internships",      href: "/hemp/internships"      },
   { label: "Mission Students", href: "/hemp/mission-students" },

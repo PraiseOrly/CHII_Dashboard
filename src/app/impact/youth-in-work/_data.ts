@@ -14,7 +14,7 @@ export type ParticipantType = "Student" | "Alumni" | "Venture Employee";
 export type Pathway =
   | "Wage Employment"
   | "Internship"
-  | "Venture Founder"
+  | "Enterprise"
   | "Wage & Venture"
   | "Further Education"
   | "Seeking Employment"
@@ -63,7 +63,7 @@ export const PARTICIPANT_TYPES: ParticipantType[] = ["Student", "Alumni", "Ventu
 export const PATHWAYS: Pathway[] = [
   "Wage Employment",
   "Internship",
-  "Venture Founder",
+  "Enterprise",
   "Wage & Venture",
   "Further Education",
   "Seeking Employment",
@@ -72,7 +72,7 @@ export const PATHWAYS: Pathway[] = [
 
 export const EMPLOYMENT_TYPES: EmploymentType[] = ["Full-time", "Part-time", "Contract"];
 export const EMPLOYER_TYPES: EmployerType[] = ["Startup", "Corporate", "Public Sector", "NGO", "Self-employed"];
-export const WORK_CATEGORIES = ["Full-time", "Part-time", "Contract", "Internship", "Self-employed", "Founder"];
+export const WORK_CATEGORIES = ["Full-time", "Part-time", "Contract", "Internship", "Self-employed", "Enterprise"];
 export const COHORTS = [2019, 2020, 2021, 2022, 2023, 2024];
 
 export const COUNTRIES = [
@@ -112,7 +112,7 @@ function pick<T>(r: () => number, weighted: [T, number][]): T {
 
 /* employment & venture pathway sets (shared by the page) */
 export const EMPLOYED_PATHWAYS: Pathway[] = ["Wage Employment", "Wage & Venture"];
-export const VENTURE_PATHWAYS: Pathway[] = ["Venture Founder", "Wage & Venture"];
+export const VENTURE_PATHWAYS: Pathway[] = ["Enterprise", "Wage & Venture"];
 
 function buildYouth(n: number): Youth[] {
   const r = rng(42);
@@ -129,12 +129,12 @@ function buildYouth(n: number): Youth[] {
     let pathway: Pathway;
     if (participantType === "Student") {
       pathway = pick<Pathway>(r, [
-        ["Internship", 0.4], ["Wage Employment", 0.14], ["Venture Founder", 0.12],
+        ["Internship", 0.4], ["Wage Employment", 0.14], ["Enterprise", 0.12],
         ["Further Education", 0.12], ["Seeking Employment", 0.16], ["Other", 0.06],
       ]);
     } else if (participantType === "Alumni") {
       pathway = pick<Pathway>(r, [
-        ["Wage Employment", 0.46], ["Venture Founder", 0.16], ["Wage & Venture", 0.1],
+        ["Wage Employment", 0.46], ["Enterprise", 0.16], ["Wage & Venture", 0.1],
         ["Further Education", 0.12], ["Seeking Employment", 0.1], ["Other", 0.06],
       ]);
     } else {
@@ -142,7 +142,7 @@ function buildYouth(n: number): Youth[] {
       pathway = "Wage Employment";
     }
 
-    const isFounder = pathway === "Venture Founder" || pathway === "Wage & Venture";
+    const isFounder = pathway === "Enterprise" || pathway === "Wage & Venture";
     const jobsCreated = isFounder ? 1 + Math.floor(r() * 12) : 0;
 
     const employed = pathway === "Wage Employment" || pathway === "Wage & Venture" || participantType === "Venture Employee";
@@ -150,7 +150,7 @@ function buildYouth(n: number): Youth[] {
       ? pick<EmploymentType>(r, [["Full-time", 0.62], ["Part-time", 0.22], ["Contract", 0.16]])
       : "None";
 
-    const primaryJob = employed || pathway === "Venture Founder";
+    const primaryJob = employed || pathway === "Enterprise";
     const secondaryJob = primaryJob && r() < 0.24;
 
     const country = pick<string>(r, [

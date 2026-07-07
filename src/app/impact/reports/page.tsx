@@ -15,7 +15,7 @@ const ACCENT = "#102C5E";
    TYPES + DATA
 ═══════════════════════════════════════════════════════ */
 type CardState = "default" | "coming" | "new";
-type ResourceType = "Annual Reports" | "Key Facts" | "Evaluations";
+type ResourceType = "HEMP" | "HENT" | "HECO" | "MELA";
 
 interface Tag { label: string; kind: "format" | "status"; }
 interface ResourceCard {
@@ -40,49 +40,67 @@ const stTag = (label: string): Tag => ({ label, kind: "status" });
 
 const SECTIONS: Section[] = [
   {
-    id: "annual",
-    title: "Annual impact reports",
-    type: "Annual Reports",
-    range: "2022–2025",
+    id: "hemp",
+    title: "HEMP",
+    type: "HEMP",
+    range: "Health Employability & Mission Programme",
     cards: [
-      { eyebrow: "ALU Impact Report", title: "2022 Annual Report", tags: [fmtTag("PDF"), fmtTag("English")], desc: "Full-year impact across outreach, employment, and entrepreneurship.", href: "#", state: "default" },
-      { eyebrow: "ALU Impact Report", title: "2023 Annual Report", tags: [fmtTag("Google Slides"), fmtTag("Interactive")], desc: "Interactive review of cohort outcomes and programme reach.", href: "#", state: "default" },
-      { eyebrow: "ALU Impact Report", title: "2024 Annual Report", tags: [fmtTag("Docsend"), fmtTag("Interactive")], desc: "Latest annual results with sector and geography breakdowns.", href: "#", state: "default" },
-      { eyebrow: "ALU Impact Report", title: "2025 Annual Report", tags: [stTag("In Progress"), stTag("Due Q2 2025")], desc: "The 2025 annual report is being compiled and will publish next quarter.", href: "#", state: "coming", statusLabel: "In progress – due Q2 2025" },
-      { eyebrow: "ALG Year in Review", title: "2022 Year in Review", tags: [fmtTag("Google Slides")], desc: "Highlights and milestones from the 2022 academic year.", href: "#", state: "default" },
-      { eyebrow: "ALG Year in Review", title: "2023 Year in Review", tags: [fmtTag("Google Slides")], desc: "A visual recap of 2023 achievements and alumni stories.", href: "#", state: "default" },
-      { eyebrow: "ALG Year in Review", title: "2024 Year in Review", tags: [fmtTag("PDF")], desc: "Year-end summary of programme outcomes and growth.", href: "#", state: "default" },
-      { eyebrow: "ALG Year in Review", title: "2025 Year in Review", tags: [fmtTag("PDF"), stTag("New")], desc: "The newest year-in-review, just published with 2025 figures.", href: "#", state: "new" },
+      { eyebrow: "HEMP", title: "HealthX report", tags: [fmtTag("PDF"), stTag("New")], desc: "Outcomes and reach across the HealthX programme.", href: "#", state: "new" },
+      { eyebrow: "HEMP", title: "SIE cohort report", tags: [fmtTag("PDF")], desc: "Performance and progression of the SIE cohort.", href: "#", state: "default" },
+      { eyebrow: "HEMP", title: "Mission Students report", tags: [fmtTag("PDF")], desc: "Engagement and impact of Mission Students.", href: "#", state: "default" },
+      { eyebrow: "HEMP", title: "Internship funnel report", tags: [stTag("In Progress"), stTag("Due Q3 2026")], desc: "Applicant-to-placement funnel across the internship pipeline.", href: "#", state: "coming", statusLabel: "In progress – due Q3 2026" },
+      { eyebrow: "HEMP", title: "Internship partnership performance report", tags: [fmtTag("PDF")], desc: "Performance of internship partners and placements.", href: "#", state: "default" },
+      { eyebrow: "HEMP", title: "Courses enrollment & completion report", tags: [fmtTag("PDF")], desc: "Enrollment and completion rates across HEMP courses.", href: "#", state: "default" },
+      { eyebrow: "HEMP", title: "Intro to Global Health course report", tags: [fmtTag("PDF")], desc: "Delivery and outcomes for the Intro to Global Health course.", href: "#", state: "default" },
+      { eyebrow: "HEMP", title: "Ethics course report", tags: [fmtTag("PDF")], desc: "Delivery and outcomes for the Ethics course.", href: "#", state: "default" },
     ],
   },
   {
-    id: "keyfacts",
-    title: "Key facts",
-    type: "Key Facts",
-    range: "2023–2025",
+    id: "hent",
+    title: "HENT",
+    type: "HENT",
+    range: "Health Entrepreneurship",
     cards: [
-      { eyebrow: "Key Facts", title: "Key facts 2024", tags: [fmtTag("PDF"), fmtTag("English")], desc: "One-page snapshot of headline impact metrics for 2024.", href: "#", state: "default" },
-      { eyebrow: "Key Facts", title: "Key facts 2025", tags: [fmtTag("PDF"), stTag("New")], desc: "Updated at-a-glance metrics for the current year.", href: "#", state: "new" },
-      { eyebrow: "Key Facts", title: "Gender & inclusion brief", tags: [fmtTag("PDF")], desc: "Inclusion metrics across cohorts — gender, refugees, and PwD.", href: "#", state: "default" },
-      { eyebrow: "Key Facts", title: "Employment fact sheet", tags: [stTag("In Progress"), stTag("Due Q3 2025")], desc: "A focused fact sheet on wage-employment outcomes is in progress.", href: "#", state: "coming", statusLabel: "In progress – due Q3 2025" },
+      { eyebrow: "HENT", title: "Hackathon report", tags: [fmtTag("PDF"), stTag("New")], desc: "Participation and outcomes from HENT hackathons.", href: "#", state: "new" },
+      { eyebrow: "HENT", title: "Funding report", tags: [fmtTag("PDF")], desc: "Funding raised and disbursed across ventures.", href: "#", state: "default" },
+      { eyebrow: "HENT", title: "Venture portfolio report", tags: [stTag("In Progress"), stTag("Due Q4 2026")], desc: "Health of the venture portfolio and growth metrics.", href: "#", state: "coming", statusLabel: "In progress – due Q4 2026" },
+      { eyebrow: "HENT", title: "Masterclasses report", tags: [fmtTag("PDF")], desc: "Attendance and impact of masterclass sessions.", href: "#", state: "default" },
+      { eyebrow: "HENT", title: "Mentorship report", tags: [fmtTag("PDF")], desc: "Mentorship engagement and outcomes.", href: "#", state: "default" },
+      { eyebrow: "HENT", title: "Application & selection report", tags: [fmtTag("PDF")], desc: "Application volumes and selection outcomes.", href: "#", state: "default" },
     ],
   },
   {
-    id: "evaluations",
-    title: "Evaluations",
-    type: "Evaluations",
-    range: "2021–2025",
+    id: "heco",
+    title: "HECO",
+    type: "HECO",
+    range: "Health Community",
     cards: [
-      { eyebrow: "External Evaluation", title: "Outcomes evaluation 2023", tags: [fmtTag("PDF"), fmtTag("English")], desc: "Independent evaluation of programme outcomes and effectiveness.", href: "#", state: "default" },
-      { eyebrow: "External Evaluation", title: "Tracer study 2024", tags: [fmtTag("Docsend"), fmtTag("Interactive")], desc: "Alumni tracer study tracking longer-term employment and ventures.", href: "#", state: "default" },
-      { eyebrow: "Internal Review", title: "Mid-term review 2022", tags: [fmtTag("PDF")], desc: "Mid-term review of programme delivery and learnings.", href: "#", state: "default" },
-      { eyebrow: "External Evaluation", title: "Impact evaluation 2025", tags: [stTag("In Progress"), stTag("Due Q4 2025")], desc: "A full impact evaluation for 2025 is underway.", href: "#", state: "coming", statusLabel: "In progress – due Q4 2025" },
+      { eyebrow: "HECO", title: "CRA report", tags: [stTag("In Progress"), stTag("Due Q3 2026")], desc: "Community Research Associate activity and outcomes.", href: "#", state: "coming", statusLabel: "In progress – due Q3 2026" },
+    ],
+  },
+  {
+    id: "mela",
+    title: "MELA",
+    type: "MELA",
+    range: "Monitoring, Evaluation, Learning & Adaptation",
+    cards: [
+      { eyebrow: "MELA", title: "Cross-pillar performance report", tags: [fmtTag("PDF")], desc: "Performance rolled up across HEMP, HENT, and HECO.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Data quality report", tags: [fmtTag("PDF")], desc: "Data completeness, accuracy, and timeliness assessment.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Learning brief", tags: [fmtTag("PDF")], desc: "Key learnings distilled from programme data.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Adaptation log", tags: [fmtTag("PDF")], desc: "Record of programme adaptations and decisions.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Indicator health report", tags: [fmtTag("PDF")], desc: "Status of indicators against targets.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Baseline / midterm / endline evaluation reports", tags: [stTag("In Progress"), stTag("Due Q4 2026")], desc: "Evaluation reports across the programme lifecycle.", href: "#", state: "coming", statusLabel: "In progress – due Q4 2026" },
+      { eyebrow: "MELA", title: "MEL capacity report", tags: [fmtTag("PDF")], desc: "Assessment of monitoring and evaluation capacity.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Framework alignment report", tags: [fmtTag("PDF")], desc: "Alignment of activities to the results framework.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "MCF Quarterly report", tags: [fmtTag("PDF"), stTag("New")], desc: "Quarterly reporting to the Mastercard Foundation.", href: "#", state: "new" },
+      { eyebrow: "MELA", title: "MCF Bi-annual outcomes report", tags: [fmtTag("PDF")], desc: "Bi-annual outcomes reporting to the Mastercard Foundation.", href: "#", state: "default" },
+      { eyebrow: "MELA", title: "Beneficiary feedback report", tags: [fmtTag("PDF")], desc: "Feedback gathered from programme beneficiaries.", href: "#", state: "default" },
     ],
   },
 ];
 
-const HERO_META = ["12 published resources", "3 in progress", "Updated June 2026"];
-const SEGMENTS: ("All" | ResourceType)[] = ["All", "Annual Reports", "Key Facts", "Evaluations"];
+const HERO_META = ["26 report types", "4 pillars", "Updated June 2026"];
+const SEGMENTS: ("All" | ResourceType)[] = ["All", "HEMP", "HENT", "HECO", "MELA"];
 
 /* ════════════════════════════════════════════════════════
    REUSABLE PILL
@@ -206,7 +224,7 @@ export default function ImpactReportsPage() {
                 <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(181,212,244,0.9)" }}>Executive</span>
               </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Annual reports, key facts, and evaluations documenting CHII&apos;s impact across programmes</p>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Reports across HEMP, HENT, HECO, and MELA documenting CHII&apos;s impact across pillars</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>
           </div>
         </div>

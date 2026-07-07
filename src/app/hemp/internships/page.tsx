@@ -115,7 +115,7 @@ const countryData = Object.entries(
 // KPI tiles
 const KPI_TILES = [
   { label: "Host Organisations", clr: "#B45309" },
-  { label: "Students Placed",    clr: "#4C1D95" },
+  { label: "Students Placed",    clr: "#F26522" },
   { label: "Employment Conv.",   clr: "#065F46" },
   { label: "Countries",          clr: "#1E3A8A" },
   { label: "Mentor-led Orgs",    clr: "#0F766E" },
@@ -157,18 +157,18 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "12px 14px", textAlign: "center", border: "1px solid rgba(76,29,149,0.12)", borderLeft: "5px solid #4C1D95" }}>
-      <p style={{ fontSize: 9.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(76,29,149,0.55)", marginBottom: 6 }}>{label}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "12px 14px", textAlign: "center", border: "1px solid rgba(242,101,34,0.12)", borderLeft: "5px solid #F26522" }}>
+      <p style={{ fontSize: 9.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(242,101,34,0.55)", marginBottom: 6 }}>{label}</p>
       <div className="flex items-center justify-center gap-1.5">
-        {Icon && <Icon size={16} style={{ color: "#4C1D95", opacity: 0.85, flexShrink: 0 }} />}
-        <p style={{ fontSize: 18, fontWeight: 800, color: "#4C1D95", lineHeight: 1 }}>{displayFmt(animated)}</p>
+        {Icon && <Icon size={16} style={{ color: "#F26522", opacity: 0.85, flexShrink: 0 }} />}
+        <p style={{ fontSize: 18, fontWeight: 800, color: "#F26522", lineHeight: 1 }}>{displayFmt(animated)}</p>
       </div>
-      <p style={{ fontSize: 9, color: "rgba(76,29,149,0.55)", marginTop: 3 }}>{sub}</p>
+      <p style={{ fontSize: 9, color: "rgba(242,101,34,0.55)", marginTop: 3 }}>{sub}</p>
       {pct !== undefined && (
-        <div className="relative" style={{ marginTop: 8, height: 4, borderRadius: 4, backgroundColor: "rgba(76,29,149,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#4C1D95", borderRadius: 4 }} />
+        <div className="relative" style={{ marginTop: 8, height: 4, borderRadius: 4, backgroundColor: "rgba(242,101,34,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
+          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#F26522", borderRadius: 4 }} />
           {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#4C1D95", borderRadius: 1 }} />
+            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#F26522", borderRadius: 1 }} />
           )}
         </div>
       )}
@@ -181,7 +181,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
     <div className="flex items-center gap-2.5 mb-4">
       <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#4C1D95", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#F26522", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -203,7 +203,7 @@ function ChartCard({ title, sub, accent = AMBER, children }: {
   }
   return (
     <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#4C1D95", padding: "11px 20px" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#F26522", padding: "11px 20px" }}>
         <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
@@ -311,7 +311,7 @@ export default function InternshipsPage() {
 
       {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#4C1D95", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#F26522", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -323,7 +323,7 @@ export default function InternshipsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(76,29,149,0) 0%, #4C1D95 34%, #4C1D95 66%, rgba(76,29,149,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -847,19 +847,19 @@ export default function InternshipsPage() {
 
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#4C1D95", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#F26522", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(76,29,149,0) 0%, #4C1D95 34%, #4C1D95 66%, rgba(76,29,149,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.85)" }}><span style={{ color: "#C4B5FD", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.85)" }}><span style={{ color: "#C4B5FD", fontWeight: 600 }}>Source:</span> HEMP Internships M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(221,214,254,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(221,214,254,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Source:</span> HEMP Internships M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(255,237,213,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
             </div>
           </div>
         </div>

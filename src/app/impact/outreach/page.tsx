@@ -679,7 +679,7 @@ export default function OutreachPage() {
                 <Legend wrapperStyle={{ fontSize: 10 }} />
                 {INSTITUTIONS.map((inst, i) => (
                   <Bar key={inst} dataKey={inst} stackId="i" barSize={15}
-                    fill={["#102C5E", "#102C5E", "#479BD6", "#C5D2E0"][i]}
+                    fill={["#102C5E", "#479BD6", "#D17A86", "#E0A458"][i]}
                     radius={i === INSTITUTIONS.length - 1 ? [0, 4, 4, 0] : undefined} />
                 ))}
               </BarChart>
