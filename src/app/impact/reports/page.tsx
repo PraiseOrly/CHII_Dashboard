@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Download, ArrowRight, FileText, PieChart as PieChartIcon } from "lucide-react";
+import { Search, Download, ArrowRight, FileText } from "lucide-react";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import HeaderDesign from "@/components/HeaderDesign";
 
@@ -219,10 +219,6 @@ export default function ImpactReportsPage() {
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Impact reports</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <PieChartIcon size={11} style={{ color: "rgba(181,212,244,0.9)" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(181,212,244,0.9)" }}>Executive</span>
-              </span>
             </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Reports across HEMP, HENT, HECO, and MELA documenting CHII&apos;s impact across pillars</p>
             <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>Last updated: 18 June 2026, 16:30 CAT</p>

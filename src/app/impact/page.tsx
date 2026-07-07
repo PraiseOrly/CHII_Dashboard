@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import {
   AlertCircle, Award, Briefcase, CheckCircle, Clock,
   Download, FileText, Globe, GraduationCap, Handshake,
-  Heart, Moon, PieChart, Star, Sun, Target, TrendingUp, Users, Zap,
+  Heart, Moon, Star, Sun, Target, TrendingUp, Users, Zap,
 } from "lucide-react";
 
 import { healthXSessions } from "@/data/hemp/healthx";
@@ -721,10 +721,6 @@ export default function ImpactDashboard() {
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
                 Overview
               </h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <PieChart size={11} style={{ color: "rgba(181,212,244,0.9)" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(181,212,244,0.9)" }}>Executive</span>
-              </span>
             </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
               Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
