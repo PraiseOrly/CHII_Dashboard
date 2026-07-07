@@ -129,9 +129,13 @@ function Panel({ title, subtitle, info, children }: {
 /* ♀ woman / female symbol icon (lucide has no female glyph in this version) */
 function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color ?? "currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
-      <circle cx="12" cy="8" r="5" />
-      <path d="M12 13v8M9 18h6" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="4.3" r="2.9" stroke="none" />
+      <path d="M8.7 7.6 L15.3 7.6 L14 12.2 L16.6 17.6 L7.4 17.6 L10 12.2 Z" stroke="none" />
+      <path d="M9.3 8 C7.6 10 6.9 12.4 6.9 15.1" fill="none" strokeWidth="2" strokeLinecap="round" />
+      <path d="M14.7 8 C16.4 10 17.1 12.4 17.1 15.1" fill="none" strokeWidth="2" strokeLinecap="round" />
+      <path d="M10.4 17.6 L10.4 21.7" fill="none" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M13.6 17.6 L13.6 21.7" fill="none" strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }
