@@ -130,12 +130,12 @@ function Panel({ title, subtitle, info, children }: {
 function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
-      <circle cx="12" cy="4.3" r="2.9" stroke="none" />
-      <path d="M8.7 7.6 L15.3 7.6 L14 12.2 L16.6 17.6 L7.4 17.6 L10 12.2 Z" stroke="none" />
-      <path d="M9.3 8 C7.6 10 6.9 12.4 6.9 15.1" fill="none" strokeWidth="2" strokeLinecap="round" />
-      <path d="M14.7 8 C16.4 10 17.1 12.4 17.1 15.1" fill="none" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10.4 17.6 L10.4 21.7" fill="none" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M13.6 17.6 L13.6 21.7" fill="none" strokeWidth="2.4" strokeLinecap="round" />
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
     </svg>
   );
 }
