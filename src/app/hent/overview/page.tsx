@@ -1,5 +1,7 @@
 ﻿"use client";
 import HENTNav from "@/components/HENTNav";
+import { DonutRing } from "@/components/DonutChart";
+import HentAfricaMap from "@/components/HentAfricaMap";
 import { fieldVisits } from "@/data/fieldVisits";
 import { founders } from "@/data/founders";
 import { hackathons } from "@/data/hackathons";
@@ -29,7 +31,7 @@ const TEAL    = "#009CA6";
 const PURPLE  = "#2D6A4F"; // female gender bars (forest)
 const AMBER   = "#3FA0D8";
 const GREEN   = "#00A07A";
-const INDIGO  = "#5C2D91";
+const INDIGO  = "#1B4332";
 const ORANGE  = "#0B2D71";
 
 const C_PURPLE = "#5C2D91";
@@ -56,11 +58,16 @@ function sg(s: string) {
   if (s === "Prototype/MVP" || s === "Early Growth") return "Build";
   return "Scale";
 }
+// Sequential satisfaction scale: deep green → light green → amber → red
+const HEAT_VERY_HIGH = "#1B4332";
+const HEAT_HIGH      = "#43AA8B";
+const HEAT_MODERATE  = "#E9C46A";
+const HEAT_LOW       = "#E63946";
 function heatColor(v: number): string {
-  if (v >= 4.5) return TEAL;
-  if (v >= 4.0) return PRIMARY;
-  if (v >= 3.5) return AMBER;
-  return PURPLE;
+  if (v >= 4.5) return HEAT_VERY_HIGH;
+  if (v >= 4.0) return HEAT_HIGH;
+  if (v >= 3.5) return HEAT_MODERATE;
+  return HEAT_LOW;
 }
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
@@ -136,7 +143,10 @@ const sectorData = Object.entries(sectorCounts)
   .sort((a, b) => b.value - a.value);
 
 // Green-family ramp for categorical charts (sectors, countries) — distinct by hue/value
-const GREEN_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5"];
+const GREEN_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5","#7FB9B7","#5A7D3F","#9DC3A0","#245C51","#D2E3BE"];
+// Very distinct multi-hue palette for donut charts (no repeats)
+const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
+const PALETTE_NEUTRAL = "#888780";
 const SECTOR_HEX = GREEN_RAMP;
 
 const stageData = [
@@ -250,8 +260,8 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-function ChartCard({ title, sub, accent = PRIMARY, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
+function ChartCard({ title, sub, accent = PRIMARY, info, children }: {
+  title: string; sub?: string; accent?: string; info?: string; children: React.ReactNode;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   async function handleDownload() {
@@ -270,11 +280,14 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   return (
     <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
       className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}
+          <div className="flex items-center gap-1.5">
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
+          </div>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5">{children}</div>
@@ -282,11 +295,11 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   );
 }
 
-function ExecCard({ label, value, sub, note, icon: Icon, center = false }: {
+function ExecCard({ label, value, sub, note, icon: Icon, center = false, tip }: {
   label: string; value: string | number; sub?: string; color?: string;
-  note?: string; bg?: string; icon?: LucideIcon; center?: boolean;
+  note?: string; bg?: string; icon?: LucideIcon; center?: boolean; tip?: string;
 }) {
-  const GREEN_BRAND = "#0E4633";
+  const GREEN_BRAND = "#2D6A4F";
   return (
     <div className="rounded-[10px]" style={{
       backgroundColor: "#ffffff",
@@ -298,6 +311,8 @@ function ExecCard({ label, value, sub, note, icon: Icon, center = false }: {
       justifyContent: "center",
       textAlign: center ? "center" : "left",
       gap: center ? 6 : 11,
+      position: "relative",
+      overflow: "visible",
     }}>
       {Icon && (
         <span className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 36 }}>
@@ -306,7 +321,10 @@ function ExecCard({ label, value, sub, note, icon: Icon, center = false }: {
       )}
       <div style={{ minWidth: 0 }}>
         <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: GREEN_BRAND, lineHeight: 1.05 }}>{value}</p>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 2 }}>{label}</p>
+        <div className="flex items-center gap-1" style={{ justifyContent: center ? "center" : "flex-start", marginTop: 2 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
+          {tip && <InfoDot tip={tip} />}
+        </div>
         {sub  && <p style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{sub}</p>}
         {note && <p className="mt-1.5 pt-1.5" style={{ fontSize: 9, color: "#6B7280", borderTop: "1px solid rgba(0,33,71,0.10)" }}>{note}</p>}
       </div>
@@ -559,14 +577,33 @@ function benchColor(pct: number, bench: number): string {
   return "#DC2626";                // red    - well below
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
+// Small "i" tooltip badge — mirrors the executive dashboard stat cards
+function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      {show && (
+        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon, tip }: {
   label: string; num: number; displayFmt: (n: number) => string;
-  sub?: string; clr: string; pct?: number; bench?: number; Icon?: LucideIcon;
+  sub?: string; clr: string; pct?: number; bench?: number; Icon?: LucideIcon; tip?: string;
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
+      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
+        {tip && <InfoDot tip={tip} />}
+      </div>
       <div className="flex items-center justify-center gap-2">
         {Icon && <Icon size={18} style={{ color: "#0E4633", opacity: 0.85, flexShrink: 0 }} />}
         <p style={{ fontSize: 24, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
@@ -601,13 +638,18 @@ export default function ExecutiveDashboard() {
       .reduce<Record<string, number>>((a, v) => { a[v.country] = (a[v.country] || 0) + 1; return a; }, {});
     return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   }, [geoRegion, geoCountry, geoYear]);
+  const geoRegionData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    geoCountryData.forEach(d => { const r = COUNTRY_REGION[d.name] || "Other"; counts[r] = (counts[r] || 0) + d.value; });
+    return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [geoCountryData]);
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
 
       {/* â"€â"€ EXECUTIVE HEADER â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -619,7 +661,7 @@ export default function ExecutiveDashboard() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay — keeps the title area solid & readable */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -645,11 +687,11 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ KPI STRIP â"€â"€â"€ */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} clr="#0EA5E9" Icon={Users} />
-          <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          clr="#7C3AED" Icon={Rocket} />
-          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            clr="#EC4899" Icon={Sparkles} />
-          <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          clr="#F59E0B" Icon={Handshake} />
-          <KpiTile label="Jobs Created"     num={TOTAL_JOBS}           displayFmt={n => Math.round(n).toLocaleString()} clr="#4338CA" Icon={Briefcase} />
+          <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} clr="#0EA5E9" Icon={Users}     tip="Total participants reached across all four HENT programme types." />
+          <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          clr="#7C3AED" Icon={Rocket}    tip="Ventures currently in the HENT portfolio." />
+          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            clr="#EC4899" Icon={Sparkles}  tip={`Share of participants who are female (${TOTAL_FEM.toLocaleString()} people).`} />
+          <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          clr="#F59E0B" Icon={Handshake} tip="Cross-sector partnership agreements formed through HENT programmes." />
+          <KpiTile label="Jobs Created"     num={TOTAL_JOBS}           displayFmt={n => Math.round(n).toLocaleString()} clr="#4338CA" Icon={Briefcase} tip="Jobs created by HENT-supported ventures to date." />
         </div>
 
         {/* â"€â"€ SECTION 1: PROGRAMME ACTIVITY â"€â"€â"€ */}
@@ -738,14 +780,6 @@ export default function ExecutiveDashboard() {
             <ChartCard title="Gender Distribution"
               sub="Female vs male share by programme"
               accent={PURPLE}>
-              <div className="flex items-center gap-5 text-[10px] text-gray-400 mb-5">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PURPLE }} /> Female
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A6C13C" }} /> Male
-                </span>
-              </div>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={genderByProg.map(g => ({ name: g.label, Female: g.femalePct, Male: 100 - g.femalePct }))}
                   margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
@@ -757,6 +791,14 @@ export default function ExecutiveDashboard() {
                   <Bar dataKey="Male"   stackId="g" fill="#A6C13C" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PURPLE }} /> Female
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A6C13C" }} /> Male
+                </span>
+              </div>
             </ChartCard>
 
             <ChartCard title="Participants by Programme"
@@ -769,17 +811,24 @@ export default function ExecutiveDashboard() {
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={34} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]}>
-                    {participantsByProgData.map((d, i) => (
-                      <Cell key={d.name} fill={COUNTRY_HEX[i % COUNTRY_HEX.length]} />
+                    {participantsByProgData.map((d) => (
+                      <Cell key={d.name} fill={PROG[d.name] ?? PALETTE_NEUTRAL} />
                     ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {participantsByProgData.map((d) => (
+                  <span key={d.name} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PROG[d.name] ?? PALETTE_NEUTRAL }} />{d.name}
+                  </span>
+                ))}
+              </div>
             </ChartCard>
           </div>
 
-          {/* Geographic reach moved to its own row, with filters */}
-          <div className="mt-4">
+          {/* Geographic reach + region breakdown row, with filters */}
+          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Geographic Reach"
               sub="Ventures by country"
               accent={GREEN}>
@@ -792,13 +841,42 @@ export default function ExecutiveDashboard() {
                   options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
               {geoCountryData.length ? (
-                <ColorBarList data={geoCountryData} colors={[GREEN]} />
+                <div className="flex justify-center"><HentAfricaMap data={geoCountryData} /></div>
               ) : (
                 <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filters.</p>
               )}
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
                 {geoCountryData.reduce((s, d) => s + d.value, 0)} ventures · {geoCountryData.length} countries
               </p>
+            </ChartCard>
+
+            <ChartCard title="Reach by Region"
+              sub="Ventures grouped by African region"
+              accent={C_SKY}>
+              {geoRegionData.length ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={geoRegionData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
+                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                    <Bar dataKey="value" name="Ventures" radius={[4, 4, 0, 0]}>
+                      {geoRegionData.map((d, i) => (
+                        <Cell key={d.name} fill={GREEN_RAMP[i % GREEN_RAMP.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filters.</p>
+              )}
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {geoRegionData.map((d, i) => (
+                  <span key={d.name} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />{d.name}
+                  </span>
+                ))}
+              </div>
             </ChartCard>
           </div>
         </section>
@@ -812,8 +890,8 @@ export default function ExecutiveDashboard() {
             <ChartCard title="Satisfaction by Dimension"
               sub="Average score per dimension"
               accent={TEAL}>
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px]">
+              <div className="overflow-x-auto flex justify-center">
+                <table className="mx-auto text-[11px]">
                   <thead>
                     <tr>
                       <th className="text-center text-gray-400 font-bold pb-3 pr-6 uppercase tracking-wider text-[9px]">Programme</th>
@@ -856,7 +934,7 @@ export default function ExecutiveDashboard() {
                   </tbody>
                 </table>
                 <div className="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex-wrap">
-                  {([["Very High (â‰¥4.5)", TEAL],["High (â‰¥4.0)", PRIMARY],["Moderate (â‰¥3.5)", AMBER],["Low (<3.5)", "#EF4444"]] as const).map(([l, c]) => (
+                  {([["Very High (≥4.5)", HEAT_VERY_HIGH],["High (≥4.0)", HEAT_HIGH],["Moderate (≥3.5)", HEAT_MODERATE],["Low (<3.5)", HEAT_LOW]] as const).map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
                       <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
                     </span>
@@ -886,6 +964,13 @@ export default function ExecutiveDashboard() {
                     </div>
                   ))}
                 </div>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                  {([["Excellent (≥4.5)", TEAL],["Good (≥4.0)", PRIMARY],["Fair (<4.0)", AMBER]] as const).map(([l, c]) => (
+                    <span key={l} className="flex items-center gap-1.5">
+                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                    </span>
+                  ))}
+                </div>
               </ChartCard>
 
               <ChartCard title="Completion by Programme"
@@ -906,6 +991,13 @@ export default function ExecutiveDashboard() {
                           style={{ width: `${d.value}%`, backgroundColor: d.value >= 90 ? GREEN : d.value >= 80 ? TEAL : AMBER }} />
                       </div>
                     </div>
+                  ))}
+                </div>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                  {([["High (≥90%)", GREEN],["Good (≥80%)", TEAL],["Low (<80%)", AMBER]] as const).map(([l, c]) => (
+                    <span key={l} className="flex items-center gap-1.5">
+                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                    </span>
                   ))}
                 </div>
               </ChartCard>
@@ -930,13 +1022,20 @@ export default function ExecutiveDashboard() {
                 { label: "Startups Created",        value: hackStart },
                 { label: "Portfolio Ventures",      value: ALL_VENTURES.length },
               ]} />
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {["Hackathon Participants","Projects Developed","Startups Created","Portfolio Ventures"].map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#0E4633", opacity: 1 - i * 0.13 }} />{l}
+                  </span>
+                ))}
+              </div>
             </ChartCard>
             <ChartCard title="Innovation Output" sub="Idea-to-venture metrics" accent={GREEN}>
               <div className="grid grid-cols-2 gap-3">
-                <ExecCard center label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
-                <ExecCard center label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
-                <ExecCard center label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
-                <ExecCard center label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
+                <ExecCard label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
+                <ExecCard label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
+                <ExecCard label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
+                <ExecCard label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
               </div>
             </ChartCard>
           </div>
@@ -947,56 +1046,35 @@ export default function ExecutiveDashboard() {
           <SecHeader title="Venture Ecosystem &amp; Impact"
             sub="Portfolio summary and the jobs, funding and partnerships HENT ventures have generated" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ExecCard label="Jobs Created"       value={TOTAL_JOBS.toLocaleString()} icon={Zap} />
-            <ExecCard label="Partnerships Built" value={TOTAL_PSHIP}                 icon={Handshake} />
-            <ExecCard label="Funding Deployed"   value={fmt$(TOTAL_FUNDING)}         icon={TrendingUp} />
-            <ExecCard label="Graduate Fellows"   value={mfGrad}                      icon={Award} />
+            <ExecCard label="Jobs Created"       value={TOTAL_JOBS.toLocaleString()} icon={Zap}        tip="Total jobs created across all portfolio ventures." />
+            <ExecCard label="Partnerships Built" value={TOTAL_PSHIP}                 icon={Handshake}  tip="Cross-sector partnership agreements formed." />
+            <ExecCard label="Funding Deployed"   value={fmt$(TOTAL_FUNDING)}         icon={TrendingUp} tip={`Total funding deployed across ${ALL_VENTURES.length} ventures.`} />
+            <ExecCard label="Graduate Fellows"   value={mfGrad}                      icon={Award}      tip="Fellows who completed the 1-year fellowship track." />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Venture Stage Pipeline"
               sub="Expose · Build · Scale"
               accent={PRIMARY}>
-              <CustomDonut
+              <DonutRing
                 data={stageData}
-                colors={STAGE_HEX}
-                className="h-52"
-                label={`${ALL_VENTURES.length}`}
-                valueFormatter={(v: number) => `${v} ventures`}
-              />
-              <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
-                {stageData.map((s, i) => (
-                  <div key={s.name}>
-                    <p className="text-xl font-black" style={{ color: STAGE_HEX[i] }}>{s.value}</p>
-                    <p className="text-[9px] text-gray-400 mt-0.5 font-medium">{s.name}</p>
-                    <p className="text-[9px] text-gray-400">{Math.round(s.value / ALL_VENTURES.length * 100)}%</p>
-                  </div>
-                ))}
-              </div>
+                colors={DISTINCT}
+                total={ALL_VENTURES.length}
+                totalLabel="Ventures"
+                height={300}
+                              />
             </ChartCard>
 
             <ChartCard title="Sector Distribution"
               sub="Ventures by sector"
               accent={GREEN}>
-              <CustomDonut
+              <DonutRing
                 data={sectorData}
-                colors={SECTOR_HEX}
-                className="h-52"
-                valueFormatter={(v: number) => `${v}`}
-              />
-              <div className="mt-3 space-y-1">
-                {sectorData.slice(0, 5).map((s, i) => (
-                  <div key={s.name} className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1.5 text-gray-600 truncate min-w-0">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: SECTOR_HEX[i] }} />
-                      <span className="truncate">{s.name}</span>
-                    </span>
-                    <span className="font-bold text-gray-700 ml-2 flex-shrink-0">
-                      {s.value} ({Math.round(s.value / ALL_VENTURES.length * 100)}%)
-                    </span>
-                  </div>
-                ))}
-              </div>
+                colors={DISTINCT}
+                total={ALL_VENTURES.length}
+                totalLabel="Ventures"
+                height={300}
+                              />
             </ChartCard>
           </div>
         </section>
@@ -1011,7 +1089,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* â"€â"€ FOOTER STRIP â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
 
           {/* Faint triangle pattern */}
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -1023,7 +1101,7 @@ export default function ExecutiveDashboard() {
             style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
           {/* Center overlay */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
 
           {/* Content */}
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>

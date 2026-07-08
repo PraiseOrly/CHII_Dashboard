@@ -5,8 +5,9 @@ import {
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Briefcase, Download, Zap } from "lucide-react";
+import { Briefcase, Zap } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import { DonutRing } from "@/components/DonutChart";
 import { hackathons, PROJECT_CATEGORIES } from "@/data/hackathons";
 
 // â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -50,64 +51,19 @@ const YEARS = Array.from(new Set(hackathons.map(h => h.year))).sort();
 
 // â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// Interactive donut — hover dims other slices and shows a colour tooltip
-function CustomDonut({
-  data, colors, label,
-  valueFormatter = (v: number) => `${v}`,
-  className = "",
-}: {
+// Donut — executive DonutRing (animated centre total, pop-out slice, bottom legend)
+const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
+function CustomDonut({ data, className = "" }: {
   data: { name: string; value: number }[];
-  colors: string[];
+  colors?: string[];
   label?: string;
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
-  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
-  const CX = 80, CY = 80, OR = 70, IR = 43;
-  let theta = -Math.PI / 2;
-  const slices = data.map((d, i) => {
-    const sweep = (d.value / total) * 2 * Math.PI;
-    const t0 = theta, t1 = theta + sweep;
-    theta = t1;
-    const lg = sweep > Math.PI ? 1 : 0;
-    const path = [
-      `M ${CX + OR * Math.cos(t0)} ${CY + OR * Math.sin(t0)}`,
-      `A ${OR} ${OR} 0 ${lg} 1 ${CX + OR * Math.cos(t1)} ${CY + OR * Math.sin(t1)}`,
-      `L ${CX + IR * Math.cos(t1)} ${CY + IR * Math.sin(t1)}`,
-      `A ${IR} ${IR} 0 ${lg} 0 ${CX + IR * Math.cos(t0)} ${CY + IR * Math.sin(t0)}`,
-      "Z",
-    ].join(" ");
-    return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
-  });
-  return (
-    <div
-      className={`relative flex items-center justify-center ${className}`}
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
-    >
-      <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
-        {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
-            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
-            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
-            onMouseLeave={() => setHovered(null)} />
-        ))}
-        {label && (
-          <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
-            fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
-        )}
-      </svg>
-      {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
-          {hovered.name}: {valueFormatter(hovered.value)}
-        </div>
-      )}
-    </div>
-  );
+  const height = className.includes("h-52") ? 300 : 260;
+  return <DonutRing data={data} colors={DISTINCT} total={total} totalLabel="Total" height={height} />;
 }
 
 // Multi-colour bar list  -  one colour per row
@@ -157,19 +113,16 @@ function ChartCard({ title, sub, accent = ORANGE, children }: {
     a.click();
   }
   return (
-    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
+    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }} title="Right-click to download this chart" className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}
+          <div className="flex items-center gap-1.5">
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+            {sub && <InfoDot tip={sub} color="#FFFFFF" />}
+          </div>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
         </div>
-        <button onClick={handleDownload} title="Download chart"
-          style={{ color: "#9CA3AF", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center", flexShrink: 0 }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#111827"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; }}>
-          <Download size={12} />
-        </button>
       </div>
       <div className="p-5">{children}</div>
     </div>
@@ -223,14 +176,30 @@ function benchColor(pct: number, bench: number): string {
   return "#DC2626";
 }
 
+function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      {show && (
+        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>{tip}</span>
+      )}
+    </span>
+  );
+}
+
 function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
   label: string; num: number; displayFmt: (n: number) => string;
   sub: string; clr: string; pct?: number; bench?: number;
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
+      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
+        {sub && <InfoDot tip={sub} />}
+      </div>
       <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
       <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
       {pct !== undefined ? (
@@ -383,7 +352,7 @@ export default function HackathonsPage() {
 
       {/* â”€â”€ TITLE + KPI STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -395,7 +364,7 @@ export default function HackathonsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -676,11 +645,11 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
           <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>

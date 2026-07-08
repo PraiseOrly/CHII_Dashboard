@@ -6,8 +6,9 @@ import {
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Banknote, Briefcase, Download, Info, Rocket, SlidersHorizontal, Target, Users, X, Zap, type LucideIcon } from "lucide-react";
+import { Banknote, Briefcase, Info, Rocket, SlidersHorizontal, Target, Users, X, Zap, type LucideIcon } from "lucide-react";
 import HENTNav, { getActiveLabel } from "@/components/HENTNav";
+import { DonutRing } from "@/components/DonutChart";
 import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 import { filterVentures } from "@/lib/filter";
@@ -36,6 +37,9 @@ const VIOLET  = D1_PURPLE;
 
 // Standardised green series order
 const BAR_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
+// Distinct colours for the Expose · Build · Scale lifecycle stages
+const STAGE3 = ["#2E7D5B", "#E9C46A", "#E76F51"] as const;
+const VENTURE_YEARS = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort((a, b) => a - b);
 
 // â”€â”€â”€ constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PACE    = 5 / 12;
@@ -101,63 +105,18 @@ const evData = PROGRAM_EVENTS_LIST
 // â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // Interactive donut — hover dims other slices and shows a colour tooltip
-function CustomDonut({
-  data, colors, label,
-  valueFormatter = (v: number) => `${v}`,
-  className = "",
-}: {
+const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
+function CustomDonut({ data, className = "" }: {
   data: { name: string; value: number }[];
-  colors: string[];
+  colors?: string[];
   label?: string;
   valueFormatter?: (v: number) => string;
   className?: string;
 }) {
-  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
-  const CX = 80, CY = 80, OR = 70, IR = 43;
-  let theta = -Math.PI / 2;
-  const slices = data.map((d, i) => {
-    const sweep = (d.value / total) * 2 * Math.PI;
-    const t0 = theta, t1 = theta + sweep;
-    theta = t1;
-    const lg = sweep > Math.PI ? 1 : 0;
-    const path = [
-      `M ${CX + OR * Math.cos(t0)} ${CY + OR * Math.sin(t0)}`,
-      `A ${OR} ${OR} 0 ${lg} 1 ${CX + OR * Math.cos(t1)} ${CY + OR * Math.sin(t1)}`,
-      `L ${CX + IR * Math.cos(t1)} ${CY + IR * Math.sin(t1)}`,
-      `A ${IR} ${IR} 0 ${lg} 0 ${CX + IR * Math.cos(t0)} ${CY + IR * Math.sin(t0)}`,
-      "Z",
-    ].join(" ");
-    return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
-  });
-  return (
-    <div
-      className={`relative flex items-center justify-center ${className}`}
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
-    >
-      <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
-        {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
-            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
-            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
-            onMouseLeave={() => setHovered(null)} />
-        ))}
-        {label && (
-          <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
-            fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
-        )}
-      </svg>
-      {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
-          {hovered.name}: {valueFormatter(hovered.value)}
-        </div>
-      )}
-    </div>
-  );
+  const height = className.includes("h-52") ? 300 : 260;
+  return <DonutRing data={data} colors={DISTINCT} total={total} totalLabel="Total" height={height} />;
 }
 
 // Custom multi-colour bar list  -  one colour per row
@@ -196,18 +155,15 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   }
   return (
     <div ref={cardRef} className="overflow-hidden flex flex-col" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5 flex-shrink-0" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
+      <div className="flex items-center gap-2.5 flex-shrink-0" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}
+          <div className="flex items-center gap-1.5">
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+            {sub && <InfoDot tip={sub} color="#FFFFFF" />}
+          </div>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
         </div>
-        <button onClick={handleDownload} title="Download chart"
-          style={{ color: "#9CA3AF", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center", flexShrink: 0 }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#111827"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; }}>
-          <Download size={12} />
-        </button>
       </div>
       <div className="p-5 min-h-0">{children}</div>
     </div>
@@ -245,6 +201,19 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
+function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      {show && (
+        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>{tip}</span>
+      )}
+    </span>
+  );
+}
+
 function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT, Icon }: {
   label: string;
   num: number;
@@ -260,9 +229,12 @@ function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT, 
   const animated = useCountUp(num);
   return (
     <div className="rounded-[10px] px-4 py-3 text-center"
-      style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #0E4633" }}>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.06em] leading-tight mb-1.5"
-        style={{ color: "rgba(14,70,51,0.55)" }}>{label}</p>
+      style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
+      <div className="flex items-center justify-center gap-1 mb-1.5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.06em] leading-tight"
+          style={{ color: "rgba(14,70,51,0.55)" }}>{label}</p>
+        {sub && <InfoDot tip={sub} />}
+      </div>
       <div className="flex items-center gap-2 justify-center">
         {Icon && <Icon size={18} style={{ color: "#0E4633", opacity: 0.85, flexShrink: 0 }} />}
         <div className="flex items-baseline gap-1">
@@ -361,9 +333,9 @@ function StackedHBar({ name, expose, build, scale, max }: {
     <div className="flex items-center gap-2 mb-1.5">
       <div className="w-32 text-[11px] text-gray-600 truncate text-right flex-shrink-0" title={name}>{name}</div>
       <div className="flex-1 h-3 bg-gray-100 rounded-sm overflow-hidden flex">
-        {expose > 0 && <div style={{ width: w(expose), backgroundColor: SKY   }} title={`Expose: ${expose}`} />}
-        {build  > 0 && <div style={{ width: w(build),  backgroundColor: AMBER }} title={`Build: ${build}`} />}
-        {scale  > 0 && <div style={{ width: w(scale),  backgroundColor: PURPLE }} title={`Scale: ${scale}`} />}
+        {expose > 0 && <div style={{ width: w(expose), backgroundColor: STAGE3[0] }} title={`Expose: ${expose}`} />}
+        {build  > 0 && <div style={{ width: w(build),  backgroundColor: STAGE3[1] }} title={`Build: ${build}`} />}
+        {scale  > 0 && <div style={{ width: w(scale),  backgroundColor: STAGE3[2] }} title={`Scale: ${scale}`} />}
       </div>
       <div className="w-6 text-[11px] text-gray-400 text-right flex-shrink-0">{expose + build + scale}</div>
     </div>
@@ -456,10 +428,11 @@ export default function HENTPortfolio() {
   const { filters } = useFilterStore();
   const [stageFilter, setStageFilter] = useState<"All" | "Expose" | "Build" | "Scale">("All");
   const [nationFilter, setNationFilter] = useState<"ALL" | "MCF" | "NON-MCF" | "FLAGGED">("ALL");
+  const [yearFilter, setYearFilter] = useState<"All" | number>("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const show = (n: number) => activeSection === "all" || activeSection === n;
-  const filtersActive = (stageFilter !== "All" ? 1 : 0) + (nationFilter !== "ALL" ? 1 : 0);
+  const filtersActive = (stageFilter !== "All" ? 1 : 0) + (nationFilter !== "ALL" ? 1 : 0) + (yearFilter !== "All" ? 1 : 0);
 
   const fv = useMemo(() => {
     const base = filterVentures(ALL_VENTURES, filters);
@@ -468,9 +441,10 @@ export default function HENTPortfolio() {
       if (nationFilter === "MCF"     && !MCF_IDS.has(v.id))     return false;
       if (nationFilter === "NON-MCF" &&  MCF_IDS.has(v.id))     return false;
       if (nationFilter === "FLAGGED" && !STALLED_IDS.has(v.id)) return false;
+      if (yearFilter !== "All" && v.cohort !== yearFilter)      return false;
       return true;
     });
-  }, [filters, stageFilter, nationFilter]);
+  }, [filters, stageFilter, nationFilter, yearFilter]);
 
   const expN   = useMemo(() => fv.filter(v => sg(v.stage) === "Expose").length, [fv]);
   const buildN = useMemo(() => fv.filter(v => sg(v.stage) === "Build").length,  [fv]);
@@ -523,7 +497,7 @@ export default function HENTPortfolio() {
 
       {/* â”€â”€ TITLE + KPI strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#0E4633", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -535,7 +509,7 @@ export default function HENTPortfolio() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -580,7 +554,7 @@ export default function HENTPortfolio() {
                 label="Active Founders"
                 num={48}
                 displayFmt={n => String(Math.round(n))}
-                sub={`${Math.round((femCount / founders.length) * 100)}% female  ·  ${founders.length} total`}
+                sub={`${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`}
                 Icon={Users}
                 clr="#155E75" pace={false} />
               <KpiTile
@@ -625,12 +599,25 @@ export default function HENTPortfolio() {
                   <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     {filtersActive > 0 && (
-                      <button onClick={() => { setStageFilter("All"); setNationFilter("ALL"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                      <button onClick={() => { setStageFilter("All"); setNationFilter("ALL"); setYearFilter("All"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
                     )}
                     <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
                   </div>
                 </div>
                 <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Year</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {(["All", ...VENTURE_YEARS] as const).map(y => (
+                        <button key={y} onClick={() => setYearFilter(y as "All" | number)}
+                          style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7, cursor: "pointer",
+                            border: `1px solid ${yearFilter === y ? G_HEAD : "rgba(14,70,51,0.18)"}`,
+                            backgroundColor: yearFilter === y ? G_HEAD : "white", color: yearFilter === y ? "white" : "#6B7280" }}>
+                          {y === "All" ? "All Years" : y}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <div>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Stage</p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -672,8 +659,8 @@ export default function HENTPortfolio() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Engagement Trend */}
-            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding  ·  2026" accent={SKY}>
-              <ResponsiveContainer width="100%" height={176}>
+            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding · 2026" accent={SKY}>
+              <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={engData}>
                   <defs>
                     <linearGradient id="engGrad" x1="0" y1="0" x2="0" y2="1">
@@ -691,8 +678,8 @@ export default function HENTPortfolio() {
             </ChartCard>
 
             {/* Jobs Created */}
-            <ChartCard title="Jobs Created" sub="Quarterly breakdown  ·  2026" accent={EMERALD}>
-              <ResponsiveContainer width="100%" height={176}>
+            <ChartCard title="Jobs Created" sub="Quarterly breakdown · 2026" accent={EMERALD}>
+              <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={qJobs} barCategoryGap="35%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Q" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
@@ -712,7 +699,7 @@ export default function HENTPortfolio() {
           <SectionHeader title="Portfolio Composition" blurb="Sector mix and founder gender across the portfolio" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ventures by Sector */}
-            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures  ·  current filter`} accent={PRIMARY}>
+            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures · current filter`} accent={PRIMARY}>
               <ColorBarList data={secData} colors={[TEAL]} />
             </ChartCard>
 
@@ -720,21 +707,9 @@ export default function HENTPortfolio() {
             <ChartCard title="Gender Distribution" sub={`${founders.length} founders`} accent={PURPLE}>
               <CustomDonut
                 data={genderData}
-                colors={[SKY, PURPLE]}
-                className="h-44"
-                label={`${founders.length}`}
+                className="h-52"
                 valueFormatter={(v: number) => `${v} founders`}
               />
-              <div className="flex flex-wrap justify-center gap-4 mt-2 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1.5">
-                  <span style={{ display:"inline-block", width:"12px", height:"8px", borderRadius:"2px", backgroundColor: SKY, flexShrink: 0 }} />
-                  Male
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span style={{ display:"inline-block", width:"12px", height:"8px", borderRadius:"2px", backgroundColor: PURPLE, flexShrink: 0 }} />
-                  Female
-                </span>
-              </div>
             </ChartCard>
 
           </div>
@@ -746,18 +721,18 @@ export default function HENTPortfolio() {
           <SectionHeader title="Geography & Engagement" blurb="Geographic spread, jobs by country, stage mix, and event participation" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ventures by Country  -  MCF vs Non-MCF diverging */}
-            <ChartCard title="Ventures by Country" sub="MCF (blue) vs Non-MCF (red)" accent={PRIMARY}>
-              <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
-                <span className="flex items-center gap-1">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PRIMARY }} /> MCF
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RED }} /> Non-MCF
-                </span>
-              </div>
+            <ChartCard title="Ventures by Country" sub="MCF vs Non-MCF" accent={PRIMARY}>
               {ctryData.map(c => (
                 <DivBar key={c.name} name={c.name} mcf={c.mcf} nm={c.nm} max={ctryMax} />
               ))}
+              <div className="flex justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PRIMARY }} /> MCF
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RED }} /> Non-MCF
+                </span>
+              </div>
             </ChartCard>
 
             {/* Jobs by Country */}
@@ -765,17 +740,8 @@ export default function HENTPortfolio() {
               <ColorBarList data={jobsCtryData} colors={[TEAL]} />
             </ChartCard>
 
-            {/* Sector Ã— Stage */}
-            <ChartCard title="Sector Ã— Stage" sub="Expose  ·  Build  ·  Scale breakdown" accent={INDIGO}>
-              <div className="flex gap-4 text-[10px] text-gray-400 mb-3">
-                {(["Expose","Build","Scale"] as const).map((l, i) => (
-                  <span key={l} className="flex items-center gap-1">
-                    <span className="w-3 h-2 rounded-sm inline-block"
-                      style={{ backgroundColor: [SKY, AMBER, PURPLE][i] }} />
-                    {l}
-                  </span>
-                ))}
-              </div>
+            {/* Sector × Stage */}
+            <ChartCard title="Sector by Stage" sub="Expose · Build · Scale breakdown" accent={INDIGO}>
               <div className="space-y-0.5">
                 {ssData.map(s => (
                   <StackedHBar key={s} name={s}
@@ -783,6 +749,14 @@ export default function HENTPortfolio() {
                     build={ssByStage[s].Build}
                     scale={ssByStage[s].Scale}
                     max={ssMax} />
+                ))}
+              </div>
+              <div className="flex justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {(["Expose","Build","Scale"] as const).map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: STAGE3[i] }} />
+                    {l}
+                  </span>
                 ))}
               </div>
             </ChartCard>
@@ -797,7 +771,7 @@ export default function HENTPortfolio() {
         )}
 
         {/* â”€â”€ FOOTER (executive style, HENT green header design) â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#0E4633", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
 
           {/* Faint triangle pattern */}
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -809,7 +783,7 @@ export default function HENTPortfolio() {
             style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
           {/* Center overlay */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #0E4633 34%, #0E4633 66%, rgba(14,70,51,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
 
           {/* Content */}
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
