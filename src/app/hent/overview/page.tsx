@@ -619,8 +619,16 @@ export default function ExecutiveDashboard() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>HENT executive summary — programme delivery, participation, ventures and impact</p>
-            <p className="text-[10px] mt-1" style={{ color: "rgba(181,212,244,0.5)" }}>All programmes · 2022–2026 · {TOTAL_PROGS} programmes tracked · Updated June 2026</p>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Programme delivery, participation, ventures and impact</p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
+              <span aria-hidden="true">·</span>
+              <span>{TOTAL_PROGS} programmes tracked</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+            </div>
           </div>
         </div>
       </header>
@@ -725,11 +733,18 @@ export default function ExecutiveDashboard() {
                 <span className="flex items-center gap-1.5">
                   <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#60A5FA" }} /> Male
                 </span>
-                <span className="ml-auto font-bold" style={{ color: PURPLE }}>Platform avg: {FEMALE_PCT}%</span>
               </div>
-              {genderByProg.map(g => (
-                <GenderBar key={g.label} label={g.label} femalePct={g.femalePct} maleColor="#60A5FA" />
-              ))}
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={genderByProg.map(g => ({ name: g.label, Female: g.femalePct, Male: 100 - g.femalePct }))}
+                  margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} formatter={(v: number) => `${v}%`} />
+                  <Bar dataKey="Female" stackId="g" fill={PURPLE} radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="Male"   stackId="g" fill="#60A5FA" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </ChartCard>
 
             <ChartCard title="Participants by Programme"
@@ -765,7 +780,7 @@ export default function ExecutiveDashboard() {
                   options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
               {geoCountryData.length ? (
-                <ColorBarList data={geoCountryData} colors={COUNTRY_HEX} />
+                <ColorBarList data={geoCountryData} colors={[GREEN]} />
               ) : (
                 <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filters.</p>
               )}
@@ -789,7 +804,7 @@ export default function ExecutiveDashboard() {
                 <table className="w-full text-[11px]">
                   <thead>
                     <tr>
-                      <th className="text-left text-gray-400 font-bold pb-3 pr-6 uppercase tracking-wider text-[9px]">Programme</th>
+                      <th className="text-center text-gray-400 font-bold pb-3 pr-6 uppercase tracking-wider text-[9px]">Programme</th>
                       {HEAT_COLS.map(c => (
                         <th key={c} className="text-center text-gray-400 font-bold pb-3 px-2 min-w-[80px] uppercase tracking-wider text-[9px]">{c}</th>
                       ))}
@@ -803,7 +818,7 @@ export default function ExecutiveDashboard() {
                       return (
                         <tr key={row.program} className="border-t border-gray-100">
                           <td className="py-2.5 pr-6 whitespace-nowrap">
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center justify-center gap-2">
                               <span className="w-2 h-2 rounded-full flex-shrink-0"
                                 style={{ backgroundColor: PROG[row.program] }} />
                               <span className="font-semibold text-gray-700">{row.program}</span>
@@ -828,7 +843,7 @@ export default function ExecutiveDashboard() {
                     })}
                   </tbody>
                 </table>
-                <div className="flex gap-4 mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex-wrap">
+                <div className="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex-wrap">
                   {([["Very High (â‰¥4.5)", TEAL],["High (â‰¥4.0)", PRIMARY],["Moderate (â‰¥3.5)", AMBER],["Low (<3.5)", "#EF4444"]] as const).map(([l, c]) => (
                     <span key={l} className="flex items-center gap-1.5">
                       <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
@@ -925,7 +940,7 @@ export default function ExecutiveDashboard() {
             <ExecCard label="Funding Deployed"   value={fmt$(TOTAL_FUNDING)}         icon={TrendingUp} />
             <ExecCard label="Graduate Fellows"   value={mfGrad}                      icon={Award} />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Venture Stage Pipeline"
               sub="Expose · Build · Scale"
@@ -943,29 +958,6 @@ export default function ExecutiveDashboard() {
                     <p className="text-xl font-black" style={{ color: STAGE_HEX[i] }}>{s.value}</p>
                     <p className="text-[9px] text-gray-400 mt-0.5 font-medium">{s.name}</p>
                     <p className="text-[9px] text-gray-400">{Math.round(s.value / ALL_VENTURES.length * 100)}%</p>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Startups &amp; Outcomes"
-              sub="Key output metrics"
-              accent={GREEN}>
-              <div className="space-y-3 mt-1">
-                {([
-                  { label: "Startups Created",      value: hackStart,                   color: GREEN,   sub: "From hackathons"  },
-                  { label: "Jobs Created",           value: TOTAL_JOBS.toLocaleString(), color: TEAL,    sub: "Across portfolio" },
-                  { label: "Funding Deployed",       value: fmt$(TOTAL_FUNDING),         color: PRIMARY, sub: "Total raised"     },
-                  { label: "Partnership Agreements", value: TOTAL_PSHIP,                 color: AMBER,   sub: "Cross-sector"     },
-                  { label: "1-Yr Fellowship Grads",  value: mfGrad,                      color: PURPLE,  sub: "Flagship track"   },
-                ] as const).map(m => (
-                  <div key={m.label} className="flex items-center gap-3 p-3 rounded border-l-2"
-                    style={{ backgroundColor: m.color + "0E", borderColor: m.color }}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: m.color + "AA" }}>{m.label}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">{m.sub}</p>
-                    </div>
-                    <p className="text-xl font-black tabular-nums flex-shrink-0" style={{ color: m.color }}>{m.value}</p>
                   </div>
                 ))}
               </div>
