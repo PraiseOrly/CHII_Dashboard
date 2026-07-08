@@ -6,7 +6,7 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Award, Briefcase, Handshake, Lightbulb, Rocket, Sparkles, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
+import { Award, Briefcase, Handshake, Lightbulb, MapPin, Presentation, Rocket, Sparkles, TrendingUp, Users, Zap, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Area,
@@ -24,7 +24,6 @@ import type { Stage, Sector, FundingStatus } from "@/types";
 
 // â"€â"€â"€ Color palette â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // Cool-only palette sampled from design1.png (no warm tones)
-const NAVY    = "#0B2D71";
 const PRIMARY = "#0B2D71";
 const TEAL    = "#009CA6";
 const PURPLE  = "#5C2D91";
@@ -277,9 +276,9 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   );
 }
 
-function ExecCard({ label, value, sub, note, icon: Icon }: {
+function ExecCard({ label, value, sub, note, icon: Icon, center = false }: {
   label: string; value: string | number; sub?: string; color?: string;
-  note?: string; bg?: string; icon?: LucideIcon;
+  note?: string; bg?: string; icon?: LucideIcon; center?: boolean;
 }) {
   const GREEN_BRAND = "#0E4633";
   return (
@@ -288,8 +287,11 @@ function ExecCard({ label, value, sub, note, icon: Icon }: {
       border: `1px solid ${GREEN_BRAND}`,
       padding: "13px 15px",
       display: "flex",
+      flexDirection: center ? "column" : "row",
       alignItems: "center",
-      gap: 11,
+      justifyContent: "center",
+      textAlign: center ? "center" : "left",
+      gap: center ? 6 : 11,
     }}>
       {Icon && (
         <span className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 36 }}>
@@ -307,16 +309,16 @@ function ExecCard({ label, value, sub, note, icon: Icon }: {
 }
 
 // Custom multi-colour horizontal bar  -  replaces Tremor BarList
-function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
+function ColorBarList({ data, colors, barHeight = 18, gap = 8 }: { data: { name: string; value: number }[]; colors: string[]; barHeight?: number; gap?: number }) {
   const max = data[0]?.value ?? 1;
   return (
-    <div className="space-y-2">
+    <div style={{ display: "flex", flexDirection: "column", gap }}>
       {data.map((row, i) => {
         const col = colors[i % colors.length];
         return (
           <div key={row.name} className="flex items-center gap-2.5">
             <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+            <div className="flex-1 rounded-sm overflow-hidden" style={{ height: barHeight, backgroundColor: col + "1A" }}>
               <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-5 flex-shrink-0 tabular-nums" style={{ color: col }}>{row.value}</div>
@@ -331,11 +333,11 @@ function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: 
   const [hovered, setHovered] = useState<{ label: string; pct: number; color: string } | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   return (
-    <div className="relative flex items-center gap-3 mb-3 last:mb-0"
+    <div className="relative flex items-center gap-3 mb-4 last:mb-0"
       onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
       onMouseLeave={() => setHovered(null)}>
       <div className="w-28 text-[11px] text-gray-600 text-right font-medium flex-shrink-0 leading-tight">{label}</div>
-      <div className="flex-1 h-5 rounded-sm overflow-hidden flex" style={{ backgroundColor: PURPLE + "15" }}>
+      <div className="flex-1 h-8 rounded-sm overflow-hidden flex" style={{ backgroundColor: PURPLE + "15" }}>
         <div style={{ width: `${femalePct}%`, backgroundColor: PURPLE, cursor: "pointer",
             opacity: hovered && hovered.label !== "Female" ? 0.45 : 1, transition: "opacity 0.15s" }}
           onMouseEnter={() => setHovered({ label: "Female", pct: femalePct, color: PURPLE })} />
@@ -343,7 +345,6 @@ function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: 
             opacity: hovered && hovered.label !== "Male" ? 0.45 : 1, transition: "opacity 0.15s" }}
           onMouseEnter={() => setHovered({ label: "Male", pct: 100 - femalePct, color: maleColor })} />
       </div>
-      <div className="text-[11px] font-bold w-8 flex-shrink-0 text-right" style={{ color: PURPLE }}>{femalePct}%</div>
       {hovered && (
         <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
           style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
@@ -436,17 +437,6 @@ function CustomDonut({
 }
 
 // â"€â"€â"€ Restructured-overview widgets â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-function QuickCard({ label, count, sub }: { label: string; count: number; sub: string }) {
-  return (
-    <div className="flex items-center gap-3" style={{ background: "linear-gradient(135deg, #0E4633 0%, #145A42 100%)", borderRadius: 10, padding: "14px 16px" }}>
-      <p style={{ fontSize: 30, fontWeight: 800, color: "white", lineHeight: 1, flexShrink: 0 }}>{count}</p>
-      <div className="min-w-0">
-        <p style={{ fontSize: 11, fontWeight: 700, color: "white", lineHeight: 1.15 }}>{label}</p>
-        <p style={{ fontSize: 9.5, color: "rgba(190,228,214,0.75)", marginTop: 3 }}>{sub}</p>
-      </div>
-    </div>
-  );
-}
 
 function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
   const max = steps[0]?.value || 1;
@@ -565,7 +555,7 @@ function benchColor(pct: number, bench: number): string {
 
 function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
   label: string; num: number; displayFmt: (n: number) => string;
-  sub: string; clr: string; pct?: number; bench?: number; Icon?: LucideIcon;
+  sub?: string; clr: string; pct?: number; bench?: number; Icon?: LucideIcon;
 }) {
   const animated = useCountUp(num);
   return (
@@ -575,7 +565,7 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
         {Icon && <Icon size={18} style={{ color: "#0E4633", opacity: 0.85, flexShrink: 0 }} />}
         <p style={{ fontSize: 24, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
       </div>
-      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
+      {sub && <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>}
       {pct !== undefined && (
         <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(14,70,51,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
           <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#0E4633", borderRadius: 4 }} />
@@ -641,11 +631,11 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ KPI STRIP â"€â"€â"€ */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} sub="Participants"                              clr="#0EA5E9" Icon={Users} />
-          <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          sub="In portfolio"                            clr="#7C3AED" Icon={Rocket} />
-          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            sub={`${TOTAL_FEM.toLocaleString()} people`}  clr="#EC4899" Icon={Sparkles} />
-          <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          sub="Cross-sector"                            clr="#F59E0B" Icon={Handshake} />
-          <KpiTile label="Jobs Created"     num={TOTAL_JOBS}           displayFmt={n => Math.round(n).toLocaleString()} sub="By ventures"                             clr="#4338CA" Icon={Briefcase} />
+          <KpiTile label="Total Reach"      num={TOTAL_PART}          displayFmt={n => Math.round(n).toLocaleString()} clr="#0EA5E9" Icon={Users} />
+          <KpiTile label="Active Ventures"  num={ALL_VENTURES.length}  displayFmt={n => String(Math.round(n))}          clr="#7C3AED" Icon={Rocket} />
+          <KpiTile label="Female Reach"     num={FEMALE_PCT}           displayFmt={n => `${Math.round(n)}%`}            clr="#EC4899" Icon={Sparkles} />
+          <KpiTile label="Partnerships"     num={TOTAL_PSHIP}          displayFmt={n => String(Math.round(n))}          clr="#F59E0B" Icon={Handshake} />
+          <KpiTile label="Jobs Created"     num={TOTAL_JOBS}           displayFmt={n => Math.round(n).toLocaleString()} clr="#4338CA" Icon={Briefcase} />
         </div>
 
         {/* â"€â"€ SECTION 1: PROGRAMME ACTIVITY â"€â"€â"€ */}
@@ -664,12 +654,12 @@ export default function ExecutiveDashboard() {
 
         <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Programme Delivery"
-            sub="How much programming have we delivered across the four HENT programme types?" />
+            sub="How much programmes have we delivered across the four HENT programme types?" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-            <QuickCard label="Hackathons"    count={hackathons.length}        sub="Programmes" />
-            <QuickCard label="Masterclasses" count={masterclasses.length}     sub="Sessions" />
-            <QuickCard label="Mentorships"   count={mentorshipPrograms.length} sub="Programmes" />
-            <QuickCard label="Field Visits"  count={fieldVisits.length}       sub="Visits" />
+            <ExecCard label="Hackathons"    value={hackathons.length}         icon={Lightbulb} />
+            <ExecCard label="Masterclasses" value={masterclasses.length}      icon={Presentation} />
+            <ExecCard label="Mentorships"   value={mentorshipPrograms.length} icon={Users} />
+            <ExecCard label="Field Visits"  value={fieldVisits.length}        icon={MapPin} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -722,10 +712,10 @@ export default function ExecutiveDashboard() {
         {/* â"€â"€ SECTION 2: PARTICIPATION & GENDER â"€â"€â"€ */}
         <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Participant Reach"
-            sub="Who are we reaching — gender parity, programme reach, and geographic spread" />
+            sub="Who are we reaching — gender distribution, programme reach, and geographic spread" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Gender Parity"
+            <ChartCard title="Gender Distribution"
               sub="Female vs male share by programme"
               accent={PURPLE}>
               <div className="flex items-center gap-5 text-[10px] text-gray-400 mb-5">
@@ -738,29 +728,26 @@ export default function ExecutiveDashboard() {
                 <span className="ml-auto font-bold" style={{ color: PURPLE }}>Platform avg: {FEMALE_PCT}%</span>
               </div>
               {genderByProg.map(g => (
-                <GenderBar key={g.label} label={g.label} femalePct={g.femalePct} maleColor={g.maleColor} />
+                <GenderBar key={g.label} label={g.label} femalePct={g.femalePct} maleColor="#60A5FA" />
               ))}
-              <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2 text-center">
-                {genderByProg.map(g => (
-                  <div key={g.label}>
-                    <p className="text-sm font-black" style={{ color: PURPLE }}>{g.femalePct}%</p>
-                    <p className="text-[9px] text-gray-400 leading-tight mt-0.5">{g.label}</p>
-                  </div>
-                ))}
-              </div>
             </ChartCard>
 
             <ChartCard title="Participants by Programme"
               sub="Reach by programme type"
               accent={C_SKY}>
-              <ColorBarList data={participantsByProgData} colors={COUNTRY_HEX} />
-              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                {participantsByProgData.map((d, i) => (
-                  <span key={d.name} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: COUNTRY_HEX[i % COUNTRY_HEX.length] }} />{d.name}
-                  </span>
-                ))}
-              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={participantsByProgData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={34} />
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]}>
+                    {participantsByProgData.map((d, i) => (
+                      <Cell key={d.name} fill={COUNTRY_HEX[i % COUNTRY_HEX.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </ChartCard>
           </div>
 
@@ -919,10 +906,10 @@ export default function ExecutiveDashboard() {
             </ChartCard>
             <ChartCard title="Innovation Output" sub="Idea-to-venture metrics" accent={GREEN}>
               <div className="grid grid-cols-2 gap-3">
-                <ExecCard label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
-                <ExecCard label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
-                <ExecCard label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
-                <ExecCard label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
+                <ExecCard center label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
+                <ExecCard center label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
+                <ExecCard center label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
+                <ExecCard center label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
               </div>
             </ChartCard>
           </div>
@@ -933,10 +920,10 @@ export default function ExecutiveDashboard() {
           <SecHeader title="Venture Ecosystem &amp; Impact"
             sub="Portfolio summary and the jobs, funding and partnerships HENT ventures have generated" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ExecCard label="Jobs Created"       value={TOTAL_JOBS.toLocaleString()} sub="Across portfolio ventures"        color={TEAL}   icon={Zap} />
-            <ExecCard label="Partnerships Built" value={TOTAL_PSHIP}                 sub="Cross-sector agreements"          color={AMBER}  icon={Handshake} />
-            <ExecCard label="Funding Deployed"   value={fmt$(TOTAL_FUNDING)}         sub={`${ALL_VENTURES.length} ventures supported`} color={GREEN} icon={TrendingUp} />
-            <ExecCard label="Graduate Fellows"   value={mfGrad}                      sub="1-year fellowship track"          color={PURPLE} icon={Award} />
+            <ExecCard label="Jobs Created"       value={TOTAL_JOBS.toLocaleString()} icon={Zap} />
+            <ExecCard label="Partnerships Built" value={TOTAL_PSHIP}                 icon={Handshake} />
+            <ExecCard label="Funding Deployed"   value={fmt$(TOTAL_FUNDING)}         icon={TrendingUp} />
+            <ExecCard label="Graduate Fellows"   value={mfGrad}                      icon={Award} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
