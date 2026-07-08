@@ -73,11 +73,11 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#A6C13C" }} />
+    <div className="flex items-center gap-3 mb-5">
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#111827", letterSpacing: "0.01em" }}>{title}</h2>
-        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
+        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
       </div>
     </div>
   );
@@ -713,10 +713,10 @@ export default function FieldVisitsPage() {
               accent={SKY}>
               <ResponsiveContainer width="100%" height={208}>
                 <BarChart data={attendanceTrend.slice(0, 12)} barCategoryGap="30%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Visit" tick={{ fontSize: 9, fill: "#9CA3AF" }}
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Visit" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Participants"]} />
                   <Bar dataKey="Participants" fill={SKY} radius={[0, 0, 0, 0]} />
                 </BarChart>
@@ -731,9 +731,9 @@ export default function FieldVisitsPage() {
               </div>
               <ResponsiveContainer width="100%" height={176}>
                 <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
                   <Bar dataKey="Female" fill={VIOLET} radius={[0, 0, 0, 0]} />
                   <Bar dataKey="Male"   fill={SKY}    radius={[0, 0, 0, 0]} />
@@ -812,9 +812,9 @@ export default function FieldVisitsPage() {
               accent={EMERALD}>
               <ResponsiveContainer width="100%" height={176}>
                 <BarChart data={partnershipsTrend} barCategoryGap="40%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={20} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} partnerships`, "Partnerships"]} />
                   <Bar dataKey="Partnerships" fill={EMERALD} radius={[0, 0, 0, 0]} />
                 </BarChart>
@@ -913,10 +913,10 @@ export default function FieldVisitsPage() {
                   "Completion %": v.completionRate,
                 }))}
                 barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Visit" tick={{ fontSize: 9, fill: "#9CA3AF" }}
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                <XAxis dataKey="Visit" tick={{ fontSize: 11, fill: "#6B7280" }}
                   axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
+                <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
                 <Bar dataKey="Completion %" fill={EMERALD} radius={[0, 0, 0, 0]} />
               </BarChart>

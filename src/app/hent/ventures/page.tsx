@@ -373,11 +373,11 @@ const G_TICK = "#A6C13C";
 
 function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 2 }}>
-      <span style={{ width: 4, height: 16, borderRadius: 999, backgroundColor: G_TICK, flexShrink: 0, alignSelf: "center" }} />
+    <div className="flex items-center gap-3 mb-5">
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
       <div>
-        <h2 style={{ fontSize: 14, fontWeight: 800, color: G_HEAD, letterSpacing: "0.01em" }}>{title}</h2>
-        <p style={{ fontSize: 11, color: "#6B7280", marginTop: 1 }}>{blurb}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
+        <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{blurb}</p>
       </div>
     </div>
   );
@@ -675,9 +675,9 @@ export default function HENTPortfolio() {
             <ChartCard title="Jobs Created" sub="Quarterly breakdown · 2026" accent={EMERALD}>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={qJobs} barCategoryGap="35%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Q" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Q" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={18} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
                   <Bar dataKey="Jobs" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
