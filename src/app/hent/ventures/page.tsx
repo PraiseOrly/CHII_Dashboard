@@ -14,29 +14,28 @@ import { filterVentures } from "@/lib/filter";
 import { founders, PROGRAM_EVENTS_LIST } from "@/data/founders";
 import { labVentures } from "@/data/ventureLabs";
 
-// â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// â”€â”€ Palette sampled from design1.png (brand header artwork) â”€â”€
-const D1_NAVY    = "#0B2D71"; // deep blue
-const D1_TEAL    = "#009CA6"; // teal / cyan
-const D1_PURPLE  = "#5C2D91"; // purple
-const D1_GREEN   = "#00A07A"; // emerald green
-const D1_SKY     = "#3FA0D8"; // light blue
+// â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const D1_NAVY    = "#1B4332"; // pine
+const D1_TEAL    = "#1F9E9E"; // teal
+const D1_PURPLE  = "#6B8E5B"; // moss
+const D1_GREEN   = "#40916C"; // sea green
+const D1_SKY     = "#A6C13C"; // lime
 
-const NAVY    = D1_NAVY;    // footer only
-const RED     = D1_TEAL;
+const NAVY    = "#0F4C3A";  // footer only (brand green)
+const RED     = "#C44536";  // negative / alert
 const PRIMARY = D1_NAVY;
 const TEAL    = D1_TEAL;
 const PURPLE  = D1_PURPLE;
 const GREEN   = D1_GREEN;
-const INDIGO  = D1_PURPLE;
+const INDIGO  = "#2D6A4F";
 const ORANGE  = D1_TEAL;
 const SKY     = D1_SKY;
 const EMERALD = D1_GREEN;
-const AMBER   = D1_GREEN;
+const AMBER   = D1_SKY;
 const VIOLET  = D1_PURPLE;
 
-// Balanced corporate order — cool palette only (no warm tones)
-const BAR_COLORS = [D1_NAVY, D1_TEAL, D1_GREEN, D1_PURPLE, D1_SKY];
+// Standardised green series order
+const BAR_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
 
 // â”€â”€â”€ constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PACE    = 5 / 12;
@@ -198,7 +197,7 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   return (
     <div ref={cardRef} className="overflow-hidden flex flex-col" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
       <div className="flex items-center gap-2.5 flex-shrink-0" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}
@@ -398,7 +397,7 @@ function DivBar({ name, mcf, nm, max }: { name: string; mcf: number; nm: number;
 // â”€â”€â”€ Youth-in-Work-style structural components (green theme) â”€â”€â”€
 const G_BAND = "#0E4633";
 const G_HEAD = "#0E4633";
-const G_TICK = "#D17A86";
+const G_TICK = "#A6C13C";
 
 function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
   return (

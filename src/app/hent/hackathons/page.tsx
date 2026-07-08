@@ -9,21 +9,20 @@ import { Briefcase, Download, Zap } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
 import { hackathons, PROJECT_CATEGORIES } from "@/data/hackathons";
 
-// â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Cool-only palette sampled from design1.png (no warm tones)
-const NAVY   = "#0B2D71"; // footer bg only
-const ORANGE = "#0B2D71";
-const SKY    = "#3FA0D8";
-const VIOLET = "#5C2D91";
-const TEAL   = "#009CA6";
-const EMERALD = "#00A07A";
-const PURPLE = "#5C2D91";
-const ROSE   = "#5C2D91";
-const AMBER  = "#3FA0D8";
-const INDIGO = "#5C2D91";
+// â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const NAVY    = "#0F4C3A"; // footer bg only (brand green)
+const ORANGE  = "#1B4332"; // primary series — pine
+const SKY     = "#1F9E9E"; // teal
+const VIOLET  = "#6B8E5B"; // moss
+const TEAL    = "#2D8A8A"; // deep teal
+const EMERALD = "#40916C"; // sea green
+const PURPLE  = "#4C8C8A"; // dusty teal
+const ROSE    = "#94A93B"; // olive-lime
+const AMBER   = "#A6C13C"; // lime
+const INDIGO  = "#2D6A4F"; // forest
 
-// Project-category donut colours (one per category)
-const CAT_COLORS = [SKY, EMERALD, VIOLET, TEAL, NAVY];
+// Project-category donut colours (green ramp, one per category)
+const CAT_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
 
 // â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmt(n: number) {
@@ -135,7 +134,7 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#A6C13C" }} />
       <div>
         <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#111827", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
@@ -160,7 +159,7 @@ function ChartCard({ title, sub, accent = ORANGE, children }: {
   return (
     <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
       <div className="flex items-center gap-2.5" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}

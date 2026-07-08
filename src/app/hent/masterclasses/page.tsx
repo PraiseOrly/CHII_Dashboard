@@ -14,26 +14,25 @@ import {
 } from "@/data/masterclasses";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 
-// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Cool-only palette sampled from design1.png (no warm tones)
-const NAVY      = "#0B2D71";
-const ACCENT    = "#0B2D71";   // navy
-const VIOLET_MC = "#5C2D91";   // purple
-const EMERALD_MC = "#00A07A";  // green
-const AMBER_MC  = "#3FA0D8";   // sky (was amber)
-const SKY       = "#3FA0D8";   // sky
-const ORANGE_MC = "#009CA6";   // teal (was orange)
-const TEAL      = "#009CA6";   // teal
-const ROSE      = "#5C2D91";   // purple (was rose)
+// â”€â”€â”€ Palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const NAVY      = "#0F4C3A"; // brand green (footer)
+const ACCENT    = "#1F9E9E"; // page identity — masterclasses = teal
+const VIOLET_MC = "#6B8E5B"; // moss
+const EMERALD_MC = "#40916C"; // sea green
+const AMBER_MC  = "#A6C13C"; // lime
+const SKY       = "#4C8C8A"; // dusty teal
+const ORANGE_MC = "#2D8A8A"; // deep teal
+const TEAL      = "#2D8A8A"; // deep teal
+const ROSE      = "#94A93B"; // olive
 
-// Donut palettes  -  cool design1 hues, distinct within each set
-const AGE_COLORS    = [NAVY, TEAL, EMERALD_MC, VIOLET_MC];          // navy, teal, green, purple
-const REGION_COLORS = [TEAL, EMERALD_MC, NAVY, VIOLET_MC, SKY];     // teal, green, navy, purple, sky
-const STAGE_COLORS  = [SKY, TEAL, VIOLET_MC];                       // sky, teal, purple
-const SOCIAL_COLORS = [NAVY, EMERALD_MC, SKY];                      // navy, green, sky
+// Donut palettes — green ramp, distinct within each set
+const AGE_COLORS    = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B"];
+const REGION_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
+const STAGE_COLORS  = ["#1B4332", "#2D8A8A", "#A6C13C"];
+const SOCIAL_COLORS = ["#1B4332", "#40916C", "#A6C13C"];
 
 const RATING_COLORS: Record<string, string> = {
-  "Very High": EMERALD_MC, High: ACCENT, Moderate: AMBER_MC, Low: ROSE,
+  "Very High": "#1B4332", High: "#40916C", Moderate: "#A6C13C", Low: "#C44536",
 };
 
 const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
@@ -66,7 +65,7 @@ function ratingLabel(score: number): string {
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#A6C13C" }} />
       <div>
         <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#111827", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
@@ -91,7 +90,7 @@ function ChartCard({ title, sub, accent = ACCENT, children }: {
   return (
     <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
       <div className="flex items-center gap-2.5" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}

@@ -26,7 +26,7 @@ import type { Stage, Sector, FundingStatus } from "@/types";
 // Cool-only palette sampled from design1.png (no warm tones)
 const PRIMARY = "#0B2D71";
 const TEAL    = "#009CA6";
-const PURPLE  = "#5C2D91";
+const PURPLE  = "#2D6A4F"; // female gender bars (forest)
 const AMBER   = "#3FA0D8";
 const GREEN   = "#00A07A";
 const INDIGO  = "#5C2D91";
@@ -35,13 +35,17 @@ const ORANGE  = "#0B2D71";
 const C_PURPLE = "#5C2D91";
 const C_SKY    = "#3FA0D8";
 
-// Per-programme identity colours (used consistently across all charts)
+// Per-programme identity colours — muted green family, distinct by hue
+// (forest → dusty teal → olive → pale sage). Used consistently across all charts.
 const PROG: Record<string, string> = {
-  Hackathons:    ORANGE,
-  Masterclasses: TEAL,
-  "Field Visits": C_PURPLE,
-  Mentorships:   C_SKY,
+  Hackathons:    "#1B4332",
+  Masterclasses: "#1F9E9E",
+  "Field Visits": "#A6C13C",
+  Mentorships:   "#BBD59B",
 };
+
+// Series colour order for the year charts (Hackathons, Masterclasses, Field Visits, Mentorships)
+const PROG_YEAR_COLORS = [PROG.Hackathons, PROG.Masterclasses, PROG["Field Visits"], PROG.Mentorships] as const;
 
 // â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function fmt$(n: number) {
@@ -131,17 +135,19 @@ const sectorData = Object.entries(sectorCounts)
   .map(([name, value]) => ({ name, value }))
   .sort((a, b) => b.value - a.value);
 
-const SECTOR_HEX = ["#3B82F6","#14B8A6","#D946EF","#F59E0B","#10B981","#F43F5E","#F97316","#A855F7","#06B6D4","#EC4899"];
+// Green-family ramp for categorical charts (sectors, countries) — distinct by hue/value
+const GREEN_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5"];
+const SECTOR_HEX = GREEN_RAMP;
 
 const stageData = [
   { name: "Expose", value: ALL_VENTURES.filter(v => sg(v.stage) === "Expose").length },
   { name: "Build",  value: ALL_VENTURES.filter(v => sg(v.stage) === "Build").length  },
   { name: "Scale",  value: ALL_VENTURES.filter(v => sg(v.stage) === "Scale").length  },
 ];
-const STAGE_HEX = [PRIMARY, "#10B981", "#D946EF"];
+const STAGE_HEX = ["#1B4332", "#2D8A8A", "#A6C13C"];
 
 
-const COUNTRY_HEX = [PRIMARY, TEAL, ORANGE, C_PURPLE, AMBER, GREEN, C_SKY, "#EC4899", "#10B981", "#F43F5E"];
+const COUNTRY_HEX = GREEN_RAMP;
 
 // Country → region grouping (used by the Geographic Reach filter)
 const COUNTRY_REGION: Record<string, string> = {
@@ -235,9 +241,9 @@ const insights = [
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#A6C13C" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#0E4633", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#111827", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -264,11 +270,11 @@ function ChartCard({ title, sub, accent = PRIMARY, children }: {
   return (
     <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
       className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#0E4633", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#FFFFFF", padding: "12px 20px", borderBottom: "1px solid #E5E7EB" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#A6C13C" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
+          <p className="text-[12px] font-semibold uppercase leading-none" style={{ letterSpacing: "0.04em", color: "#111827" }}>{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "#5F5E5A" }}>{sub}</p>}
         </div>
       </div>
       <div className="p-5">{children}</div>
@@ -681,11 +687,17 @@ export default function ExecutiveDashboard() {
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
                   {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
-                    <Bar key={cat} dataKey={cat} fill={[ORANGE, TEAL, C_PURPLE, C_SKY][i]} radius={[0, 0, 0, 0]} />
+                    <Bar key={cat} dataKey={cat} fill={PROG_YEAR_COLORS[i]} radius={[0, 0, 0, 0]} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
-              <ChartLegend />
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PROG_YEAR_COLORS[i] }} />{l}
+                  </span>
+                ))}
+              </div>
             </ChartCard>
 
             <ChartCard title="Participants per Year"
@@ -694,7 +706,7 @@ export default function ExecutiveDashboard() {
               <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={participantsByYear}>
                   <defs>
-                    {([ORANGE, TEAL, C_PURPLE, C_SKY] as const).map((hex, i) => (
+                    {PROG_YEAR_COLORS.map((hex, i) => (
                       <linearGradient key={i} id={`ag${i}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%"  stopColor={hex} stopOpacity={0.25} />
                         <stop offset="95%" stopColor={hex} stopOpacity={0.03} />
@@ -707,7 +719,7 @@ export default function ExecutiveDashboard() {
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
                   {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
                     <Area key={cat} type="monotone" dataKey={cat}
-                      stroke={[ORANGE, TEAL, C_PURPLE, C_SKY][i]} strokeWidth={2}
+                      stroke={PROG_YEAR_COLORS[i]} strokeWidth={2}
                       fill={`url(#ag${i})`} dot={false} />
                   ))}
                 </AreaChart>
@@ -731,7 +743,7 @@ export default function ExecutiveDashboard() {
                   <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PURPLE }} /> Female
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#60A5FA" }} /> Male
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A6C13C" }} /> Male
                 </span>
               </div>
               <ResponsiveContainer width="100%" height={250}>
@@ -742,7 +754,7 @@ export default function ExecutiveDashboard() {
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} formatter={(v: number) => `${v}%`} />
                   <Bar dataKey="Female" stackId="g" fill={PURPLE} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Male"   stackId="g" fill="#60A5FA" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Male"   stackId="g" fill="#A6C13C" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
