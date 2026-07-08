@@ -117,7 +117,7 @@ function CustomDonut({ data, className = "" }: {
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
   const height = className.includes("h-52") ? 300 : 260;
-  return <DonutRing data={data} colors={DISTINCT} total={total} totalLabel="Total" height={height} />;
+  return <DonutRing data={data} colors={DISTINCT} total={total} totalLabel="Total" height={height} legendPercent />;
 }
 
 // Multi-colour horizontal bar list

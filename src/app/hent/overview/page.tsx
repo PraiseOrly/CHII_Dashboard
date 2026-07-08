@@ -2,6 +2,11 @@
 import HENTNav from "@/components/HENTNav";
 import { DonutRing } from "@/components/DonutChart";
 import HentAfricaMap from "@/components/HentAfricaMap";
+import { type RadarSeries } from "@/components/SatisfactionRadar";
+import SatisfactionBars from "@/components/SatisfactionBars";
+import BulletChart from "@/components/BulletChart";
+import ProgressRing from "@/components/ProgressRing";
+import { PALETTE } from "@/styles/palette";
 import { fieldVisits } from "@/data/fieldVisits";
 import { founders } from "@/data/founders";
 import { hackathons } from "@/data/hackathons";
@@ -208,8 +213,39 @@ const perfHeatmap = [
 ];
 const HEAT_COLS = ["Quality", "Usefulness", "Accessibility", "Relevance"] as const;
 
+// â"€â"€â"€ Programme Performance (radar / bullet / rings) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Per-programme colour + line style, using the standardised palette
+const PROG_STYLE: Record<string, { color: string; dashed: boolean; fillOpacity: number }> = {
+  "Masterclasses": { color: PALETTE.masterclasses, dashed: false, fillOpacity: 0.08 },
+  "Field Visits":  { color: PALETTE.fieldVisits,   dashed: false, fillOpacity: 0.08 },
+  "Mentorships":   { color: PALETTE.mentorships,   dashed: true,  fillOpacity: 0.06 },
+};
+const radarSeries: RadarSeries[] = perfHeatmap.map(row => {
+  const values = HEAT_COLS.reduce<Record<string, number>>((a, c) => { a[c] = row[c]; return a; }, {});
+  const avgScore = parseFloat(avg(HEAT_COLS.map(c => row[c])).toFixed(1));
+  const st = PROG_STYLE[row.program];
+  return { name: row.program, color: st.color, dashed: st.dashed, fillOpacity: st.fillOpacity, values, avg: avgScore };
+});
+// Auto-detect the weakest dimension (lowest average across programmes)
+const weakestDim = [...HEAT_COLS]
+  .map(c => ({ dim: c, score: avg(perfHeatmap.map(r => r[c])) }))
+  .sort((a, b) => a.score - b.score)[0].dim;
+const satBulletRows = satCompare.map(d => ({ name: d.name, value: d.value, color: PROG_STYLE[d.name].color }));
+const compRingRows  = compCompare.map(d => ({ name: d.name, value: d.value, color: PROG_STYLE[d.name].color }));
+
 // â"€â"€â"€ Derived data for the restructured (programme-lifecycle) overview â"€â"€â"€
 const hackProjects = hackathons.reduce((s, h) => s + h.projects, 0);
+
+// Hackathon innovation output per year (projects, startups, conversion rate)
+const hackYearData = YEARS
+  .map(yr => {
+    const projects = hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.projects, 0);
+    const startups = hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.startupsCreated, 0);
+    return { Year: String(yr), Projects: projects, Startups: startups, Rate: projects ? Math.round((startups / projects) * 100) : 0 };
+  })
+  .filter(d => d.Projects + d.Startups > 0);
+const INNO_COLORS = ["#2D6A4F", "#A6C13C"] as const; // Projects, Startups
+
 const femaleLedVentures = ALL_VENTURES.filter(v => v.teamGender === "Female").length;
 const scaleShare = Math.round((stageData.find(s => s.name === "Scale")?.value ?? 0) / ALL_VENTURES.length * 100);
 
@@ -293,6 +329,29 @@ function ChartCard({ title, sub, accent = PRIMARY, info, children }: {
         </div>
       </div>
       <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
+// White card with a green header bar
+function PlainCard({ title, sub, chip, fill, children }: {
+  title: string; sub?: string; chip?: React.ReactNode; fill?: boolean; children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden" style={{
+      backgroundColor: PALETTE.surfaceCard, border: `1px solid ${PALETTE.border}`, borderRadius: 12,
+      height: fill ? "100%" : undefined, display: fill ? "flex" : undefined, flexDirection: fill ? "column" : undefined,
+    }}>
+      <div className="flex items-center justify-between gap-3" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "white", lineHeight: 1.2 }}>{title}</p>
+          {sub && <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>{sub}</p>}
+        </div>
+        {chip}
+      </div>
+      <div style={{ padding: 20, flex: fill ? 1 : undefined, display: fill ? "flex" : undefined, flexDirection: fill ? "column" : undefined, justifyContent: fill ? "center" : undefined }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -658,11 +717,24 @@ export default function ExecutiveDashboard() {
       .reduce<Record<string, number>>((a, v) => { a[v.country] = (a[v.country] || 0) + 1; return a; }, {});
     return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   }, [geoRegion, geoCountry, geoYear]);
-  const geoRegionData = useMemo(() => {
+  // Reach by Region has its own independent year filter + richer detail
+  const [regionYear, setRegionYear] = useState("All Years");
+  const regionChartData = useMemo(() => {
     const counts: Record<string, number> = {};
-    geoCountryData.forEach(d => { const r = COUNTRY_REGION[d.name] || "Other"; counts[r] = (counts[r] || 0) + d.value; });
-    return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-  }, [geoCountryData]);
+    const countries: Record<string, Set<string>> = {};
+    const female: Record<string, number> = {};
+    ALL_VENTURES
+      .filter(v => regionYear === "All Years" || String(v.cohort) === regionYear)
+      .forEach(v => {
+        const r = COUNTRY_REGION[v.country] || "Other";
+        counts[r] = (counts[r] || 0) + 1;
+        (countries[r] = countries[r] || new Set()).add(v.country);
+        if (v.teamGender === "Female") female[r] = (female[r] || 0) + 1;
+      });
+    return Object.keys(counts)
+      .map(r => ({ name: r, value: counts[r], countries: countries[r].size, femaleLed: female[r] || 0 }))
+      .sort((a, b) => b.value - a.value);
+  }, [regionYear]);
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
@@ -863,32 +935,45 @@ export default function ExecutiveDashboard() {
             </ChartCard>
 
             <ChartCard title="Reach by Region"
-              sub="Ventures grouped by African region"
+              sub="Ventures, countries and female-led split by African region"
               accent={C_SKY}>
-              {geoRegionData.length ? (
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={geoRegionData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                    <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip />} />
-                    <Bar dataKey="value" name="Ventures" radius={[4, 4, 0, 0]} maxBarSize={46}>
-                      {geoRegionData.map((d, i) => (
-                        <Cell key={d.name} fill={GREEN_RAMP[i % GREEN_RAMP.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filters.</p>
-              )}
-              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                {geoRegionData.map((d, i) => (
-                  <span key={d.name} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />{d.name}
-                  </span>
-                ))}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <FilterSelect label="Year" value={regionYear} onChange={setRegionYear}
+                  options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
+              {regionChartData.length ? (
+                <>
+                  <ResponsiveContainer width="100%" height={190}>
+                    <BarChart data={regionChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                      <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                      <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip />} />
+                      <Bar dataKey="value" name="Ventures" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                        {regionChartData.map((d, i) => (
+                          <Cell key={d.name} fill={GREEN_RAMP[i % GREEN_RAMP.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  {/* Per-region detail breakdown */}
+                  <div className="mt-4 pt-3 border-t border-gray-100 space-y-2">
+                    {regionChartData.map((d, i) => (
+                      <div key={d.name} className="flex items-center justify-between text-[11px]">
+                        <span className="flex items-center gap-1.5 text-gray-600">
+                          <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />
+                          {d.name}
+                        </span>
+                        <span className="text-gray-500 tabular-nums">
+                          <b className="text-gray-700">{d.value}</b> ventures · {d.countries} countries · {Math.round(d.femaleLed / d.value * 100) || 0}% female-led
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filter.</p>
+              )}
             </ChartCard>
           </div>
         </section>
@@ -897,122 +982,30 @@ export default function ExecutiveDashboard() {
         <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Programme Performance"
             sub="Are programmes delivering a high-quality experience? Satisfaction and completion compared across types" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-            <ChartCard title="Satisfaction by Dimension"
-              sub="Average score per dimension"
-              accent={TEAL}>
-              <div className="overflow-x-auto flex justify-center">
-                <table className="mx-auto text-[11px]">
-                  <thead>
-                    <tr>
-                      <th className="text-center text-gray-400 font-bold pb-3 pr-6 uppercase tracking-wider text-[9px]">Programme</th>
-                      {HEAT_COLS.map(c => (
-                        <th key={c} className="text-center text-gray-400 font-bold pb-3 px-2 min-w-[80px] uppercase tracking-wider text-[9px]">{c}</th>
-                      ))}
-                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Avg</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {perfHeatmap.map(row => {
-                      const scores = HEAT_COLS.map(c => row[c]);
-                      const rowAvg = parseFloat(avg(scores).toFixed(1));
-                      return (
-                        <tr key={row.program} className="border-t border-gray-100">
-                          <td className="py-2.5 pr-6 whitespace-nowrap">
-                            <span className="flex items-center justify-center gap-2">
-                              <span className="w-2 h-2 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: PROG[row.program] }} />
-                              <span className="font-semibold text-gray-700">{row.program}</span>
-                            </span>
-                          </td>
-                          {HEAT_COLS.map(c => (
-                            <td key={c} className="py-2.5 px-2 text-center">
-                              <span className="inline-block px-2.5 py-1 rounded text-white text-[10px] font-bold tabular-nums"
-                                style={{ backgroundColor: heatColor(row[c]) }}>
-                                {row[c].toFixed(1)}
-                              </span>
-                            </td>
-                          ))}
-                          <td className="py-2.5 px-2 text-center">
-                            <span className="inline-block px-2.5 py-1 rounded text-white text-[10px] font-bold tabular-nums"
-                              style={{ backgroundColor: INDIGO }}>
-                              {rowAvg.toFixed(1)}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <div className="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex-wrap">
-                  {([["Very High (≥4.5)", HEAT_VERY_HIGH],["High (≥4.0)", HEAT_HIGH],["Moderate (≥3.5)", HEAT_MODERATE],["Low (<3.5)", HEAT_LOW]] as const).map(([l, c]) => (
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
-                    </span>
-                  ))}
-                </div>
+            {/* Chart 1 — Satisfaction by dimension (~67%) */}
+            <div className="lg:col-span-8">
+              <PlainCard title="Satisfaction by dimension" sub="Average score per dimension (out of 5)">
+                <SatisfactionBars dimensions={HEAT_COLS} series={radarSeries} target={4.5} height={360} />
+              </PlainCard>
+            </div>
+
+            {/* Charts 2 & 3 stacked (~33%) */}
+            <div className="lg:col-span-4 flex flex-col gap-4 h-full">
+              <PlainCard title="Satisfaction by programme" sub="Score vs. target of 4.5">
+                <BulletChart rows={satBulletRows} target={4.5} />
+              </PlainCard>
+
+              <div className="flex-1">
+                <PlainCard title="Completion by programme" sub="Share completed · target 90%" fill>
+                  <div className="grid grid-cols-3" style={{ gap: 8 }}>
+                    {compRingRows.map(r => (
+                      <ProgressRing key={r.name} value={r.value} color={r.color} label={r.name} target={90} />
+                    ))}
+                  </div>
+                </PlainCard>
               </div>
-            </ChartCard>
-
-            <div className="space-y-4">
-              <ChartCard title="Satisfaction by Programme"
-                sub="Rating out of 5"
-                accent={PRIMARY}>
-                <div className="space-y-3">
-                  {satCompare.map(d => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="flex items-center gap-1.5 font-medium text-gray-700">
-                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PROG[d.name] }} />
-                          {d.name}
-                        </span>
-                        <span className="font-bold tabular-nums" style={{ color: PROG[d.name] }}>{d.value}/5</span>
-                      </div>
-                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: PROG[d.name] + "18" }}>
-                        <div className="h-full transition-all"
-                          style={{ width: `${(d.value / 5) * 100}%`, backgroundColor: d.value >= 4.5 ? TEAL : d.value >= 4.0 ? PRIMARY : AMBER }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                  {([["Excellent (≥4.5)", TEAL],["Good (≥4.0)", PRIMARY],["Fair (<4.0)", AMBER]] as const).map(([l, c]) => (
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
-                    </span>
-                  ))}
-                </div>
-              </ChartCard>
-
-              <ChartCard title="Completion by Programme"
-                sub="Share who completed"
-                accent={GREEN}>
-                <div className="space-y-3">
-                  {compCompare.map(d => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="flex items-center gap-1.5 font-medium text-gray-700">
-                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PROG[d.name] }} />
-                          {d.name}
-                        </span>
-                        <span className="font-bold tabular-nums" style={{ color: PROG[d.name] }}>{d.value}%</span>
-                      </div>
-                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: PROG[d.name] + "18" }}>
-                        <div className="h-full transition-all"
-                          style={{ width: `${d.value}%`, backgroundColor: d.value >= 90 ? GREEN : d.value >= 80 ? TEAL : AMBER }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                  {([["High (≥90%)", GREEN],["Good (≥80%)", TEAL],["Low (<80%)", AMBER]] as const).map(([l, c]) => (
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
-                    </span>
-                  ))}
-                </div>
-              </ChartCard>
             </div>
           </div>
           <div className="mt-4">
@@ -1026,7 +1019,16 @@ export default function ExecutiveDashboard() {
         <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader title="Innovation Pipeline"
             sub="How hackathons convert participants into projects, startups and portfolio ventures" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          {/* Innovation Output — stat cards in a row after the section title */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <ExecCard label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
+            <ExecCard label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
+            <ExecCard label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
+            <ExecCard label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Innovation Funnel" sub="Participants to ventures" accent={PRIMARY}>
               <Funnel steps={[
                 { label: "Hackathon Participants", value: hackPart },
@@ -1042,13 +1044,43 @@ export default function ExecutiveDashboard() {
                 ))}
               </div>
             </ChartCard>
-            <ChartCard title="Innovation Output" sub="Idea-to-venture metrics" accent={GREEN}>
-              <div className="grid grid-cols-2 gap-3">
-                <ExecCard label="Hackathon Participants" value={hackPart.toLocaleString()}               icon={Users} />
-                <ExecCard label="Projects Developed"     value={String(hackProjects)}                    icon={Lightbulb} />
-                <ExecCard label="Startups Created"        value={String(hackStart)}                       icon={Rocket} />
-                <ExecCard label="Project → Startup"       value={`${Math.round(hackStart / hackProjects * 100)}%`} icon={TrendingUp} />
+
+            {/* New chart 1 — Projects & Startups per Year */}
+            <ChartCard title="Projects & Startups per Year" sub="Hackathon output by year" accent={GREEN}>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={hackYearData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel />} />
+                  <Bar dataKey="Projects" fill={INNO_COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="Startups" fill={INNO_COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={16} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {(["Projects","Startups"] as const).map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: INNO_COLORS[i] }} />{l}
+                  </span>
+                ))}
               </div>
+            </ChartCard>
+
+            {/* New chart 2 — Startup Conversion Rate per Year */}
+            <ChartCard title="Startup Conversion Rate" sub="Projects that became startups (%)" accent={TEAL}>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={hackYearData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel unit="%" />} />
+                  <Line type="monotone" dataKey="Rate" name="Conversion rate" stroke={TEAL} strokeWidth={2.5}
+                    dot={{ r: 4, fill: TEAL, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+                Overall {Math.round(hackStart / hackProjects * 100)}% of hackathon projects convert to startups
+              </p>
             </ChartCard>
           </div>
         </section>
@@ -1074,7 +1106,8 @@ export default function ExecutiveDashboard() {
                 total={ALL_VENTURES.length}
                 totalLabel="Ventures"
                 height={300}
-                              />
+                legendPercent
+              />
             </ChartCard>
 
             <ChartCard title="Sector Distribution"
@@ -1086,7 +1119,8 @@ export default function ExecutiveDashboard() {
                 total={ALL_VENTURES.length}
                 totalLabel="Ventures"
                 height={300}
-                              />
+                legendPercent
+              />
             </ChartCard>
           </div>
         </section>
