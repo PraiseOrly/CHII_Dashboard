@@ -1,7 +1,7 @@
 ﻿"use client";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
-  BarChart, Bar, AreaChart, Area,
+  BarChart, Bar, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Star, MapPin, Users, Handshake, Zap, Briefcase, SlidersHorizontal, X } from "lucide-react";
@@ -894,19 +894,13 @@ export default function FieldVisitsPage() {
             sub="Running total across all visits  -  shows programme exposure growth"
             accent={EMERALD}>
             <ResponsiveContainer width="100%" height={208}>
-              <AreaChart data={growthData}>
-                <defs>
-                  <linearGradient id="cumGradFV" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor={EMERALD} stopOpacity={0.25} />
-                    <stop offset="95%" stopColor={EMERALD} stopOpacity={0.03} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                <XAxis dataKey="Period" tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+              <LineChart data={growthData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Cumulative Participants"]} />
-                <Area type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2} fill="url(#cumGradFV)" dot={false} />
-              </AreaChart>
+                <Line type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+              </LineChart>
             </ResponsiveContainer>
           </ChartCard>
           <ChartCard title="Completion Rate by Field Visit"

@@ -18,6 +18,8 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis, YAxis,
@@ -250,11 +252,11 @@ const insights = [
 
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#A6C13C" }} />
+    <div className="flex items-center gap-3 mb-5">
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#111827", letterSpacing: "0.01em" }}>{title}</h2>
-        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
+        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
       </div>
     </div>
   );
@@ -621,6 +623,24 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon, tip }: {
   );
 }
 
+// â"€â"€â"€ Executive-style chart tooltip (green swap of the impact ChartTip) â"€â"€â"€
+const TIP_GREEN = "#0F4C3A";
+function tipFmt(n: number) { return Math.round(n).toLocaleString(); }
+function HentChartTip({ active, payload, label, hideLabel, unit }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      {!hideLabel && label != null && <p style={{ fontWeight: 700, color: TIP_GREEN, marginBottom: 4 }}>{label}</p>}
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill || p.stroke, display: "inline-block" }} />
+          {p.name}: <b style={{ color: TIP_GREEN }}>{typeof p.value === "number" ? tipFmt(p.value) : p.value}{unit || ""}</b>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 // â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 export default function ExecutiveDashboard() {
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
@@ -722,14 +742,14 @@ export default function ExecutiveDashboard() {
             <ChartCard title="Programmes per Year"
               sub="By programme type"
               accent={ORANGE}>
-              <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={activityByYear} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={activityByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel />} />
                   {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
-                    <Bar key={cat} dataKey={cat} fill={PROG_YEAR_COLORS[i]} radius={[0, 0, 0, 0]} />
+                    <Bar key={cat} dataKey={cat} fill={PROG_YEAR_COLORS[i]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -745,26 +765,18 @@ export default function ExecutiveDashboard() {
             <ChartCard title="Participants per Year"
               sub="By programme type"
               accent={TEAL}>
-              <ResponsiveContainer width="100%" height={280}>
-                <AreaChart data={participantsByYear}>
-                  <defs>
-                    {PROG_YEAR_COLORS.map((hex, i) => (
-                      <linearGradient key={i} id={`ag${i}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={hex} stopOpacity={0.25} />
-                        <stop offset="95%" stopColor={hex} stopOpacity={0.03} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={participantsByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip content={<HentChartTip hideLabel />} />
                   {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
-                    <Area key={cat} type="monotone" dataKey={cat}
-                      stroke={PROG_YEAR_COLORS[i]} strokeWidth={2}
-                      fill={`url(#ag${i})`} dot={false} />
+                    <Line key={cat} type="monotone" dataKey={cat}
+                      stroke={PROG_YEAR_COLORS[i]} strokeWidth={2.5}
+                      dot={{ r: 4, fill: PROG_YEAR_COLORS[i], strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   ))}
-                </AreaChart>
+                </LineChart>
               </ResponsiveContainer>
               <ChartLegend />
             </ChartCard>
@@ -780,15 +792,15 @@ export default function ExecutiveDashboard() {
             <ChartCard title="Gender Distribution"
               sub="Female vs male share by programme"
               accent={PURPLE}>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={genderByProg.map(g => ({ name: g.label, Female: g.femalePct, Male: 100 - g.femalePct }))}
                   margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} formatter={(v: number) => `${v}%`} />
-                  <Bar dataKey="Female" stackId="g" fill={PURPLE} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Male"   stackId="g" fill="#A6C13C" radius={[4, 4, 0, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip unit="%" />} />
+                  <Bar dataKey="Female" stackId="g" fill={PURPLE} radius={[0, 0, 0, 0]} maxBarSize={46} />
+                  <Bar dataKey="Male"   stackId="g" fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={46} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
@@ -804,13 +816,13 @@ export default function ExecutiveDashboard() {
             <ChartCard title="Participants by Programme"
               sub="Reach by programme type"
               accent={C_SKY}>
-              <ResponsiveContainer width="100%" height={280}>
+              <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={participantsByProgData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={34} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip />} />
+                  <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
                     {participantsByProgData.map((d) => (
                       <Cell key={d.name} fill={PROG[d.name] ?? PALETTE_NEUTRAL} />
                     ))}
@@ -827,21 +839,21 @@ export default function ExecutiveDashboard() {
             </ChartCard>
           </div>
 
-          {/* Geographic reach + region breakdown row, with filters */}
+          {/* Geographic reach + region breakdown — 2-col row (executive layout) */}
           <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Geographic Reach"
               sub="Ventures by country"
               accent={GREEN}>
               <div className="flex flex-wrap gap-2 mb-4">
-                <FilterSelect label="Region" value={geoRegion} onChange={setGeoRegion}
-                  options={["All Regions", ...GEO_REGIONS]} />
                 <FilterSelect label="Country" value={geoCountry} onChange={setGeoCountry}
                   options={["All Countries", ...GEO_COUNTRIES]} />
                 <FilterSelect label="Year" value={geoYear} onChange={setGeoYear}
                   options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
               {geoCountryData.length ? (
-                <div className="flex justify-center"><HentAfricaMap data={geoCountryData} /></div>
+                <HentAfricaMap data={geoCountryData}
+                  region={geoRegion} onRegionChange={setGeoRegion}
+                  regions={["All Regions", ...GEO_REGIONS]} />
               ) : (
                 <p className="text-[11px] text-gray-400 text-center py-6">No ventures match the selected filters.</p>
               )}
@@ -854,13 +866,13 @@ export default function ExecutiveDashboard() {
               sub="Ventures grouped by African region"
               accent={C_SKY}>
               {geoRegionData.length ? (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={geoRegionData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
-                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                    <Bar dataKey="value" name="Ventures" radius={[4, 4, 0, 0]}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                    <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip />} />
+                    <Bar dataKey="value" name="Ventures" radius={[4, 4, 0, 0]} maxBarSize={46}>
                       {geoRegionData.map((d, i) => (
                         <Cell key={d.name} fill={GREEN_RAMP[i % GREEN_RAMP.length]} />
                       ))}

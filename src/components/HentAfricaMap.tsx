@@ -30,9 +30,12 @@ function getColor(value: number, max: number): string {
 }
 
 export default function HentAfricaMap({
-  data,
+  data, region, onRegionChange, regions,
 }: {
   data: { name: string; value: number }[];
+  region?: string;
+  onRegionChange?: (r: string) => void;
+  regions?: string[];
 }) {
   const current: Record<string, number> = {};
   data.forEach(d => { current[d.name] = d.value; });
@@ -46,10 +49,19 @@ export default function HentAfricaMap({
 
   return (
     <div>
+      {/* Control row — matches the executive map */}
+      {onRegionChange && regions && (
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 14 }}>
+          <select value={region} onChange={e => onRegionChange(e.target.value)}
+            style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(0,33,71,0.12)", fontSize: 11, color: "#374151", backgroundColor: "white", cursor: "pointer" }}>
+            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
+      )}
       <div style={{ display: "flex", gap: 14, alignItems: "stretch" }}>
 
         {/* Map */}
-        <div style={{ flex: 1, position: "relative", borderRadius: 8, overflow: "hidden", backgroundColor: "#EDF4EF" }}>
+        <div style={{ flex: 1, position: "relative", borderRadius: 8, overflow: "hidden", backgroundColor: "#EEF4FB" }}>
           {/* Zoom controls */}
           <div style={{ position: "absolute", top: 8, left: 8, zIndex: 5, display: "flex", flexDirection: "column", gap: 4 }}>
             {[

@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
   BarChart, Bar,
-  AreaChart, Area,
+  AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Banknote, Briefcase, Info, Rocket, SlidersHorizontal, Target, Users, X, Zap, type LucideIcon } from "lucide-react";
@@ -661,19 +661,13 @@ export default function HENTPortfolio() {
             {/* Engagement Trend */}
             <ChartCard title="Engagement Trend" sub="Monthly founder onboarding · 2026" accent={SKY}>
               <ResponsiveContainer width="100%" height={240}>
-                <AreaChart data={engData}>
-                  <defs>
-                    <linearGradient id="engGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor={SKY} stopOpacity={0.25} />
-                      <stop offset="95%" stopColor={SKY} stopOpacity={0.03} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                <LineChart data={engData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
-                  <Area type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2} fill="url(#engGrad)" dot={false} />
-                </AreaChart>
+                  <Line type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2.5} dot={{ r: 4, fill: SKY, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </LineChart>
               </ResponsiveContainer>
             </ChartCard>
 
