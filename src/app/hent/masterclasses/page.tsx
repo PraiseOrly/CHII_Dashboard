@@ -145,14 +145,11 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   label: string; value: number; pct: number; total: number; color: string;
 }) {
   return (
-    <div className="rounded border p-5 shadow-sm" style={{ backgroundColor: color + "0D", borderColor: color + "35" }}>
-      <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none" style={{ color: color + "AA" }}>{label}</p>
-      <div className="flex items-baseline gap-0.5 mt-3">
-        <p className="text-[2.25rem] font-black tabular-nums leading-none" style={{ color }}>{pct}</p>
-        <p className="text-lg font-bold mb-0.5" style={{ color }}>%</p>
-      </div>
-      <p className="text-[11px] text-gray-400 mt-2 tabular-nums">{value.toLocaleString()} / {tot.toLocaleString()}</p>
-      <div className="h-1.5 rounded-sm mt-3 overflow-hidden" style={{ backgroundColor: color + "20" }}>
+    <div className="rounded-[10px]" style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "14px 16px" }}>
+      <p className="tabular-nums" style={{ fontSize: 30, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{pct}%</p>
+      <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 4 }}>{label}</p>
+      <p className="tabular-nums" style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{value.toLocaleString()} / {tot.toLocaleString()}</p>
+      <div className="rounded-sm mt-3 overflow-hidden" style={{ height: 6, backgroundColor: color + "20" }}>
         <div className="h-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -579,7 +576,7 @@ export default function MasterclassesPage() {
             <ProfileCard label="Student Participants" value={tot.students}            pct={studentPct}     total={tot.attendees} color={EMERALD_MC} />
             <ProfileCard label="Alumni Participants"  value={alumniTot}               pct={100 - studentPct} total={tot.attendees} color={AMBER_MC} />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Age Group Distribution" sub="Participants by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={AGE_COLORS} className="h-36" valueFormatter={v => `${v}`} />
               <div className="mt-2 space-y-0.5">
@@ -751,31 +748,23 @@ export default function MasterclassesPage() {
         {show(5) && (
         <section>
           <SecHeader title="Top Performing Masterclasses & Most Engaged Ventures"
-            sub="Ranked by attendee feedback and session participation" />
+            sub="Highest-rated sessions and the ventures that attend most" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Top Performing Masterclasses"
-              sub="Ranked by average feedback score across all four rating criteria"
+              sub="Highest average attendee rating (out of 5)"
               accent={AMBER_MC}>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {topSessions.map((m, i) => (
-                  <div key={m.id} className="flex items-start gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                  <div key={m.id} className="flex items-center gap-3 pb-2.5 border-b border-gray-50 last:border-0 last:pb-0">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white"
                       style={{ backgroundColor: RANK_BG[i] ?? ACCENT }}>{i + 1}</div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{m.name}</p>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        <Stars score={m.avgScore} />
-                        <span className="text-[10px] text-gray-400">{m.topic}</span>
-                        <span className="text-[10px] text-gray-400">{m.attendees} attendees</span>
-                      </div>
-                      <div className="flex gap-1.5 flex-wrap mt-1.5">
-                        {RATING_CRITERIA.map(c => (
-                          <span key={c} className="text-[9px] px-1.5 py-0.5 rounded font-medium"
-                            style={{ backgroundColor: RATING_COLORS[ratingLabel(m.scores[c])] + "22", color: RATING_COLORS[ratingLabel(m.scores[c])] }}>
-                            {c.split(" ")[0]}: {m.scores[c].toFixed(1)}
-                          </span>
-                        ))}
-                      </div>
+                      <p className="text-[10px] text-gray-400 truncate">{m.topic} · {m.attendees} attendees</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Stars score={m.avgScore} />
+                      <span className="text-sm font-bold tabular-nums" style={{ color: AMBER_MC }}>{m.avgScore.toFixed(1)}</span>
                     </div>
                   </div>
                 ))}
@@ -783,26 +772,20 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Most Engaged Ventures"
-              sub="Ventures with highest masterclass session participation"
+              sub="Ventures that attended the most masterclass sessions"
               accent={ACCENT}>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {engagedVentures.map((v, i) => (
-                  <div key={v.name} className="flex items-center gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                  <div key={v.name} className="flex items-center gap-3 pb-2.5 border-b border-gray-50 last:border-0 last:pb-0">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white"
                       style={{ backgroundColor: RANK_BG[i] ?? ACCENT }}>{i + 1}</div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{v.name}</p>
-                      <p className="text-[10px] text-gray-400">{v.sector}</p>
+                      <p className="text-[10px] text-gray-400 truncate">{v.sector}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-sm font-bold" style={{ color: ACCENT }}>{v.sessions}</p>
+                      <p className="text-sm font-bold tabular-nums" style={{ color: ACCENT }}>{v.sessions}</p>
                       <p className="text-[10px] text-gray-400">sessions</p>
-                    </div>
-                    <div className="w-16">
-                      <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: ACCENT + "1A" }}>
-                        <div className="h-full" style={{ width: `${v.engagement}%`, backgroundColor: ACCENT }} />
-                      </div>
-                      <p className="text-[9px] text-gray-400 mt-0.5 text-right">{v.engagement}% eng.</p>
                     </div>
                   </div>
                 ))}

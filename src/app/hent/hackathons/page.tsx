@@ -414,33 +414,29 @@ export default function HackathonsPage() {
           <SecHeader title="Participant Profiles"
             sub={`${total.participants.toLocaleString()} participants across all hackathons`} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-            {/* Participant profile stats  -  stacked column */}
-            <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-              {([
-                { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
-                { label: "Male Participants",    value: total.participants - total.female,  pct: malePct,    color: SKY     },
-                { label: "Student Participants", value: total.students,                     pct: studentPct, color: EMERALD },
-                { label: "Alumni Participants",  value: alumniTotal,                        pct: alumniPct,  color: AMBER   },
-              ] as const).map((item, i) => (
-                <div key={item.label} className={`px-4 py-3.5 ${i > 0 ? "border-t border-gray-100" : ""}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] leading-none"
-                      style={{ color: item.color + "AA" }}>{item.label}</p>
-                    <p className="text-xl font-black tabular-nums leading-none"
-                      style={{ color: item.color }}>{item.pct}%</p>
-                  </div>
-                  <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: item.color + "20" }}>
-                    <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
-                  </div>
-                  <p className="text-[10px] text-gray-400 mt-1.5 tabular-nums">
-                    {item.value.toLocaleString()} / {total.participants.toLocaleString()}
-                  </p>
+          {/* Participant profile stat cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {([
+              { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
+              { label: "Male Participants",    value: total.participants - total.female,  pct: malePct,    color: SKY     },
+              { label: "Student Participants", value: total.students,                     pct: studentPct, color: EMERALD },
+              { label: "Alumni Participants",  value: alumniTotal,                        pct: alumniPct,  color: AMBER   },
+            ] as const).map((item) => (
+              <div key={item.label} className="rounded-[10px]"
+                style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "14px 16px" }}>
+                <p className="tabular-nums" style={{ fontSize: 30, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{item.pct}%</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 4 }}>{item.label}</p>
+                <p className="tabular-nums" style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>
+                  {item.value.toLocaleString()} / {total.participants.toLocaleString()}
+                </p>
+                <div className="rounded-sm mt-3 overflow-hidden" style={{ height: 6, backgroundColor: item.color + "20" }}>
+                  <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Gender Composition"
               sub="Distribution of participants by gender across all events"
               accent={VIOLET}>
