@@ -123,11 +123,11 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   label: string; value: number; pct: number; total: number; color: string;
 }) {
   return (
-    <div className="rounded-[10px]" style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "14px 16px" }}>
-      <p className="tabular-nums" style={{ fontSize: 30, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{pct}%</p>
-      <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 4 }}>{label}</p>
+    <div className="rounded-[10px]" style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "13px 15px" }}>
+      <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{pct}%</p>
+      <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 2 }}>{label}</p>
       <p className="tabular-nums" style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{value.toLocaleString()} / {tot.toLocaleString()}</p>
-      <div className="rounded-sm mt-3 overflow-hidden" style={{ height: 6, backgroundColor: color + "20" }}>
+      <div className="rounded-sm mt-2 overflow-hidden" style={{ height: 5, backgroundColor: color + "20" }}>
         <div className="h-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
       </div>
     </div>

@@ -423,13 +423,13 @@ export default function HackathonsPage() {
               { label: "Alumni Participants",  value: alumniTotal,                        pct: alumniPct,  color: AMBER   },
             ] as const).map((item) => (
               <div key={item.label} className="rounded-[10px]"
-                style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "14px 16px" }}>
-                <p className="tabular-nums" style={{ fontSize: 30, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{item.pct}%</p>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 4 }}>{item.label}</p>
+                style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "13px 15px" }}>
+                <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{item.pct}%</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 2 }}>{item.label}</p>
                 <p className="tabular-nums" style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>
                   {item.value.toLocaleString()} / {total.participants.toLocaleString()}
                 </p>
-                <div className="rounded-sm mt-3 overflow-hidden" style={{ height: 6, backgroundColor: item.color + "20" }}>
+                <div className="rounded-sm mt-2 overflow-hidden" style={{ height: 5, backgroundColor: item.color + "20" }}>
                   <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
                 </div>
               </div>
