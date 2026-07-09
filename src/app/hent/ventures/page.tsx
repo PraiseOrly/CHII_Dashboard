@@ -515,7 +515,16 @@ export default function HENTPortfolio() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>{getActiveLabel(pathname)}</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Data scope: 2026 Cohort · Updated 28 May 2026</p>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Portfolio ventures, founders and the jobs, funding and impact they generate</p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
+              <span aria-hidden="true">·</span>
+              <span>{ALL_VENTURES.length} ventures tracked</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+            </div>
           </div>
         </div>
       </header>

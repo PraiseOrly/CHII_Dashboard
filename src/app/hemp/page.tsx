@@ -1,67 +1,62 @@
-﻿"use client";
+"use client";
 import HEMPNav from "@/components/HEMPNav";
+import { DonutRing } from "@/components/DonutChart";
+import HentAfricaMap from "@/components/HentAfricaMap";
+import { type RadarSeries } from "@/components/SatisfactionRadar";
+import SatisfactionBars from "@/components/SatisfactionBars";
+import BulletChart from "@/components/BulletChart";
+import ProgressRing from "@/components/ProgressRing";
+import { PALETTE } from "@/styles/palette";
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
 import { missionStudents } from "@/data/hemp/missionStudents";
 import {
-  Activity,
-  Award,
-  Briefcase,
-  Building2,
-  Download, FileText,
-  GraduationCap,
-  Rocket,
-  Sparkles,
-  Star,
-  Target,
-  TrendingUp, Users,
-  Zap, type LucideIcon,
+  Activity, Award, Briefcase, Building2, GraduationCap, Handshake,
+  Rocket, Sparkles, Star, TrendingUp, Users, Zap, type LucideIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
+  ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import type { InternshipSector } from "@/data/hemp/internships";
-import type { StudentTrack } from "@/data/hemp/missionStudents";
 
-// â"€â"€â"€ Palette â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-const VIOLET = "#7C3AED";
-const TEAL   = "#0D9488";
-const GREEN  = "#10B981";
-const AMBER  = "#F59E0B";
-const SKY    = "#0EA5E9";
-const ROSE   = "#F43F5E";
-const INDIGO = "#4338CA";
-const ORANGE = "#EA580C";
-const PURPLE = "#A855F7";
+// ─── Brand ───────────────────────────────────────────────────────────────────
+const BRAND    = "#F26522"; // HEMP orange (chrome, headers, pills, borders)
+const BRAND_DK = "#C2410C"; // darker orange for value text
+const TEAL     = "#0D9488";
+const AMBER    = "#F59E0B";
+const VIOLET   = "#7C3AED";
+const SKY      = "#0EA5E9";
+const GREEN    = "#10B981";
+const ROSE     = "#F43F5E";
 
-// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Per-programme identity colours — distinct by hue, used consistently everywhere.
+const PROG: Record<string, string> = {
+  HealthX:            TEAL,
+  Internships:        AMBER,
+  "Mission Students": VIOLET,
+};
+const PROG_YEAR_COLORS = [PROG.HealthX, PROG.Internships, PROG["Mission Students"]] as const;
+
+// Very distinct multi-hue palette for donut charts (no repeats)
+const DISTINCT = ["#F26522","#0D9488","#7C3AED","#0EA5E9","#F59E0B","#10B981","#F43F5E","#4338CA","#EA580C","#A855F7","#14B8A6","#EC4899","#84CC16","#6366F1","#F97316"];
+const WARM_RAMP = ["#F26522","#F59E0B","#EA580C","#FB923C","#0D9488","#14B8A6","#7C3AED","#A855F7","#0EA5E9","#38BDF8","#10B981","#F43F5E","#FB7185","#FBBF24","#FDBA74"];
+const PALETTE_NEUTRAL = "#94A3B8";
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
-function heatColor(v: number): string {
-  if (v >= 4.5) return TEAL;
-  if (v >= 4.0) return VIOLET;
-  if (v >= 3.5) return AMBER;
-  return ROSE;
-}
 
-// â"€â"€â"€ Cross-programme aggregates â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ─── Cross-programme aggregates ──────────────────────────────────────────────
+const hxSessions = healthXSessions.length;
 const hxPart     = healthXSessions.reduce((s, h) => s + h.participants, 0);
 const hxFem      = healthXSessions.reduce((s, h) => s + h.femalePart,   0);
 const hxPship    = healthXSessions.reduce((s, h) => s + h.partnerships, 0);
 const hxCompAvg  = Math.round(avg(healthXSessions.map(h => h.completionRate)));
 const hxSatAvg   = parseFloat(avg(healthXSessions.map(h => avg(Object.values(h.scores)))).toFixed(1));
 
+const intOrgs        = internships.length;
 const intStudents    = internships.reduce((s, i) => s + i.students,              0);
 const intFem         = internships.reduce((s, i) => s + i.femaleStudents,        0);
 const intConversions = internships.reduce((s, i) => s + i.employmentConversions, 0);
@@ -70,117 +65,254 @@ const intSatAvg      = parseFloat(avg(internships.map(i => i.satisfactionScore))
 const totalStudents = missionStudents.length;
 const studentFem    = missionStudents.filter(s => s.gender === "Female").length;
 const completed     = missionStudents.filter(s => s.status === "Completed");
-const activeList    = missionStudents.filter(s => s.status === "Active");
 const employed      = completed.filter(s => s.employment === "Employed" || s.employment === "Entrepreneur");
 const ventures      = missionStudents.filter(s => s.ventureCreated);
 const completionPct = Math.round(completed.length / totalStudents * 100);
 const employPct     = completed.length ? Math.round(employed.length / completed.length * 100) : 0;
 
-const FEMALE_PCT_HX  = Math.round(hxFem      / hxPart        * 100);
-const FEMALE_PCT_IN  = Math.round(intFem     / intStudents    * 100);
-const FEMALE_PCT_ST  = Math.round(studentFem / totalStudents  * 100);
-const FEMALE_PCT_ALL = Math.round((hxFem + intFem + studentFem) / (hxPart + intStudents + totalStudents) * 100);
+const FEMALE_PCT_HX  = Math.round(hxFem      / hxPart       * 100);
+const FEMALE_PCT_IN  = Math.round(intFem     / intStudents   * 100);
+const FEMALE_PCT_ST  = Math.round(studentFem / totalStudents * 100);
+const TOTAL_REACH    = hxPart + intStudents + totalStudents;
+const TOTAL_FEM      = hxFem + intFem + studentFem;
+const FEMALE_PCT_ALL = Math.round(TOTAL_FEM / TOTAL_REACH * 100);
 const AVG_SAT        = parseFloat(((hxSatAvg + intSatAvg) / 2).toFixed(1));
+const TOTAL_PSHIP    = hxPship + intOrgs;
 
-// â"€â"€â"€ Chart data â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ─── Chart data ──────────────────────────────────────────────────────────────
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
 
-const enrolmentByYear = YEARS.map(yr => ({
-  Year:      String(yr),
-  Completed: missionStudents.filter(s => s.cohort === yr && s.status === "Completed").length,
-  Active:    missionStudents.filter(s => s.cohort === yr && s.status === "Active").length,
-  Deferred:  missionStudents.filter(s => s.cohort === yr && s.status === "Deferred").length,
-}));
+const activityByYear = YEARS
+  .map(yr => ({
+    Year:              String(yr),
+    HealthX:           healthXSessions.filter(h => h.year === yr).length,
+    Internships:       internships.filter(i => i.year === yr).length,
+    "Mission Students":missionStudents.filter(s => s.cohort === yr).length ? 1 : 0,
+  }))
+  .filter(d => d.HealthX + d.Internships + d["Mission Students"] > 0);
 
-const reachByYear = YEARS.map(yr => ({
-  Year:         String(yr),
-  HealthX:      healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
-  Internships:  internships.filter(i => i.year === yr).reduce((s, i) => s + i.students,         0),
-})).filter(d => d.HealthX + d.Internships > 0);
+const participantsByYear = YEARS
+  .map(yr => ({
+    Year:              String(yr),
+    HealthX:           healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
+    Internships:       internships.filter(i => i.year === yr).reduce((s, i) => s + i.students, 0),
+    "Mission Students":missionStudents.filter(s => s.cohort === yr).length,
+  }))
+  .filter(d => d.HealthX + d.Internships + d["Mission Students"] > 0);
 
-// Heatmap: session type Ã— score dimension
+const genderByProg = [
+  { label: "HealthX",            femalePct: FEMALE_PCT_HX },
+  { label: "Internships",        femalePct: FEMALE_PCT_IN },
+  { label: "Mission Students",   femalePct: FEMALE_PCT_ST },
+];
+
+const participantsByProgData = [
+  { name: "HealthX",            value: hxPart },
+  { name: "Internships",        value: intStudents },
+  { name: "Mission Students",   value: totalStudents },
+].sort((a, b) => b.value - a.value);
+
+// ─── Geographic reach ────────────────────────────────────────────────────────
+type ReachRec = { country: string; year: number; reach: number; female: number };
+const REACH_RECORDS: ReachRec[] = [
+  ...healthXSessions.map(h => ({ country: h.country, year: h.year,   reach: h.participants, female: h.femalePart })),
+  ...internships.map(i    => ({ country: i.country,  year: i.year,   reach: i.students,     female: i.femaleStudents })),
+  ...missionStudents.map(s => ({ country: s.country, year: s.cohort, reach: 1,              female: s.gender === "Female" ? 1 : 0 })),
+];
+const COUNTRY_REGION: Record<string, string> = {
+  Rwanda: "East Africa", Kenya: "East Africa", Uganda: "East Africa", Tanzania: "East Africa", Ethiopia: "East Africa",
+  Ghana: "West Africa", Nigeria: "West Africa", Senegal: "West Africa",
+  "South Africa": "Southern Africa", Malawi: "Southern Africa", Mozambique: "Southern Africa", Zambia: "Southern Africa",
+  Cameroon: "Central Africa",
+};
+const GEO_REGIONS   = Array.from(new Set(Object.values(COUNTRY_REGION)));
+const GEO_COUNTRIES = Array.from(new Set(REACH_RECORDS.map(r => r.country))).sort();
+const GEO_YEARS     = Array.from(new Set(REACH_RECORDS.map(r => r.year))).sort();
+
+// ─── Programme performance (radar / bullet / rings) ──────────────────────────
 const HX_SESSION_TYPES = ["Health Facility Visit", "Innovation Challenge", "Field Exposure", "Industry Tour"] as const;
 const SCORE_DIMS = ["Learning Experience", "Practical Relevance", "Accessibility", "Innovation Impact"] as const;
 
-const hxHeatmap = HX_SESSION_TYPES.map(type => {
+const TYPE_STYLE: Record<string, { color: string; dashed: boolean; fillOpacity: number }> = {
+  "Health Facility Visit": { color: TEAL,   dashed: false, fillOpacity: 0.08 },
+  "Innovation Challenge":  { color: VIOLET, dashed: false, fillOpacity: 0.08 },
+  "Field Exposure":        { color: SKY,    dashed: true,  fillOpacity: 0.06 },
+  "Industry Tour":         { color: AMBER,  dashed: true,  fillOpacity: 0.06 },
+};
+const radarSeries: RadarSeries[] = HX_SESSION_TYPES.map(type => {
   const sessions = healthXSessions.filter(h => h.type === type);
-  return {
-    type,
-    "Learning Experience":  parseFloat(avg(sessions.map(h => h.scores["Learning Experience"])).toFixed(1)),
-    "Practical Relevance":  parseFloat(avg(sessions.map(h => h.scores["Practical Relevance"])).toFixed(1)),
-    "Accessibility":        parseFloat(avg(sessions.map(h => h.scores["Accessibility"])).toFixed(1)),
-    "Innovation Impact":    parseFloat(avg(sessions.map(h => h.scores["Innovation Impact"])).toFixed(1)),
-  };
+  const values = SCORE_DIMS.reduce<Record<string, number>>((a, d) => {
+    a[d] = parseFloat(avg(sessions.map(h => h.scores[d])).toFixed(1)); return a;
+  }, {});
+  const avgScore = parseFloat(avg(SCORE_DIMS.map(d => values[d])).toFixed(1));
+  const st = TYPE_STYLE[type];
+  return { name: type, color: st.color, dashed: st.dashed, fillOpacity: st.fillOpacity, values, avg: avgScore };
 });
 
-const hxSatByType = HX_SESSION_TYPES.map(type => {
-  const sessions = healthXSessions.filter(h => h.type === type);
-  return { name: type, value: parseFloat(avg(sessions.map(h => avg(Object.values(h.scores)))).toFixed(1)) };
-}).sort((a, b) => b.value - a.value);
-
-const TYPE_HEX: Record<string, string> = {
-  "Health Facility Visit": TEAL,
-  "Innovation Challenge":  VIOLET,
-  "Field Exposure":        SKY,
-  "Industry Tour":         AMBER,
-};
-
-const genderByProg = [
-  { label: "HealthX",     femalePct: FEMALE_PCT_HX, maleColor: TEAL  },
-  { label: "Internships", femalePct: FEMALE_PCT_IN, maleColor: AMBER },
-  { label: "Students",    femalePct: FEMALE_PCT_ST, maleColor: SKY   },
+const satBulletRows = [
+  { name: "HealthX",     value: hxSatAvg,  color: TEAL  },
+  { name: "Internships", value: intSatAvg, color: AMBER },
+];
+const compRingRows = [
+  { name: "HealthX",          value: hxCompAvg,     color: TEAL   },
+  { name: "Mission Students", value: completionPct, color: VIOLET },
 ];
 
-const countryCounts = Object.entries(
-  [
-    ...healthXSessions.map(h => ({ country: h.country, n: h.participants })),
-    ...internships.map(i    => ({ country: i.country,  n: i.students     })),
-  ].reduce<Record<string, number>>((acc, { country, n }) => {
-    acc[country] = (acc[country] || 0) + n;
-    return acc;
-  }, {})
-).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-const COUNTRY_HEX = [VIOLET, TEAL, ORANGE, SKY, AMBER, GREEN, ROSE, INDIGO, PURPLE, "#EC4899"];
+const HEMP_COMPARE: { name: string; reach: number; sat: number | null; comp: number | null }[] = [
+  { name: "HealthX",          reach: hxPart,        sat: hxSatAvg,  comp: hxCompAvg },
+  { name: "Internships",      reach: intStudents,   sat: intSatAvg, comp: null },
+  { name: "Mission Students", reach: totalStudents, sat: null,      comp: completionPct },
+];
 
-const trackCounts = (["Health Innovation", "Health Management", "Health Policy", "Digital Health"] as const).map(track => ({
-  name:  track,
-  value: missionStudents.filter(s => s.track === track).length,
-}));
-const TRACK_HEX = [VIOLET, TEAL, AMBER, SKY];
-
+// ─── Outcomes & innovation ───────────────────────────────────────────────────
 const empOutcomes = [
   { name: "Employed",      value: completed.filter(s => s.employment === "Employed").length      },
   { name: "Entrepreneur",  value: completed.filter(s => s.employment === "Entrepreneur").length  },
   { name: "Further Study", value: completed.filter(s => s.employment === "Further Study").length },
   { name: "Seeking",       value: completed.filter(s => s.employment === "Seeking").length       },
 ];
-const EMP_HEX = [GREEN, VIOLET, SKY, AMBER];
 
-const intSatBySector = Object.entries(
-  internships.reduce<Record<string, number[]>>((acc, i) => {
-    if (!acc[i.sector]) acc[i.sector] = [];
-    acc[i.sector].push(i.satisfactionScore);
-    return acc;
-  }, {})
-).map(([name, scores]) => ({ name, value: parseFloat(avg(scores).toFixed(1)) }))
-  .sort((a, b) => b.value - a.value);
-const SECTOR_HEX = [GREEN, VIOLET, TEAL, AMBER, SKY, ROSE];
+const outcomesByYear = YEARS
+  .map(yr => {
+    const grads = missionStudents.filter(s => s.cohort === yr && s.status === "Completed").length;
+    const vents = missionStudents.filter(s => s.cohort === yr && s.ventureCreated).length;
+    return { Year: String(yr), Graduates: grads, Ventures: vents, Rate: grads ? Math.round((vents / grads) * 100) : 0 };
+  })
+  .filter(d => d.Graduates + d.Ventures > 0);
+const OUT_COLORS = ["#7C3AED", "#F26522"] as const; // Graduates, Ventures
 
-// â"€â"€â"€ Sub-components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ─── Ecosystem ───────────────────────────────────────────────────────────────
+const trackCounts = (["Health Innovation", "Health Management", "Health Policy", "Digital Health"] as const)
+  .map(track => ({ name: track, value: missionStudents.filter(s => s.track === track).length }));
 
-// ─── Impact analytics constants ──────────────────────────────────────────────
-const HMP_YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
-type HmpYearVal = typeof HMP_YEARS[number] | "all";
-const HMP_SECTORS: InternshipSector[] = ["Hospital", "NGO", "Government", "MedTech", "Pharma", "Research"];
-const HMP_TRACKS: StudentTrack[] = ["Health Innovation", "Health Management", "Health Policy", "Digital Health"];
-const HMP_TRACK_COLORS = ["#0D9488", "#F59E0B", "#7C3AED", "#0EA5E9"];
-const HMP_SECTOR_COLORS = ["#F43F5E", "#0D9488", "#4338CA", "#EA580C", "#7C3AED", "#10B981"];
-const HMP_ALL_COUNTRIES = Array.from(new Set([
-  ...healthXSessions.map(h => h.country),
-  ...internships.map(i => i.country),
-]));
+const sectorCounts = Object.entries(
+  internships.reduce<Record<string, number>>((a, i) => { a[i.sector] = (a[i.sector] || 0) + i.students; return a; }, {})
+).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 
+// ─── Insights ────────────────────────────────────────────────────────────────
+const topReach = participantsByProgData[0];
+const insights = [
+  `${topReach.name} account for the largest share of participant reach (${topReach.value.toLocaleString()} people).`,
+  `HealthX has reached ${hxPart.toLocaleString()} participants across ${hxSessions} experiential sessions.`,
+  `${intStudents > 0 ? Math.round(intConversions / intStudents * 100) : 0}% of internship placements convert into employment.`,
+  `${employPct}% of graduates are employed or running ventures.`,
+  `Female participation stands at ${FEMALE_PCT_ALL}% across all HEMP programmes.`,
+  `Mission Students have launched ${ventures.length} ventures to date.`,
+  `Programme completion among mission students stands at ${completionPct}%.`,
+];
 
+// ─── Sub-components ───────────────────────────────────────────────────────────
+function SecHeader({ title, sub }: { title: string; sub?: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: BRAND }} />
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: BRAND }}>{title}</p>
+        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+// Small "i" tooltip badge
+function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      {show && (
+        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function ChartCard({ title, sub, info, children }: {
+  title: string; sub?: string; accent?: string; info?: string; children: React.ReactNode;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  async function handleDownload() {
+    if (!cardRef.current) return;
+    const h2c = (await import("html2canvas")).default;
+    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const a = document.createElement("a");
+    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
+    a.href = canvas.toDataURL();
+    a.click();
+  }
+  function handleContextMenu(e: React.MouseEvent) { e.preventDefault(); handleDownload(); }
+  return (
+    <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
+      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(242,101,34,0.12)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
+          </div>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
+        </div>
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
+function PlainCard({ title, sub, chip, fill, children }: {
+  title: string; sub?: string; chip?: React.ReactNode; fill?: boolean; children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden" style={{
+      backgroundColor: "#fff", border: `1px solid ${PALETTE.border}`, borderRadius: 12,
+      height: fill ? "100%" : undefined, display: fill ? "flex" : undefined, flexDirection: fill ? "column" : undefined,
+    }}>
+      <div className="flex items-center justify-between gap-3" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "white", lineHeight: 1.2 }}>{title}</p>
+          {sub && <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>{sub}</p>}
+        </div>
+        {chip}
+      </div>
+      <div style={{ padding: 20, flex: fill ? 1 : undefined, display: fill ? "flex" : undefined, flexDirection: fill ? "column" : undefined, justifyContent: fill ? "center" : undefined }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ExecCard({ label, value, sub, note, icon: Icon, center = false, tip }: {
+  label: string; value: string | number; sub?: string; note?: string; icon?: LucideIcon; center?: boolean; tip?: string;
+}) {
+  return (
+    <div className="rounded-[10px]" style={{
+      backgroundColor: "#ffffff", border: `1px solid ${BRAND}`, padding: "13px 15px",
+      display: "flex", flexDirection: center ? "column" : "row", alignItems: "center",
+      justifyContent: "center", textAlign: center ? "center" : "left", gap: center ? 6 : 11,
+      position: "relative", overflow: "visible",
+    }}>
+      {Icon && (
+        <span className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 36 }}>
+          <Icon size={20} style={{ color: BRAND }} />
+        </span>
+      )}
+      <div style={{ minWidth: 0 }}>
+        <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: BRAND, lineHeight: 1.05 }}>{value}</p>
+        <div className="flex items-center gap-1" style={{ justifyContent: center ? "center" : "flex-start", marginTop: 2 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
+          {tip && <InfoDot tip={tip} />}
+        </div>
+        {sub  && <p style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{sub}</p>}
+        {note && <p className="mt-1.5 pt-1.5" style={{ fontSize: 9, color: "#6B7280", borderTop: "1px solid rgba(242,101,34,0.15)" }}>{note}</p>}
+      </div>
+    </div>
+  );
+}
+
+// ─── Count-up ────────────────────────────────────────────────────────────────
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -199,54 +331,100 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-// â"€â"€â"€ Derived data for the restructured (pipeline) overview â"€â"€â"€
-const HEMP_COMPARE: { name: string; reach: number; sat: number | null; comp: number | null }[] = [
-  { name: "HealthX",          reach: hxPart,        sat: hxSatAvg,  comp: hxCompAvg },
-  { name: "Internships",      reach: intStudents,   sat: intSatAvg, comp: null },
-  { name: "Mission Students", reach: totalStudents, sat: null,      comp: completionPct },
-];
+function benchColor(pct: number, bench: number): string {
+  const r = bench > 0 ? pct / bench : 1;
+  if (r >= 1)    return "#16A34A";
+  if (r >= 0.95) return "#84CC16";
+  if (r >= 0.8)  return "#F59E0B";
+  return "#DC2626";
+}
 
-const pipelineSteps: { value: string; label: string }[] = [
-  { value: String(totalStudents),    label: "Mission Students" },
-  { value: hxPart.toLocaleString(),  label: "HealthX Experiences" },
-  { value: String(intStudents),      label: "Internship Placements" },
-  { value: String(intConversions),   label: "Employment Conversions" },
-  { value: String(completed.length), label: "Graduates" },
-  { value: `${employPct}%`,          label: "Employment Rate" },
-  { value: String(ventures.length),  label: "Ventures Created" },
-];
-
-const hempInsights = [
-  `HealthX has reached ${hxPart.toLocaleString()} participants across ${healthXSessions.length} sessions.`,
-  `${intStudents > 0 ? Math.round(intConversions / intStudents * 100) : 0}% of internships convert into employment.`,
-  `${employPct}% of graduates are employed or running ventures.`,
-  `Female participation stands at ${FEMALE_PCT_ALL}% across all HEMP programmes.`,
-  `Mission Students have launched ${ventures.length} ventures.`,
-  `Programme completion among mission students stands at ${completionPct}%.`,
-];
-
-function QuickCard({ label, count, sub }: { label: string; count: number | string; sub: string }) {
+function KpiTile({ label, num, displayFmt, sub, pct, bench, Icon, tip }: {
+  label: string; num: number; displayFmt: (n: number) => string;
+  sub?: string; pct?: number; bench?: number; Icon?: LucideIcon; tip?: string;
+}) {
+  const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(242,101,34,0.12)", borderLeft: "5px solid #F26522" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(242,101,34,0.55)", marginBottom: 6 }}>{label}</p>
-      <p style={{ fontSize: 26, fontWeight: 800, color: "#F26522", lineHeight: 1 }}>{count}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(242,101,34,0.55)", marginTop: 4 }}>{sub}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(242,101,34,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
+      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(242,101,34,0.6)" }}>{label}</p>
+        {tip && <InfoDot tip={tip} />}
+      </div>
+      <div className="flex items-center justify-center gap-2">
+        {Icon && <Icon size={18} style={{ color: BRAND_DK, opacity: 0.9, flexShrink: 0 }} />}
+        <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
+      </div>
+      {sub && <p style={{ fontSize: 9.5, color: "rgba(242,101,34,0.6)", marginTop: 4 }}>{sub}</p>}
+      {pct !== undefined && (
+        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(242,101,34,0.14)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
+          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : BRAND, borderRadius: 4 }} />
+          {bench !== undefined && (
+            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-function Pipeline({ steps }: { steps: { value: string; label: string }[] }) {
+// ─── Chart tooltip ───────────────────────────────────────────────────────────
+function tipFmt(n: number) { return Math.round(n).toLocaleString(); }
+function HempChartTip({ active, payload, label, hideLabel, unit }: any) {
+  if (!active || !payload?.length) return null;
   return (
-    <div className="flex flex-wrap items-stretch justify-center gap-2">
-      {steps.map((s, i) => (
-        <div key={s.label} className="flex items-stretch" style={{ flex: "1 1 110px" }}>
-          <div className="flex-1 rounded-lg text-center px-2 py-3" style={{ border: "1px solid rgba(242,101,34,0.12)", borderTop: "3px solid #F26522" }}>
-            <p className="font-black tabular-nums" style={{ fontSize: 20, color: "#F26522", lineHeight: 1 }}>{s.value}</p>
-            <p className="text-[9px] text-gray-500 mt-1 font-medium leading-tight">{s.label}</p>
-          </div>
-          {i < steps.length - 1 && <div className="flex items-center px-0.5" style={{ color: "rgba(242,101,34,0.4)", fontSize: 16 }}>→</div>}
-        </div>
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(242,101,34,0.15)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      {!hideLabel && label != null && <p style={{ fontWeight: 700, color: BRAND_DK, marginBottom: 4 }}>{label}</p>}
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill || p.stroke, display: "inline-block" }} />
+          {p.name}: <b style={{ color: BRAND_DK }}>{typeof p.value === "number" ? tipFmt(p.value) : p.value}{unit || ""}</b>
+        </p>
       ))}
+    </div>
+  );
+}
+
+function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
+  const max = data[0]?.value ?? 1;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {data.map((row, i) => {
+        const col = colors[i % colors.length];
+        return (
+          <div key={row.name} className="flex items-center gap-2.5">
+            <div className="w-[104px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
+            <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
+              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+            </div>
+            <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
+  const max = steps[0]?.value || 1;
+  return (
+    <div className="space-y-2.5">
+      {steps.map((s, i) => {
+        const pct = Math.max(8, Math.round((s.value / max) * 100));
+        const conv = i > 0 && steps[i - 1].value > 0 ? Math.round((s.value / steps[i - 1].value) * 100) : null;
+        return (
+          <div key={s.label}>
+            <div className="flex items-center justify-between text-[11px] mb-1">
+              <span className="font-semibold text-gray-700">{s.label}</span>
+              <span className="font-bold tabular-nums" style={{ color: BRAND_DK }}>
+                {s.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
+              </span>
+            </div>
+            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(242,101,34,0.08)" }}>
+              <div className="h-full rounded-sm transition-all" style={{ width: `${pct}%`, backgroundColor: BRAND, opacity: 1 - i * 0.13 }} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -264,10 +442,15 @@ function CompareTable({ rows }: { rows: { name: string; reach: number; sat: numb
         <tbody>
           {rows.map(r => (
             <tr key={r.name} className="border-t border-gray-100">
-              <td className="py-2.5 pr-6 whitespace-nowrap"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: "#F26522" }} /><span className="font-semibold text-gray-700">{r.name}</span></span></td>
+              <td className="py-2.5 pr-6 whitespace-nowrap">
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: PROG[r.name] ?? BRAND }} />
+                  <span className="font-semibold text-gray-700">{r.name}</span>
+                </span>
+              </td>
               <td className="py-2.5 px-2 text-center font-bold tabular-nums text-gray-700">{r.reach.toLocaleString()}</td>
-              <td className="py-2.5 px-2 text-center font-bold tabular-nums" style={{ color: "#F26522" }}>{r.sat !== null ? `${r.sat}/5` : "—"}</td>
-              <td className="py-2.5 px-2 text-center font-bold tabular-nums" style={{ color: "#F26522" }}>{r.comp !== null ? `${r.comp}%` : "—"}</td>
+              <td className="py-2.5 px-2 text-center font-bold tabular-nums" style={{ color: BRAND_DK }}>{r.sat !== null ? `${r.sat}/5` : "—"}</td>
+              <td className="py-2.5 px-2 text-center font-bold tabular-nums" style={{ color: BRAND_DK }}>{r.comp !== null ? `${r.comp}%` : "—"}</td>
             </tr>
           ))}
         </tbody>
@@ -276,12 +459,27 @@ function CompareTable({ rows }: { rows: { name: string; reach: number; sat: numb
   );
 }
 
+function FilterSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[];
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(194,65,12,0.65)" }}>
+      {label}
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
+        style={{ color: BRAND_DK, border: "1px solid rgba(242,101,34,0.25)", backgroundColor: "white" }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+}
+
 function InsightList({ items }: { items: string[] }) {
   return (
     <div className="space-y-2.5">
       {items.map((t, i) => (
         <div key={i} className="flex items-start gap-2.5">
-          <span className="rounded-full flex-shrink-0 mt-1.5" style={{ width: 6, height: 6, backgroundColor: "#F26522" }} />
+          <span className="rounded-full flex-shrink-0 mt-1.5" style={{ width: 6, height: 6, backgroundColor: BRAND }} />
           <p className="text-[12px] text-gray-700 leading-relaxed">{t}</p>
         </div>
       ))}
@@ -289,519 +487,275 @@ function InsightList({ items }: { items: string[] }) {
   );
 }
 
-// Red → amber → green based on progress against benchmark
-function benchColor(pct: number, bench: number): string {
-  const r = bench > 0 ? pct / bench : 1;
-  if (r >= 1)    return "#16A34A";
-  if (r >= 0.95) return "#84CC16";
-  if (r >= 0.8)  return "#F59E0B";
-  return "#DC2626";
-}
-
-function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub: string; clr: string;
-  pct?: number; bench?: number; Icon?: LucideIcon;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(242,101,34,0.12)", borderLeft: "5px solid #F26522" }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(242,101,34,0.55)", marginBottom: 8 }}>{label}</p>
-      <div className="flex items-center justify-center gap-2">
-        {Icon && <Icon size={18} style={{ color: "#F26522", opacity: 0.85, flexShrink: 0 }} />}
-        <p style={{ fontSize: 22, fontWeight: 700, color: "#F26522", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      </div>
-      <p style={{ fontSize: 9.5, color: "rgba(242,101,34,0.55)", marginTop: 4 }}>{sub}</p>
-      {pct !== undefined && (
-        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(242,101,34,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#F26522", borderRadius: 4 }} />
-          {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#F26522", borderRadius: 1 }} />
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ExecCard({ label, value, sub, color, note, icon: Icon }: {
-  label: string; value: string | number; sub?: string; color: string; note?: string; icon?: LucideIcon;
-}) {
-  return (
-    <div className="rounded border p-3 shadow-sm" style={{ backgroundColor: color, borderColor: color }}>
-      <div className="flex items-start justify-between mb-2">
-        <p className="text-[8px] font-bold uppercase tracking-[0.12em] leading-none"
-          style={{ color: "rgba(255,255,255,0.68)" }}>{label}</p>
-        {Icon && (
-          <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-            <Icon size={11} style={{ color: "rgba(255,255,255,0.88)" }} />
-          </div>
-        )}
-      </div>
-      <p className="text-xl font-black tabular-nums leading-none text-white">{value}</p>
-      {sub  && <p className="text-[9px] mt-1 font-medium" style={{ color: "rgba(255,255,255,0.68)" }}>{sub}</p>}
-      {note && <p className="text-[9px] mt-1.5 pt-1.5" style={{ color: "rgba(255,255,255,0.55)", borderTop: "1px solid rgba(255,255,255,0.18)" }}>{note}</p>}
-    </div>
-  );
-}
-
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
-      <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#F26522", letterSpacing: "0.01em" }}>{title}</h2>
-        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, accent = VIOLET, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#F26522", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
-        </div>
-        <button onClick={handleDownload} title="Download chart"
-          style={{ color: "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center", flexShrink: 0 }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "white"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}>
-          <Download size={12} />
-        </button>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
-function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
-  const max = data[0]?.value ?? 1;
-  return (
-    <div className="space-y-2">
-      {data.map((row, i) => {
-        const col = colors[i % colors.length];
-        return (
-          <div key={row.name} className="flex items-center gap-2.5">
-            <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
-            </div>
-            <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: number; maleColor: string }) {
-  const [hovered, setHovered] = useState<{ label: string; pct: number; color: string } | null>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  return (
-    <div className="relative flex items-center gap-3 mb-3 last:mb-0"
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
-      onMouseLeave={() => setHovered(null)}>
-      <div className="w-24 text-[11px] text-gray-600 text-right font-medium flex-shrink-0 leading-tight">{label}</div>
-      <div className="flex-1 h-5 rounded-sm overflow-hidden flex" style={{ backgroundColor: ROSE + "15" }}>
-        <div style={{ width: `${femalePct}%`, backgroundColor: ROSE, cursor: "pointer",
-            opacity: hovered && hovered.label !== "Female" ? 0.45 : 1, transition: "opacity 0.15s" }}
-          onMouseEnter={() => setHovered({ label: "Female", pct: femalePct, color: ROSE })} />
-        <div style={{ width: `${100 - femalePct}%`, backgroundColor: maleColor, cursor: "pointer",
-            opacity: hovered && hovered.label !== "Male" ? 0.45 : 1, transition: "opacity 0.15s" }}
-          onMouseEnter={() => setHovered({ label: "Male", pct: 100 - femalePct, color: maleColor })} />
-      </div>
-      <div className="text-[11px] font-bold w-8 flex-shrink-0 text-right" style={{ color: ROSE }}>{femalePct}%</div>
-      {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
-          {hovered.label}: {hovered.pct}%
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CustomDonut({ data, colors, label, valueFormatter = (v: number) => `${v}`, className = "" }: {
-  data: { name: string; value: number }[];
-  colors: string[];
-  label?: string;
-  valueFormatter?: (v: number) => string;
-  className?: string;
-}) {
-  const [hovered, setHovered] = useState<{ name: string; value: number; color: string } | null>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const total = data.reduce((s, d) => s + d.value, 0);
-  if (!total) return null;
-  const CX = 80, CY = 80, OR = 70, IR = 43;
-  let theta = -Math.PI / 2;
-  const slices = data.map((d, i) => {
-    const sweep = (d.value / total) * 2 * Math.PI;
-    const t0 = theta, t1 = theta + sweep;
-    theta = t1;
-    const lg = sweep > Math.PI ? 1 : 0;
-    const path = [
-      `M ${CX + OR * Math.cos(t0)} ${CY + OR * Math.sin(t0)}`,
-      `A ${OR} ${OR} 0 ${lg} 1 ${CX + OR * Math.cos(t1)} ${CY + OR * Math.sin(t1)}`,
-      `L ${CX + IR * Math.cos(t1)} ${CY + IR * Math.sin(t1)}`,
-      `A ${IR} ${IR} 0 ${lg} 0 ${CX + IR * Math.cos(t0)} ${CY + IR * Math.sin(t0)}`,
-      "Z",
-    ].join(" ");
-    return { path, fill: colors[i % colors.length], name: d.name, value: d.value };
-  });
-  return (
-    <div className={`relative flex items-center justify-center ${className}`}
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}>
-      <svg viewBox="0 0 160 160" style={{ width: "100%", height: "100%" }}>
-        {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.fill} stroke="white" strokeWidth="2.5"
-            style={{ cursor: "pointer", opacity: hovered && hovered.name !== s.name ? 0.45 : 1, transition: "opacity 0.15s" }}
-            onMouseEnter={() => setHovered({ name: s.name, value: s.value, color: s.fill })}
-            onMouseLeave={() => setHovered(null)} />
-        ))}
-        {label && (
-          <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
-            fill="#111827" fontSize="20" fontWeight="900"
-            fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
-        )}
-      </svg>
-      {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded px-2 py-1 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 34, transform: "translateX(-50%)" }}>
-          {hovered.name}: {valueFormatter(hovered.value)}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// ─── Page ────────────────────────────────────────────────────────────────────
 export default function HEMPOverview() {
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+
+  // Geographic reach filters
+  const [geoCountry, setGeoCountry] = useState("All Countries");
+  const [geoYear, setGeoYear]       = useState("All Years");
+  const [geoRegion, setGeoRegion]   = useState("All Regions");
+  const geoCountryData = useMemo(() => {
+    const counts = REACH_RECORDS
+      .filter(r => geoRegion === "All Regions" || COUNTRY_REGION[r.country] === geoRegion)
+      .filter(r => geoCountry === "All Countries" || r.country === geoCountry)
+      .filter(r => geoYear === "All Years" || String(r.year) === geoYear)
+      .reduce<Record<string, number>>((a, r) => { a[r.country] = (a[r.country] || 0) + r.reach; return a; }, {});
+    return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [geoRegion, geoCountry, geoYear]);
+
+  const [regionYear, setRegionYear] = useState("All Years");
+  const regionChartData = useMemo(() => {
+    const reach: Record<string, number> = {};
+    const female: Record<string, number> = {};
+    const countries: Record<string, Set<string>> = {};
+    REACH_RECORDS
+      .filter(r => regionYear === "All Years" || String(r.year) === regionYear)
+      .forEach(r => {
+        const reg = COUNTRY_REGION[r.country] || "Other";
+        reach[reg] = (reach[reg] || 0) + r.reach;
+        female[reg] = (female[reg] || 0) + r.female;
+        (countries[reg] = countries[reg] || new Set()).add(r.country);
+      });
+    return Object.keys(reach)
+      .map(reg => ({ name: reg, value: reach[reg], countries: countries[reg].size, female: female[reg] }))
+      .sort((a, b) => b.value - a.value);
+  }, [regionYear]);
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HEMPNav />
 
-      {/* â"€â"€ HEADER + KPI STRIP â"€â"€â"€ */}
+      {/* ── EXECUTIVE HEADER ── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#F26522", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
-
-        {/* Faint triangle pattern across the whole header */}
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: BRAND, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-
-        {/* Full design elements anchored to the left & right edges */}
         <img src="/images/hempdesign.png" alt="" aria-hidden="true"
           style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
         <img src="/images/hempdesign.png" alt="" aria-hidden="true"
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-
-        {/* Center overlay */}
         <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
-
-        {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#F59E0B" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
-              </span>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(255,237,213,0.82)" }}>Mission students, HealthX, internships and graduate impact</p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(255,237,213,0.5)" }}>
+              <span><span style={{ color: "rgba(255,237,213,0.85)", fontWeight: 600 }}>Data source:</span> HEMP Programmes M&amp;E</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(255,237,213,0.85)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
+              <span aria-hidden="true">·</span>
+              <span>{totalStudents} students · {hxSessions} HealthX sessions</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(255,237,213,0.85)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
-              HEMP Programme  ·  2021 - 2026  ·  {totalStudents} students  ·  {healthXSessions.length} HealthX sessions
-            </p>
           </div>
         </div>
       </header>
       </div>
 
-      {/* â"€â"€ KPI STRIP â"€â"€â"€ */}
-      <div className="max-w-[1440px] mx-auto px-6 pt-5">
-          <div className="pb-1">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <KpiTile label="Mission Students"    num={totalStudents}          displayFmt={n => String(Math.round(n))}         sub="Total enrolled"                  clr="#F26522" Icon={GraduationCap} />
-              <KpiTile label="HealthX Sessions"    num={healthXSessions.length} displayFmt={n => String(Math.round(n))}         sub="Experiential sessions"           clr="#0F766E" Icon={Activity} />
-              <KpiTile label="Female Reach"        num={FEMALE_PCT_ALL}         displayFmt={n => `${Math.round(n)}%`}           sub="Across all programmes"           clr="#9D174D" Icon={Sparkles} pct={FEMALE_PCT_ALL} bench={50} />
-              <KpiTile label="Employment Rate"     num={employPct}              displayFmt={n => `${Math.round(n)}%`}           sub="Employed or entrepreneur"        clr="#065F46" Icon={Briefcase} pct={employPct} bench={70} />
-              <KpiTile label="Internship Orgs"     num={internships.length}     displayFmt={n => String(Math.round(n))}         sub="Host organisations"              clr="#B45309" Icon={Building2} />
-              <KpiTile label="Ventures Created"    num={ventures.length}        displayFmt={n => String(Math.round(n))}         sub="Student startups"                clr="#5B21B6" Icon={Rocket} />
-              <KpiTile label="Internship Students" num={intStudents}            displayFmt={n => String(Math.round(n))}         sub="Total placements"                clr="#1E3A8A" Icon={Users} />
-              <KpiTile label="Avg Satisfaction"    num={AVG_SAT}                displayFmt={n => `${n.toFixed(1)}/5`}          sub="HealthX &amp; internships"       clr="#881337" Icon={Star} pct={(AVG_SAT / 5) * 100} bench={80} />
-            </div>
-          </div>
-      </div>
-
-      {/* â"€â"€ BODY â"€â"€â"€ */}
+      {/* ── MAIN CONTENT ── */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
+        {/* ── KPI STRIP ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <KpiTile label="Total Reach"     num={TOTAL_REACH}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        tip="Total people reached across mission students, HealthX and internships." />
+          <KpiTile label="Mission Students" num={totalStudents} displayFmt={n => String(Math.round(n))}          Icon={GraduationCap} tip="Students enrolled in the HEMP mission programme." />
+          <KpiTile label="Female Reach"    num={FEMALE_PCT_ALL} displayFmt={n => `${Math.round(n)}%`}            Icon={Sparkles}     pct={FEMALE_PCT_ALL} bench={50} tip={`Share of participants who are female (${TOTAL_FEM.toLocaleString()} people).`} />
+          <KpiTile label="Partnerships"    num={TOTAL_PSHIP}    displayFmt={n => String(Math.round(n))}          Icon={Handshake}    tip="HealthX partnerships plus internship host organisations." />
+          <KpiTile label="Employment Rate" num={employPct}     displayFmt={n => `${Math.round(n)}%`}            Icon={Briefcase}    pct={employPct} bench={70} tip="Graduates employed or running a venture." />
+        </div>
 
-        {/* â"€â"€ SECTION 1: ENROLMENT & ACTIVITY â"€â"€â"€ */}
         {/* Section pills */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {[{ n: 0, label: "All Sections" }, { n: 1, label: "Delivery" }, { n: 2, label: "Students" }, { n: 3, label: "Learning" }, { n: 4, label: "Outcomes" }, { n: 5, label: "Partnerships" }, { n: 6, label: "Insights" }].map(({ n, label }) => {
+          {[{ n: 0, label: "All Sections" }, { n: 1, label: "Delivery" }, { n: 2, label: "Participants" }, { n: 3, label: "Performance" }, { n: 4, label: "Outcomes" }, { n: 5, label: "Ecosystem & Impact" }].map(({ n, label }) => {
             const on = n === 0 ? activeSection === "all" : activeSection === n;
             return (
               <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#F26522" : "rgba(242,101,34,0.18)"}`, backgroundColor: on ? "#F26522" : "white", color: on ? "white" : "#6B7280" }}>
+                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? BRAND : "rgba(242,101,34,0.2)"}`, backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280" }}>
                 {label}
               </button>
             );
           })}
         </div>
 
+        {/* ── SECTION 1: PROGRAMME DELIVERY ── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Programme Delivery"
-            sub="How much programming has HEMP delivered across cohorts, HealthX and internships?" />
+          <SecHeader title="Programme Delivery" sub="How much programming has HEMP delivered across HealthX, internships and mission cohorts?" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-            <QuickCard label="Mission Students" count={YEARS.length}          sub="Cohorts · 2021–2026" />
-            <QuickCard label="HealthX"          count={healthXSessions.length} sub="Sessions" />
-            <QuickCard label="Internships"      count={intStudents}            sub="Placements" />
-            <QuickCard label="Internship Orgs"  count={internships.length}     sub="Host organisations" />
+            <ExecCard label="HealthX Sessions" value={hxSessions}     icon={Activity} />
+            <ExecCard label="Internship Orgs"  value={intOrgs}        icon={Building2} />
+            <ExecCard label="Mission Cohorts"  value={YEARS.length}   icon={GraduationCap} />
+            <ExecCard label="Countries"        value={GEO_COUNTRIES.length} icon={Users} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Student Enrolment by Cohort"
-              sub="Cohort status  -  Completed  ·  Active  ·  Deferred"
-              accent={VIOLET}>
-              <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                {[["Completed", GREEN], ["Active", VIOLET], ["Deferred", AMBER]].map(([l, c]) => (
-                  <span key={l} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
-                  </span>
-                ))}
-              </div>
-              <ResponsiveContainer width="100%" height={208}>
-                <BarChart data={enrolmentByYear} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
-                  <Bar dataKey="Completed" fill={GREEN}  radius={[0,0,0,0]} />
-                  <Bar dataKey="Active"    fill={VIOLET} radius={[0,0,0,0]} />
-                  <Bar dataKey="Deferred"  fill={AMBER}  radius={[0,0,0,0]} />
+            <ChartCard title="Delivery per Year" sub="Sessions & internship placements by year">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={activityByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(242,101,34,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "rgba(242,101,34,0.04)" }} content={<HempChartTip hideLabel />} />
+                  <Bar dataKey="HealthX"     fill={PROG.HealthX}     radius={[4, 4, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="Internships" fill={PROG.Internships} radius={[4, 4, 0, 0]} maxBarSize={16} />
                 </BarChart>
               </ResponsiveContainer>
-            </ChartCard>
-
-            <ChartCard title="Programme Reach by Year"
-              sub="HealthX participants and internship placements  -  year on year"
-              accent={TEAL}>
-              <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                {[["HealthX", TEAL], ["Internships", AMBER]].map(([l, c]) => (
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {(["HealthX","Internships"] as const).map((l) => (
                   <span key={l} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PROG[l] }} />{l}
                   </span>
                 ))}
               </div>
-              <ResponsiveContainer width="100%" height={208}>
-                <AreaChart data={reachByYear}>
-                  <defs>
-                    {([[TEAL, "ag0"], [AMBER, "ag1"]] as [string, string][]).map(([hex, id]) => (
-                      <linearGradient key={id} id={id} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={hex} stopOpacity={0.25} />
-                        <stop offset="95%" stopColor={hex} stopOpacity={0.03} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }} />
-                  <Area type="monotone" dataKey="HealthX"     stroke={TEAL}  strokeWidth={2} fill="url(#ag0)" dot={false} />
-                  <Area type="monotone" dataKey="Internships" stroke={AMBER} strokeWidth={2} fill="url(#ag1)" dot={false} />
-                </AreaChart>
+            </ChartCard>
+
+            <ChartCard title="Participants per Year" sub="Reach by programme type">
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={participantsByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(242,101,34,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip content={<HempChartTip hideLabel />} />
+                  {(["HealthX","Internships","Mission Students"] as const).map((cat, i) => (
+                    <Line key={cat} type="monotone" dataKey={cat} stroke={PROG_YEAR_COLORS[i]} strokeWidth={2.5}
+                      dot={{ r: 4, fill: PROG_YEAR_COLORS[i], strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  ))}
+                </LineChart>
               </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {(["HealthX","Internships","Mission Students"] as const).map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PROG_YEAR_COLORS[i] }} />{l}
+                  </span>
+                ))}
+              </div>
             </ChartCard>
-
           </div>
         </section>
 
-        {/* â"€â"€ SECTION 2: DIVERSITY & REACH â"€â"€â"€ */}
+        {/* ── SECTION 2: PARTICIPANT REACH ── */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Student Reach &amp; Diversity"
-            sub="Gender representation, country coverage, and student track distribution" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-            <ChartCard title="Gender Representation by Programme"
-              sub="Female (rose) vs Male  -  per programme type"
-              accent={ROSE}>
-              <div className="flex items-center gap-5 text-[10px] text-gray-400 mb-5">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: ROSE }} /> Female</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#60A5FA" }} /> Male</span>
-                <span className="ml-auto font-bold" style={{ color: ROSE }}>Platform avg: {FEMALE_PCT_ALL}%</span>
-              </div>
-              {genderByProg.map(g => (
-                <GenderBar key={g.label} label={g.label} femalePct={g.femalePct} maleColor={g.maleColor} />
-              ))}
-              <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2 text-center">
-                {genderByProg.map(g => (
-                  <div key={g.label}>
-                    <p className="text-sm font-black" style={{ color: ROSE }}>{g.femalePct}%</p>
-                    <p className="text-[9px] text-gray-400 leading-tight mt-0.5">{g.label}</p>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Country Coverage"
-              sub="HealthX + internship reach by country"
-              accent={SKY}>
-              <ColorBarList data={countryCounts.slice(0, 9)} colors={COUNTRY_HEX} />
-            </ChartCard>
-
-            <ChartCard title="Student Track Distribution"
-              sub="Mission students by programme track  ·  2021 - 2026"
-              accent={VIOLET}>
-              <CustomDonut
-                data={trackCounts}
-                colors={TRACK_HEX}
-                className="h-44"
-                label={`${totalStudents}`}
-                valueFormatter={(v: number) => `${v} students`}
-              />
-              <div className="mt-3 space-y-1">
-                {trackCounts.map((t, i) => (
-                  <div key={t.name} className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1.5 text-gray-600 truncate min-w-0">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: TRACK_HEX[i] }} />
-                      <span className="truncate">{t.name}</span>
-                    </span>
-                    <span className="font-bold text-gray-700 ml-2 flex-shrink-0">
-                      {t.value} ({Math.round(t.value / totalStudents * 100)}%)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-
-          </div>
-        </section>
-
-        {/* â"€â"€ SECTION 3: PERFORMANCE â"€â"€â"€ */}
-        <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Learning Experience"
-            sub="HealthX satisfaction by session type and dimension  -  internship sector comparison" />
+          <SecHeader title="Participant Reach" sub="Who are we reaching — gender distribution, programme reach, and geographic spread" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="HealthX Satisfaction Heatmap  -  Type Ã— Dimension"
-              sub="Avg score  ·  Teal â‰¥4.5  ·  Violet â‰¥4.0  ·  Amber â‰¥3.5  ·  Rose <3.5"
-              accent={TEAL}>
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px]">
-                  <thead>
-                    <tr>
-                      <th className="text-left text-gray-400 font-bold pb-3 pr-3 uppercase tracking-wider text-[9px]">Session Type</th>
-                      {SCORE_DIMS.map(d => (
-                        <th key={d} className="text-center text-gray-400 font-bold pb-3 px-1 min-w-[60px] uppercase tracking-wider text-[9px] leading-tight">{d}</th>
-                      ))}
-                      <th className="text-center text-gray-400 font-bold pb-3 px-1 uppercase tracking-wider text-[9px]">Avg</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hxHeatmap.map(row => {
-                      const scores = SCORE_DIMS.map(d => row[d]);
-                      const rowAvg = parseFloat(avg(scores).toFixed(1));
-                      return (
-                        <tr key={row.type} className="border-t border-gray-100">
-                          <td className="py-2.5 pr-3">
-                            <span className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: TYPE_HEX[row.type] }} />
-                              <span className="font-semibold text-gray-700 text-[10px] leading-tight">{row.type}</span>
-                            </span>
-                          </td>
-                          {SCORE_DIMS.map(d => (
-                            <td key={d} className="py-2.5 px-1 text-center">
-                              <span className="inline-block px-2 py-1 rounded text-white text-[10px] font-bold tabular-nums"
-                                style={{ backgroundColor: heatColor(row[d]) }}>
-                                {row[d].toFixed(1)}
-                              </span>
-                            </td>
-                          ))}
-                          <td className="py-2.5 px-1 text-center">
-                            <span className="inline-block px-2 py-1 rounded text-white text-[10px] font-bold tabular-nums"
-                              style={{ backgroundColor: INDIGO }}>
-                              {rowAvg.toFixed(1)}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <div className="flex gap-3 mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex-wrap">
-                  {([["Very High (â‰¥4.5)", TEAL], ["High (â‰¥4.0)", VIOLET], ["Moderate (â‰¥3.5)", AMBER], ["Low (<3.5)", ROSE]] as const).map(([l, c]) => (
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
-                    </span>
-                  ))}
-                </div>
+            <ChartCard title="Gender Distribution" sub="Female vs male share by programme">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={genderByProg.map(g => ({ name: g.label, Female: g.femalePct, Male: 100 - g.femalePct }))}
+                  margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(242,101,34,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
+                  <Tooltip cursor={{ fill: "rgba(242,101,34,0.04)" }} content={<HempChartTip unit="%" />} />
+                  <Bar dataKey="Female" stackId="g" fill={ROSE}  maxBarSize={46} />
+                  <Bar dataKey="Male"   stackId="g" fill={BRAND} radius={[4, 4, 0, 0]} maxBarSize={46} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: ROSE }} /> Female</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Male</span>
               </div>
             </ChartCard>
 
-            <div className="space-y-4">
-              <ChartCard title="HealthX Avg Satisfaction by Type"
-                sub="Overall satisfaction rating (1 - 5) per session category"
-                accent={VIOLET}>
-                <div className="space-y-3">
-                  {hxSatByType.map(d => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="flex items-center gap-1.5 font-medium text-gray-700">
-                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: TYPE_HEX[d.name] }} />
-                          {d.name}
-                        </span>
-                        <span className="font-bold tabular-nums" style={{ color: TYPE_HEX[d.name] }}>{d.value}/5</span>
-                      </div>
-                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: TYPE_HEX[d.name] + "18" }}>
-                        <div className="h-full transition-all"
-                          style={{ width: `${(d.value / 5) * 100}%`, backgroundColor: d.value >= 4.5 ? TEAL : d.value >= 4.0 ? VIOLET : AMBER }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ChartCard>
+            <ChartCard title="Participants by Programme" sub="Reach by programme type">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={participantsByProgData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(242,101,34,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "rgba(242,101,34,0.04)" }} content={<HempChartTip />} />
+                  <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                    {participantsByProgData.map((d) => (<Cell key={d.name} fill={PROG[d.name] ?? PALETTE_NEUTRAL} />))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {participantsByProgData.map((d) => (
+                  <span key={d.name} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PROG[d.name] ?? PALETTE_NEUTRAL }} />{d.name}
+                  </span>
+                ))}
+              </div>
+            </ChartCard>
+          </div>
 
-              <ChartCard title="Internship Satisfaction by Sector"
-                sub="Average satisfaction score per placement sector"
-                accent={AMBER}>
-                <div className="space-y-3">
-                  {intSatBySector.map((d, i) => (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="flex items-center gap-1.5 font-medium text-gray-700">
-                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: SECTOR_HEX[i % SECTOR_HEX.length] }} />
+          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Geographic Reach" sub="Participants reached by country">
+              <div className="flex flex-wrap gap-2 mb-4">
+                <FilterSelect label="Country" value={geoCountry} onChange={setGeoCountry} options={["All Countries", ...GEO_COUNTRIES]} />
+                <FilterSelect label="Year" value={geoYear} onChange={setGeoYear} options={["All Years", ...GEO_YEARS.map(String)]} />
+              </div>
+              {geoCountryData.length ? (
+                <HentAfricaMap data={geoCountryData} region={geoRegion} onRegionChange={setGeoRegion} regions={["All Regions", ...GEO_REGIONS]} />
+              ) : (
+                <p className="text-[11px] text-gray-400 text-center py-6">No records match the selected filters.</p>
+              )}
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+                {geoCountryData.reduce((s, d) => s + d.value, 0).toLocaleString()} people · {geoCountryData.length} countries
+              </p>
+            </ChartCard>
+
+            <ChartCard title="Reach by Region" sub="Participants, countries and female share by African region">
+              <div className="flex flex-wrap gap-2 mb-4">
+                <FilterSelect label="Year" value={regionYear} onChange={setRegionYear} options={["All Years", ...GEO_YEARS.map(String)]} />
+              </div>
+              {regionChartData.length ? (
+                <>
+                  <ResponsiveContainer width="100%" height={190}>
+                    <BarChart data={regionChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(242,101,34,0.06)" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                      <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                      <Tooltip cursor={{ fill: "rgba(242,101,34,0.04)" }} content={<HempChartTip />} />
+                      <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                        {regionChartData.map((d, i) => (<Cell key={d.name} fill={WARM_RAMP[i % WARM_RAMP.length]} />))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="mt-4 pt-3 border-t border-gray-100 space-y-2">
+                    {regionChartData.map((d, i) => (
+                      <div key={d.name} className="flex items-center justify-between text-[11px]">
+                        <span className="flex items-center gap-1.5 text-gray-600">
+                          <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: WARM_RAMP[i % WARM_RAMP.length] }} />
                           {d.name}
                         </span>
-                        <span className="font-bold tabular-nums" style={{ color: SECTOR_HEX[i % SECTOR_HEX.length] }}>{d.value}/5</span>
+                        <span className="text-gray-500 tabular-nums">
+                          <b className="text-gray-700">{d.value.toLocaleString()}</b> people · {d.countries} countries · {Math.round(d.female / d.value * 100) || 0}% female
+                        </span>
                       </div>
-                      <div className="h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SECTOR_HEX[i % SECTOR_HEX.length] + "18" }}>
-                        <div className="h-full transition-all"
-                          style={{ width: `${(d.value / 5) * 100}%`, backgroundColor: d.value >= 4.5 ? GREEN : d.value >= 4.0 ? TEAL : AMBER }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ChartCard>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-[11px] text-gray-400 text-center py-6">No records match the selected filter.</p>
+              )}
+            </ChartCard>
+          </div>
+        </section>
+
+        {/* ── SECTION 3: PROGRAMME PERFORMANCE ── */}
+        <section style={{ display: show(3) ? undefined : "none" }}>
+          <SecHeader title="Programme Performance" sub="Are programmes delivering a high-quality experience? Satisfaction and completion compared across types" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div className="lg:col-span-8">
+              <PlainCard title="HealthX satisfaction by dimension" sub="Average score per dimension (out of 5), by session type">
+                <SatisfactionBars dimensions={SCORE_DIMS} series={radarSeries} target={4.5} height={360} />
+              </PlainCard>
             </div>
-
+            <div className="lg:col-span-4 flex flex-col gap-4 h-full">
+              <PlainCard title="Satisfaction by programme" sub="Score vs. target of 4.5">
+                <BulletChart rows={satBulletRows} target={4.5} />
+              </PlainCard>
+              <div className="flex-1">
+                <PlainCard title="Completion by programme" sub="Share completed · target 90%" fill>
+                  <div className="grid grid-cols-2" style={{ gap: 8 }}>
+                    {compRingRows.map(r => (
+                      <ProgressRing key={r.name} value={r.value} color={r.color} label={r.name} target={90} />
+                    ))}
+                  </div>
+                </PlainCard>
+              </div>
+            </div>
           </div>
           <div className="mt-4">
             <ChartCard title="Programme Comparison" sub="Reach, satisfaction and completion side by side — internships are not completion-tracked">
@@ -810,119 +764,93 @@ export default function HEMPOverview() {
           </div>
         </section>
 
-        {/* â"€â"€ SECTION 4: GRADUATE OUTCOMES & INNOVATION â"€â"€â"€ */}
+        {/* ── SECTION 4: GRADUATE OUTCOMES ── */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader title="Graduate Outcomes &amp; Innovation"
-            sub={`${completed.length} graduates  ·  ${ventures.length} ventures  ·  ${intConversions} internship-to-hire conversions`} />
+          <SecHeader title="Graduate Outcomes & Innovation" sub="How mission students convert into graduates, employment and ventures" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <ExecCard label="Graduates"              value={completed.length}  icon={GraduationCap} />
+            <ExecCard label="Employment Conversions" value={intConversions}    icon={TrendingUp} />
+            <ExecCard label="Ventures Created"       value={ventures.length}   icon={Rocket} />
+            <ExecCard label="Employment Rate"        value={`${employPct}%`}   icon={Briefcase} />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-            <ChartCard title="Graduate Employment Outcomes"
-              sub="Employment status for all completed mission students"
-              accent={GREEN}>
-              <CustomDonut
-                data={empOutcomes}
-                colors={EMP_HEX}
-                className="h-40"
-                label={`${completed.length}`}
-                valueFormatter={(v: number) => `${v} graduates`}
-              />
-              <div className="mt-3 grid grid-cols-2 gap-2 pt-3 border-t border-gray-100 text-center">
-                {empOutcomes.map((e, i) => (
-                  <div key={e.name}>
-                    <p className="text-base font-black" style={{ color: EMP_HEX[i] }}>{e.value}</p>
-                    <p className="text-[9px] text-gray-400 mt-0.5 font-medium leading-tight">{e.name}</p>
-                    <p className="text-[9px] text-gray-400">{completed.length ? Math.round(e.value / completed.length * 100) : 0}%</p>
-                  </div>
+            <ChartCard title="Talent Pipeline" sub="Students to employment">
+              <Funnel steps={[
+                { label: "Mission Students",      value: totalStudents },
+                { label: "HealthX Experiences",   value: hxPart },
+                { label: "Internship Placements", value: intStudents },
+                { label: "Graduates",             value: completed.length },
+                { label: "Employed / Venture",    value: employed.length },
+              ]} />
+              <div className="flex flex-wrap justify-center gap-3 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {["Mission Students","HealthX Experiences","Internship Placements","Graduates","Employed / Venture"].map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND, opacity: 1 - i * 0.13 }} />{l}
+                  </span>
                 ))}
               </div>
             </ChartCard>
 
-            <ChartCard title="Key Programme Outcomes"
-              sub="Cumulative impact across HEMP 2021 - 2026"
-              accent={VIOLET}>
-              <div className="space-y-3 mt-1">
-                {([
-                  { label: "HealthX Participants",   value: hxPart.toLocaleString(), color: TEAL,   sub: `${healthXSessions.length} sessions delivered`  },
-                  { label: "Internship Conversions",  value: intConversions,          color: AMBER,  sub: `Of ${intStudents} total placements`             },
-                  { label: "Student Ventures Created",value: ventures.length,         color: VIOLET, sub: "Startups from programme alumni"                 },
-                  { label: "HealthX Partnerships",    value: hxPship,                 color: SKY,    sub: "Industry & facility collaborations"             },
-                  { label: "Graduates",               value: completed.length,        color: GREEN,  sub: `${completionPct}% programme completion rate`   },
-                ] as const).map(m => (
-                  <div key={m.label} className="flex items-center gap-3 p-3 rounded border-l-2"
-                    style={{ backgroundColor: m.color + "0E", borderColor: m.color }}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: m.color + "AA" }}>{m.label}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">{m.sub}</p>
-                    </div>
-                    <p className="text-xl font-black tabular-nums flex-shrink-0" style={{ color: m.color }}>{m.value}</p>
-                  </div>
+            <ChartCard title="Graduate Employment Outcomes" sub="Employment status for all completed students">
+              <DonutRing data={empOutcomes} colors={DISTINCT} total={completed.length} totalLabel="Graduates" height={300} legendPercent />
+            </ChartCard>
+
+            <ChartCard title="Graduates & Ventures per Year" sub="Programme output by cohort">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={outcomesByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(242,101,34,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "rgba(242,101,34,0.04)" }} content={<HempChartTip hideLabel />} />
+                  <Bar dataKey="Graduates" fill={OUT_COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="Ventures"  fill={OUT_COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={16} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {(["Graduates","Ventures"] as const).map((l, i) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: OUT_COLORS[i] }} />{l}
+                  </span>
                 ))}
               </div>
             </ChartCard>
-
-            <ChartCard title="Programme Scale Overview"
-              sub="Sessions and reach across all HEMP programme types"
-              accent={ORANGE}>
-              <div className="space-y-4">
-                {([
-                  { label: "HealthX Sessions",   count: healthXSessions.length, reach: hxPart,      unit: "participants", color: TEAL   },
-                  { label: "Internship Orgs",    count: internships.length,     reach: intStudents,  unit: "students",    color: AMBER  },
-                  { label: "Mission Students",   count: YEARS.length,           reach: totalStudents,unit: "students",    color: VIOLET },
-                ] as const).map(row => {
-                  const total = hxPart + intStudents + totalStudents;
-                  const pct = Math.round(row.reach / total * 100);
-                  return (
-                    <div key={row.label}>
-                      <div className="flex items-center justify-between text-xs mb-1.5">
-                        <span className="flex items-center gap-1.5 font-medium text-gray-700">
-                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: row.color }} />
-                          {row.label}
-                        </span>
-                        <span className="text-gray-400 tabular-nums">
-                          <span className="font-bold text-gray-700">{row.count}</span>{" "}
-                          {row.label === "Mission Students" ? "cohorts" : "entries"}  · {" "}
-                          <span className="font-bold" style={{ color: row.color }}>{row.reach.toLocaleString()}</span> {row.unit}
-                        </span>
-                      </div>
-                      <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: row.color + "1A" }}>
-                        <div className="h-full" style={{ width: `${pct}%`, backgroundColor: row.color }} />
-                      </div>
-                      <p className="text-[9px] text-gray-400 mt-0.5 text-right">{pct}% of total reach</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
-
           </div>
         </section>
 
-        {/* â"€â"€ SECTION 5: PARTNERSHIPS & ECOSYSTEM â"€â"€â"€ */}
+        {/* ── SECTION 5: ECOSYSTEM & IMPACT ── */}
         <section style={{ display: show(5) ? undefined : "none" }}>
-          <SecHeader title="Partnerships &amp; Ecosystem"
-            sub={`${internships.length} internship organisations  ·  ${hxPship} HealthX partnerships  ·  ${countryCounts.length} countries`} />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-            <QuickCard label="Internship Orgs"     count={internships.length} sub="Host partners" />
-            <QuickCard label="HealthX Partnerships" count={hxPship}            sub="MOUs & collaborations" />
-            <QuickCard label="Students Hosted"      count={intStudents}        sub="Internship placements" />
-            <QuickCard label="Countries"            count={countryCounts.length} sub="Geographic reach" />
+          <SecHeader title="Ecosystem & Impact" sub="Partner network, student tracks and internship sector distribution" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <ExecCard label="Internship Orgs"      value={intOrgs}   icon={Building2}  tip="Host organisations offering internship placements." />
+            <ExecCard label="HealthX Partnerships" value={hxPship}   icon={Handshake}  tip="MOUs and facility collaborations formed through HealthX." />
+            <ExecCard label="Students Hosted"       value={intStudents} icon={Users}    tip="Total internship placements across all host organisations." />
+            <ExecCard label="Ventures Created"      value={ventures.length} icon={Zap}  tip="Startups launched by HEMP mission-student alumni." />
           </div>
-          <ChartCard title="Partner Reach by Country" sub="Participants reached across HealthX and internships, by country">
-            <ColorBarList data={countryCounts} colors={COUNTRY_HEX} />
-          </ChartCard>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Student Track Distribution" sub="Mission students by programme track">
+              <DonutRing data={trackCounts} colors={DISTINCT} total={totalStudents} totalLabel="Students" height={300} legendPercent />
+            </ChartCard>
+            <ChartCard title="Internship Sector Distribution" sub="Placements by host sector">
+              <DonutRing data={sectorCounts} colors={DISTINCT} total={intStudents} totalLabel="Students" height={300} legendPercent />
+            </ChartCard>
+          </div>
+          <div className="mt-4">
+            <ChartCard title="Partner Reach by Country" sub="Participants reached across HealthX and internships, by country">
+              <ColorBarList data={geoCountryData} colors={WARM_RAMP} />
+            </ChartCard>
+          </div>
         </section>
 
-        {/* â"€â"€ SECTION 6: KEY INSIGHTS â"€â"€â"€ */}
-        <section style={{ display: show(6) ? undefined : "none" }}>
-          <SecHeader title="Key Insights"
-            sub="Executive highlights across delivery, students, learning, outcomes and partnerships" />
+        {/* ── KEY INSIGHTS ── */}
+        <div>
+          <SecHeader title="Key Insights" sub="Executive highlights across delivery, participation, quality, outcomes and impact" />
           <ChartCard title="Programme Highlights" sub="Auto-generated from the latest HEMP data">
-            <InsightList items={hempInsights} />
+            <InsightList items={insights} />
           </ChartCard>
-        </section>
+        </div>
 
-        {/* -- FOOTER (executive style, HEMP violet header design) -- */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#F26522", minHeight: 116, display: "flex", alignItems: "center" }}>
+        {/* ── FOOTER STRIP ── */}
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: BRAND, minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />

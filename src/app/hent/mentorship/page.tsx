@@ -476,7 +476,16 @@ export default function MentorshipPage() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Capacity-building &amp; fellowship tracks · 2022–2026 · {mentorshipPrograms.length} programmes tracked</p>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Fellowship tracks, fellows supported and completion outcomes</p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
+              <span aria-hidden="true">·</span>
+              <span>{mentorshipPrograms.length} programmes tracked</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+            </div>
           </div>
         </div>
       </header>
