@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown, Sun, Moon, Download } from "lucide-react";
+import { useEffect, useState } from "react";
+import { LayoutGrid, Sun, Moon, Download } from "lucide-react";
 
 const GREEN = "#0E4633";
 
@@ -37,12 +37,6 @@ export const HENT_NAV_ITEMS = [
 
 export type HENTNavLabel = typeof HENT_NAV_ITEMS[number]["label"];
 
-const PORTAL_LINKS = [
-  { label: "HEMP", desc: "Employment Pillar",       href: "/hemp",    color: "#0D9488", bg: "#F0FDFA" },
-  { label: "HECO", desc: "Ecosystems Pillar",       href: "/heco",    color: "#2563EB", bg: "#EFF6FF" },
-  { label: "Executive", desc: "Impact Dashboard",   href: "/impact",  color: "#14306B", bg: "#EFF6FF" },
-] as const;
-
 export function getActiveLabel(pathname: string): HENTNavLabel {
   if (pathname === "/hent/overview" || pathname === "/hent") return "Overview";
   return HENT_NAV_ITEMS.find(n => n.href === pathname)?.label ?? "Overview";
@@ -51,17 +45,7 @@ export function getActiveLabel(pathname: string): HENTNavLabel {
 export default function HENTNav() {
   const pathname = usePathname();
   const activeLabel = getActiveLabel(pathname);
-  const [open, setOpen] = useState(false);
   const [dark, toggleTheme] = useTheme();
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, []);
 
   return (
     <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
@@ -128,47 +112,15 @@ export default function HENTNav() {
             <Download size={12} />
           </button>
 
-          {/* Portals dropdown */}
-          <div className="relative flex-shrink-0" ref={ref}>
-            <button
-              onClick={() => setOpen((v) => !v)}
-              className="hidden sm:flex items-center gap-1 text-[11px] px-2.5 py-1.5 rounded-md border font-medium transition-colors"
-              style={{
-                borderColor: open ? "#9CA3AF" : "#E5E7EB",
-                color: open ? "#111827" : "#6B7280",
-                backgroundColor: open ? "#F9FAFB" : "white",
-              }}
-            >
-              <LayoutGrid size={11} />
-              Portals
-              <ChevronDown size={10} className="transition-transform" style={{ transform: open ? "rotate(180deg)" : "none" }} />
-            </button>
-
-            {open && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border border-gray-100 shadow-lg overflow-hidden z-50">
-                <div className="px-3 py-2 border-b border-gray-50">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Switch Portal</p>
-                </div>
-                {PORTAL_LINKS.map((p) => (
-                  <Link
-                    key={p.label}
-                    href={p.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: p.bg }}>
-                      <span className="text-[10px] font-black" style={{ color: p.color }}>{p.label[0]}</span>
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-bold text-gray-900 leading-none">{p.label}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">{p.desc}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Portal button */}
+          <Link
+            href="/"
+            className="hidden sm:flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
+            style={{ borderColor: "#E5E7EB", color: GREEN, backgroundColor: "white" }}
+          >
+            <LayoutGrid size={11} />
+            HENT Portal
+          </Link>
 
         </div>
       </div>

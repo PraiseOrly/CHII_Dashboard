@@ -12,7 +12,7 @@ import {
   Users,
   Briefcase,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -27,9 +27,9 @@ import {
 // â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Page identity (header KPIs only): purple/violet
 // Keep section header accents as-is for brand consistency.
-const VIOLET      = "#7C3AED";
-const VIOLET_MID  = "#6D28D9";
-const VIOLET_DARK = "#F26522";
+const VIOLET      = "#2D6A4F"; // page identity now green (mirrors exec theme)
+const VIOLET_MID  = "#40916C";
+const VIOLET_DARK = "#0E4633";
 const NAVY        = "#002147";
 
 // Section header accents
@@ -102,45 +102,56 @@ const curatorData = [
 function sm(arr: number[]): number { return arr.reduce((a, b) => a + b, 0); }
 function avg(arr: number[]): number { return arr.length ? sm(arr) / arr.length : 0; }
 
-// â”€â”€â”€ Aggregates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const activeMission  = missionStudents.filter(ms => ms.status === "Active").length;
-const totalMentors   = sm(mentorData.map(d => d.mentors));
-const totalEnrolled  = sm(mentorData.map(d => d.enrolled));
-const totalFeedbackM = sm(mentorData.map(d => d.feedback));
-const avgFeedbackPct = Math.round(avg(mentorData.map(d => d.feedbackPct)));
+// â”€â”€â”€ Filter option list â”€â”€â”€
+const YEARS = mentorData.map(d => d.year);
 
-const totalSessions  = sm(guestData.map(d => d.sessions));
-const totalFeedbackG = sm(guestData.map(d => d.feedbackCollected));
-const totalDisagg    = sm(guestData.map(d => d.disaggregated));
-const feedbackGPct   = Math.round(totalFeedbackG / totalSessions * 100);
-const disaggPct      = Math.round(totalDisagg    / totalSessions * 100);
+// Derive every aggregate + chart dataset from (possibly year-filtered) operational rows.
+function derive(
+  mRows: typeof mentorData,
+  gRows: typeof guestData,
+  cRows: typeof curatorData,
+) {
+  const totalMentors   = sm(mRows.map(d => d.mentors));
+  const totalEnrolled  = sm(mRows.map(d => d.enrolled));
+  const totalFeedbackM = sm(mRows.map(d => d.feedback));
+  const avgFeedbackPct = Math.round(avg(mRows.map(d => d.feedbackPct)));
 
-const totalCareerEvt = sm(curatorData.map(d => d.careerEvents));
-const totalTraining  = sm(curatorData.map(d => d.training));
-const totalOneOnOne  = sm(curatorData.map(d => d.oneOnOne));
-const totalCourses   = sm(curatorData.map(d => d.coursesCompleted));
-const totalCuratorRes = totalCareerEvt + totalTraining + totalOneOnOne;
+  const totalSessions  = sm(gRows.map(d => d.sessions));
+  const totalFeedbackG = sm(gRows.map(d => d.feedbackCollected));
+  const totalDisagg    = sm(gRows.map(d => d.disaggregated));
+  const feedbackGPct   = totalSessions ? Math.round(totalFeedbackG / totalSessions * 100) : 0;
+  const disaggPct      = totalSessions ? Math.round(totalDisagg    / totalSessions * 100) : 0;
 
-// â”€â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const mentorChartData = mentorData.map(d => ({
-  Year: String(d.year), Mentors: d.mentors, Enrolled: d.enrolled, Feedback: d.feedback,
-}));
+  const totalCareerEvt = sm(cRows.map(d => d.careerEvents));
+  const totalTraining  = sm(cRows.map(d => d.training));
+  const totalOneOnOne  = sm(cRows.map(d => d.oneOnOne));
+  const totalCourses   = sm(cRows.map(d => d.coursesCompleted));
+  const totalCuratorRes = totalCareerEvt + totalTraining + totalOneOnOne;
 
-const guestChartData = guestData.map(d => ({
-  Year: String(d.year), Sessions: d.sessions,
-  Feedback: d.feedbackCollected, Disaggregated: d.disaggregated,
-}));
+  const mentorChartData = mRows.map(d => ({
+    Year: String(d.year), Mentors: d.mentors, Enrolled: d.enrolled, Feedback: d.feedback,
+  }));
+  const guestChartData = gRows.map(d => ({
+    Year: String(d.year), Sessions: d.sessions,
+    Feedback: d.feedbackCollected, Disaggregated: d.disaggregated,
+  }));
+  const curatorChartData = cRows.map(d => ({
+    Year: String(d.year),
+    "Career Events": d.careerEvents,
+    Training: d.training,
+    "1-on-1": d.oneOnOne,
+  }));
+  const coursesChartData = cRows.map(d => ({
+    Year: String(d.year), Completed: d.coursesCompleted,
+  }));
 
-const curatorChartData = curatorData.map(d => ({
-  Year: String(d.year),
-  "Career Events": d.careerEvents,
-  Training: d.training,
-  "1-on-1": d.oneOnOne,
-}));
-
-const coursesChartData = curatorData.map(d => ({
-  Year: String(d.year), Completed: d.coursesCompleted,
-}));
+  return {
+    totalMentors, totalEnrolled, totalFeedbackM, avgFeedbackPct,
+    totalSessions, totalFeedbackG, totalDisagg, feedbackGPct, disaggPct,
+    totalCareerEvt, totalTraining, totalOneOnOne, totalCourses, totalCuratorRes,
+    mentorChartData, guestChartData, curatorChartData, coursesChartData,
+  };
+}
 
 // â”€â”€â”€ Survey checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SURVEY_ITEMS = [
@@ -153,6 +164,21 @@ const SURVEY_ITEMS = [
 ] as const;
 
 // â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+function FilterSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[];
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+      {label}
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
+        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+}
 
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
@@ -175,9 +201,9 @@ function useCountUp(target: number, duration = 750): number {
 function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#2D6A4F" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#F26522", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#2D6A4F", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -189,8 +215,8 @@ function Card({ title, sub, children }: {
 }) {
   return (
     <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#F26522", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -241,6 +267,23 @@ function StatTile({ icon: Icon, iconBg, iconColor, label, value, valueColor, sub
 
 // â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MissionStudentsPage() {
+  // â”€â”€ Filters â”€â”€
+  const [fYear, setFYear] = useState("All Years");
+  const byYear = <T extends { year: number }>(rows: T[]) =>
+    fYear === "All Years" ? rows : rows.filter(d => String(d.year) === fYear);
+  const mRows = useMemo(() => byYear(mentorData),  [fYear]);
+  const gRows = useMemo(() => byYear(guestData),   [fYear]);
+  const cRows = useMemo(() => byYear(curatorData), [fYear]);
+  const {
+    totalMentors, totalEnrolled, totalFeedbackM, avgFeedbackPct,
+    totalSessions, totalFeedbackG, totalDisagg, feedbackGPct, disaggPct,
+    totalCareerEvt, totalTraining, totalOneOnOne, totalCourses, totalCuratorRes,
+    mentorChartData, guestChartData, curatorChartData, coursesChartData,
+  } = useMemo(() => derive(mRows, gRows, cRows), [mRows, gRows, cRows]);
+  const activeMission = useMemo(() => missionStudents.filter(ms =>
+    ms.status === "Active" && (fYear === "All Years" || String(ms.cohort) === fYear)
+  ).length, [fYear]);
+
   const animActive  = useCountUp(activeMission);
   const animCourses = useCountUp(totalCourses);
   const animRes     = useCountUp(totalCuratorRes);
@@ -251,7 +294,7 @@ export default function MissionStudentsPage() {
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#F26522", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -263,7 +306,7 @@ export default function MissionStudentsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -271,11 +314,11 @@ export default function MissionStudentsPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mission Students</h1>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#F59E0B" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
+                <Briefcase size={11} style={{ color: "#B7E4C7" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#B7E4C7" }}>HEMP</span>
               </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(214,236,224,0.82)" }}>
               Mentorship  ·  Guest Faculty  ·  Mission Curator  -  three pillars of student support in HEMP
             </p>
           </div>
@@ -348,6 +391,18 @@ export default function MissionStudentsPage() {
 
       {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
+
+        {/* FILTER BAR */}
+        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(14,70,51,0.12)" }}>
+          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#2D6A4F" }}>Filters</span>
+          <FilterSelect label="Year" value={fYear} onChange={setFYear} options={["All Years", ...YEARS.map(String)]} />
+          {fYear !== "All Years" && (
+            <button onClick={() => setFYear("All Years")}
+              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(14,70,51,0.6)" }}>
+              Reset
+            </button>
+          )}
+        </div>
 
         {/* â•â• SECTION A: MENTORSHIP  -  indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section>
@@ -706,19 +761,19 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#F26522", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Source:</span> HEMP Mission Students M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(255,237,213,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Source:</span> HEMP Mission Students M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(214,236,224,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
             </div>
           </div>
         </div>

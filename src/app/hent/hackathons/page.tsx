@@ -525,20 +525,17 @@ export default function HackathonsPage() {
           <SecHeader title="Hackathon Trends"
             sub="Year-on-year trends with male vs female comparison" />
 
-          {/* Tab filters */}
-          <div className="flex gap-1 mb-4 bg-white rounded shadow-sm px-1 py-1 w-fit">
+          {/* Tab filters — pill style matching the section filters */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
             {(["participants", "projects", "winners", "startups"] as const).map(tab => {
               const label = tab === "participants" ? "Participants"
                           : tab === "projects"     ? "Projects Developed"
                           : tab === "winners"      ? "Winning Teams"
                           :                          "Startups Created";
-              const active = trendTab === tab;
+              const on = trendTab === tab;
               return (
                 <button key={tab} onClick={() => setTrendTab(tab)}
-                  className="text-xs px-4 py-1.5 rounded font-medium transition-colors"
-                  style={active
-                    ? { backgroundColor: ORANGE, color: "white" }
-                    : { color: "#6b7280" }}>
+                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
                   {label}
                 </button>
               );

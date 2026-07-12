@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -12,17 +12,17 @@ import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 // Primary: teal (partnership / field theme)
 // Supporting: blue
 // Warning: amber
-const TEAL        = "#0D9488";
-const TEAL_MID    = "#0A7D72";
-const TEAL_DEEP   = "#085E56";
-const BLUE        = "#2563EB";
-const BLUE_LIGHT  = "#3B82F6";
+const TEAL        = "#1B4332"; // forest (HealthX primary, mirrors overview)
+const TEAL_MID    = "#2D6A4F";
+const TEAL_DEEP   = "#0E4633";
+const BLUE        = "#40916C"; // supporting green
+const BLUE_LIGHT  = "#52B788";
 const AMBER       = "#F59E0B";
 const NAVY        = "#002147";
 const GREEN       = "#10B981";
-const INDIGO      = "#4338CA";
+const INDIGO      = "#1F9E9E"; // dusty teal-green (avg badge)
 const ROSE        = "#F43F5E";
-const VIOLET      = "#7C3AED";
+const VIOLET      = "#A6C13C"; // olive (distinct category accent)
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function avg(arr: number[]): number {
@@ -30,52 +30,8 @@ function avg(arr: number[]): number {
 }
 
 // â”€â”€â”€ Module-level aggregates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const hxPart      = healthXSessions.reduce((s, h) => s + h.participants, 0);
-const hxFem       = healthXSessions.reduce((s, h) => s + h.femalePart,   0);
-const totalPships = healthXSessions.reduce((s, h) => s + h.partnerships, 0);
-const femalePct   = Math.round(hxFem / hxPart * 100);
-const avgComp     = Math.round(avg(healthXSessions.map(h => h.completionRate)));
-const avgSat      = parseFloat(avg(healthXSessions.map(h => avg(Object.values(h.scores)))).toFixed(1));
-const countries   = Array.from(new Set(healthXSessions.map(h => h.country)));
-const YEARS       = Array.from(new Set(healthXSessions.map(h => h.year))).sort();
-
-// â”€â”€ Partnership pipeline funnel â”€â”€
-const visitsCompleted    = healthXSessions.length;
-const feedbackCollected  = healthXSessions.filter(h => h.completionRate >= 90).length;
-const mouSigned          = healthXSessions.filter(
-  h => h.partnerships >= 2 && h.completionRate >= 93
-).length;
-
-// â”€â”€ Student feedback bars (positive response = score â‰¥ 4.5/5) â”€â”€
-const HIGH_SAT = 4.5;
-const feedbackBars = [
-  { label: "Quality of experience",  dim: "Learning Experience"  as const },
-  { label: "Relevance to career",    dim: "Practical Relevance"  as const },
-  { label: "Usefulness of exposure", dim: "Innovation Impact"    as const },
-].map(m => ({
-  label: m.label,
-  pct: Math.round(
-    healthXSessions.filter(h => h.scores[m.dim] >= HIGH_SAT).length
-    / healthXSessions.length * 100
-  ),
-}));
-
-// â”€â”€ Visits by org type (absolute counts) â”€â”€
-const orgTypeData = ORG_TYPES.map(type => ({
-  name:  type,
-  value: healthXSessions.filter(h => h.orgType === type).length,
-})).sort((a, b) => b.value - a.value);
-const orgTypeMax = orgTypeData[0]?.value ?? 1;
-
-// â”€â”€ Annual charts â”€â”€
-const sessionsPerYear = YEARS.map(yr => ({
-  Year:     String(yr),
-  Sessions: healthXSessions.filter(h => h.year === yr).length,
-}));
-const participantsPerYear = YEARS.map(yr => ({
-  Year:         String(yr),
-  Participants: healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
-}));
+const YEARS         = Array.from(new Set(healthXSessions.map(h => h.year))).sort();
+const ALL_COUNTRIES = Array.from(new Set(healthXSessions.map(h => h.country))).sort();
 
 // â”€â”€ Satisfaction heatmap (type Ã— dimension) â”€â”€
 const HX_SESSION_TYPES = [
@@ -91,16 +47,70 @@ const SCORE_DIMS = [
   "Innovation Impact",
 ] as const;
 
-const hxHeatmap = HX_SESSION_TYPES.map(type => {
-  const sessions = healthXSessions.filter(h => h.type === type);
+const HIGH_SAT = 4.5;
+
+// Derive every chart dataset from a (possibly filtered) set of HealthX sessions.
+function derive(rows: typeof healthXSessions) {
+  const hxPart      = rows.reduce((s, h) => s + h.participants, 0);
+  const hxFem       = rows.reduce((s, h) => s + h.femalePart,   0);
+  const totalPships = rows.reduce((s, h) => s + h.partnerships, 0);
+  const femalePct   = hxPart ? Math.round(hxFem / hxPart * 100) : 0;
+  const avgComp     = Math.round(avg(rows.map(h => h.completionRate)));
+  const avgSat      = parseFloat(avg(rows.map(h => avg(Object.values(h.scores)))).toFixed(1));
+  const countries   = Array.from(new Set(rows.map(h => h.country)));
+
+  const visitsCompleted   = rows.length;
+  const feedbackCollected = rows.filter(h => h.completionRate >= 90).length;
+  const mouSigned         = rows.filter(h => h.partnerships >= 2 && h.completionRate >= 93).length;
+
+  const feedbackBars = [
+    { label: "Quality of experience",  dim: "Learning Experience"  as const },
+    { label: "Relevance to career",    dim: "Practical Relevance"  as const },
+    { label: "Usefulness of exposure", dim: "Innovation Impact"    as const },
+  ].map(m => ({
+    label: m.label,
+    pct: rows.length ? Math.round(rows.filter(h => h.scores[m.dim] >= HIGH_SAT).length / rows.length * 100) : 0,
+  }));
+
+  const orgTypeData = ORG_TYPES.map(type => ({
+    name:  type,
+    value: rows.filter(h => h.orgType === type).length,
+  })).sort((a, b) => b.value - a.value);
+  const orgTypeMax = orgTypeData[0]?.value ?? 1;
+
+  const sessionsPerYear = YEARS.map(yr => ({
+    Year:     String(yr),
+    Sessions: rows.filter(h => h.year === yr).length,
+  }));
+  const participantsPerYear = YEARS.map(yr => ({
+    Year:         String(yr),
+    Participants: rows.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
+  }));
+
+  const hxHeatmap = HX_SESSION_TYPES.map(type => {
+    const sessions = rows.filter(h => h.type === type);
+    return {
+      type,
+      "Learning Experience":  parseFloat(avg(sessions.map(h => h.scores["Learning Experience"])).toFixed(1)),
+      "Practical Relevance":  parseFloat(avg(sessions.map(h => h.scores["Practical Relevance"])).toFixed(1)),
+      "Accessibility":        parseFloat(avg(sessions.map(h => h.scores["Accessibility"])).toFixed(1)),
+      "Innovation Impact":    parseFloat(avg(sessions.map(h => h.scores["Innovation Impact"])).toFixed(1)),
+    };
+  });
+
+  const countryData = Object.entries(
+    rows.reduce<Record<string, number>>((acc, h) => {
+      acc[h.country] = (acc[h.country] || 0) + h.participants;
+      return acc;
+    }, {})
+  ).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
   return {
-    type,
-    "Learning Experience":  parseFloat(avg(sessions.map(h => h.scores["Learning Experience"])).toFixed(1)),
-    "Practical Relevance":  parseFloat(avg(sessions.map(h => h.scores["Practical Relevance"])).toFixed(1)),
-    "Accessibility":        parseFloat(avg(sessions.map(h => h.scores["Accessibility"])).toFixed(1)),
-    "Innovation Impact":    parseFloat(avg(sessions.map(h => h.scores["Innovation Impact"])).toFixed(1)),
+    hxPart, hxFem, totalPships, femalePct, avgComp, avgSat, countries,
+    visitsCompleted, feedbackCollected, mouSigned, feedbackBars,
+    orgTypeData, orgTypeMax, sessionsPerYear, participantsPerYear, hxHeatmap, countryData,
   };
-});
+}
 
 const TYPE_COLOR: Record<string, string> = {
   "Health Facility Visit": TEAL,
@@ -109,16 +119,24 @@ const TYPE_COLOR: Record<string, string> = {
   "Industry Tour":         AMBER,
 };
 
-// â”€â”€ Country reach â”€â”€
-const countryData = Object.entries(
-  healthXSessions.reduce<Record<string, number>>((acc, h) => {
-    acc[h.country] = (acc[h.country] || 0) + h.participants;
-    return acc;
-  }, {})
-).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 const COUNTRY_HEX = [TEAL, BLUE_LIGHT, AMBER, VIOLET, GREEN, INDIGO, ROSE, "#A855F7", "#EC4899", "#6B7280"];
 
 // â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+function FilterSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[];
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+      {label}
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
+        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+}
 
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
@@ -148,9 +166,9 @@ function heatColor(v: number): string {
 function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#2D6A4F" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#F26522", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#2D6A4F", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -162,8 +180,8 @@ function Card({ title, sub, children }: {
 }) {
   return (
     <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#F26522", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -177,6 +195,21 @@ function Card({ title, sub, children }: {
 // â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HealthXPage() {
 
+  // â”€â”€ Filters â”€â”€
+  const [fYear, setFYear]       = useState("All Years");
+  const [fCountry, setFCountry] = useState("All Countries");
+  const [fType, setFType]       = useState("All Types");
+  const filtered = useMemo(() => healthXSessions.filter(h =>
+    (fYear === "All Years" || String(h.year) === fYear) &&
+    (fCountry === "All Countries" || h.country === fCountry) &&
+    (fType === "All Types" || h.type === fType)
+  ), [fYear, fCountry, fType]);
+  const {
+    hxPart, totalPships, femalePct, avgComp, avgSat, countries,
+    visitsCompleted, feedbackCollected, mouSigned, feedbackBars,
+    orgTypeData, orgTypeMax, sessionsPerYear, participantsPerYear, hxHeatmap, countryData,
+  } = useMemo(() => derive(filtered), [filtered]);
+
   // â”€â”€ Animate headline numbers â”€â”€
   const animVisits  = useCountUp(visitsCompleted);
   const animPships  = useCountUp(totalPships);
@@ -188,7 +221,7 @@ export default function HealthXPage() {
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#F26522", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -200,7 +233,7 @@ export default function HealthXPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -208,11 +241,11 @@ export default function HealthXPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX</h1>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#F59E0B" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
+                <Briefcase size={11} style={{ color: "#B7E4C7" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#B7E4C7" }}>HEMP</span>
               </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(214,236,224,0.82)" }}>
               Field-based learning  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {visitsCompleted} sessions  ·  {countries.length} countries
             </p>
           </div>
@@ -285,6 +318,20 @@ export default function HealthXPage() {
 
       {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
+
+        {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
+        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(14,70,51,0.12)" }}>
+          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#2D6A4F" }}>Filters</span>
+          <FilterSelect label="Year"    value={fYear}    onChange={setFYear}    options={["All Years", ...YEARS.map(String)]} />
+          <FilterSelect label="Country" value={fCountry} onChange={setFCountry} options={["All Countries", ...ALL_COUNTRIES]} />
+          <FilterSelect label="Type"    value={fType}    onChange={setFType}    options={["All Types", ...HX_SESSION_TYPES]} />
+          {(fYear !== "All Years" || fCountry !== "All Countries" || fType !== "All Types") && (
+            <button onClick={() => { setFYear("All Years"); setFCountry("All Countries"); setFType("All Types"); }}
+              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(14,70,51,0.6)" }}>
+              Reset
+            </button>
+          )}
+        </div>
 
         {/* â”€â”€ SECTION 1: PIPELINE + FEEDBACK â”€â”€â”€ */}
         <section>
@@ -488,10 +535,10 @@ export default function HealthXPage() {
               sub="Total students reached per organisation category">
               <div className="space-y-4 py-1">
                 {ORG_TYPES.map((type, i) => {
-                  const sessions = healthXSessions.filter(h => h.orgType === type);
+                  const sessions = filtered.filter(h => h.orgType === type);
                   const part     = sessions.reduce((s, h) => s + h.participants, 0);
                   const pct      = Math.round(part / hxPart * 100);
-                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#064E45"];
+                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#08331F"];
                   return (
                     <div key={type}>
                       <div className="flex items-center justify-between text-xs mb-1.5">
@@ -516,8 +563,8 @@ export default function HealthXPage() {
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2 text-center">
                 {ORG_TYPES.map((type, i) => {
-                  const count = healthXSessions.filter(h => h.orgType === type).length;
-                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#064E45"];
+                  const count = filtered.filter(h => h.orgType === type).length;
+                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#08331F"];
                   return (
                     <div key={type}>
                       <p className="text-sm font-black" style={{ color: tealShades[i] }}>{count}</p>
@@ -648,19 +695,19 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#F26522", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Source:</span> HEMP HealthX M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(255,237,213,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Source:</span> HEMP HealthX M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(214,236,224,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
             </div>
           </div>
         </div>

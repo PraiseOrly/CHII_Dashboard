@@ -2,7 +2,7 @@
 import HEMPNav from "@/components/HEMPNav";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
 import { Briefcase, Download, FileText, type LucideIcon } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Area,
   AreaChart,
@@ -58,64 +58,79 @@ const avgSat     = parseFloat(avg(internships.map(i => i.satisfactionScore)).toF
 const countries  = Array.from(new Set(internships.map(i => i.country)));
 
 const YEARS = Array.from(new Set(internships.map(i => i.year))).sort();
+const ALL_COUNTRIES = Array.from(new Set(internships.map(i => i.country))).sort();
 
-// Per-sector stats
-const sectorStats = INTERNSHIP_SECTORS.map(sector => {
-  const orgs = internships.filter(i => i.sector === sector);
-  const stu  = orgs.reduce((s, i) => s + i.students, 0);
-  const conv = orgs.reduce((s, i) => s + i.employmentConversions, 0);
-  return {
-    sector,
-    count:    orgs.length,
-    students: stu,
-    convPct:  stu > 0 ? Math.round(conv / stu * 100) : 0,
-    avgSat:   parseFloat(avg(orgs.map(i => i.satisfactionScore)).toFixed(1)),
+// Derive every chart dataset from a (possibly filtered) set of internship rows.
+function derive(rows: typeof internships) {
+  const total = {
+    orgs:        rows.length,
+    students:    rows.reduce((s, i) => s + i.students,              0),
+    female:      rows.reduce((s, i) => s + i.femaleStudents,        0),
+    conversions: rows.reduce((s, i) => s + i.employmentConversions, 0),
+    mentored:    rows.filter(i => i.hasMentor).length,
   };
-}).sort((a, b) => b.students - a.students);
+  const femalePct = total.students ? Math.round(total.female      / total.students * 100) : 0;
+  const malePct   = 100 - femalePct;
+  const convRate  = total.students ? Math.round(total.conversions / total.students * 100) : 0;
+  const mentorPct = total.orgs     ? Math.round(total.mentored    / total.orgs     * 100) : 0;
+  const avgSat    = parseFloat(avg(rows.map(i => i.satisfactionScore)).toFixed(1));
+  const countries = Array.from(new Set(rows.map(i => i.country)));
 
-// Sector donut
-const sectorData = INTERNSHIP_SECTORS.map(sector => ({
-  name:  sector,
-  value: internships.filter(i => i.sector === sector).reduce((s, i) => s + i.students, 0),
-})).sort((a, b) => b.value - a.value);
+  const sectorStats = INTERNSHIP_SECTORS.map(sector => {
+    const orgs = rows.filter(i => i.sector === sector);
+    const stu  = orgs.reduce((s, i) => s + i.students, 0);
+    const conv = orgs.reduce((s, i) => s + i.employmentConversions, 0);
+    return {
+      sector,
+      count:    orgs.length,
+      students: stu,
+      convPct:  stu > 0 ? Math.round(conv / stu * 100) : 0,
+      avgSat:   parseFloat(avg(orgs.map(i => i.satisfactionScore)).toFixed(1)),
+    };
+  }).sort((a, b) => b.students - a.students);
 
-// Annual trends
-const placementsPerYear = YEARS.map(yr => {
-  const yrInts = internships.filter(i => i.year === yr);
+  const sectorData = INTERNSHIP_SECTORS.map(sector => ({
+    name:  sector,
+    value: rows.filter(i => i.sector === sector).reduce((s, i) => s + i.students, 0),
+  })).sort((a, b) => b.value - a.value);
+
+  const placementsPerYear = YEARS.map(yr => {
+    const yrInts = rows.filter(i => i.year === yr);
+    return {
+      Year:        String(yr),
+      Orgs:        yrInts.length,
+      Students:    yrInts.reduce((s, i) => s + i.students,              0),
+      Conversions: yrInts.reduce((s, i) => s + i.employmentConversions, 0),
+    };
+  });
+
+  const genderTrend = YEARS.map(yr => {
+    const yrInts = rows.filter(i => i.year === yr);
+    const fem    = yrInts.reduce((s, i) => s + i.femaleStudents, 0);
+    const tot    = yrInts.reduce((s, i) => s + i.students,       0);
+    return { Year: String(yr), Female: fem, Male: tot - fem };
+  });
+
+  const satBySector  = sectorStats.map(s => ({ name: s.sector, value: s.avgSat  })).sort((a, b) => b.value - a.value);
+  const convBySector = sectorStats.map(s => ({ name: s.sector, value: s.convPct })).sort((a, b) => b.value - a.value);
+
+  const countryData = Object.entries(
+    rows.reduce<Record<string, number>>((acc, i) => {
+      acc[i.country] = (acc[i.country] || 0) + i.students;
+      return acc;
+    }, {})
+  ).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
   return {
-    Year:        String(yr),
-    Orgs:        yrInts.length,
-    Students:    yrInts.reduce((s, i) => s + i.students,              0),
-    Conversions: yrInts.reduce((s, i) => s + i.employmentConversions, 0),
+    total, femalePct, malePct, convRate, mentorPct, avgSat, countries,
+    sectorStats, sectorData, placementsPerYear, genderTrend, satBySector, convBySector, countryData,
   };
-});
-
-// Gender trend
-const genderTrend = YEARS.map(yr => {
-  const yrInts = internships.filter(i => i.year === yr);
-  const fem    = yrInts.reduce((s, i) => s + i.femaleStudents, 0);
-  const tot    = yrInts.reduce((s, i) => s + i.students,       0);
-  return { Year: String(yr), Female: fem, Male: tot - fem };
-});
-
-// Satisfaction by sector
-const satBySector = sectorStats.map(s => ({ name: s.sector, value: s.avgSat })).sort((a, b) => b.value - a.value);
-
-// Conversion rate by sector
-const convBySector = sectorStats.map(s => ({ name: s.sector, value: s.convPct })).sort((a, b) => b.value - a.value);
-
-// Country distribution
-const countryData = Object.entries(
-  internships.reduce<Record<string, number>>((acc, i) => {
-    acc[i.country] = (acc[i.country] || 0) + i.students;
-    return acc;
-  }, {})
-).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+}
 
 // KPI tiles
 const KPI_TILES = [
   { label: "Host Organisations", clr: "#B45309" },
-  { label: "Students Placed",    clr: "#F26522" },
+  { label: "Students Placed",    clr: "#2D6A4F" },
   { label: "Employment Conv.",   clr: "#065F46" },
   { label: "Countries",          clr: "#1E3A8A" },
   { label: "Mentor-led Orgs",    clr: "#0F766E" },
@@ -123,6 +138,21 @@ const KPI_TILES = [
 ] as const;
 
 // â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+function FilterSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[];
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+      {label}
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
+        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+}
 
 function useCountUp(target: number, duration = 750): number {
   const [val, setVal] = useState(0);
@@ -157,18 +187,18 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "12px 14px", textAlign: "center", border: "1px solid rgba(242,101,34,0.12)", borderLeft: "5px solid #F26522" }}>
-      <p style={{ fontSize: 9.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(242,101,34,0.55)", marginBottom: 6 }}>{label}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "12px 14px", textAlign: "center", border: "1px solid rgba(45,106,79,0.12)", borderLeft: "5px solid #2D6A4F" }}>
+      <p style={{ fontSize: 9.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(45,106,79,0.55)", marginBottom: 6 }}>{label}</p>
       <div className="flex items-center justify-center gap-1.5">
-        {Icon && <Icon size={16} style={{ color: "#F26522", opacity: 0.85, flexShrink: 0 }} />}
-        <p style={{ fontSize: 18, fontWeight: 800, color: "#F26522", lineHeight: 1 }}>{displayFmt(animated)}</p>
+        {Icon && <Icon size={16} style={{ color: "#2D6A4F", opacity: 0.85, flexShrink: 0 }} />}
+        <p style={{ fontSize: 18, fontWeight: 800, color: "#2D6A4F", lineHeight: 1 }}>{displayFmt(animated)}</p>
       </div>
-      <p style={{ fontSize: 9, color: "rgba(242,101,34,0.55)", marginTop: 3 }}>{sub}</p>
+      <p style={{ fontSize: 9, color: "rgba(45,106,79,0.55)", marginTop: 3 }}>{sub}</p>
       {pct !== undefined && (
-        <div className="relative" style={{ marginTop: 8, height: 4, borderRadius: 4, backgroundColor: "rgba(242,101,34,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#F26522", borderRadius: 4 }} />
+        <div className="relative" style={{ marginTop: 8, height: 4, borderRadius: 4, backgroundColor: "rgba(45,106,79,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
+          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#2D6A4F", borderRadius: 4 }} />
           {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#F26522", borderRadius: 1 }} />
+            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#2D6A4F", borderRadius: 1 }} />
           )}
         </div>
       )}
@@ -179,9 +209,9 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#D17A86" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#2D6A4F" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#F26522", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#2D6A4F", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -203,8 +233,8 @@ function ChartCard({ title, sub, accent = AMBER, children }: {
   }
   return (
     <div ref={cardRef} className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#F26522", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -288,6 +318,20 @@ function CustomDonut({ data, colors, label, valueFormatter = (v: number) => `${v
 export default function InternshipsPage() {
   const [trendTab, setTrendTab] = useState<"students" | "conversions">("students");
 
+  // ── Filters ──
+  const [fYear, setFYear]       = useState("All Years");
+  const [fCountry, setFCountry] = useState("All Countries");
+  const [fSector, setFSector]   = useState("All Sectors");
+  const filtered = useMemo(() => internships.filter(i =>
+    (fYear === "All Years" || String(i.year) === fYear) &&
+    (fCountry === "All Countries" || i.country === fCountry) &&
+    (fSector === "All Sectors" || i.sector === fSector)
+  ), [fYear, fCountry, fSector]);
+  const {
+    total, femalePct, malePct, convRate, mentorPct, avgSat, countries,
+    sectorStats, sectorData, placementsPerYear, genderTrend, satBySector, convBySector, countryData,
+  } = useMemo(() => derive(filtered), [filtered]);
+
   const trendData  = trendTab === "students"
     ? genderTrend
     : placementsPerYear.map(d => ({ Year: d.Year, Conversions: d.Conversions, Students: d.Students }));
@@ -311,7 +355,7 @@ export default function InternshipsPage() {
 
       {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#F26522", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -323,7 +367,7 @@ export default function InternshipsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -331,11 +375,11 @@ export default function InternshipsPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internships</h1>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#F59E0B" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#F59E0B" }}>HEMP</span>
+                <Briefcase size={11} style={{ color: "#B7E4C7" }} />
+                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#B7E4C7" }}>HEMP</span>
               </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(214,236,224,0.82)" }}>
               Workplace placements  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {total.orgs} organisations  ·  {total.students} students placed
             </p>
           </div>
@@ -357,6 +401,20 @@ export default function InternshipsPage() {
 
       {/* â”€â”€ BODY â”€â”€â”€ */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
+
+        {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
+        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(14,70,51,0.12)" }}>
+          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#2D6A4F" }}>Filters</span>
+          <FilterSelect label="Year"    value={fYear}    onChange={setFYear}    options={["All Years", ...YEARS.map(String)]} />
+          <FilterSelect label="Country" value={fCountry} onChange={setFCountry} options={["All Countries", ...ALL_COUNTRIES]} />
+          <FilterSelect label="Sector"  value={fSector}  onChange={setFSector}  options={["All Sectors", ...INTERNSHIP_SECTORS]} />
+          {(fYear !== "All Years" || fCountry !== "All Countries" || fSector !== "All Sectors") && (
+            <button onClick={() => { setFYear("All Years"); setFCountry("All Countries"); setFSector("All Sectors"); }}
+              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(14,70,51,0.6)" }}>
+              Reset
+            </button>
+          )}
+        </div>
 
         {/* â”€â”€ SECTION 1: SECTOR PROFILES â”€â”€â”€ */}
         <section>
@@ -590,7 +648,7 @@ export default function InternshipsPage() {
             };
 
             const cohortTotals = COHORTS.map(c => {
-              const row = internships.filter(i => i.cohort === c);
+              const row = filtered.filter(i => i.cohort === c);
               const interns = row.reduce((s, i) => s + i.students, 0);
               const placements = row.reduce((s, i) => s + i.placementsAfterInternship, 0);
               return {
@@ -620,7 +678,7 @@ export default function InternshipsPage() {
                 WAG: 0,
                 KASHA: 0,
               };
-              internships
+              filtered
                 .filter(i => i.year === Number(yr) && i.cohort)
                 .forEach(i => {
                   byCohort[i.cohort] += i.students;
@@ -847,19 +905,19 @@ export default function InternshipsPage() {
 
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#F26522", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
           <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 34%, #F26522 66%, rgba(242,101,34,0) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.85)" }}><span style={{ color: "#FDBA74", fontWeight: 600 }}>Source:</span> HEMP Internships M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(255,237,213,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(255,237,213,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Source:</span> HEMP Internships M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(214,236,224,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
             </div>
           </div>
         </div>

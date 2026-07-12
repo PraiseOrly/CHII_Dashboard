@@ -675,7 +675,7 @@ export default function MentorshipPage() {
             <ProfileCard label="Student Fellows" value={studentSum}               pct={studentPct}       total={tot.fellows} color={EMERALD} />
             <ProfileCard label="Alumni Fellows"  value={alumniTotal}              pct={100 - studentPct} total={tot.fellows} color={AMBER}   />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={[ACCENT, "#C2410C", "#059669", ROSE]} className="h-36" valueFormatter={(v) => `${v}`} />
               <div className="mt-2 space-y-0.5">
