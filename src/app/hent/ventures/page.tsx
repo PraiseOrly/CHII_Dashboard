@@ -7,17 +7,18 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Banknote, Briefcase, Info, Rocket, Target, Users, Zap, type LucideIcon } from "lucide-react";
-import HENTNav, { getActiveLabel } from "@/components/HENTNav";
-import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
-import HentFooter from "@/components/HentFooter";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect } from "@/components/OutreachFilters";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import PortalFooter from "@/components/layout/portal-footer";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect } from "@/components/filters/filter-popover";
+import { DonutRing } from "@/components/charts/donut-chart";
 import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 import { filterVentures } from "@/lib/filter";
 import { founders, PROGRAM_EVENTS_LIST } from "@/data/founders";
-import { labVentures } from "@/data/ventureLabs";
+import { labVentures } from "@/data/venture-labs";
 
 // â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const D1_NAVY    = "#1B4332"; // pine
@@ -501,7 +502,7 @@ export default function HENTPortfolio() {
   // â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* â”€â”€ TITLE + KPI strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -522,7 +523,7 @@ export default function HENTPortfolio() {
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>{getActiveLabel(pathname)}</h1>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Ventures</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Portfolio ventures, founders and the jobs, funding and impact they generate</p>
             <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
@@ -623,7 +624,7 @@ export default function HENTPortfolio() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2.5} dot={{ r: 4, fill: SKY, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -637,7 +638,7 @@ export default function HENTPortfolio() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Q" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Jobs" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -725,7 +726,7 @@ export default function HENTPortfolio() {
         )}
 
         {/* â”€â”€ FOOTER (executive style, HENT green header design) â”€â”€â”€ */}
-        <HentFooter source="HENT Ventures M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" source="HENT Ventures M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>

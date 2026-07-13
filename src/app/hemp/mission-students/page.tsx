@@ -1,11 +1,12 @@
 ﻿"use client";
-import HEMPNav from "@/components/HEMPNav";
-import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import HempFooter from "@/components/HempFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import { missionStudents } from "@/data/hemp/mission-students";
 import {
   AlertTriangle,
   BookOpen,
@@ -294,7 +295,7 @@ export default function MissionStudentsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HEMPNav />
+      <PortalNav portal="hemp" />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -418,7 +419,7 @@ export default function MissionStudentsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
-                    <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                     <Bar dataKey="Mentors"  fill={MS.MENTORS}      radius={[0,0,0,0]} />
                     <Bar dataKey="Enrolled" fill={MS.ENROLLED}    radius={[0,0,0,0]} />
                     <Bar dataKey="Feedback" fill={MS.FEEDBACK}    radius={[0,0,0,0]} />
@@ -554,7 +555,7 @@ export default function MissionStudentsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
-                    <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                     <Bar dataKey="Sessions"      fill={MS.FAC_SESSIONS}       radius={[0,0,0,0]} />
                     <Bar dataKey="Feedback"      fill={MS.FAC_FEEDBACK}       radius={[0,0,0,0]} />
                     <Bar dataKey="Disaggregated" fill={MS.FAC_DISAGGREGATED}  radius={[0,0,0,0]} />
@@ -639,7 +640,7 @@ export default function MissionStudentsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
-                    <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                     <Bar dataKey="Career Events" fill={MS.CUR_CAREER} radius={[0,0,0,0]} stackId="a" />
                     <Bar dataKey="Training"       fill={MS.CUR_TRAIN}  radius={[0,0,0,0]} stackId="a" />
                     <Bar dataKey="1-on-1"         fill={MS.CUR_ONEON1}  radius={[4,4,0,0]} stackId="a" />
@@ -663,7 +664,7 @@ export default function MissionStudentsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
-                    <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
 
                     <Area type="monotone" dataKey="Completed" stroke={MS.COURSES_COMPLETED} strokeWidth={2} fill="url(#courseGrad)" dot={false} />
 
@@ -740,7 +741,7 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}
-        <HempFooter source="HEMP Mission Students M&amp;E" synced="04 Jun 2026, EAT" />
+        <PortalFooter portal="hemp" source="HEMP Mission Students M&amp;E" synced="04 Jun 2026, EAT" />
 
       </div>
     </div>

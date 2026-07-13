@@ -1,8 +1,8 @@
 "use client";
 import { useState, useMemo } from "react";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 import { masterclasses } from "@/data/masterclasses";
-import { fieldVisits } from "@/data/fieldVisits";
+import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -31,7 +31,7 @@ export default function OutreachAccess() {
   const stackData = useMemo(() => {
     const ms = missionStudents.filter(s => year === "all" || s.cohort === year);
     const mc = year === "all" ? masterclasses       : masterclasses.filter(m => m.year === year);
-    const fv = year === "all" ? fieldVisits         : fieldVisits.filter(v => v.year === year);
+    const fv = year === "all" ? studyTrips         : studyTrips.filter(v => v.year === year);
     const mf = year === "all" ? mentorshipPrograms  : mentorshipPrograms.filter(p => p.year === year);
 
     const enrolled_f = ms.filter(s => s.status === "Active"    && s.gender === "Female").length;

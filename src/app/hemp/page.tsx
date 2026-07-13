@@ -1,19 +1,19 @@
 "use client";
-import HEMPNav from "@/components/HEMPNav";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import HempFooter from "@/components/HempFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import { DonutRing } from "@/components/DonutChart";
-import HentAfricaMap from "@/components/HentAfricaMap";
-import { type RadarSeries } from "@/components/SatisfactionRadar";
-import SatisfactionBars from "@/components/SatisfactionBars";
-import BulletChart from "@/components/BulletChart";
-import ProgressRing from "@/components/ProgressRing";
+import PortalNav from "@/components/layout/portal-nav";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import { DonutRing } from "@/components/charts/donut-chart";
+import AfricaMap from "@/components/charts/africa-map";
+import { type RadarSeries } from "@/components/charts/satisfaction-radar";
+import SatisfactionBars from "@/components/charts/satisfaction-bars";
+import BulletChart from "@/components/charts/bullet-chart";
+import ProgressRing from "@/components/charts/progress-ring";
 import { PALETTE } from "@/styles/palette";
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 import {
   Activity, Award, Briefcase, Building2, GraduationCap, Handshake,
   Rocket, Sparkles, Star, TrendingUp, Users, Zap, type LucideIcon,
@@ -523,7 +523,7 @@ export default function HEMPOverview() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HEMPNav />
+      <PortalNav portal="hemp" />
 
       {/* ── EXECUTIVE HEADER ── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -700,7 +700,7 @@ export default function HEMPOverview() {
                 <FilterSelect label="Year" value={geoYear} onChange={setGeoYear} options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
               {geoCountryData.length ? (
-                <HentAfricaMap data={geoCountryData} region={geoRegion} onRegionChange={setGeoRegion} regions={["All Regions", ...GEO_REGIONS]}
+                <AfricaMap data={geoCountryData} region={geoRegion} onRegionChange={setGeoRegion} regions={["All Regions", ...GEO_REGIONS]}
                   lightColor="#C7DFFE" deepColor="#185FA5" tooltipColor="#042C53" />
               ) : (
                 <p className="text-[11px] text-gray-400 text-center py-6">No records match the selected filters.</p>
@@ -865,7 +865,7 @@ export default function HEMPOverview() {
         </div>
 
         {/* ── FOOTER STRIP ── */}
-        <HempFooter source="HEMP Programmes M&amp;E" />
+        <PortalFooter portal="hemp" source="HEMP Programmes M&amp;E" />
 
       </div>
     </div>

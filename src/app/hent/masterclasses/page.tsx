@@ -6,12 +6,13 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Star, Zap, Briefcase } from "lucide-react";
-import HENTNav from "@/components/HENTNav";
-import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
-import HentFooter from "@/components/HentFooter";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import PortalFooter from "@/components/layout/portal-footer";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { DonutRing } from "@/components/charts/donut-chart";
 import {
   masterclasses,
   MC_TOPICS, RATING_CRITERIA,
@@ -410,7 +411,7 @@ export default function MasterclassesPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -640,7 +641,7 @@ export default function MasterclassesPage() {
                   <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -663,7 +664,7 @@ export default function MasterclassesPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Female" fill={VIOLET_MC} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Male"   fill={SKY}       radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -688,7 +689,7 @@ export default function MasterclassesPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Cumulative Attendees"
                     stroke={VIOLET_MC} strokeWidth={2.5} dot={{ r: 4, fill: VIOLET_MC, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -705,7 +706,7 @@ export default function MasterclassesPage() {
                   <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -780,7 +781,7 @@ export default function MasterclassesPage() {
         )}
 
         {/* FOOTER */}
-        <HentFooter source="HENT Masterclasses M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" source="HENT Masterclasses M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>

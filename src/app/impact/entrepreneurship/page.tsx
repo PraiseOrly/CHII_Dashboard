@@ -14,10 +14,10 @@ import {
   VENTURES, STATUSES, FUNDING_SOURCES, STAGES,
   type Gender, type Stage, type Status, type FundingSource,
 } from "./_data";
-import FeaturedImpactStory from "@/components/FeaturedImpactStory";
-import HeaderDesign from "@/components/HeaderDesign";
-import StatsKpiCard from "../StatsKpiCard";
-import { DonutRing as Donut } from "@/components/DonutChart";
+import FeaturedImpactStory from "@/components/layout/featured-impact-story";
+import HeaderDesign from "@/components/layout/header-design";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import { DonutRing as Donut } from "@/components/charts/donut-chart";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#14306B";

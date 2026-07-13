@@ -1,5 +1,5 @@
 import { Users } from "lucide-react";
-import HeaderDesign from "@/components/HeaderDesign";
+import HeaderDesign from "@/components/layout/header-design";
 
 /* Featured impact story banner — shared "impact section" used as the
    last section across the executive impact pages. */

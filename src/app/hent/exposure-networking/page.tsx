@@ -1,10 +1,10 @@
 "use client";
-import HENTNav from "@/components/HENTNav";
-import HentFooter from "@/components/HentFooter";
-import { ChartLegend } from "@/components/HentChart";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import PortalFooter from "@/components/layout/portal-footer";
+import { ChartLegend } from "@/components/ui";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { DonutRing } from "@/components/charts/donut-chart";
 import {
   exposureEvents, EXPOSURE_TYPES, STAKEHOLDER_GROUPS,
   type ExposureType, type StakeholderGroup,
@@ -277,7 +277,7 @@ export default function ExposureNetworkingPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -504,7 +504,7 @@ export default function ExposureNetworkingPage() {
           </div>
         </section>
 
-        <HentFooter source="HENT Ecosystem Engagement Log" />
+        <PortalFooter portal="hent" source="HENT Ecosystem Engagement Log" />
 
       </div>
     </div>

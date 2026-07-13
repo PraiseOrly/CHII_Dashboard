@@ -1,10 +1,11 @@
 ﻿"use client";
-import HEMPNav from "@/components/HEMPNav";
-import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import HempFooter from "@/components/HempFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
 import { Briefcase, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -364,7 +365,7 @@ export default function InternshipsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HEMPNav />
+      <PortalNav portal="hemp" />
 
       {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -544,7 +545,7 @@ export default function InternshipsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Orgs" fill={AMBER} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -564,7 +565,7 @@ export default function InternshipsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Area type="monotone" dataKey="Students" stroke={VIOLET} strokeWidth={2} fill="url(#intGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -609,7 +610,7 @@ export default function InternshipsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   {trendCats.map((cat, i) => (
                     <Bar key={cat} dataKey={cat} fill={trendColors[i]} radius={[0, 0, 0, 0]} />
                   ))}
@@ -762,7 +763,7 @@ export default function InternshipsPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                         <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                        <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                        <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                         {COHORTS.map((c) => (
                           <Bar
                             key={c}
@@ -828,7 +829,7 @@ export default function InternshipsPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                         <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                        <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                        <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                         {COHORTS.map((c) => (
                           <Bar
                             key={c}
@@ -859,7 +860,7 @@ export default function InternshipsPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                         <XAxis dataKey="cohort" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                        <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                        <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                         {COHORTS.map((c) => (
                           <Bar
                             key={c + "-placed"}
@@ -1015,7 +1016,7 @@ export default function InternshipsPage() {
 
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <HempFooter source="HEMP Internships M&amp;E" synced="04 Jun 2026, EAT" />
+        <PortalFooter portal="hemp" source="HEMP Internships M&amp;E" synced="04 Jun 2026, EAT" />
 
       </div>
     </div>

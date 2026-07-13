@@ -5,18 +5,19 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Briefcase, Building2, Download, FileText, Link2, MapPin, Handshake, TrendingUp, Users } from "lucide-react";
-import HEMPNav from "@/components/HEMPNav";
-import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import HempFooter from "@/components/HempFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 import {
   healthXSymposia, readinessSessions,
   LEAD_TYPES, READINESS_TOPICS, EMPLOYER_SECTORS,
   type LeadType, type ReadinessTopic, type EmployerSector,
-} from "@/data/hemp/healthxCareers";
+} from "@/data/hemp/healthx-careers";
 
 // ── Career-exposure platform derivations ("Explore What's Next") ──
 function deriveCareers(symposia: typeof healthXSymposia, readiness: typeof readinessSessions) {
@@ -277,7 +278,7 @@ export default function HealthXPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HEMPNav />
+      <PortalNav portal="hemp" />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -636,7 +637,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Sessions" fill={TEAL} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -655,7 +656,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Area type="monotone" dataKey="Participants" stroke={BLUE_LIGHT} strokeWidth={2} fill="url(#hxGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -762,7 +763,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Leads"     fill="#185FA5" radius={[4, 4, 0, 0]} maxBarSize={30} />
                   <Bar dataKey="Converted" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={30} />
                 </BarChart>
@@ -805,7 +806,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={52} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Registered" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={24} />
                   <Bar dataKey="Attended"   fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={24} />
                 </BarChart>
@@ -826,7 +827,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={34} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Students"  stroke="#14306B" strokeWidth={2.5} dot={{ r: 4, fill: "#14306B", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   <Line type="monotone" dataKey="Leads"     stroke="#0F6E56" strokeWidth={2.5} dot={{ r: 4, fill: "#0F6E56", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   <Line type="monotone" dataKey="Employers" stroke="#D45F2C" strokeWidth={2.5} dot={{ r: 4, fill: "#D45F2C", strokeWidth: 0 }} activeDot={{ r: 6 }} />
@@ -844,7 +845,7 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <HempFooter source="HEMP HealthX M&amp;E" synced="04 Jun 2026, EAT" />
+        <PortalFooter portal="hemp" source="HEMP HealthX M&amp;E" synced="04 Jun 2026, EAT" />
 
       </div>
     </div>

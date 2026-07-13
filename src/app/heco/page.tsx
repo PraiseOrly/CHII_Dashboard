@@ -1,11 +1,12 @@
 "use client";
-import HECONav from "@/components/HECONav";
-import HecoFooter from "@/components/HecoFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import { DonutRing } from "@/components/charts/donut-chart";
 import { fellows, craHackathons, researchPartnerships, CRA_PILLARS } from "@/data/heco/cra";
 import { Banknote, BookOpen, GraduationCap, Handshake, Rocket, Users } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
@@ -206,7 +207,7 @@ export default function HecoOverviewPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HECONav />
+      <PortalNav portal="heco" />
 
       {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -302,10 +303,10 @@ export default function HecoOverviewPage() {
               info="Each pillar's own primary output. These are different units, so read them as three separate scorecards rather than a like-for-like comparison.">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={D.outputByPillar} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="34%">
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Output" name="Output" radius={[4, 4, 0, 0]} maxBarSize={64}>
                     {D.outputByPillar.map(d => <Cell key={d.name} fill={PILLAR_HEX[d.name]} />)}
                   </Bar>
@@ -325,10 +326,10 @@ export default function HecoOverviewPage() {
               info="All three pillars growing together is the healthy pattern — the fellowship should lead, since Fellows are the mentors who make the hackathons work.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-                  <XAxis dataKey="Year" tick={AXIS_TICK} axisLine={false} tickLine={false} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
+                  <XAxis dataKey="Year" tick={CHART.axisTick} axisLine={false} tickLine={false} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Fellows"  fill={PILLAR_HEX["Public Sector Fellowship"]} radius={[4, 4, 0, 0]} maxBarSize={20} />
                   <Bar dataKey="Ventures" fill={PILLAR_HEX["Student Hackathons"]}       radius={[4, 4, 0, 0]} maxBarSize={20} />
                   <Bar dataKey="Studies"  fill={PILLAR_HEX["Public Health Research"]}   radius={[4, 4, 0, 0]} maxBarSize={20} />
@@ -349,9 +350,9 @@ export default function HecoOverviewPage() {
                   Ventures: arr.slice(0, i + 1).reduce((n, x) => n + x.Ventures, 0),
                   Studies:  arr.slice(0, i + 1).reduce((n, x) => n + x.Studies, 0),
                 }))} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-                  <XAxis dataKey="Year" tick={AXIS_TICK} axisLine={false} tickLine={false} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
+                  <XAxis dataKey="Year" tick={CHART.axisTick} axisLine={false} tickLine={false} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={30} />
                   <Tooltip content={<ChartTip />} />
                   <Line type="monotone" dataKey="Ventures" stroke={PILLAR_HEX["Student Hackathons"]} strokeWidth={2.5}
                     dot={{ r: 4, fill: PILLAR_HEX["Student Hackathons"], strokeWidth: 0 }} activeDot={{ r: 6 }} />
@@ -393,7 +394,7 @@ export default function HecoOverviewPage() {
           </ChartCard>
         </section>
 
-        <HecoFooter source="HECO Consolidated Database" />
+        <PortalFooter portal="heco" source="HECO Consolidated Database" />
       </div>
     </div>
   );

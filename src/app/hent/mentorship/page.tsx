@@ -5,12 +5,13 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Star, Award, Users, Target, Zap, Briefcase } from "lucide-react";
-import HENTNav from "@/components/HENTNav";
-import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
-import HentFooter from "@/components/HentFooter";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import PortalFooter from "@/components/layout/portal-footer";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { DonutRing } from "@/components/charts/donut-chart";
 import {
   mentorshipPrograms, MF_CRITERIA, MF_QUAL_AREAS,
   type MFCriterion, type MFQualArea,
@@ -452,7 +453,7 @@ export default function MentorshipPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -803,7 +804,7 @@ export default function MentorshipPage() {
                   <XAxis dataKey="Program" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Fellows" fill={SKY} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -821,7 +822,7 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -845,7 +846,7 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Expose" fill={SKY}    radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Build"  fill={PRIMARY} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Scale"  fill={INDIGO}  radius={[4, 4, 0, 0]} />
@@ -861,7 +862,7 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Cumulative Fellows" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -957,7 +958,7 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Graduates" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -1026,7 +1027,7 @@ export default function MentorshipPage() {
                 <XAxis dataKey="Programme" tick={{ fontSize: 11, fill: "#6B7280" }}
                   axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                 <Bar dataKey="Completion %" fill={EMERALD} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -1047,7 +1048,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* FOOTER */}
-        <HentFooter source="HENT Mentorship M&amp;E" synced="01 Jun 2026, EAT" />
+        <PortalFooter portal="hent" source="HENT Mentorship M&amp;E" synced="01 Jun 2026, EAT" />
 
       </div>
     </div>

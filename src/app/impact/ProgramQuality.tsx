@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
 import { masterclasses } from "@/data/masterclasses";
-import { fieldVisits } from "@/data/fieldVisits";
+import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026] as const;
@@ -46,7 +46,7 @@ export default function ProgramQuality() {
     const hx2 = healthXSessions.filter(h => year === "all" || h.year === year);
     const int2 = internships.filter(i => year === "all" || i.year === year);
     const mc2  = masterclasses.filter(m => year === "all" || m.year === year);
-    const fv2  = fieldVisits.filter(v => year === "all" || v.year === year);
+    const fv2  = studyTrips.filter(v => year === "all" || v.year === year);
     const mf2  = mentorshipPrograms.filter(p => year === "all" || p.year === year);
 
     const rows = [

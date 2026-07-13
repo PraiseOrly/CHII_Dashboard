@@ -1,14 +1,14 @@
 ﻿"use client";
-import HENTNav from "@/components/HENTNav";
-import HentFooter from "@/components/HentFooter";
-import { DonutRing } from "@/components/DonutChart";
-import HentAfricaMap from "@/components/HentAfricaMap";
-import { type RadarSeries } from "@/components/SatisfactionRadar";
-import SatisfactionBars from "@/components/SatisfactionBars";
-import BulletChart from "@/components/BulletChart";
-import ProgressRing from "@/components/ProgressRing";
+import PortalNav from "@/components/layout/portal-nav";
+import PortalFooter from "@/components/layout/portal-footer";
+import { DonutRing } from "@/components/charts/donut-chart";
+import AfricaMap from "@/components/charts/africa-map";
+import { type RadarSeries } from "@/components/charts/satisfaction-radar";
+import SatisfactionBars from "@/components/charts/satisfaction-bars";
+import BulletChart from "@/components/charts/bullet-chart";
+import ProgressRing from "@/components/charts/progress-ring";
 import { PALETTE } from "@/styles/palette";
-import { fieldVisits } from "@/data/fieldVisits";
+import { studyTrips } from "@/data/study-trips";
 import { founders } from "@/data/founders";
 import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
@@ -92,11 +92,11 @@ const mcFem   = masterclasses.reduce((s, m) => s + m.femaleAttendees, 0);
 const mcComp  = Math.round(avg(masterclasses.map(m => m.completionRate)));
 const mcSat   = parseFloat(avg(masterclasses.map(m => avg(Object.values(m.scores)))).toFixed(1));
 
-const fvPart  = fieldVisits.reduce((s, v) => s + v.participants, 0);
-const fvFem   = fieldVisits.reduce((s, v) => s + v.femaleParticipants, 0);
-const fvComp  = Math.round(avg(fieldVisits.map(v => v.completionRate)));
-const fvPship = fieldVisits.reduce((s, v) => s + v.partnerships, 0);
-const fvSat   = parseFloat(avg(fieldVisits.map(v => avg(Object.values(v.scores)))).toFixed(1));
+const fvPart  = studyTrips.reduce((s, v) => s + v.participants, 0);
+const fvFem   = studyTrips.reduce((s, v) => s + v.femaleParticipants, 0);
+const fvComp  = Math.round(avg(studyTrips.map(v => v.completionRate)));
+const fvPship = studyTrips.reduce((s, v) => s + v.partnerships, 0);
+const fvSat   = parseFloat(avg(studyTrips.map(v => avg(Object.values(v.scores)))).toFixed(1));
 
 const mfFel   = mentorshipPrograms.reduce((s, p) => s + p.fellows, 0);
 const mfFem   = mentorshipPrograms.reduce((s, p) => s + p.femaleFellows, 0);
@@ -107,7 +107,7 @@ const mfGrad  = mentorshipPrograms.filter(p => p.isOneYearFellowship).reduce((s,
 const TOTAL_PART    = hackPart + mcAtt + fvPart + mfFel;
 const TOTAL_FEM     = hackFem  + mcFem  + fvFem  + mfFem;
 const FEMALE_PCT    = Math.round((TOTAL_FEM / TOTAL_PART) * 100);
-const TOTAL_PROGS   = hackathons.length + masterclasses.length + fieldVisits.length + mentorshipPrograms.length;
+const TOTAL_PROGS   = hackathons.length + masterclasses.length + studyTrips.length + mentorshipPrograms.length;
 const TOTAL_PSHIP   = hackPship + fvPship;
 const TOTAL_FUNDING = ALL_VENTURES.reduce((s, v) => s + v.funding, 0);
 const TOTAL_JOBS    = ALL_VENTURES.reduce((s, v) => s + v.jobsTotal, 0);
@@ -121,7 +121,7 @@ const activityByYear = YEARS
     Year:          String(yr),
     Hackathons:    hackathons.filter(h => h.year === yr).length,
     Masterclasses: masterclasses.filter(m => m.year === yr).length,
-    "Study Trips": fieldVisits.filter(v => v.year === yr).length,
+    "Study Trips": studyTrips.filter(v => v.year === yr).length,
     Mentorships:   mentorshipPrograms.filter(p => p.year === yr).length,
   }))
   .filter(d => d.Hackathons + d.Masterclasses + d["Study Trips"] + d.Mentorships > 0);
@@ -131,7 +131,7 @@ const participantsByYear = YEARS
     Year:          String(yr),
     Hackathons:    hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
     Masterclasses: masterclasses.filter(m => m.year === yr).reduce((s, m) => s + m.attendees, 0),
-    "Study Trips": fieldVisits.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0),
+    "Study Trips": studyTrips.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0),
     Mentorships:   mentorshipPrograms.filter(p => p.year === yr).reduce((s, p) => s + p.fellows, 0),
   }))
   .filter(d => d.Hackathons + d.Masterclasses + d["Study Trips"] + d.Mentorships > 0);
@@ -199,10 +199,10 @@ const perfHeatmap = [
   },
   {
     program:       "Study Trips",
-    Quality:       parseFloat(avg(fieldVisits.map(v => v.scores["Learning Experience"])).toFixed(1)),
-    Usefulness:    parseFloat(avg(fieldVisits.map(v => v.scores["Practical Knowledge Gained"])).toFixed(1)),
-    Accessibility: parseFloat(avg(fieldVisits.map(v => v.scores["Accessibility & Organisation"])).toFixed(1)),
-    Relevance:     parseFloat(avg(fieldVisits.map(v => v.scores["Relevance to Venture Growth"])).toFixed(1)),
+    Quality:       parseFloat(avg(studyTrips.map(v => v.scores["Learning Experience"])).toFixed(1)),
+    Usefulness:    parseFloat(avg(studyTrips.map(v => v.scores["Practical Knowledge Gained"])).toFixed(1)),
+    Accessibility: parseFloat(avg(studyTrips.map(v => v.scores["Accessibility & Organisation"])).toFixed(1)),
+    Relevance:     parseFloat(avg(studyTrips.map(v => v.scores["Relevance to Venture Growth"])).toFixed(1)),
   },
   {
     program:       "Mentorships",
@@ -218,7 +218,7 @@ const HEAT_COLS = ["Quality", "Usefulness", "Accessibility", "Relevance"] as con
 // Per-programme colour + line style, using the standardised palette
 const PROG_STYLE: Record<string, { color: string; dashed: boolean; fillOpacity: number }> = {
   "Masterclasses": { color: PALETTE.masterclasses, dashed: false, fillOpacity: 0.08 },
-  "Study Trips":  { color: PALETTE.fieldVisits,   dashed: false, fillOpacity: 0.08 },
+  "Study Trips":  { color: PALETTE.studyTrips,   dashed: false, fillOpacity: 0.08 },
   "Mentorships":   { color: PALETTE.mentorships,   dashed: true,  fillOpacity: 0.06 },
 };
 const radarSeries: RadarSeries[] = perfHeatmap.map(row => {
@@ -738,7 +738,7 @@ export default function ExecutiveDashboard() {
   }, [regionYear]);
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* â"€â"€ EXECUTIVE HEADER â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -808,7 +808,7 @@ export default function ExecutiveDashboard() {
             <ExecCard label="Hackathons"    value={hackathons.length}         icon={Lightbulb} />
             <ExecCard label="Masterclasses" value={masterclasses.length}      icon={Presentation} />
             <ExecCard label="Mentorships"   value={mentorshipPrograms.length} icon={Users} />
-            <ExecCard label="Study Trips"  value={fieldVisits.length}        icon={MapPin} />
+            <ExecCard label="Study Trips"  value={studyTrips.length}        icon={MapPin} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -924,7 +924,7 @@ export default function ExecutiveDashboard() {
                   options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
               {geoCountryData.length ? (
-                <HentAfricaMap data={geoCountryData}
+                <AfricaMap data={geoCountryData}
                   region={geoRegion} onRegionChange={setGeoRegion}
                   regions={["All Regions", ...GEO_REGIONS]} />
               ) : (
@@ -1136,7 +1136,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* â"€â"€ FOOTER STRIP â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <HentFooter source="HENT Programmes M&amp;E" synced="01 Jun 2026, EAT" />
+        <PortalFooter portal="hent" source="HENT Programmes M&amp;E" synced="01 Jun 2026, EAT" />
 
       </div>
     </div>

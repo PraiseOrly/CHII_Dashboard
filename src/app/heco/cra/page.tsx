@@ -1,11 +1,12 @@
 "use client";
-import HECONav from "@/components/HECONav";
-import HecoFooter from "@/components/HecoFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import { DonutRing } from "@/components/charts/donut-chart";
 import {
   fellows, craHackathons, researchPartnerships,
   FELLOWSHIP_SUPPORTS, EXEC_ROLES, RESEARCH_THEMES,
@@ -286,7 +287,7 @@ export default function CraPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HECONav />
+      <PortalNav portal="heco" />
 
       {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -378,10 +379,10 @@ export default function CraPage() {
               info="Watch whether publications keep pace with fellow numbers — if intake grows but publications flatten, the publication-guidance support is the bottleneck.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={D.byCohort} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-                  <XAxis dataKey="Year" tick={AXIS_TICK} axisLine={false} tickLine={false} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
+                  <XAxis dataKey="Year" tick={CHART.axisTick} axisLine={false} tickLine={false} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Fellows"      fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={22} />
                   <Bar dataKey="Publications" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={22} />
                 </BarChart>
@@ -410,10 +411,10 @@ export default function CraPage() {
               info="The link between the two pillars: Fellows from the Public Sector Fellowship mentor the student teams. More Fellow mentors should track with more ventures incubated.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={D.hackByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="26%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-                  <XAxis dataKey="Year" tick={AXIS_TICK} axisLine={false} tickLine={false} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={34} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
+                  <XAxis dataKey="Year" tick={CHART.axisTick} axisLine={false} tickLine={false} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={34} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Participants"   fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Bar dataKey="Fellow Mentors" fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Bar dataKey="Ventures"       fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={18} />
@@ -451,10 +452,10 @@ export default function CraPage() {
               info="Where the research effort is concentrated. Themes with studies but no publications are where the acceleration mandate is falling short.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={D.byTheme} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }} barCategoryGap="24%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} horizontal={false} />
-                  <XAxis type="number" tick={AXIS_TICK} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} horizontal={false} />
+                  <XAxis type="number" tick={CHART.axisTick} axisLine={false} tickLine={false} allowDecimals={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#6B7280" }} axisLine={false} tickLine={false} width={160} interval={0} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="value"        name="Studies"      fill="#D45F2C" radius={[0, 4, 4, 0]} maxBarSize={16} />
                   <Bar dataKey="Publications" name="Publications" fill="#0F6E56" radius={[0, 4, 4, 0]} maxBarSize={16} />
                 </BarChart>
@@ -464,7 +465,7 @@ export default function CraPage() {
           </div>
         </section>
 
-        <HecoFooter source="HECO CRA Programme M&amp;E" />
+        <PortalFooter portal="heco" source="HECO CRA Programme M&amp;E" />
       </div>
     </div>
   );

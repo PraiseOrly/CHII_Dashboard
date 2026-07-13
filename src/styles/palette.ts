@@ -2,7 +2,7 @@
 export const PALETTE = {
   hackathons:    '#534AB7',  // purple
   masterclasses: '#0F6E56',  // teal
-  fieldVisits:   '#D4537E',  // pink
+  studyTrips:   '#D4537E',  // pink
   mentorships:   '#185FA5',  // blue
   ventures:      '#BA7517',  // amber
 
@@ -27,7 +27,7 @@ export const PALETTE = {
 export const PALETTE_TINTS = {
   hackathons:    '#EEEDFE',
   masterclasses: '#E1F5EE',
-  fieldVisits:   '#FBEAF0',
+  studyTrips:   '#FBEAF0',
   mentorships:   '#E6F1FB',
   ventures:      '#FAEEDA',
 };

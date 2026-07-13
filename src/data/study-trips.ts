@@ -1,10 +1,10 @@
-export const VISIT_TYPES = [
+export const TRIP_TYPES = [
   "Hospital", "Research Institution", "Health Startup",
   "Innovation Hub", "NGO / Non-profit", "Pharmaceutical", "Government Agency",
 ] as const;
-export type VisitType = typeof VISIT_TYPES[number];
+export type TripType = typeof TRIP_TYPES[number];
 
-export const FV_CRITERIA = [
+export const TRIP_CRITERIA = [
   "Learning Experience",
   "Relevance to Venture Growth",
   "Exposure to Industry Practices",
@@ -12,20 +12,20 @@ export const FV_CRITERIA = [
   "Accessibility & Organisation",
   "Practical Knowledge Gained",
 ] as const;
-export type FVCriterion = typeof FV_CRITERIA[number];
+export type TripCriterion = typeof TRIP_CRITERIA[number];
 
-export const FV_REGIONS = [
+export const TRIP_REGIONS = [
   "East Africa", "West Africa", "Southern Africa", "North Africa & Horn",
 ] as const;
-export type FVRegion = typeof FV_REGIONS[number];
+export type TripRegion = typeof TRIP_REGIONS[number];
 
-export interface FieldVisit {
+export interface StudyTrip {
   id: string;
   organization: string;
-  type: VisitType;
+  type: TripType;
   city: string;
   country: string;
-  region: FVRegion;
+  region: TripRegion;
   date: string;
   year: number;
   month: number;
@@ -35,14 +35,14 @@ export interface FieldVisit {
   venturesRepresented: number;
   completionRate: number;   // 0-100
   partnerships: number;     // new partnerships established
-  scores: Record<FVCriterion, number>; // 1.0–5.0
+  scores: Record<TripCriterion, number>; // 1.0–5.0
   byAge:    Record<"18-25" | "26-35" | "36-45" | "46+", number>;
   byStage:  Record<"Expose" | "Build" | "Scale", number>;
   bySocial: Record<"MCF Scholars" | "PWD" | "Refugee-Displaced", number>;
   highlight: string; // one-line visit highlight / takeaway
 }
 
-export const fieldVisits: FieldVisit[] = [
+export const studyTrips: StudyTrip[] = [
   {
     id: "FV01",
     organization: "Kigali University Teaching Hospital",

@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer, Cell,
 } from "recharts";
 import { PALETTE } from "@/styles/palette";
-import type { RadarSeries } from "./SatisfactionRadar";
+import type { RadarSeries } from "./satisfaction-radar";
 
 function Tip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;

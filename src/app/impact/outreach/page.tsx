@@ -14,10 +14,10 @@ import {
   INTERVENTIONS_BY_PILLAR, GENDERS, STATUSES, TREND_YEARS,
   type OutreachParticipant, type Pillar, type Gender,
 } from "./_data";
-import FeaturedImpactStory from "@/components/FeaturedImpactStory";
-import HeaderDesign from "@/components/HeaderDesign";
-import StatsKpiCard from "../StatsKpiCard";
-import { DonutRing as Donut } from "@/components/DonutChart";
+import FeaturedImpactStory from "@/components/layout/featured-impact-story";
+import HeaderDesign from "@/components/layout/header-design";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import { DonutRing as Donut } from "@/components/charts/donut-chart";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#14306B";

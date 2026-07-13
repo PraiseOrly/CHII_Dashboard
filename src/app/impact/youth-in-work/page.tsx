@@ -14,10 +14,10 @@ import {
   EMPLOYER_TYPES, WORK_CATEGORIES, YEARS, COHORTS, EMPLOYED_PATHWAYS, VENTURE_PATHWAYS,
   type Pathway, type Program, type ParticipantType, type Gender, type Youth,
 } from "./_data";
-import FeaturedImpactStory from "@/components/FeaturedImpactStory";
-import HeaderDesign from "@/components/HeaderDesign";
-import StatsKpiCard from "../StatsKpiCard";
-import { DonutRing as Donut } from "@/components/DonutChart";
+import FeaturedImpactStory from "@/components/layout/featured-impact-story";
+import HeaderDesign from "@/components/layout/header-design";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import { DonutRing as Donut } from "@/components/charts/donut-chart";
 
 /* ── palette ──────────────────────────────────────────── */
 const NAVY = "#14306B";

@@ -9,10 +9,10 @@ import {
 
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
-import { fieldVisits } from "@/data/fieldVisits";
+import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
 import Link from "next/link";
@@ -21,8 +21,8 @@ import DignifiedWork from "./DignifiedWork";
 import OutreachAccess from "./OutreachAccess";
 import ProgramImpactMatrix from "./ProgramImpactMatrix";
 import ProgramQuality from "./ProgramQuality";
-import StatsKpiCard from "./StatsKpiCard";
-import FeaturedImpactStory from "@/components/FeaturedImpactStory";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid,
@@ -462,7 +462,7 @@ export default function ImpactDashboard() {
     const ms  = missionStudents.filter((s) => yr === "all" || s.cohort === yr);    // cohort-level only
     const hak = hackathons.filter((h) => yr === "all" || h.year === yr);           // year-level only
     const mc  = masterclasses.filter((m) => (yr === "all" || m.year === yr) && inPeriod(m.month));
-    const fv  = fieldVisits.filter((v) => (yr === "all" || v.year === yr) && inPeriod(v.month));
+    const fv  = studyTrips.filter((v) => (yr === "all" || v.year === yr) && inPeriod(v.month));
     const mf  = mentorshipPrograms.filter((p) => (yr === "all" || p.year === yr) && inPeriod(p.month));
     const vc  = ventures.filter((v) => yr === "all" || v.cohort === yr);
 
@@ -599,12 +599,12 @@ export default function ImpactDashboard() {
       const hent =
         hackathons.filter((h) => h.year === yr).reduce((s, h) => s + h.participants, 0) +
         masterclasses.filter((m) => m.year === yr).reduce((s, m) => s + m.attendees, 0) +
-        fieldVisits.filter((v) => v.year === yr).reduce((s, v) => s + v.participants, 0) +
+        studyTrips.filter((v) => v.year === yr).reduce((s, v) => s + v.participants, 0) +
         mentorshipPrograms.filter((p) => p.year === yr).reduce((s, p) => s + p.fellows, 0);
       // Quality metrics by year (for quality view)
       const yrHx = healthXSessions.filter((h) => h.year === yr);
       const yrMc = masterclasses.filter((m) => m.year === yr);
-      const yrFv = fieldVisits.filter((v) => v.year === yr);
+      const yrFv = studyTrips.filter((v) => v.year === yr);
       const yrMf = mentorshipPrograms.filter((p) => p.year === yr);
       const complVals = [
         avg(yrHx.map((h) => h.completionRate)),
@@ -665,7 +665,7 @@ export default function ImpactDashboard() {
       missionStudents.filter(s => s.cohort === yr).length +
       hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0) +
       masterclasses.filter(m => m.year === yr).reduce((s, m) => s + m.attendees, 0) +
-      fieldVisits.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0) +
+      studyTrips.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0) +
       mentorshipPrograms.filter(p => p.year === yr).reduce((s, p) => s + p.fellows, 0);
     const y25 = total(2025), y24 = total(2024);
     return y24 > 0 ? Math.round(((y25 - y24) / y24) * 100) : null;
@@ -730,7 +730,7 @@ export default function ImpactDashboard() {
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
               <span aria-hidden="true">·</span>
-              <span>{hackathons.length + masterclasses.length + fieldVisits.length + mentorshipPrograms.length} programmes tracked</span>
+              <span>{hackathons.length + masterclasses.length + studyTrips.length + mentorshipPrograms.length} programmes tracked</span>
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
             </div>

@@ -2,10 +2,10 @@
 import { useState, useMemo } from "react";
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
-import { fieldVisits } from "@/data/fieldVisits";
+import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -53,7 +53,7 @@ export default function ProgramImpactMatrix() {
     const ms2  = missionStudents.filter(s => year === "all" || s.cohort === year);
     const hak2 = hackathons.filter(h => year === "all" || h.year === year);
     const mc2  = masterclasses.filter(m => year === "all" || m.year === year);
-    const fv2  = fieldVisits.filter(v => year === "all" || v.year === year);
+    const fv2  = studyTrips.filter(v => year === "all" || v.year === year);
     const mf2  = mentorshipPrograms.filter(p => year === "all" || p.year === year);
 
     const scale: Record<string, number> = {

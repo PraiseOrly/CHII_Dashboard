@@ -5,16 +5,17 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Star, MapPin, Users, Handshake, Zap, Briefcase } from "lucide-react";
-import HENTNav from "@/components/HENTNav";
-import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
-import HentFooter from "@/components/HentFooter";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import PortalFooter from "@/components/layout/portal-footer";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { DonutRing } from "@/components/charts/donut-chart";
 import {
-  fieldVisits, VISIT_TYPES, FV_CRITERIA, FV_REGIONS,
-  type VisitType, type FVRegion,
-} from "@/data/fieldVisits";
+  studyTrips, TRIP_TYPES, TRIP_CRITERIA, TRIP_REGIONS,
+  type TripType, type TripRegion,
+} from "@/data/study-trips";
 
 // â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#0F4C3A"; // footer bg only (brand green)
@@ -133,7 +134,7 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
 }
 
 function RatingBar({ label, visits, criterion }: {
-  label: string; visits: typeof fieldVisits; criterion: typeof FV_CRITERIA[number];
+  label: string; visits: typeof studyTrips; criterion: typeof TRIP_CRITERIA[number];
 }) {
   const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -174,8 +175,8 @@ function RatingBar({ label, visits, criterion }: {
 }
 
 function GenderRatingBar({ label, fVisits, mVisits, criterion }: {
-  label: string; fVisits: typeof fieldVisits; mVisits: typeof fieldVisits;
-  criterion: typeof FV_CRITERIA[number];
+  label: string; fVisits: typeof studyTrips; mVisits: typeof studyTrips;
+  criterion: typeof TRIP_CRITERIA[number];
 }) {
   const fAvg = fVisits.length ? fVisits.reduce((s, v) => s + v.scores[criterion], 0) / fVisits.length : 0;
   const mAvg = mVisits.length ? mVisits.reduce((s, v) => s + v.scores[criterion], 0) / mVisits.length : 0;
@@ -313,14 +314,14 @@ function FilterSelect<T extends string>({ label, value, onChange, options }: {
 // â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function FieldVisitsPage() {
   const [yearFilter,   setYearFilter]   = useState<"All"|"2022"|"2023"|"2024"|"2025"|"2026">("All");
-  const [typeFilter,   setTypeFilter]   = useState<"All"|VisitType>("All");
-  const [regionFilter, setRegionFilter] = useState<"All"|FVRegion>("All");
+  const [typeFilter,   setTypeFilter]   = useState<"All"|TripType>("All");
+  const [regionFilter, setRegionFilter] = useState<"All"|TripRegion>("All");
   const [genderView,   setGenderView]   = useState<"All"|"Female"|"Male">("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (typeFilter !== "All" ? 1 : 0) + (regionFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
-  const filtered = useMemo(() => fieldVisits.filter(v => {
+  const filtered = useMemo(() => studyTrips.filter(v => {
     if (yearFilter   !== "All" && v.year   !== Number(yearFilter)) return false;
     if (typeFilter   !== "All" && v.type   !== typeFilter)         return false;
     if (regionFilter !== "All" && v.region !== regionFilter)       return false;
@@ -397,7 +398,7 @@ export default function FieldVisitsPage() {
   });
 
   const topVisits = [...filtered]
-    .map(v => ({ ...v, avgScore: FV_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / FV_CRITERIA.length }))
+    .map(v => ({ ...v, avgScore: TRIP_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / TRIP_CRITERIA.length }))
     .sort((a, b) => b.avgScore - a.avgScore).slice(0, 3);
 
   const orgFreq: Record<string, { type: string; count: number; participants: number; avgScore: number; location: string }> = {};
@@ -406,7 +407,7 @@ export default function FieldVisitsPage() {
     if (!orgFreq[base]) orgFreq[base] = { type: v.type, count: 0, participants: 0, avgScore: 0, location: `${v.city}, ${v.country}` };
     orgFreq[base].count++;
     orgFreq[base].participants += v.participants;
-    orgFreq[base].avgScore += FV_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / FV_CRITERIA.length;
+    orgFreq[base].avgScore += TRIP_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / TRIP_CRITERIA.length;
   });
   const frequentOrgs = Object.entries(orgFreq)
     .map(([name, d]) => ({ name, ...d, avgScore: d.avgScore / d.count }))
@@ -448,7 +449,7 @@ export default function FieldVisitsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -476,7 +477,7 @@ export default function FieldVisitsPage() {
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
               <span aria-hidden="true">·</span>
-              <span>{fieldVisits.length} visits tracked</span>
+              <span>{studyTrips.length} visits tracked</span>
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
             </div>
@@ -523,9 +524,9 @@ export default function FieldVisitsPage() {
             <OFilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent="#0E4633"
               options={[{ value: "All" as const, label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
             <OFilterSelect label="Type" value={typeFilter} onChange={setTypeFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Types" }, ...VISIT_TYPES.map(t => ({ value: t, label: t }))]} />
+              options={[{ value: "All" as const, label: "All Types" }, ...TRIP_TYPES.map(t => ({ value: t, label: t }))]} />
             <OFilterSelect label="Region" value={regionFilter} onChange={setRegionFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Regions" }, ...FV_REGIONS.map(r => ({ value: r, label: r }))]} />
+              options={[{ value: "All" as const, label: "All Regions" }, ...TRIP_REGIONS.map(r => ({ value: r, label: r }))]} />
             <OFilterSelect label="Gender" value={genderView} onChange={setGenderView} accent="#0E4633"
               options={[{ value: "All" as const, label: "All Genders" }, { value: "Female" as const, label: "Female-majority" }, { value: "Male" as const, label: "Male-majority" }]} />
           </OutreachFilters>
@@ -545,7 +546,7 @@ export default function FieldVisitsPage() {
                   </span>
                 ))}
               </div>
-              {FV_CRITERIA.map(c => <RatingBar key={c} label={c} visits={filtered} criterion={c} />)}
+              {TRIP_CRITERIA.map(c => <RatingBar key={c} label={c} visits={filtered} criterion={c} />)}
             </ChartCard>
 
             <ChartCard title="Ratings by Gender of Participants"
@@ -555,7 +556,7 @@ export default function FieldVisitsPage() {
                 <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET }}>F</span> Female-majority visits</span>
                 <span className="flex items-center gap-1"><span className="font-bold" style={{ color: SKY }}>M</span> Male-majority visits</span>
               </div>
-              {FV_CRITERIA.map(c => (
+              {TRIP_CRITERIA.map(c => (
                 <GenderRatingBar key={c} label={c} fVisits={fVisits} mVisits={mVisits} criterion={c} />
               ))}
               <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
@@ -566,7 +567,7 @@ export default function FieldVisitsPage() {
                     : v.byStage.Scale > v.byStage.Build
                   );
                   const avg = sv.length
-                    ? FV_CRITERIA.reduce((s, c) => s + sv.reduce((ss, v) => ss + v.scores[c], 0) / sv.length, 0) / FV_CRITERIA.length : 0;
+                    ? TRIP_CRITERIA.reduce((s, c) => s + sv.reduce((ss, v) => ss + v.scores[c], 0) / sv.length, 0) / TRIP_CRITERIA.length : 0;
                   return (
                     <div key={stage}>
                       <p className="text-[10px] text-gray-400">{stage}</p>
@@ -705,7 +706,7 @@ export default function FieldVisitsPage() {
                   <XAxis dataKey="Visit" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Participants" fill={SKY} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -723,7 +724,7 @@ export default function FieldVisitsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -805,7 +806,7 @@ export default function FieldVisitsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Partnerships" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -867,7 +868,7 @@ export default function FieldVisitsPage() {
                       <span className="text-[10px] text-gray-500">
                         <Users size={9} className="inline mr-1"/>{v.participants} participants
                       </span>
-                      <Stars score={FV_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / FV_CRITERIA.length} />
+                      <Stars score={TRIP_CRITERIA.reduce((s, c) => s + v.scores[c], 0) / TRIP_CRITERIA.length} />
                     </div>
                   </div>
                 </div>
@@ -889,7 +890,7 @@ export default function FieldVisitsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                 <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                 <Line type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -909,7 +910,7 @@ export default function FieldVisitsPage() {
                 <XAxis dataKey="Visit" tick={{ fontSize: 11, fill: "#6B7280" }}
                   axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                 <Bar dataKey="Completion %" fill={EMERALD} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -931,7 +932,7 @@ export default function FieldVisitsPage() {
         </section>
 
         {/* FOOTER */}
-        <HentFooter source="HENT Study Trips M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" source="HENT Study Trips M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>

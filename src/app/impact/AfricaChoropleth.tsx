@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 
 const GEO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";

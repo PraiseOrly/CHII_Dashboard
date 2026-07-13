@@ -7,9 +7,9 @@ import {
   STORIES, SUMMARY, PROGRAMS, MISSION_AREAS, HUMANITARIAN, NATIONALITIES, DISABILITY, GENDERS,
   type Story,
 } from "./_data";
-import FeaturedImpactStory from "@/components/FeaturedImpactStory";
-import HeaderDesign from "@/components/HeaderDesign";
-import StatsKpiCard from "../StatsKpiCard";
+import FeaturedImpactStory from "@/components/layout/featured-impact-story";
+import HeaderDesign from "@/components/layout/header-design";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
 
 const StoriesMap = dynamic(() => import("./StoriesMap"), { ssr: false, loading: () =>
   <div style={{ width: "100%", height: "100%", minHeight: 480, borderRadius: 10, backgroundColor: "#E9EEF4", display: "flex", alignItems: "center", justifyContent: "center", color: "#9CA3AF", fontSize: 12 }}>Loading map…</div>

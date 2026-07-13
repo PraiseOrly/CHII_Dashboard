@@ -7,7 +7,7 @@ import {
 
 import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
-import { fieldVisits } from "@/data/fieldVisits";
+import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
 import type { Stage, Sector, FundingStatus } from "@/types";
@@ -219,7 +219,7 @@ export default function HENTImpactPage() {
     const yr = yearFilter;
     const hak = hackathons.filter((h) => yr === "all" || h.year === yr);
     const mc  = masterclasses.filter((m) => yr === "all" || m.year === yr);
-    const fv  = fieldVisits.filter((v) => yr === "all" || v.year === yr);
+    const fv  = studyTrips.filter((v) => yr === "all" || v.year === yr);
     const mf  = mentorshipPrograms.filter((p) => yr === "all" || p.year === yr);
     const vc  = ventures.filter((v) => (yr === "all" || v.cohort === yr) && (stageFilter === "all" || v.stage === stageFilter) && (sectorFilter === "all" || v.sector === sectorFilter));
     const vcAll = ventures.filter((v) => yr === "all" || v.cohort === yr);
@@ -273,7 +273,7 @@ export default function HENTImpactPage() {
       Year: String(y),
       Hackathons:    hackathons.filter((h) => h.year === y).reduce((s, h) => s + h.participants, 0),
       Masterclasses: masterclasses.filter((m) => m.year === y).reduce((s, m) => s + m.attendees, 0),
-      "Field Visits": fieldVisits.filter((v) => v.year === y).reduce((s, v) => s + v.participants, 0),
+      "Field Visits": studyTrips.filter((v) => v.year === y).reduce((s, v) => s + v.participants, 0),
       Mentorship:    mentorshipPrograms.filter((p) => p.year === y).reduce((s, p) => s + p.fellows, 0),
       // Innovation output metrics (for metric toggle)
       Projects:  hackathons.filter((h) => h.year === y).reduce((s, h) => s + h.projects, 0),

@@ -1,10 +1,10 @@
 "use client";
-import HEMPNav from "@/components/HEMPNav";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import HempFooter from "@/components/HempFooter";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import PortalFooter from "@/components/layout/portal-footer";
+import { DonutRing } from "@/components/charts/donut-chart";
 import {
   sieCohorts, sieSiteVisits,
   SIE_ACTIVITIES, SIE_EXPOSURE_AREAS, SIE_DISCIPLINES, SIE_PHASES,
@@ -245,7 +245,7 @@ export default function SiePage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HEMPNav />
+      <PortalNav portal="hemp" />
 
       {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -469,7 +469,7 @@ export default function SiePage() {
           </div>
         </section>
 
-        <HempFooter source="HEMP SIE Programme M&amp;E" />
+        <PortalFooter portal="hemp" source="HEMP SIE Programme M&amp;E" />
 
       </div>
     </div>

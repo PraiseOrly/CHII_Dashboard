@@ -1,7 +1,10 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ChevronDown, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Playfair_Display } from "next/font/google";
+import { ChevronDown, ArrowRight } from "lucide-react";
+
+const display = Playfair_Display({ subsets: ["latin"], weight: ["400", "500"] });
 
 const PORTAL_ROUTES: Record<string, string> = {
   HENT:   "/hent",
@@ -10,54 +13,37 @@ const PORTAL_ROUTES: Record<string, string> = {
   EXECUTIVE: "/impact",
 };
 
-const HIGHLIGHTS = [
-  { n: "1", text: "Reach and access across Africa" },
-  { n: "2", text: "Youth employment and entrepreneurship outcomes" },
-  { n: "3", text: "Impact stories and change pathways. Our MEL framework in action" },
-  { n: "4", text: "Recent impact reports" },
-];
+// ─── Palette ─────────────────────────────────────────────────────────────────
+// Container colours are kept: the executive navy on the left, with a warm
+// off-white on the right.
+const NAVY   = "#102C5E"; // executive header fill — the container colour
+const CREAM  = "#FBFAF7"; // right panel
+const GOLD   = "#A98B62"; // eyebrow / accent
+const BLUEY  = "#8FA9CE"; // supporting copy on navy
+const RULE   = "#DCD8D1"; // hairlines on cream
+const LABEL  = "#8A8681"; // small-caps field labels
+const INK    = "#1F2937"; // input text on cream
 
-// Executive dashboard palette — the sign-in page uses the same blues as the
-// Impact dashboard header, so the product reads as one system.
-const EXEC_NAVY  = "#102C5E"; // executive header fill
-const EXEC_BLUE  = "#185FA5"; // executive blue 600 — accents
-const EXEC_LIGHT = "#85B7EB"; // executive blue 200 — links / checkbox
-const EXEC_TINT  = "#E6F1FB"; // executive blue 50  — button hover
-
-// ─── Shared type scale ───────────────────────────────────────────────────────
-// Both panels use one scale so the two halves read as a single page. The only
-// difference between them is the colour ramp: the left sits on navy (white
-// text at descending opacity), the right on white (navy → gray).
-const TYPE = {
-  heading: { fontSize: "26px", fontWeight: 600, lineHeight: 1.2 },
-  body:    { fontSize: "13px", fontWeight: 400, lineHeight: 1.65 },
-  label:   { fontSize: "12px", fontWeight: 500, lineHeight: 1.4 },
-  caption: { fontSize: "11px", fontWeight: 400, lineHeight: 1.5 },
-} as const;
-
-/** Text colours: [primary, secondary, muted] on each background. */
-const ON_NAVY  = { primary: "white",     secondary: "rgba(255,255,255,0.6)",  muted: "rgba(255,255,255,0.3)" };
-const ON_WHITE = { primary: EXEC_NAVY,   secondary: "#6B7280",                muted: "#9CA3AF" };
-
-/* Translucent inputs for dark background */
-const FIELD_BASE: React.CSSProperties = {
-  height: "40px",
-  borderRadius: "8px",
-  border: "1px solid rgba(255,255,255,0.2)",
-  background: "rgba(255,255,255,0.1)",
-  fontSize: TYPE.body.fontSize,
-  color: ON_NAVY.primary,
-  padding: "0 12px",
-  width: "100%",
-  outline: "none",
-  transition: "border 0.15s, box-shadow 0.15s, background 0.15s",
+/** Small-caps, wide-tracked label — used for every eyebrow and field label. */
+const EYEBROW: React.CSSProperties = {
+  fontSize: "9px",
+  fontWeight: 500,
+  letterSpacing: "0.18em",
+  textTransform: "uppercase",
 };
 
-const FIELD_FOCUS: React.CSSProperties = {
-  ...FIELD_BASE,
-  border: "1.5px solid rgba(255,255,255,0.55)",
-  boxShadow: "0 0 0 3px rgba(255,255,255,0.08)",
-  background: "rgba(255,255,255,0.15)",
+/** Underline-only field — no box, just a hairline. */
+const FIELD: React.CSSProperties = {
+  width: "100%",
+  height: "34px",
+  border: "none",
+  borderBottom: `1px solid ${RULE}`,
+  background: "transparent",
+  fontSize: "13px",
+  color: INK,
+  outline: "none",
+  padding: "0 0 4px",
+  transition: "border-color 0.15s",
 };
 
 export default function LoginPage() {
@@ -65,9 +51,7 @@ export default function LoginPage() {
   const [loading, setLoading]           = useState(false);
   const [portal, setPortal]             = useState("HENT");
   const [showPassword, setShowPassword] = useState(false);
-  const [portalFocus, setPortalFocus]   = useState(false);
-  const [emailFocus, setEmailFocus]     = useState(false);
-  const [passFocus, setPassFocus]       = useState(false);
+  const [focused, setFocused]           = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,219 +59,223 @@ export default function LoginPage() {
     setTimeout(() => router.push(PORTAL_ROUTES[portal]), 600);
   }
 
+  const fieldStyle = (name: string): React.CSSProperties => ({
+    ...FIELD,
+    borderBottomColor: focused === name ? NAVY : RULE,
+  });
+
   return (
-    /* Mobile: outer bg matches the dark form panel for a seamless full-screen feel */
+    /* Centered container — the design sits inside the card, as before */
     <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
       <div className="w-full sm:max-w-4xl flex flex-col md:flex-row sm:rounded-lg sm:overflow-hidden sm:shadow-2xl">
 
-        {/* ── Form panel — DARK, full-screen on mobile, left half on desktop ── */}
-        <div
-          className="w-full md:w-1/2 relative flex flex-col justify-center px-6 py-10 md:px-12 md:py-9"
-          style={{ background: EXEC_NAVY }}
-        >
-          {/* Dot-grid texture */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-            opacity: 0.05,
-          }} />
-          {/* Ambient blobs */}
-          <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full pointer-events-none"
-            style={{ background: "rgba(255,255,255,0.03)", filter: "blur(50px)" }} />
-          <div className="absolute -bottom-12 -right-12 w-56 h-56 rounded-full pointer-events-none"
-            style={{ background: "rgba(96,165,250,0.07)", filter: "blur(50px)" }} />
+      {/* ══ LEFT — navy brand panel ══════════════════════════════════════════ */}
+      <div
+        className="relative w-full md:w-[42%] flex flex-col justify-between overflow-hidden px-8 py-7 md:px-10 md:py-8"
+        style={{ background: NAVY, minHeight: "400px" }}
+      >
+        {/* CHII logo */}
+        <div className="relative z-10">
+          <img
+            src="/logos/CHII-Logo.png"
+            alt="Centre for Health Innovation and Impact"
+            style={{ height: "46px", width: "auto", objectFit: "contain", display: "block" }}
+          />
+        </div>
 
-          <div className="relative z-10 w-full max-w-sm mx-auto">
+        {/* Headline */}
+        <div className="relative z-10 max-w-[300px] py-8 md:py-0">
+          <h1
+            className={display.className}
+            style={{ fontSize: "25px", fontWeight: 400, lineHeight: 1.3, color: "white", marginBottom: "14px" }}
+          >
+            Developing Africa&apos;s next generation of health leaders.
+          </h1>
+          <p style={{ fontSize: "11.5px", lineHeight: 1.7, color: BLUEY }}>
+            Mission-driven, experiential learning for dignified work,
+            new ventures, and lasting health impact across the continent.
+          </p>
+        </div>
 
-            {/* Logo */}
-            <div className="flex items-center justify-center mb-3">
-              <img
-                src="/logos/CHII-Logo.png"
-                alt="Centre for Health Innovation and Impact"
-                style={{ height: "58px", width: "auto", objectFit: "contain", display: "block" }}
+        {/* Copyright */}
+        <p className="relative z-10" style={{ ...EYEBROW, fontSize: "8.5px", color: "rgba(255,255,255,0.35)" }}>
+          © 2026 CHII · African Leadership University
+        </p>
+      </div>
+
+      {/* ══ RIGHT — cream form panel ═════════════════════════════════════════ */}
+      <div
+        className="flex-1 flex items-center justify-center px-6 py-8 md:px-10 md:py-8"
+        style={{ background: CREAM }}
+      >
+        <div className="w-full" style={{ maxWidth: "300px" }}>
+
+          {/* Eyebrow + heading */}
+          <p style={{ ...EYEBROW, color: GOLD, marginBottom: "10px" }}>Programme Portals</p>
+          <h2
+            className={display.className}
+            style={{ fontSize: "24px", fontWeight: 400, color: NAVY, lineHeight: 1.2, marginBottom: "20px" }}
+          >
+            Welcome back
+          </h2>
+
+          <form onSubmit={handleSubmit}>
+
+            {/* Portal */}
+            <div style={{ marginBottom: "15px" }}>
+              <label style={{ ...EYEBROW, color: LABEL, display: "block", marginBottom: "6px" }}>Portal</label>
+              <div style={{ position: "relative" }}>
+                <select
+                  value={portal}
+                  onChange={(e) => setPortal(e.target.value)}
+                  onFocus={() => setFocused("portal")}
+                  onBlur={() => setFocused(null)}
+                  style={{
+                    ...fieldStyle("portal"),
+                    appearance: "none",
+                    WebkitAppearance: "none",
+                    paddingRight: "24px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {Object.keys(PORTAL_ROUTES).map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  style={{ position: "absolute", right: 0, top: "8px", color: LABEL, pointerEvents: "none" }}
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div style={{ marginBottom: "15px" }}>
+              <label style={{ ...EYEBROW, color: LABEL, display: "block", marginBottom: "6px" }}>Email address</label>
+              <input
+                type="email"
+                defaultValue="admin@chii.alu.edu"
+                placeholder="your@email.com"
+                onFocus={() => setFocused("email")}
+                onBlur={() => setFocused(null)}
+                style={fieldStyle("email")}
               />
             </div>
 
-            {/* Divider */}
-            <div style={{ height: "1px", background: "rgba(255,255,255,0.15)", marginBottom: "20px" }} />
-
-            {/* Heading */}
-            <div style={{ marginBottom: "20px" }}>
-              <h2 style={{ ...TYPE.heading, color: ON_NAVY.primary, marginBottom: "4px" }}>
-                Welcome back
-              </h2>
-              <p style={{ ...TYPE.body, color: ON_NAVY.secondary }}>
-                Sign in to access your programme portals
-              </p>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-
-                {/* Portal */}
-                <div>
-                  <label style={{ ...TYPE.label, display: "block", color: ON_NAVY.secondary, marginBottom: "5px" }}>
-                    Portal
-                  </label>
-                  <div style={{ position: "relative" }}>
-                    <select
-                      value={portal}
-                      onChange={(e) => setPortal(e.target.value)}
-                      onFocus={() => setPortalFocus(true)}
-                      onBlur={() => setPortalFocus(false)}
-                      style={{ ...(portalFocus ? FIELD_FOCUS : FIELD_BASE), appearance: "none", WebkitAppearance: "none", paddingRight: "40px", cursor: "pointer", fontWeight: 500 }}
-                    >
-                      {Object.keys(PORTAL_ROUTES).map((p) => (
-                        <option key={p} value={p} style={{ background: EXEC_NAVY, color: "white" }}>{p}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={15} style={{ position: "absolute", right: "11px", top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.5)", pointerEvents: "none" }} />
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label style={{ ...TYPE.label, display: "block", color: ON_NAVY.secondary, marginBottom: "5px" }}>
-                    Email address
-                  </label>
-                  <input
-                    type="email"
-                    defaultValue="admin@chii.alu.edu"
-                    placeholder="your@email.com"
-                    onFocus={() => setEmailFocus(true)}
-                    onBlur={() => setEmailFocus(false)}
-                    style={emailFocus ? FIELD_FOCUS : FIELD_BASE}
-                  />
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label style={{ ...TYPE.label, display: "block", color: ON_NAVY.secondary, marginBottom: "5px" }}>
-                    Password
-                  </label>
-                  <div style={{ position: "relative" }}>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      defaultValue="password"
-                      placeholder="••••••••"
-                      onFocus={() => setPassFocus(true)}
-                      onBlur={() => setPassFocus(false)}
-                      style={{ ...(passFocus ? FIELD_FOCUS : FIELD_BASE), paddingRight: "42px" }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ position: "absolute", right: "11px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.45)", padding: 0, display: "flex", alignItems: "center" }}
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Remember me + Forgot password */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: "7px", cursor: "pointer" }}>
-                    <input type="checkbox" defaultChecked style={{ accentColor: EXEC_LIGHT, width: "13px", height: "13px" }} />
-                    <span style={{ ...TYPE.label, color: ON_NAVY.secondary }}>Remember me</span>
-                  </label>
-                  <button type="button" className="hover:underline"
-                    style={{ ...TYPE.label, color: EXEC_LIGHT, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                    Forgot password?
-                  </button>
-                </div>
-
-                {/* CTA — white button on dark bg */}
+            {/* Password */}
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ ...EYEBROW, color: LABEL, display: "block", marginBottom: "6px" }}>Password</label>
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  defaultValue="password"
+                  placeholder="••••••••"
+                  onFocus={() => setFocused("password")}
+                  onBlur={() => setFocused(null)}
+                  style={{ ...fieldStyle("password"), paddingRight: "44px" }}
+                />
                 <button
-                  type="submit"
-                  disabled={loading}
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
                   style={{
-                    width: "100%", height: "44px", borderRadius: "8px",
-                    background: "white", color: EXEC_NAVY,
-                    fontSize: TYPE.body.fontSize, fontWeight: 600,
-                    border: "none", cursor: loading ? "not-allowed" : "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                    transition: "background-color 0.18s, transform 0.18s",
-                    opacity: loading ? 0.7 : 1,
+                    ...EYEBROW,
+                    position: "absolute",
+                    right: 0,
+                    top: "6px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: LABEL,
+                    padding: 0,
                   }}
-                  onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.backgroundColor = EXEC_TINT; e.currentTarget.style.transform = "scale(1.01)"; } }}
-                  onMouseLeave={(e) => { if (!loading) { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.transform = "scale(1)"; } }}
                 >
-                  {loading
-                    ? <span className="animate-spin" style={{ width: "15px", height: "15px", border: "2px solid rgba(16,44,94,0.2)", borderTopColor: EXEC_NAVY, borderRadius: "50%", display: "inline-block" }} />
-                    : <>{`Sign in to ${portal}`} <ArrowRight size={14} /></>}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
-
               </div>
-            </form>
-
-            {/* Footer */}
-            <p style={{ ...TYPE.caption, color: ON_NAVY.muted, textAlign: "center", marginTop: "18px" }}>
-              © 2026 CHII · ALU
-            </p>
-
-            {/* Partner logos — mobile only */}
-            <div className="flex md:hidden items-center justify-between mt-6 rounded-lg px-4 py-3"
-              style={{ background: "white" }}>
-              <img src="/logos/alu.png"  alt="African Leadership University" style={{ height: "22px", width: "auto", objectFit: "contain" }} />
-              <img src="/logos/ahc.jpg"  alt="Africa Health Collaborative"   style={{ height: "22px", width: "auto", objectFit: "contain" }} />
-              <img src="/logos/mcf.png"  alt="Mastercard Foundation"         style={{ height: "22px", width: "auto", objectFit: "contain" }} />
             </div>
 
+            {/* Remember me + Forgot password */}
+            <div className="flex items-center justify-between" style={{ marginBottom: "18px" }}>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  style={{ accentColor: NAVY, width: "12px", height: "12px" }}
+                />
+                <span style={{ ...EYEBROW, color: LABEL }}>Remember me</span>
+              </label>
+              <button
+                type="button"
+                className="hover:underline"
+                style={{ fontSize: "11px", color: NAVY, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* CTA — square navy bar */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2"
+              style={{
+                ...EYEBROW,
+                height: "42px",
+                background: NAVY,
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1,
+                transition: "opacity 0.18s",
+              }}
+            >
+              {loading ? (
+                <span
+                  className="animate-spin"
+                  style={{
+                    width: "13px", height: "13px",
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "white",
+                    borderRadius: "50%",
+                    display: "inline-block",
+                  }}
+                />
+              ) : (
+                <>Sign in <ArrowRight size={12} /></>
+              )}
+            </button>
+          </form>
+
+          {/* Need access */}
+          <p style={{ fontSize: "11px", color: LABEL, textAlign: "center", marginTop: "16px" }}>
+            Need access?{" "}
+            <a href="mailto:insights@chii.org" className="hover:underline" style={{ color: NAVY }}>
+              Contact your programme lead
+            </a>
+          </p>
+
+          {/* Partners */}
+          <div style={{ borderTop: `1px solid ${RULE}`, marginTop: "20px", paddingTop: "14px" }}>
+            <p style={{ ...EYEBROW, color: LABEL, textAlign: "center", marginBottom: "10px" }}>In partnership with</p>
+            <div className="flex items-center justify-center gap-6">
+              {[
+                { src: "/logos/alu.png", alt: "African Leadership University" },
+                { src: "/logos/ahc.jpg", alt: "Africa Health Collaborative" },
+                { src: "/logos/mcf.png", alt: "Mastercard Foundation" },
+              ].map((p) => (
+                <img
+                  key={p.src}
+                  src={p.src}
+                  alt={p.alt}
+                  style={{ height: "24px", width: "auto", objectFit: "contain", display: "block" }}
+                />
+              ))}
+            </div>
           </div>
+
         </div>
-
-        {/* ── Brand panel — WHITE, desktop only ── */}
-        <div className="hidden md:flex md:w-1/2 relative overflow-hidden flex-col bg-white">
-
-          {/* Partner logo bar */}
-          <div className="absolute z-10" style={{ top: "16px", left: "24px", right: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <img src="/logos/alu.png" alt="African Leadership University" style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <img src="/logos/ahc.jpg" alt="Africa Health Collaborative" style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
-              <img src="/logos/mcf.png" alt="Mastercard Foundation"       style={{ height: "36px", width: "auto", display: "block", objectFit: "contain" }} />
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 flex flex-col h-full" style={{ padding: "76px 44px 32px" }}>
-            <div className="flex-1 flex flex-col justify-center">
-
-              <h1 style={{ ...TYPE.heading, color: ON_WHITE.primary, marginBottom: "16px" }}>
-                Health Innovation &amp; <em style={{ color: EXEC_BLUE, fontStyle: "italic" }}>Impact.</em>
-              </h1>
-
-              <p style={{ ...TYPE.body, color: ON_WHITE.secondary, marginBottom: "28px" }}>
-                CHII develops ethical and entrepreneurial health leaders through
-                mission-driven, experiential learning enabling young Africans to
-                access dignified work, build ventures, and drive lasting health
-                impact across the continent.
-              </p>
-
-              <div>
-                {HIGHLIGHTS.map(({ n, text }, i) => (
-                  <div key={n}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", paddingBottom: "11px" }}>
-                      <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: `1.5px solid ${EXEC_LIGHT}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "1px", background: EXEC_TINT }}>
-                        <span style={{ ...TYPE.caption, fontWeight: 600, color: ON_WHITE.primary }}>{n}</span>
-                      </div>
-                      <p style={{ ...TYPE.body, color: ON_WHITE.secondary }}>{text}</p>
-                    </div>
-                    {i < HIGHLIGHTS.length - 1 && (
-                      <div style={{ height: "1px", background: "#F3F4F6", marginBottom: "11px" }} />
-                    )}
-                  </div>
-                ))}
-              </div>
-
-            </div>
-
-            <p style={{ ...TYPE.caption, color: ON_WHITE.muted }}>
-              © 2026 African Leadership University
-            </p>
-          </div>
-        </div>
+      </div>
 
       </div>
     </div>

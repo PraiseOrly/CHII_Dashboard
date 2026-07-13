@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { Search, Download, ArrowRight, FileText } from "lucide-react";
-import FeaturedImpactStory from "@/components/FeaturedImpactStory";
-import HeaderDesign from "@/components/HeaderDesign";
+import FeaturedImpactStory from "@/components/layout/featured-impact-story";
+import HeaderDesign from "@/components/layout/header-design";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
 const NAVY = "#14306B";

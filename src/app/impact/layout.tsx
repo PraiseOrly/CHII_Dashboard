@@ -1,4 +1,4 @@
-import ImpactNav from "@/components/ImpactNav";
+import ImpactNav from "@/components/layout/portal-nav-impact";
 
 export const metadata = {
   title: "CHII Impact — Analytics Platform",

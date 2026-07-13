@@ -44,7 +44,7 @@ function makeGetColor(lightHex: string, deepHex: string) {
   };
 }
 
-export default function HentAfricaMap({
+export default function AfricaMap({
   data, region, onRegionChange, regions,
   lightColor = LIGHT_DEFAULT,
   deepColor = DEEP_DEFAULT,

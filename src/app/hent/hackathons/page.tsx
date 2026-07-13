@@ -6,11 +6,12 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Briefcase, Zap } from "lucide-react";
-import HENTNav from "@/components/HENTNav";
-import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
-import HentFooter from "@/components/HentFooter";
-import SectionPills from "@/components/SectionPills";
-import { DonutRing } from "@/components/DonutChart";
+import PortalNav from "@/components/layout/portal-nav";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import PortalFooter from "@/components/layout/portal-footer";
+import SectionPills from "@/components/filters/section-pills";
+import { DonutRing } from "@/components/charts/donut-chart";
 import { hackathons, PROJECT_CATEGORIES } from "@/data/hackathons";
 
 // â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -351,7 +352,7 @@ export default function HackathonsPage() {
   // â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
-      <HENTNav />
+      <PortalNav portal="hent" />
 
       {/* â”€â”€ TITLE + KPI STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -494,7 +495,7 @@ export default function HackathonsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Hackathons" fill={ORANGE} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -509,7 +510,7 @@ export default function HackathonsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Participants"
                     stroke={TEAL} strokeWidth={2.5} dot={{ r: 4, fill: TEAL, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -568,7 +569,7 @@ export default function HackathonsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                 <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
-                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                 <Bar dataKey={trendCategories[1]} fill={SKY}    radius={[4, 4, 0, 0]} />
                 <Bar dataKey={trendCategories[0]} fill={VIOLET} radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -696,7 +697,7 @@ export default function HackathonsPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="l" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
                   <YAxis yAxisId="r" orientation="right" unit="%" domain={[0, 100]} tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={36} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar yAxisId="l" dataKey="Projects" fill="#1B4332" radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Bar yAxisId="l" dataKey="Startups" fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Line yAxisId="r" type="monotone" dataKey="Rate" name="Conversion rate" stroke="#1F9E9E" strokeWidth={2.5}
@@ -716,7 +717,7 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <HentFooter source="HENT Hackathons M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" source="HENT Hackathons M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>

@@ -1,12 +1,13 @@
 "use client";
-import HEMPNav from "@/components/HEMPNav";
-import HempFooter from "@/components/HempFooter";
-import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import SectionPills from "@/components/SectionPills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
-import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import { DonutRing } from "@/components/DonutChart";
-import { ghCohorts, GH_MODULES, GH_PROGRAMMES } from "@/data/hemp/globalHealth";
+import PortalNav from "@/components/layout/portal-nav";
+import PortalFooter from "@/components/layout/portal-footer";
+import StatsKpiCard from "@/components/ui/stat-kpi-card";
+import SectionPills from "@/components/filters/section-pills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { ChartTip, ChartLegend } from "@/components/ui";
+import { CHART } from "@/theme/tokens";
+import { DonutRing } from "@/components/charts/donut-chart";
+import { ghCohorts, GH_MODULES, GH_PROGRAMMES } from "@/data/hemp/global-health";
 import {
   Award, BookOpen, CheckCircle2, GraduationCap, Star, TrendingUp,
 } from "lucide-react";
@@ -222,7 +223,7 @@ export default function GlobalHealthPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
-      <HEMPNav />
+      <PortalNav portal="hemp" />
 
       {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
@@ -284,10 +285,10 @@ export default function GlobalHealthPage() {
               info="Epidemiology Basics is consistently the hardest gate. A low completion rate on a single module points at content or support, not at the students.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={D.byModule} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }} barCategoryGap="26%">
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} horizontal={false} />
-                  <XAxis type="number" domain={[0, 100]} unit="%" tick={AXIS_TICK} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} horizontal={false} />
+                  <XAxis type="number" domain={[0, 100]} unit="%" tick={CHART.axisTick} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#6B7280" }} axisLine={false} tickLine={false} width={140} interval={0} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip unit="%" />} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip unit="%" />} />
                   <Bar dataKey="value" name="Completion" radius={[0, 4, 4, 0]} maxBarSize={22}>
                     {D.byModule.map(d => (
                       <Cell key={d.name} fill={d.value >= 90 ? "#0F6E56" : d.value >= 80 ? "#185FA5" : "#BA7517"} />
@@ -316,10 +317,10 @@ export default function GlobalHealthPage() {
               info="Progression growing faster than enrolment would mean the course is getting better at converting learners into participants.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-                  <XAxis dataKey="Year" tick={AXIS_TICK} axisLine={false} tickLine={false} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={26} allowDecimals={false} />
-                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
+                  <XAxis dataKey="Year" tick={CHART.axisTick} axisLine={false} tickLine={false} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={26} allowDecimals={false} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Internship" fill={PATH_HEX.Internship} radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Bar dataKey="Venture"    fill={PATH_HEX.Venture}    radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Bar dataKey="Research"   fill={PATH_HEX.Research}   radius={[4, 4, 0, 0]} maxBarSize={18} />
@@ -361,9 +362,9 @@ export default function GlobalHealthPage() {
               info="Watch for score falling as enrolment grows — that would suggest the course is scaling faster than its teaching support.">
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={D.trend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-                  <XAxis dataKey="Year" tick={AXIS_TICK} axisLine={false} tickLine={false} />
-                  <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.gridStroke} vertical={false} />
+                  <XAxis dataKey="Year" tick={CHART.axisTick} axisLine={false} tickLine={false} />
+                  <YAxis tick={CHART.axisTick} axisLine={false} tickLine={false} width={30} />
                   <Tooltip content={<ChartTip />} />
                   <Line type="monotone" dataKey="Enrolled"  stroke="#14306B" strokeWidth={2.5} dot={{ r: 4, fill: "#14306B", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   <Line type="monotone" dataKey="Avg Score" stroke="#0F6E56" strokeWidth={2.5} dot={{ r: 4, fill: "#0F6E56", strokeWidth: 0 }} activeDot={{ r: 6 }} />
@@ -374,7 +375,7 @@ export default function GlobalHealthPage() {
           </div>
         </section>
 
-        <HempFooter source="HEMP Global Health Course M&amp;E" />
+        <PortalFooter portal="hemp" source="HEMP Global Health Course M&amp;E" />
       </div>
     </div>
   );

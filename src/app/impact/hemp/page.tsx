@@ -7,9 +7,9 @@ import {
 
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 import type { InternshipSector } from "@/data/hemp/internships";
-import type { StudentTrack } from "@/data/hemp/missionStudents";
+import type { StudentTrack } from "@/data/hemp/mission-students";
 
 import {
   Bar, BarChart, CartesianGrid, Cell, Legend,

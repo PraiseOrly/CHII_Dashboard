@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { internships } from "@/data/hemp/internships";
-import { missionStudents } from "@/data/hemp/missionStudents";
+import { missionStudents } from "@/data/hemp/mission-students";
 import { hackathons } from "@/data/hackathons";
 import { ventures } from "@/data/ventures";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
