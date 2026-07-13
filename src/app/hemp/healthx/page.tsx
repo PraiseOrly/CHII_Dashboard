@@ -1,14 +1,71 @@
 ﻿"use client";
 import { useState, useEffect, useMemo } from "react";
 import {
-  BarChart, Bar, AreaChart, Area,
+  BarChart, Bar, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Briefcase, Download, FileText, MapPin, Handshake, Users } from "lucide-react";
+import { Briefcase, Building2, Download, FileText, Link2, MapPin, Handshake, TrendingUp, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
 import ExecFilterBar from "@/components/ExecFilterBar";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
+import {
+  healthXSymposia, readinessSessions,
+  LEAD_TYPES, READINESS_TOPICS, EMPLOYER_SECTORS,
+  type LeadType, type ReadinessTopic, type EmployerSector,
+} from "@/data/hemp/healthxCareers";
+
+// ── Career-exposure platform derivations ("Explore What's Next") ──
+function deriveCareers(symposia: typeof healthXSymposia, readiness: typeof readinessSessions) {
+  const s = (a: number[]) => a.reduce((x, y) => x + y, 0);
+
+  const institutions = s(symposia.map(x => x.institutions));
+  const students     = s(symposia.map(x => x.studentsAttending));
+  const femaleStu    = s(symposia.map(x => x.femaleStudents));
+  const femalePct    = students ? Math.round(femaleStu / students * 100) : 0;
+  const employers    = s(symposia.map(x => x.employersExhibiting));
+
+  const totalLeads       = s(symposia.flatMap(x => LEAD_TYPES.map(t => x.leads[t])));
+  const totalConversions = s(symposia.flatMap(x => LEAD_TYPES.map(t => x.conversions[t])));
+  const conversionPct    = totalLeads ? Math.round(totalConversions / totalLeads * 100) : 0;
+
+  const partnerships = s(symposia.map(x => x.partnershipsFormed));
+  const renewed      = s(symposia.map(x => x.partnershipsRenewed));
+
+  const byLeadType = LEAD_TYPES.map(t => ({
+    name: t,
+    Leads: s(symposia.map(x => x.leads[t])),
+    Converted: s(symposia.map(x => x.conversions[t])),
+  }));
+
+  const byEmployerSector = EMPLOYER_SECTORS
+    .map(sec => ({ name: sec, value: s(symposia.map(x => x.employersBySector[sec])) }))
+    .filter(d => d.value > 0)
+    .sort((a, b) => b.value - a.value);
+
+  const byReadinessTopic = READINESS_TOPICS.map(t => {
+    const rs = readiness.filter(r => r.topic === t);
+    return {
+      name: t,
+      Registered: s(rs.map(r => r.registered)),
+      Attended: s(rs.map(r => r.attended)),
+    };
+  });
+
+  const byYear = symposia.map(x => ({
+    Year: String(x.year),
+    Students: x.studentsAttending,
+    Employers: x.employersExhibiting,
+    Leads: LEAD_TYPES.reduce((n, t) => n + x.leads[t], 0),
+  }));
+
+  return {
+    institutions, students, femalePct, employers,
+    totalLeads, totalConversions, conversionPct, partnerships, renewed,
+    byLeadType, byEmployerSector, byReadinessTopic, byYear,
+  };
+}
+const CX = deriveCareers(healthXSymposia, readinessSessions);
 
 // â”€â”€â”€ Color language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Primary: teal (partnership / field theme)
@@ -237,10 +294,10 @@ export default function HealthXPage() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX</h1>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX: Explore What&apos;s Next</h1>
             </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
-              Field-based learning across health facilities, industry and innovation challenges
+              A multi-institutional career exposure platform — readiness sessions, a health careers exhibition, and the leads it generates
             </p>
             <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP HealthX M&amp;E</span>
@@ -657,6 +714,113 @@ export default function HealthXPage() {
               </div>
             </Card>
 
+          </div>
+        </section>
+
+        {/* ══ CAREER EXPOSURE PLATFORM — "Explore What's Next" ══════════════ */}
+        <section>
+          <SecHeader title="Career Exposure Platform — Explore What&apos;s Next"
+            sub="The multi-institutional symposium: pre-event readiness sessions, the health careers exhibition, and the internship, employment and project leads it generates" />
+
+          {/* Symposium KPIs */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+            <StatsKpiCard label="Institutions"      num={CX.institutions}     sub="Universities & colleges"          Icon={Building2}  tooltip="Institutions taking part — the platform is explicitly multi-institutional, not a single-campus event." />
+            <StatsKpiCard label="Students Reached"  num={CX.students}         sub={`${CX.femalePct}% female`}        Icon={Users}      tooltip="Students attending the careers exhibition across all participating institutions." />
+            <StatsKpiCard label="Employers"         num={CX.employers}        sub="Exhibiting at the fair"           Icon={Briefcase}  tooltip="Employers exhibiting — the supply of real opportunities students are put in front of." />
+            <StatsKpiCard label="Leads Generated"   num={CX.totalLeads}       sub="Internship · employment · project" Icon={Link2}     tooltip="Total leads generated across all three types. This is the platform's core output." />
+            <StatsKpiCard label="Leads Converted"   num={CX.totalConversions} sub={`${CX.conversionPct}% conversion`} Icon={TrendingUp} tooltip="Leads that became a confirmed placement, hire or project engagement." />
+            <StatsKpiCard label="Partnerships"      num={CX.partnerships}     sub={`${CX.renewed} renewed`}          Icon={Handshake}  tooltip="Institutional partnerships formed or renewed through the symposium." />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <Card title="Leads Generated vs Converted"
+              sub="Internship, employment and project-based leads — and how many became real">
+              <ResponsiveContainer width="100%" height={230}>
+                <BarChart data={CX.byLeadType} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Bar dataKey="Leads"     fill="#185FA5" radius={[4, 4, 0, 0]} maxBarSize={30} />
+                  <Bar dataKey="Converted" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={30} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["Leads generated", "#185FA5"], ["Converted", "#0F6E56"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </Card>
+
+            <Card title="Employers by Sector"
+              sub="The mix of career pathways students are exposed to at the exhibition">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {CX.byEmployerSector.map((row, i) => {
+                  const col = COUNTRY_HEX[i % COUNTRY_HEX.length];
+                  const max = CX.byEmployerSector[0]?.value || 1;
+                  return (
+                    <div key={row.name} className="flex items-center gap-2.5">
+                      <div className="w-[136px] text-[11px] text-gray-600 text-right flex-shrink-0 truncate">{row.name}</div>
+                      <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
+                        <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+                      </div>
+                      <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+
+            <Card title="Pre-Event Readiness Sessions"
+              sub="Registered vs attended per topic — readiness is what makes the exhibition pay off">
+              <ResponsiveContainer width="100%" height={230}>
+                <BarChart data={CX.byReadinessTopic} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="26%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={52} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Bar dataKey="Registered" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={24} />
+                  <Bar dataKey="Attended"   fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={24} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["Registered", "#85B7EB"], ["Attended", "#14306B"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </Card>
+
+            <Card title="Symposium Growth"
+              sub="Institutions, students, employers and leads — year on year">
+              <ResponsiveContainer width="100%" height={230}>
+                <LineChart data={CX.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={34} />
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Line type="monotone" dataKey="Students"  stroke="#14306B" strokeWidth={2.5} dot={{ r: 4, fill: "#14306B", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="Leads"     stroke="#0F6E56" strokeWidth={2.5} dot={{ r: 4, fill: "#0F6E56", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="Employers" stroke="#D45F2C" strokeWidth={2.5} dot={{ r: 4, fill: "#D45F2C", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["Students", "#14306B"], ["Leads", "#0F6E56"], ["Employers", "#D45F2C"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </Card>
           </div>
         </section>
 

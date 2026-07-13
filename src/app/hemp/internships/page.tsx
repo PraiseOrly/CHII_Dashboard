@@ -321,6 +321,25 @@ export default function InternshipsPage() {
     sectorStats, sectorData, placementsPerYear, genderTrend, satBySector, convBySector, countryData,
   } = useMemo(() => derive(filtered), [filtered]);
 
+  // ── SOP lifecycle metrics ──
+  // Students placed with a host that provides a named supervisor/mentor.
+  const mentorLedStudents = useMemo(
+    () => filtered.filter(i => i.hasMentor).reduce((s, i) => s + i.students, 0),
+    [filtered]
+  );
+  // Post-internship placements captured at close-out (the SOP's M&E step).
+  const placementsAfter = useMemo(
+    () => filtered.reduce((s, i) => s + i.placementsAfterInternship, 0),
+    [filtered]
+  );
+  // "Completed & evaluated" — placements with a satisfaction score on record.
+  const evaluated = useMemo(
+    () => filtered.filter(i => i.satisfactionScore > 0).reduce((s, i) => s + i.students, 0),
+    [filtered]
+  );
+  const supervisedPct = total.students ? Math.round(mentorLedStudents / total.students * 100) : 0;
+  const placementPct  = total.students ? Math.round(placementsAfter / total.students * 100) : 0;
+
   const trendData  = trendTab === "students"
     ? genderTrend
     : placementsPerYear.map(d => ({ Year: d.Year, Conversions: d.Conversions, Students: d.Students }));
@@ -362,7 +381,7 @@ export default function InternshipsPage() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internships</h1>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internship</h1>
             </div>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
               Workplace placements, host organisations and employment conversion
@@ -850,6 +869,84 @@ export default function InternshipsPage() {
               </div>
             );
           })()}
+        </section>
+
+        {/* â”€â”€ SECTION: PROGRAMME LIFECYCLE (SOP) â”€â”€â”€ */}
+        <section>
+          <SecHeader title="Internship Programme Lifecycle"
+            sub="The full SOP pipeline — partnership engagement, recruitment and eligibility screening, matching, pre-internship training, onboarding, supervision, M&amp;E and close-out" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <ChartCard title="Placement Lifecycle Funnel"
+              sub="From host partnerships engaged through to employment conversion">
+              {(() => {
+                const steps = [
+                  { label: "Host partnerships engaged",  value: total.orgs },
+                  { label: "Students placed",            value: total.students },
+                  { label: "Supervised (mentor-led org)", value: mentorLedStudents },
+                  { label: "Completed & evaluated",      value: evaluated },
+                  { label: "Employment conversions",     value: total.conversions },
+                ];
+                const max = steps[0].value || 1;
+                // Orgs and students live on very different scales, so scale each bar
+                // against the largest value in the funnel for a readable shape.
+                const barMax = Math.max(...steps.map(s => s.value)) || 1;
+                return (
+                  <div className="space-y-2.5">
+                    {steps.map((s, i) => {
+                      const pct = Math.max(6, Math.round((s.value / barMax) * 100));
+                      const conv = i > 1 && steps[i - 1].value > 0
+                        ? Math.round((s.value / steps[i - 1].value) * 100) : null;
+                      return (
+                        <div key={s.label}>
+                          <div className="flex items-center justify-between text-[11px] mb-1">
+                            <span className="font-semibold text-gray-700">{s.label}</span>
+                            <span className="font-bold tabular-nums" style={{ color: "#0C447C" }}>
+                              {s.value.toLocaleString()}
+                              {conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
+                            </span>
+                          </div>
+                          <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(20,48,107,0.08)" }}>
+                            <div className="h-full rounded-sm" style={{ width: `${pct}%`, backgroundColor: "#14306B", opacity: 1 - i * 0.13 }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+                {total.students ? Math.round(total.conversions / total.students * 100) : 0}% of placements convert into employment
+              </p>
+            </ChartCard>
+
+            <ChartCard title="Institutional Capacity — Supervision Coverage"
+              sub="Share of host organisations providing a named supervisor / mentor, the SOP's core quality control">
+              <div className="space-y-4">
+                {([
+                  { label: "Mentor-led organisations",  value: total.mentored,                    pct: mentorPct,   color: "#185FA5", denom: total.orgs },
+                  { label: "Unsupervised placements",   value: total.orgs - total.mentored,       pct: 100 - mentorPct, color: "#BA7517", denom: total.orgs },
+                  { label: "Students under supervision",value: mentorLedStudents,                 pct: supervisedPct, color: "#0F6E56", denom: total.students },
+                  { label: "Post-internship placements",value: placementsAfter,                   pct: placementPct, color: "#534AB7", denom: total.students },
+                ] as const).map(item => (
+                  <div key={item.label}>
+                    <div className="flex items-center justify-between mb-1.5 text-xs">
+                      <span className="font-medium text-gray-700">{item.label}</span>
+                      <span className="font-black tabular-nums" style={{ color: item.color }}>{item.pct}%</span>
+                    </div>
+                    <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: item.color + "1A" }}>
+                      <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                    </div>
+                    <p className="text-[9px] text-gray-400 mt-1 tabular-nums">{item.value} / {item.denom}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                Supervision is the SOP&apos;s main lever on quality — unsupervised placements carry the highest drop-off risk.
+              </p>
+            </ChartCard>
+          </div>
         </section>
 
         {/* â”€â”€ SECTION 4: GEOGRAPHIC COVERAGE â”€â”€â”€ */}

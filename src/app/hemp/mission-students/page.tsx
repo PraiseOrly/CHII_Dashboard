@@ -3,6 +3,45 @@ import HEMPNav from "@/components/HEMPNav";
 import ExecFilterBar from "@/components/ExecFilterBar";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { missionStudents } from "@/data/hemp/missionStudents";
+import { ghCohorts, GH_MODULES, GH_PROGRAMMES } from "@/data/hemp/globalHealth";
+
+// ── Introduction to Global Health course derivations ──
+const GH = (() => {
+  const s = (a: number[]) => a.reduce((x, y) => x + y, 0);
+  const enrolled   = s(ghCohorts.map(c => c.enrolled));
+  const female     = s(ghCohorts.map(c => c.female));
+  const completed  = s(ghCohorts.map(c => c.completed));
+  const certified  = s(ghCohorts.map(c => c.certified));
+  const progressed = s(ghCohorts.map(c => c.progressedToVenture + c.progressedToResearch + c.progressedToInternship));
+
+  return {
+    enrolled, completed, certified, progressed,
+    femalePct:     enrolled ? Math.round(female / enrolled * 100) : 0,
+    completionPct: enrolled ? Math.round(completed / enrolled * 100) : 0,
+    certifiedPct:  enrolled ? Math.round(certified / enrolled * 100) : 0,
+    avgScore:      Math.round(s(ghCohorts.map(c => c.avgScore)) / (ghCohorts.length || 1)),
+    satisfaction:  parseFloat((s(ghCohorts.map(c => c.satisfaction)) / (ghCohorts.length || 1)).toFixed(1)),
+
+    // Average completion per module — reveals the hardest gate
+    byModule: GH_MODULES.map(m => ({
+      name: m,
+      value: Math.round(s(ghCohorts.map(c => c.moduleCompletion[m])) / (ghCohorts.length || 1)),
+    })),
+
+    // Cross-disciplinary intake
+    byProgramme: GH_PROGRAMMES
+      .map(p => ({ name: p, value: s(ghCohorts.map(c => c.byProgramme[p])) }))
+      .sort((a, b) => b.value - a.value),
+
+    // What the course led on to, per cohort
+    byYear: ghCohorts.map(c => ({
+      Year: String(c.cohortYear),
+      Internship: c.progressedToInternship,
+      Venture: c.progressedToVenture,
+      Research: c.progressedToResearch,
+    })),
+  };
+})();
 import {
   AlertTriangle,
   BookOpen,
@@ -13,6 +52,9 @@ import {
   Package,
   Users,
   Briefcase,
+  Award,
+  Star,
+  TrendingUp,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
@@ -21,6 +63,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis, YAxis,
@@ -720,6 +763,96 @@ export default function MissionStudentsPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* â•â• SECTION: INTRODUCTION TO GLOBAL HEALTH COURSE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        <section>
+          <SecHeader
+            title="Introduction to Global Health Course"
+            sub={`Mission students come from different academic programmes but share a passion for improving healthcare. This foundational course is one of the ways we link them into the health sector — ${GH.enrolled} enrolled · ${GH.certifiedPct}% certified`}
+          />
+
+          {/* Course KPIs */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+            <StatsKpiCard label="Enrolled"          num={GH.enrolled}     sub={`${GH.femalePct}% female`}          Icon={BookOpen}      tooltip="Mission students enrolled on the Introduction to Global Health course across all cohorts." />
+            <StatsKpiCard label="Completed"         num={GH.completed}    sub={`${GH.completionPct}% completion`}  Icon={CheckCircle2}  tooltip="Students who finished all five modules of the course." />
+            <StatsKpiCard label="Certified"         num={GH.certified}    sub="Completed & passed"                 Icon={GraduationCap} tooltip="Students who completed the course and passed the final assessment." />
+            <StatsKpiCard label="Avg Score"         num={GH.avgScore}     displayFmt={n => `${Math.round(n)}%`} sub="Assessment mean" Icon={Award} tooltip="Mean assessment score across all certified students." />
+            <StatsKpiCard label="Progressed On"     num={GH.progressed}   sub="Venture · research · internship"    Icon={TrendingUp}    tooltip="Students who went on to a venture, a research project or an internship after the course — the point of the course is to open these doors." />
+            <StatsKpiCard label="Satisfaction"      num={GH.satisfaction} displayFmt={n => `${n.toFixed(1)}/5`} sub="Student-rated" Icon={Star} tooltip="How students rate the course, out of 5." />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <Card title="Module Completion — Where Learners Drop Off"
+              sub="Average completion rate per module. Epidemiology is consistently the hardest gate.">
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={GH.byModule} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }} barCategoryGap="26%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" horizontal={false} />
+                  <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#6B7280" }} axisLine={false} tickLine={false} width={140} interval={0} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Bar dataKey="value" name="Completion" radius={[0, 4, 4, 0]} maxBarSize={22}>
+                    {GH.byModule.map(d => (
+                      <Cell key={d.name} fill={d.value >= 90 ? "#0F6E56" : d.value >= 80 ? "#185FA5" : "#BA7517"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["≥90%", "#0F6E56"], ["80–89%", "#185FA5"], ["<80%", "#BA7517"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </Card>
+
+            <Card title="Where the Course Leads"
+              sub="Students progressing into ventures, research and internships after the course, per cohort">
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={GH.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={26} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Bar dataKey="Internship" fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={18} />
+                  <Bar dataKey="Venture"    fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={18} />
+                  <Bar dataKey="Research"   fill="#534AB7" radius={[4, 4, 0, 0]} maxBarSize={18} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["Internship", "#14306B"], ["Venture", "#0F6E56"], ["Research", "#534AB7"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-4">
+            <Card title="Cross-Disciplinary Intake"
+              sub="Mission students come from different academic programmes — this is the mix enrolling on the course">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {GH.byProgramme.map((row, i) => {
+                  const col = ["#14306B", "#185FA5", "#479BD6", "#0F6E56", "#534AB7"][i % 5];
+                  const max = GH.byProgramme[0]?.value || 1;
+                  return (
+                    <div key={row.name} className="flex items-center gap-2.5">
+                      <div className="w-[168px] text-[11px] text-gray-600 text-right flex-shrink-0 truncate">{row.name}</div>
+                      <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
+                        <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+                      </div>
+                      <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
           </div>
         </section>
 

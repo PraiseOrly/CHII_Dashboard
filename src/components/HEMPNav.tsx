@@ -27,11 +27,12 @@ function useTheme(): [boolean, () => void] {
 }
 
 export const HEMP_NAV_ITEMS = [
-  { label: "Overview",         href: "/hemp"                  },
-  { label: "Pipeline",         href: "/hemp/pipeline"         },
-  { label: "HealthX",          href: "/hemp/healthx"          },
-  { label: "Internships",      href: "/hemp/internships"      },
-  { label: "Mission Students", href: "/hemp/mission-students" },
+  { label: "Overview",                          href: "/hemp"                  },
+  { label: "Pipeline",                          href: "/hemp/pipeline"         },
+  { label: "Internship",                        href: "/hemp/internships"      },
+  { label: "Signature Immersive Experience",    href: "/hemp/sie"              },
+  { label: "HealthX: Explore What's Next",      href: "/hemp/healthx"          },
+  { label: "Mission Students",                  href: "/hemp/mission-students" },
 ] as const;
 
 export type HEMPNavLabel = typeof HEMP_NAV_ITEMS[number]["label"];
