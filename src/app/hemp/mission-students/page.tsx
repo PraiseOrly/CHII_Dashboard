@@ -1,7 +1,8 @@
 ﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
 import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import ExecFilterRow from "@/components/ExecSelect";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import HempFooter from "@/components/HempFooter";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { missionStudents } from "@/data/hemp/missionStudents";
@@ -273,6 +274,8 @@ function StatTile({ icon: Icon, label, value, sub }: {
 export default function MissionStudentsPage() {
   // â”€â”€ Filters â”€â”€
   const [fYear, setFYear] = useState("All Years");
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
   const byYear = <T extends { year: number }>(rows: T[]) =>
     fYear === "All Years" ? rows : rows.filter(d => String(d.year) === fYear);
   const mRows = useMemo(() => byYear(mentorData),  [fYear]);
@@ -365,16 +368,31 @@ export default function MissionStudentsPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* FILTER BAR */}
-        <ExecFilterRow
-          filters={[
-            { label: "Year", value: fYear, onChange: setFYear, options: ["All Years", ...YEARS.map(String)] },
-          ]}
-          dirty={fYear !== "All Years"}
-          onReset={() => setFYear("All Years")}
-        />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <SectionPills
+            accent="#14306B"
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Mentorship", value: "1" },
+              { label: "Guest Faculty", value: "2" },
+              { label: "Mission Curator", value: "3" },
+              { label: "Data Quality", value: "4" },
+            ]}
+          />
+          <OutreachFilters
+            accent="#14306B"
+            activeCount={fYear !== "All Years" ? 1 : 0}
+            onReset={() => setFYear("All Years")}
+          >
+            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent="#14306B"
+              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+          </OutreachFilters>
+        </div>
 
         {/* â•â• SECTION A: MENTORSHIP  -  indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        <section>
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader
             accent={INDIGO}
             title="Mentorship Program"
@@ -463,7 +481,7 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â•â• SECTION B: GUEST FACULTY  -  teal + sky identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader
             accent={TEAL}
             title="Guest Faculty &amp; Sessions"
@@ -550,7 +568,7 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â•â• SECTION C: CURATOR RESOURCES  -  orange + green + amber identity â•â•â• */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader
             accent={ORANGE}
             title="Mission Curator Resources"
@@ -659,7 +677,7 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â•â• SECTION D: SURVEY STATUS  -  rose identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader
             accent={ROSE_900}
             title="Survey &amp; Data Status"

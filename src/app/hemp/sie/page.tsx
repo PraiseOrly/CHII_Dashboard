@@ -1,7 +1,8 @@
 "use client";
 import HEMPNav from "@/components/HEMPNav";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import ExecFilterRow from "@/components/ExecSelect";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import HempFooter from "@/components/HempFooter";
 import { DonutRing } from "@/components/DonutChart";
 import {
@@ -238,7 +239,9 @@ export default function SiePage() {
   ), [fYear, fCountry]);
 
   const D = useMemo(() => derive(cohorts, visits), [cohorts, visits]);
-  const dirty = fYear !== "All Years" || fCountry !== "All Countries";
+  const activeCount = (fYear !== "All Years" ? 1 : 0) + (fCountry !== "All Countries" ? 1 : 0);
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
@@ -286,18 +289,34 @@ export default function SiePage() {
           <StatsKpiCard label="Satisfaction"       num={D.satisfaction} displayFmt={n => `${n.toFixed(1)}/5`} sub="Student-rated" Icon={Star} tooltip="How students rate the overall immersive experience, out of 5." />
         </div>
 
-        {/* Filters */}
-        <ExecFilterRow
-          filters={[
-            { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
-            { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...COUNTRIES] },
-          ]}
-          dirty={dirty}
-          onReset={() => { setFYear("All Years"); setFCountry("All Countries"); }}
-        />
+        {/* Section pills (left) + outreach-style filters popover (right) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <SectionPills
+            accent={BRAND}
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Hybrid Model", value: "1" },
+              { label: "Exposure", value: "2" },
+              { label: "Intake & Delivery", value: "3" },
+              { label: "Cohort Growth", value: "4" },
+            ]}
+          />
+          <OutreachFilters
+            accent={BRAND}
+            activeCount={activeCount}
+            onReset={() => { setFYear("All Years"); setFCountry("All Countries"); }}
+          >
+            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent={BRAND}
+              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent={BRAND}
+              options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
+          </OutreachFilters>
+        </div>
 
         {/* ── SECTION 1: The hybrid model ─── */}
-        <section>
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="The Hybrid Model"
             sub="How the programme splits between a virtual phase and the in-country immersion, and how many students make it all the way through" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -319,7 +338,7 @@ export default function SiePage() {
         </section>
 
         {/* ── SECTION 2: What students are exposed to ─── */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="What Students Are Exposed To"
             sub="The three things the immersion is designed to deliver — how health systems function, how innovation is applied, and what employment pathways exist" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -349,7 +368,7 @@ export default function SiePage() {
         </section>
 
         {/* ── SECTION 3: Interdisciplinary intake & delivery ─── */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Interdisciplinary Intake & Delivery"
             sub="The programme is explicitly for non-clinical students — this is the mix of disciplines it draws, and the activity pillars it delivers" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -393,7 +412,7 @@ export default function SiePage() {
         </section>
 
         {/* ── SECTION 4: Cohort growth & top visits ─── */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader title="Cohort Growth & Highest-Value Visits"
             sub="How the programme has scaled cohort on cohort, and which site visits students rated most valuable" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

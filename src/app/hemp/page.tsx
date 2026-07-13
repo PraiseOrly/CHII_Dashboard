@@ -1,5 +1,7 @@
 "use client";
 import HEMPNav from "@/components/HEMPNav";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import HempFooter from "@/components/HempFooter";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { DonutRing } from "@/components/DonutChart";
@@ -562,17 +564,33 @@ export default function HEMPOverview() {
           <KpiTile label="Employment Rate" num={employPct}     displayFmt={n => `${Math.round(n)}%`}            Icon={Briefcase}    pct={employPct} bench={70} tip="Graduates employed or running a venture." />
         </div>
 
-        {/* Section pills */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {[{ n: 0, label: "All Sections" }, { n: 1, label: "Delivery" }, { n: 2, label: "Participants" }, { n: 3, label: "Performance" }, { n: 4, label: "Outcomes" }, { n: 5, label: "Ecosystem & Impact" }].map(({ n, label }) => {
-            const on = n === 0 ? activeSection === "all" : activeSection === n;
-            return (
-              <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? BRAND : "rgba(20,48,107,0.2)"}`, backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280" }}>
-                {label}
-              </button>
-            );
-          })}
+        {/* Section pills (left) + outreach-style filters popover (right) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <SectionPills
+            accent={BRAND}
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Delivery", value: "1" },
+              { label: "Participants", value: "2" },
+              { label: "Performance", value: "3" },
+              { label: "Outcomes", value: "4" },
+              { label: "Ecosystem & Impact", value: "5" },
+            ]}
+          />
+          <OutreachFilters
+            accent={BRAND}
+            activeCount={(geoCountry !== "All Countries" ? 1 : 0) + (geoYear !== "All Years" ? 1 : 0) + (geoRegion !== "All Regions" ? 1 : 0)}
+            onReset={() => { setGeoCountry("All Countries"); setGeoYear("All Years"); setGeoRegion("All Regions"); }}
+          >
+            <OFilterSelect label="Country" value={geoCountry} onChange={setGeoCountry} accent={BRAND}
+              options={["All Countries", ...GEO_COUNTRIES].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Year" value={geoYear} onChange={setGeoYear} accent={BRAND}
+              options={["All Years", ...GEO_YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Region" value={geoRegion} onChange={setGeoRegion} accent={BRAND}
+              options={["All Regions", ...GEO_REGIONS].map(o => ({ value: o, label: o }))} />
+          </OutreachFilters>
         </div>
 
         {/* ── SECTION 1: PROGRAMME DELIVERY ── */}

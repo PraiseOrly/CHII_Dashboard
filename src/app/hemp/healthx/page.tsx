@@ -7,7 +7,8 @@ import {
 import { Briefcase, Building2, Download, FileText, Link2, MapPin, Handshake, TrendingUp, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
 import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import ExecFilterRow from "@/components/ExecSelect";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import HempFooter from "@/components/HempFooter";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
@@ -258,6 +259,8 @@ export default function HealthXPage() {
 
   // â”€â”€ Filters â”€â”€
   const [fYear, setFYear]       = useState("All Years");
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
   const [fCountry, setFCountry] = useState("All Countries");
   const [fType, setFType]       = useState("All Types");
   const filtered = useMemo(() => healthXSessions.filter(h =>
@@ -348,18 +351,36 @@ export default function HealthXPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
-        <ExecFilterRow
-          filters={[
-            { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
-            { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...ALL_COUNTRIES] },
-            { label: "Type",    value: fType,    onChange: setFType,    options: ["All Types", ...HX_SESSION_TYPES] },
-          ]}
-          dirty={fYear !== "All Years" || fCountry !== "All Countries" || fType !== "All Types"}
-          onReset={() => { setFYear("All Years"); setFCountry("All Countries"); setFType("All Types"); }}
-        />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <SectionPills
+            accent="#14306B"
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Pipeline & Feedback", value: "1" },
+              { label: "Org Types", value: "2" },
+              { label: "Annual Activity", value: "3" },
+              { label: "Satisfaction & Reach", value: "4" },
+              { label: "Career Exposure", value: "5" },
+            ]}
+          />
+          <OutreachFilters
+            accent="#14306B"
+            activeCount={(fYear !== "All Years" ? 1 : 0) + (fCountry !== "All Countries" ? 1 : 0) + (fType !== "All Types" ? 1 : 0)}
+            onReset={() => { setFYear("All Years"); setFCountry("All Countries"); setFType("All Types"); }}
+          >
+            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent="#14306B"
+              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent="#14306B"
+              options={["All Countries", ...ALL_COUNTRIES].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Type" value={fType} onChange={setFType} accent="#14306B"
+              options={["All Types", ...HX_SESSION_TYPES].map(o => ({ value: o, label: o }))} />
+          </OutreachFilters>
+        </div>
 
         {/* â”€â”€ SECTION 1: PIPELINE + FEEDBACK â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Partnership Pipeline &amp; Student Feedback"
             sub="Visit-to-MOU conversion funnel alongside student experience quality ratings" />
 
@@ -525,7 +546,7 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ SECTION 2: VISITS BY ORG TYPE â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Visits by Organisation Type"
             sub="Count of HealthX sessions per host organisation category  -  absolute numbers" accent={BLUE} />
 
@@ -604,7 +625,7 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ SECTION 3: ANNUAL ACTIVITY â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Annual Activity" sub="Session frequency and student reach year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -644,7 +665,7 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ SECTION 4: PERFORMANCE & GEOGRAPHY â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader title="Satisfaction &amp; Geographic Reach"
             sub="Score breakdown by session type  ·  country coverage by participant volume" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -718,7 +739,7 @@ export default function HealthXPage() {
         </section>
 
         {/* ══ CAREER EXPOSURE PLATFORM — "Explore What's Next" ══════════════ */}
-        <section>
+        <section style={{ display: show(5) ? undefined : "none" }}>
           <SecHeader title="Career Exposure Platform — Explore What&apos;s Next"
             sub="The multi-institutional symposium: pre-event readiness sessions, the health careers exhibition, and the internship, employment and project leads it generates" />
 

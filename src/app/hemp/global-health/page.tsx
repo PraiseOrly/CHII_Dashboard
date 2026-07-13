@@ -2,7 +2,8 @@
 import HEMPNav from "@/components/HEMPNav";
 import HempFooter from "@/components/HempFooter";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import ExecFilterRow from "@/components/ExecSelect";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
 import { DonutRing } from "@/components/DonutChart";
 import { ghCohorts, GH_MODULES, GH_PROGRAMMES } from "@/data/hemp/globalHealth";
@@ -191,12 +192,32 @@ export default function GlobalHealthPage() {
   const D = useMemo(() => derive(rows), [rows]);
   const dirty = fYear !== "All Years";
 
-  const filterRow = (
-    <ExecFilterRow
-      filters={[{ label: "Year", value: fYear, onChange: setFYear, options: ["All Years", ...YEARS.map(String)], allLabel: "All" }]}
-      dirty={dirty}
-      onReset={() => setFYear("All Years")}
-    />
+  const activeCount = fYear !== "All Years" ? 1 : 0;
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
+
+  const filterControls = (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+      <SectionPills
+        accent={BRAND}
+        value={activeSection === "all" ? "all" : String(activeSection)}
+        onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+        options={[
+          { label: "All Sections", value: "all" },
+          { label: "Enrolment to Certification", value: "1" },
+          { label: "Where It Leads", value: "2" },
+          { label: "Intake & Performance", value: "3" },
+        ]}
+      />
+      <OutreachFilters
+        accent={BRAND}
+        activeCount={activeCount}
+        onReset={() => setFYear("All Years")}
+      >
+        <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent={BRAND}
+          options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+      </OutreachFilters>
+    </div>
   );
 
   return (
@@ -243,13 +264,15 @@ export default function GlobalHealthPage() {
           <StatsKpiCard label="Satisfaction"  num={D.satisfaction} displayFmt={n => `${n.toFixed(1)}/5`} sub="Student-rated"   Icon={Star} tooltip="How students rate the course, out of 5." />
         </div>
 
+        {filterControls}
+
         {/* ── SECTION 1: Completion ─── */}
-        <section>
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Enrolment to Certification"
             sub="How many students make it from enrolment through to a certificate — and which module is the hardest gate" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Course Funnel" sub="Enrolled → completed → certified → progressed onward" filters={filterRow}
+            <ChartCard title="Course Funnel" sub="Enrolled → completed → certified → progressed onward"
               info="The drop between 'completed' and 'certified' is the assessment gate; the drop to 'progressed onward' shows how well the course actually converts into opportunity.">
               <Funnel steps={D.funnel} />
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
@@ -278,7 +301,7 @@ export default function GlobalHealthPage() {
         </section>
 
         {/* ── SECTION 2: Where it leads ─── */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Where the Course Leads"
             sub="The course exists to link students into the health sector — these are the doors it opens" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -308,7 +331,7 @@ export default function GlobalHealthPage() {
         </section>
 
         {/* ── SECTION 3: Intake & performance ─── */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Intake & Performance"
             sub="Mission students come from different academic programmes — this is the mix, and how the cohort performs" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

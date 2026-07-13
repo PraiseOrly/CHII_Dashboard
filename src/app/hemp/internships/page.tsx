@@ -1,7 +1,8 @@
 ﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
 import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
-import ExecFilterRow from "@/components/ExecSelect";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import HempFooter from "@/components/HempFooter";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
@@ -311,6 +312,8 @@ export default function InternshipsPage() {
 
   // ── Filters ──
   const [fYear, setFYear]       = useState("All Years");
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
   const [fCountry, setFCountry] = useState("All Countries");
   const [fSector, setFSector]   = useState("All Sectors");
   const filtered = useMemo(() => internships.filter(i =>
@@ -418,18 +421,37 @@ export default function InternshipsPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
-        <ExecFilterRow
-          filters={[
-            { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
-            { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...ALL_COUNTRIES] },
-            { label: "Sector",  value: fSector,  onChange: setFSector,  options: ["All Sectors", ...INTERNSHIP_SECTORS] },
-          ]}
-          dirty={fYear !== "All Years" || fCountry !== "All Countries" || fSector !== "All Sectors"}
-          onReset={() => { setFYear("All Years"); setFCountry("All Countries"); setFSector("All Sectors"); }}
-        />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <SectionPills
+            accent="#14306B"
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Sector Profiles", value: "1" },
+              { label: "Annual Trends", value: "2" },
+              { label: "Placement Outcomes", value: "3" },
+              { label: "Cohort Outcomes", value: "4" },
+              { label: "Lifecycle", value: "5" },
+              { label: "Geography", value: "6" },
+            ]}
+          />
+          <OutreachFilters
+            accent="#14306B"
+            activeCount={(fYear !== "All Years" ? 1 : 0) + (fCountry !== "All Countries" ? 1 : 0) + (fSector !== "All Sectors" ? 1 : 0)}
+            onReset={() => { setFYear("All Years"); setFCountry("All Countries"); setFSector("All Sectors"); }}
+          >
+            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent="#14306B"
+              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent="#14306B"
+              options={["All Countries", ...ALL_COUNTRIES].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Sector" value={fSector} onChange={setFSector} accent="#14306B"
+              options={["All Sectors", ...INTERNSHIP_SECTORS].map(o => ({ value: o, label: o }))} />
+          </OutreachFilters>
+        </div>
 
         {/* â”€â”€ SECTION 1: SECTOR PROFILES â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Sector Profiles"
             sub={`${total.students} students across ${total.orgs} organisations in ${countries.length} countries`} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -508,7 +530,7 @@ export default function InternshipsPage() {
         </section>
 
         {/* â”€â”€ SECTION 2: ANNUAL TRENDS â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(2) ? undefined : "none" }}>
           <SecHeader title="Annual Placement Trends"
             sub="Organisation and student placement volume year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -552,7 +574,7 @@ export default function InternshipsPage() {
         </section>
 
         {/* â”€â”€ SECTION 3: TRENDS & ANALYSIS â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(3) ? undefined : "none" }}>
           <SecHeader title="Placement Outcomes"
             sub="Employment conversion and gender trend analysis" />
 
@@ -643,7 +665,7 @@ export default function InternshipsPage() {
         </section>
 
         {/* â”€â”€ SECTION 5: COHORT OUTCOMES (HEMP) â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(4) ? undefined : "none" }}>
           <SecHeader
             title="Cohort Outcomes (Internal  ·  SFH  ·  WAG  ·  KASHA)"
             sub="Internship participation + post-internship placement outcomes" />
@@ -872,7 +894,7 @@ export default function InternshipsPage() {
         </section>
 
         {/* â”€â”€ SECTION: PROGRAMME LIFECYCLE (SOP) â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(5) ? undefined : "none" }}>
           <SecHeader title="Internship Programme Lifecycle"
             sub="The full SOP pipeline — partnership engagement, recruitment and eligibility screening, matching, pre-internship training, onboarding, supervision, M&amp;E and close-out" />
 
@@ -950,7 +972,7 @@ export default function InternshipsPage() {
         </section>
 
         {/* â”€â”€ SECTION 4: GEOGRAPHIC COVERAGE â”€â”€â”€ */}
-        <section>
+        <section style={{ display: show(6) ? undefined : "none" }}>
 
 
           <SecHeader title="Geographic Coverage"
