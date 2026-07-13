@@ -33,7 +33,7 @@ export const HENT_NAV_ITEMS = [
   { label: "Masterclass",                         href: "/hent/masterclasses"       },
   { label: "Hackathon",                           href: "/hent/hackathons"          },
   { label: "Mentorship",                          href: "/hent/mentorship"          },
-  { label: "Exposure & Networking Opportunities", href: "/hent/exposure-networking" },
+  { label: "Exposure & Networking",               href: "/hent/exposure-networking" },
   { label: "Study Trips",                         href: "/hent/fieldvisits"         },
 ] as const;
 

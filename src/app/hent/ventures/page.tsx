@@ -6,8 +6,11 @@ import {
   AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Banknote, Briefcase, Info, Rocket, SlidersHorizontal, Target, Users, X, Zap, type LucideIcon } from "lucide-react";
+import { Banknote, Briefcase, Info, Rocket, Target, Users, Zap, type LucideIcon } from "lucide-react";
 import HENTNav, { getActiveLabel } from "@/components/HENTNav";
+import HentFooter from "@/components/HentFooter";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect } from "@/components/OutreachFilters";
 import { DonutRing } from "@/components/DonutChart";
 import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
@@ -416,6 +419,11 @@ function Panel({ title, subtitle, info, children }: {
   );
 }
 
+// Cohort filter: internal value <-> human label, for the executive dropdown.
+type NationFilter = "ALL" | "MCF" | "NON-MCF" | "FLAGGED";
+const NATION_LABEL: Record<NationFilter, string> = {
+  ALL: "All Cohorts", MCF: "MCF Scholars", "NON-MCF": "Non-MCF", FLAGGED: "Flagged",
+};
 const VEN_SECTIONS = [
   { n: 1, label: "Growth & Jobs" },
   { n: 2, label: "Portfolio Composition" },
@@ -430,7 +438,6 @@ export default function HENTPortfolio() {
   const [nationFilter, setNationFilter] = useState<"ALL" | "MCF" | "NON-MCF" | "FLAGGED">("ALL");
   const [yearFilter, setYearFilter] = useState<"All" | number>("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const show = (n: number) => activeSection === "all" || activeSection === n;
   const filtersActive = (stageFilter !== "All" ? 1 : 0) + (nationFilter !== "ALL" ? 1 : 0) + (yearFilter !== "All" ? 1 : 0);
 
@@ -575,91 +582,32 @@ export default function HENTPortfolio() {
                 clr="#134E4A" pace={false} />
         </div>
 
-        {/* Section pills (left) + Filters dropdown (right) */}
+        {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {[{ n: 0, label: "All Sections" }, ...VEN_SECTIONS].map(({ n, label }) => {
-              const on = n === 0 ? activeSection === "all" : activeSection === n;
-              return (
-                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                    border: `1px solid ${on ? G_HEAD : "rgba(14,70,51,0.18)"}`,
-                    backgroundColor: on ? G_HEAD : "white", color: on ? "white" : "#6B7280" }}>
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <SectionPills
+            accent={G_HEAD}
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[{ label: "All Sections", value: "all" }, ...VEN_SECTIONS.map(s => ({ label: s.label, value: String(s.n) }))]}
+          />
 
-          <div style={{ position: "relative", flexShrink: 0 }}>
-            <button onClick={() => setFiltersOpen(o => !o)}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                border: `1px solid ${filtersActive || filtersOpen ? G_HEAD : "rgba(14,70,51,0.18)"}`,
-                backgroundColor: filtersOpen ? G_HEAD : "white", color: filtersOpen ? "white" : "#374151" }}>
-              <SlidersHorizontal size={13} />
-              Filters
-              {filtersActive > 0 && (
-                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : G_HEAD, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{filtersActive}</span>
-              )}
-            </button>
-            {filtersOpen && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 300, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(14,70,51,0.14)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
-                <div style={{ backgroundColor: G_BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    {filtersActive > 0 && (
-                      <button onClick={() => { setStageFilter("All"); setNationFilter("ALL"); setYearFilter("All"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
-                    )}
-                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
-                  </div>
-                </div>
-                <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Year</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {(["All", ...VENTURE_YEARS] as const).map(y => (
-                        <button key={y} onClick={() => setYearFilter(y as "All" | number)}
-                          style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7, cursor: "pointer",
-                            border: `1px solid ${yearFilter === y ? G_HEAD : "rgba(14,70,51,0.18)"}`,
-                            backgroundColor: yearFilter === y ? G_HEAD : "white", color: yearFilter === y ? "white" : "#6B7280" }}>
-                          {y === "All" ? "All Years" : y}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Stage</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {(["All", "Expose", "Build", "Scale"] as const).map(s => (
-                        <button key={s} onClick={() => setStageFilter(s)}
-                          style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7, cursor: "pointer",
-                            border: `1px solid ${stageFilter === s ? G_HEAD : "rgba(14,70,51,0.18)"}`,
-                            backgroundColor: stageFilter === s ? G_HEAD : "white", color: stageFilter === s ? "white" : "#6B7280" }}>
-                          {s === "All" ? "All Stages" : s}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 6 }}>Cohort</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {(["ALL", "MCF", "NON-MCF", "FLAGGED"] as const).map(n => {
-                        const label = n === "ALL" ? "All" : n === "MCF" ? "MCF Scholars" : n === "NON-MCF" ? "Non-MCF" : "Flagged";
-                        return (
-                          <button key={n} onClick={() => setNationFilter(n)}
-                            style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7, cursor: "pointer",
-                              border: `1px solid ${nationFilter === n ? G_HEAD : "rgba(14,70,51,0.18)"}`,
-                              backgroundColor: nationFilter === n ? G_HEAD : "white", color: nationFilter === n ? "white" : "#6B7280" }}>
-                            {label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <OutreachFilters
+            accent={G_HEAD}
+            activeCount={filtersActive}
+            onReset={() => { setStageFilter("All"); setNationFilter("ALL"); setYearFilter("All"); }}
+          >
+            <FilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent={G_HEAD}
+              options={[{ value: "All" as const, label: "All Years" }, ...VENTURE_YEARS.map(y => ({ value: y, label: String(y) }))]} />
+            <FilterSelect label="Stage" value={stageFilter} onChange={setStageFilter} accent={G_HEAD}
+              options={[
+                { value: "All", label: "All Stages" },
+                { value: "Expose", label: "Expose" },
+                { value: "Build", label: "Build" },
+                { value: "Scale", label: "Scale" },
+              ]} />
+            <FilterSelect label="Cohort" value={nationFilter} onChange={setNationFilter} accent={G_HEAD}
+              options={(Object.keys(NATION_LABEL) as NationFilter[]).map(v => ({ value: v, label: NATION_LABEL[v] }))} />
+          </OutreachFilters>
         </div>
 
         {show(1) && (
@@ -774,38 +722,7 @@ export default function HENTPortfolio() {
         )}
 
         {/* â”€â”€ FOOTER (executive style, HENT green header design) â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
-
-          {/* Faint triangle pattern */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-
-          {/* Design elements anchored to the left & right edges */}
-          <img src="/images/design1.png" alt="" aria-hidden="true"
-            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true"
-            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-
-          {/* Center overlay */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
-
-          {/* Content */}
-          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}>
-                <span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 28 May 2026, EAT
-              </span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}>
-                <span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Ventures M&amp;E
-              </span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
-                Contact Analyst
-              </a>
-            </div>
-          </div>
-        </div>
+        <HentFooter source="HENT Ventures M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>

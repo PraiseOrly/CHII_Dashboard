@@ -4,8 +4,11 @@ import {
   BarChart, Bar, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Star, Award, Users, Target, Zap, Briefcase, SlidersHorizontal, X } from "lucide-react";
+import { Star, Award, Users, Target, Zap, Briefcase } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import HentFooter from "@/components/HentFooter";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import { DonutRing } from "@/components/DonutChart";
 import {
   mentorshipPrograms, MF_CRITERIA, MF_QUAL_AREAS,
@@ -337,7 +340,6 @@ export default function MentorshipPage() {
   const [genderView,  setGenderView]  = useState<GenderVal>("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (typeFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
   const filtered = useMemo(() => mentorshipPrograms.filter(p => {
@@ -503,52 +505,43 @@ export default function MentorshipPage() {
 
 
         {/* S1: VENTURE RATINGS */}
-        {/* Section pills (left) + Filters dropdown (right) */}
+        {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {[{ n: 0, label: "All Sections" }, { n: 1, label: "Ratings" }, { n: 2, label: "Satisfaction" }, { n: 3, label: "Demographics" }, { n: 4, label: "Heatmap" }, { n: 5, label: "Engagement" }, { n: 6, label: "Top Rated" }, { n: 7, label: "Outcomes" }, { n: 8, label: "Completion" }].map(({ n, label }) => {
-              const on = n === 0 ? activeSection === "all" : activeSection === n;
-              return (
-                <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <SectionPills
+            accent="#0E4633"
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Ratings", value: "1" }, { label: "Satisfaction", value: "2" },
+              { label: "Demographics", value: "3" }, { label: "Heatmap", value: "4" },
+              { label: "Engagement", value: "5" }, { label: "Top Rated", value: "6" },
+              { label: "Outcomes", value: "7" }, { label: "Completion", value: "8" },
+            ]}
+          />
 
-          <div style={{ position: "relative", flexShrink: 0 }}>
-            <button onClick={() => setFiltersOpen(o => !o)}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${filtersActive || filtersOpen ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: filtersOpen ? "#0E4633" : "white", color: filtersOpen ? "white" : "#374151" }}>
-              <SlidersHorizontal size={13} />
-              Filters
-              {filtersActive > 0 && (
-                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : "#0E4633", borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{filtersActive}</span>
-              )}
-            </button>
-            {filtersOpen && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(14,70,51,0.14)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
-                <div style={{ backgroundColor: "#0E4633", padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    {filtersActive > 0 && (
-                      <button onClick={() => { setYearFilter("All"); setTypeFilter("All"); setGenderView("All"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
-                    )}
-                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
-                  </div>
-                </div>
-                <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <FilterSelect label="Year" value={yearFilter} onChange={setYearFilter}
-                    options={[{ value: "All", label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
-                  <FilterSelect label="Type" value={typeFilter} onChange={setTypeFilter}
-                    options={[{ value: "All", label: "All Types" }, { value: "Mentorship", label: "Mentorship" }, { value: "Fellowship", label: "Fellowship" }, { value: "One-Year Fellowship", label: "One-Year Fellowship" }, { value: "Advisory", label: "Advisory Program" }]} />
-                  <FilterSelect label="Gender" value={genderView} onChange={setGenderView}
-                    options={[{ value: "All", label: "All Genders" }, { value: "Female", label: "Female-majority" }, { value: "Male", label: "Male-majority" }]} />
-                </div>
-                <div style={{ padding: "0 14px 12px", fontSize: 10.5, color: "#6B7280" }}>{filtered.length} of {mentorshipPrograms.length} programmes</div>
-              </div>
-            )}
-          </div>
+          <OutreachFilters
+            accent="#0E4633"
+            activeCount={filtersActive}
+            onReset={() => { setYearFilter("All"); setTypeFilter("All"); setGenderView("All"); }}
+          >
+            <OFilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent="#0E4633"
+              options={[{ value: "All" as YearVal, label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y as YearVal, label: y }))]} />
+            <OFilterSelect label="Type" value={typeFilter} onChange={setTypeFilter} accent="#0E4633"
+              options={[
+                { value: "All" as TypeVal, label: "All Types" },
+                { value: "Mentorship" as TypeVal, label: "Mentorship" },
+                { value: "Fellowship" as TypeVal, label: "Fellowship" },
+                { value: "One-Year Fellowship" as TypeVal, label: "One-Year Fellowship" },
+                { value: "Advisory" as TypeVal, label: "Advisory Program" },
+              ]} />
+            <OFilterSelect label="Gender" value={genderView} onChange={setGenderView} accent="#0E4633"
+              options={[
+                { value: "All" as GenderVal, label: "All Genders" },
+                { value: "Female" as GenderVal, label: "Female-majority" },
+                { value: "Male" as GenderVal, label: "Male-majority" },
+              ]} />
+          </OutreachFilters>
         </div>
 
         <section style={{ display: show(1) ? undefined : "none" }}>
@@ -1051,22 +1044,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* FOOTER */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
-          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 01 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Mentorship M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
-            </div>
-          </div>
-        </div>
+        <HentFooter source="HENT Mentorship M&amp;E" synced="01 Jun 2026, EAT" />
 
       </div>
     </div>

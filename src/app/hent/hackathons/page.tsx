@@ -2,11 +2,13 @@
 import { useState, useEffect, useRef } from "react";
 import {
   BarChart, Bar,
-  AreaChart, Area, LineChart, Line,
+  AreaChart, Area, LineChart, Line, ComposedChart,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Briefcase, Zap } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import HentFooter from "@/components/HentFooter";
+import SectionPills from "@/components/SectionPills";
 import { DonutRing } from "@/components/DonutChart";
 import { hackathons, PROJECT_CATEGORIES } from "@/data/hackathons";
 
@@ -397,18 +399,18 @@ export default function HackathonsPage() {
         </div>
 
         {/* â”€â”€ SECTION 1: PARTICIPANT PROFILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        {/* Section pills */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {[{ n: 0, label: "All Sections" }, { n: 1, label: "Profiles" }, { n: 2, label: "Per Year" }, { n: 3, label: "Trends" }, { n: 4, label: "Categories" }].map(({ n, label }) => {
-            const on = n === 0 ? activeSection === "all" : activeSection === n;
-            return (
-              <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
-                {label}
-              </button>
-            );
-          })}
-        </div>
+        {/* Section pills (HENT Overview design) */}
+        <SectionPills
+          accent="#0E4633"
+          value={activeSection === "all" ? "all" : String(activeSection)}
+          onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+          options={[
+            { label: "All Sections", value: "all" },
+            { label: "Profiles", value: "1" }, { label: "Per Year", value: "2" },
+            { label: "Trends", value: "3" }, { label: "Categories", value: "4" },
+            { label: "Lifecycle", value: "5" },
+          ]}
+        />
 
         <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Participant Profiles"
@@ -526,20 +528,18 @@ export default function HackathonsPage() {
             sub="Year-on-year trends with male vs female comparison" />
 
           {/* Tab filters — pill style matching the section filters */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-            {(["participants", "projects", "winners", "startups"] as const).map(tab => {
-              const label = tab === "participants" ? "Participants"
-                          : tab === "projects"     ? "Projects Developed"
-                          : tab === "winners"      ? "Winning Teams"
-                          :                          "Startups Created";
-              const on = trendTab === tab;
-              return (
-                <button key={tab} onClick={() => setTrendTab(tab)}
-                  style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? "#0E4633" : "rgba(14,70,51,0.18)"}`, backgroundColor: on ? "#0E4633" : "white", color: on ? "white" : "#6B7280" }}>
-                  {label}
-                </button>
-              );
-            })}
+          <div style={{ marginBottom: 16 }}>
+            <SectionPills
+              accent="#0E4633"
+              value={trendTab}
+              onChange={setTrendTab}
+              options={[
+                { label: "Participants",       value: "participants" },
+                { label: "Projects Developed", value: "projects" },
+                { label: "Winning Teams",      value: "winners" },
+                { label: "Startups Created",   value: "startups" },
+              ]}
+            />
           </div>
 
           <ChartCard
@@ -640,23 +640,88 @@ export default function HackathonsPage() {
           </div>
         </section>
 
-        {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
-          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Data Last Synced:</span> 28 May 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.85)" }}><span style={{ color: "#7FD0B6", fontWeight: 600 }}>Source:</span> HENT Hackathons M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(190,228,214,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(190,228,214,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
-            </div>
+        {/* â”€â”€ SECTION 5: INNOVATION LIFECYCLE â”€â”€â”€ */}
+        <section style={{ display: show(5) ? undefined : "none" }}>
+          <SecHeader title="Hackathon Innovation Lifecycle"
+            sub="The full SOP pipeline — from participant recruitment and team formation through prototyping and pitching, to the ventures and partnerships that survive it" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <ChartCard title="Lifecycle Conversion Funnel"
+              sub="How many participants make it through each stage of the hackathon pipeline">
+              <div className="space-y-2.5">
+                {(() => {
+                  const steps = [
+                    { label: "Participants recruited",   value: total.participants },
+                    { label: "Projects developed",        value: total.projects },
+                    { label: "Winning teams selected",    value: total.winningTeams },
+                    { label: "Startups created",          value: total.startups },
+                    { label: "Partnerships secured",      value: total.partnerships },
+                  ];
+                  const max = steps[0].value || 1;
+                  return steps.map((s, i) => {
+                    const pct = Math.max(6, Math.round((s.value / max) * 100));
+                    const conv = i > 0 && steps[i - 1].value > 0
+                      ? Math.round((s.value / steps[i - 1].value) * 100) : null;
+                    return (
+                      <div key={s.label}>
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="font-semibold text-gray-700">{s.label}</span>
+                          <span className="font-bold tabular-nums" style={{ color: "#0E4633" }}>
+                            {s.value.toLocaleString()}
+                            {conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
+                          </span>
+                        </div>
+                        <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(14,70,51,0.08)" }}>
+                          <div className="h-full rounded-sm" style={{ width: `${pct}%`, backgroundColor: "#0E4633", opacity: 1 - i * 0.14 }} />
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+                {total.projects ? Math.round(total.startups / total.projects * 100) : 0}% of hackathon projects go on to become startups
+              </p>
+            </ChartCard>
+
+            <ChartCard title="Idea-to-Venture Conversion per Year"
+              sub="Projects developed vs startups created, and the conversion rate achieved each year">
+              <ResponsiveContainer width="100%" height={220}>
+                <ComposedChart data={YEARS.map(yr => {
+                  const hs = hackathons.filter(h => h.year === yr);
+                  const projects = hs.reduce((s, h) => s + h.projects, 0);
+                  const startups = hs.reduce((s, h) => s + h.startupsCreated, 0);
+                  return {
+                    Year: String(yr), Projects: projects, Startups: startups,
+                    Rate: projects ? Math.round((startups / projects) * 100) : 0,
+                  };
+                })} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="l" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <YAxis yAxisId="r" orientation="right" unit="%" domain={[0, 100]} tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={36} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Bar yAxisId="l" dataKey="Projects" fill="#1B4332" radius={[4, 4, 0, 0]} maxBarSize={18} />
+                  <Bar yAxisId="l" dataKey="Startups" fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={18} />
+                  <Line yAxisId="r" type="monotone" dataKey="Rate" name="Conversion rate" stroke="#1F9E9E" strokeWidth={2.5}
+                    dot={{ r: 4, fill: "#1F9E9E", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </ComposedChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["Projects", "#1B4332"], ["Startups", "#A6C13C"], ["Conversion rate", "#1F9E9E"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </ChartCard>
+
           </div>
-        </div>
+        </section>
+
+        {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <HentFooter source="HENT Hackathons M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>

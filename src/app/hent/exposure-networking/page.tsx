@@ -1,14 +1,264 @@
 "use client";
 import HENTNav from "@/components/HENTNav";
+import HentFooter from "@/components/HentFooter";
+import SectionPills from "@/components/SectionPills";
+import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
+import { DonutRing } from "@/components/DonutChart";
+import {
+  exposureEvents, EXPOSURE_TYPES, STAKEHOLDER_GROUPS,
+  type ExposureType, type StakeholderGroup,
+} from "@/data/exposure";
+import { CalendarDays, Handshake, Link2, Mic, Star, Users, type LucideIcon } from "lucide-react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import {
+  Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
+  ResponsiveContainer, Tooltip, XAxis, YAxis,
+} from "recharts";
 
+// ─── Theme (HENT green) ──────────────────────────────────────────────────────
+const HERO     = "#2D6A4F";
+const BRAND    = "#2D6A4F";
+const BRAND_DK = "#0E4633";
+const GREEN_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5"];
+const DISTINCT   = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5"];
+
+const TYPE_HEX: Record<ExposureType, string> = {
+  "Pitch Event":          "#1B4332",
+  "Conference":           "#1F9E9E",
+  "Investor Roundtable":  "#A6C13C",
+  "Ecosystem Engagement": "#40916C",
+  "Demo Day":             "#BBD59B",
+};
+
+function avg(a: number[]) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0; }
+function sum(a: number[]) { return a.reduce((x, y) => x + y, 0); }
+
+const YEARS = Array.from(new Set(exposureEvents.map(e => e.year))).sort();
+const COUNTRIES = Array.from(new Set(exposureEvents.map(e => e.country))).sort();
+
+// ─── Derivations (filter-aware) ──────────────────────────────────────────────
+function derive(rows: typeof exposureEvents) {
+  const events = rows.length;
+  const founders = sum(rows.map(e => e.founders));
+  const femaleFounders = sum(rows.map(e => e.femaleFounders));
+  const femalePct = founders ? Math.round(femaleFounders / founders * 100) : 0;
+  const ventures = sum(rows.map(e => e.ventures));
+  const connections = sum(rows.map(e => e.connections));
+  const followUps = sum(rows.map(e => e.followUps));
+  const deals = sum(rows.map(e => e.dealsInitiated));
+  const mous = sum(rows.map(e => e.mousSigned));
+  const investors = sum(rows.map(e => e.stakeholders.Investors));
+  const visibility = parseFloat(avg(rows.map(e => e.visibilityScore)).toFixed(1));
+
+  // Relationship funnel — the core value chain of the intervention
+  const funnel = [
+    { label: "Connections made",      value: connections },
+    { label: "Follow-up meetings",    value: followUps },
+    { label: "Deals / partnerships opened", value: deals },
+    { label: "Formal agreements signed",    value: mous },
+  ];
+
+  // Events + founders reached per year
+  const byYear = YEARS.map(y => {
+    const rs = rows.filter(e => e.year === y);
+    return {
+      Year: String(y),
+      Events: rs.length,
+      Founders: sum(rs.map(e => e.founders)),
+      Connections: sum(rs.map(e => e.connections)),
+    };
+  }).filter(d => d.Events > 0);
+
+  // Events by type
+  const byType = EXPOSURE_TYPES.map(t => {
+    const rs = rows.filter(e => e.type === t);
+    return {
+      name: t,
+      value: rs.length,
+      Events: rs.length,
+      Founders: sum(rs.map(e => e.founders)),
+      Connections: sum(rs.map(e => e.connections)),
+      Deals: sum(rs.map(e => e.dealsInitiated)),
+      // effectiveness: deals opened per event
+      DealsPerEvent: rs.length ? parseFloat((sum(rs.map(e => e.dealsInitiated)) / rs.length).toFixed(1)) : 0,
+      ConnPerFounder: sum(rs.map(e => e.founders))
+        ? parseFloat((sum(rs.map(e => e.connections)) / sum(rs.map(e => e.founders))).toFixed(1))
+        : 0,
+    };
+  }).filter(d => d.Events > 0);
+
+  // Stakeholder mix — who founders are being connected to
+  const byStakeholder = STAKEHOLDER_GROUPS.map(g => ({
+    name: g,
+    value: sum(rows.map(e => e.stakeholders[g as StakeholderGroup])),
+  })).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
+
+  // Geographic spread
+  const byCountry = COUNTRIES.map(c => {
+    const rs = rows.filter(e => e.country === c);
+    return { name: c, value: rs.length, founders: sum(rs.map(e => e.founders)) };
+  }).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
+
+  return {
+    events, founders, femalePct, ventures, connections, followUps, deals, mous,
+    investors, visibility, funnel, byYear, byType, byStakeholder, byCountry,
+  };
+}
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 750): number {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (target === 0) { setVal(0); return; }
+    let start: number | null = null;
+    function tick(now: number) {
+      if (start === null) start = now;
+      const p = Math.min((now - start) / duration, 1);
+      setVal(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+      else setVal(target);
+    }
+    const id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [target, duration]);
+  return val;
+}
+
+function KpiTile({ label, num, displayFmt, sub, Icon }: {
+  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon;
+}) {
+  const animated = useCountUp(num);
+  return (
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}` }}>
+      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+      <div className="flex items-center justify-center gap-2">
+        <Icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
+        <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
+      </div>
+      {sub && <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>}
+    </div>
+  );
+}
+
+function SecHeader({ title, sub }: { title: string; sub?: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: BRAND }} />
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: BRAND }}>{title}</p>
+        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+function ChartCard({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  async function handleDownload() {
+    if (!cardRef.current) return;
+    const h2c = (await import("html2canvas")).default;
+    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const a = document.createElement("a");
+    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
+    a.href = canvas.toDataURL();
+    a.click();
+  }
+  return (
+    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }}
+      title="Right-click to download this chart"
+      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
+        <div className="flex-1 min-w-0">
+          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
+        </div>
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
+function ChartTip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      {label != null && <p style={{ fontWeight: 700, color: BRAND_DK, marginBottom: 4 }}>{label}</p>}
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill, display: "inline-block" }} />
+          {p.name}: <b style={{ color: BRAND_DK }}>{typeof p.value === "number" ? p.value.toLocaleString() : p.value}</b>
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function FilterSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[];
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+      {label}
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="cursor-pointer focus:outline-none"
+        style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(0,33,71,0.12)", fontSize: 11, color: "#374151", backgroundColor: "white" }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+}
+
+function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
+  const max = steps[0]?.value || 1;
+  return (
+    <div className="space-y-2.5">
+      {steps.map((s, i) => {
+        const pct = Math.max(8, Math.round((s.value / max) * 100));
+        const conv = i > 0 && steps[i - 1].value > 0 ? Math.round((s.value / steps[i - 1].value) * 100) : null;
+        return (
+          <div key={s.label}>
+            <div className="flex items-center justify-between text-[11px] mb-1">
+              <span className="font-semibold text-gray-700">{s.label}</span>
+              <span className="font-bold tabular-nums" style={{ color: BRAND_DK }}>
+                {s.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
+              </span>
+            </div>
+            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(14,70,51,0.08)" }}>
+              <div className="h-full rounded-sm" style={{ width: `${pct}%`, backgroundColor: BRAND_DK, opacity: 1 - i * 0.15 }} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
 export default function ExposureNetworkingPage() {
+  const [fYear, setFYear]       = useState("All Years");
+  const [fType, setFType]       = useState("All Types");
+  const [fCountry, setFCountry] = useState("All Countries");
+
+  const filtered = useMemo(() => exposureEvents.filter(e =>
+    (fYear === "All Years" || String(e.year) === fYear) &&
+    (fType === "All Types" || e.type === fType) &&
+    (fCountry === "All Countries" || e.country === fCountry)
+  ), [fYear, fType, fCountry]);
+
+  const D = useMemo(() => derive(filtered), [filtered]);
+  const activeCount = (fYear !== "All Years" ? 1 : 0) + (fType !== "All Types" ? 1 : 0) + (fCountry !== "All Countries" ? 1 : 0);
+
+  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
 
       {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-        <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
@@ -19,27 +269,205 @@ export default function ExposureNetworkingPage() {
             <div style={{ textAlign: "center" }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Exposure &amp; Networking Opportunities</h1>
               <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(190,228,214,0.78)" }}>
-                Events, convenings and connections created for HENT founders
+                Connecting founders with investors, partners, healthcare stakeholders, policy makers and peers
               </p>
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(190,228,214,0.5)" }}>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Data source:</span> HENT Ecosystem Engagement Log</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
+                <span aria-hidden="true">·</span>
+                <span>{D.events} events · {D.founders} founder placements</span>
+              </div>
             </div>
           </div>
         </header>
       </div>
 
       {/* ── BODY ─── */}
-      <div className="max-w-[1440px] mx-auto px-6 py-7">
-        <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-          <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
-            <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>Exposure &amp; Networking</p>
-          </div>
-          <div className="p-10 text-center">
-            <p className="text-[13px] font-semibold text-gray-700">Exposure &amp; networking analytics coming soon</p>
-            <p className="text-[11px] text-gray-400 mt-1.5">
-              This section will track exposure events, networking convenings and the partnerships they generate.
-            </p>
-          </div>
+      <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
+
+        {/* Section pills (left) + outreach-style filters popover (right) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+          <SectionPills
+            accent={BRAND}
+            value={activeSection === "all" ? "all" : String(activeSection)}
+            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            options={[
+              { label: "All Sections", value: "all" },
+              { label: "Connection to Commitment", value: "1" },
+              { label: "Reach Over Time", value: "2" },
+              { label: "Which Platforms Work", value: "3" },
+            ]}
+          />
+          <OutreachFilters
+            accent={BRAND}
+            activeCount={activeCount}
+            onReset={() => { setFYear("All Years"); setFType("All Types"); setFCountry("All Countries"); }}
+          >
+            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent={BRAND}
+              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Type" value={fType} onChange={setFType} accent={BRAND}
+              options={["All Types", ...EXPOSURE_TYPES].map(o => ({ value: o, label: o }))} />
+            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent={BRAND}
+              options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
+          </OutreachFilters>
         </div>
+
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <KpiTile label="Events Held"        num={D.events}      displayFmt={n => String(Math.round(n))}          Icon={CalendarDays} sub="Pitch, conference & ecosystem" />
+          <KpiTile label="Founder Placements" num={D.founders}    displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        sub={`${D.femalePct}% female founders`} />
+          <KpiTile label="Investors Engaged"  num={D.investors}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Mic}          sub="Across all events" />
+          <KpiTile label="Connections Made"   num={D.connections} displayFmt={n => Math.round(n).toLocaleString()} Icon={Link2}        sub="Introductions brokered" />
+          <KpiTile label="Agreements Signed"  num={D.mous}        displayFmt={n => String(Math.round(n))}          Icon={Handshake}    sub={`from ${D.deals} deals opened`} />
+          <KpiTile label="Visibility Score"   num={D.visibility}  displayFmt={n => `${n.toFixed(1)}/5`}            Icon={Star}         sub="Founder-rated value" />
+        </div>
+
+        {/* ── SECTION 1: Relationship funnel ─── */}
+        <section style={{ display: show(1) ? undefined : "none" }}>
+          <SecHeader title="From Connection to Commitment"
+            sub="Whether the introductions made at these platforms actually convert into meetings, deals and formal agreements" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <ChartCard title="Relationship Funnel" sub="Connections → follow-ups → deals opened → agreements signed">
+              <Funnel steps={D.funnel} />
+              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+                {D.connections ? Math.round(D.mous / D.connections * 100) : 0}% of introductions convert into a formal agreement
+              </p>
+            </ChartCard>
+
+            <ChartCard title="Stakeholder Mix" sub="Who founders are being connected to across all platforms">
+              <DonutRing data={D.byStakeholder} colors={DISTINCT}
+                total={D.byStakeholder.reduce((s, d) => s + d.value, 0)} totalLabel="Stakeholders"
+                height={300} legendPercent />
+            </ChartCard>
+          </div>
+        </section>
+
+        {/* ── SECTION 2: Reach over time ─── */}
+        <section style={{ display: show(2) ? undefined : "none" }}>
+          <SecHeader title="Reach Over Time" sub="Events delivered, founders placed and connections brokered each year" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <ChartCard title="Events & Founder Placements per Year" sub="Delivery volume year on year">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={34} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
+                  <Bar dataKey="Founders" fill="#1B4332" radius={[4, 4, 0, 0]} maxBarSize={22} />
+                  <Bar dataKey="Events"   fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={22} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                {([["Founders", "#1B4332"], ["Events", "#A6C13C"]] as const).map(([l, c]) => (
+                  <span key={l} className="flex items-center gap-1.5">
+                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  </span>
+                ))}
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Connections Brokered per Year" sub="Introductions made between founders and ecosystem stakeholders">
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={34} />
+                  <Tooltip content={<ChartTip />} />
+                  <Line type="monotone" dataKey="Connections" stroke="#1F9E9E" strokeWidth={2.5}
+                    dot={{ r: 4, fill: "#1F9E9E", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+        </section>
+
+        {/* ── SECTION 3: Which platforms work ─── */}
+        <section style={{ display: show(3) ? undefined : "none" }}>
+          <SecHeader title="Which Platforms Work"
+            sub="Comparing pitch events, conferences, roundtables, ecosystem engagements and demo days on the connections and deals they produce" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <ChartCard title="Deals Opened per Event, by Platform Type" sub="Higher is a more deal-productive format">
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={D.byType} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={50} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
+                  <Bar dataKey="DealsPerEvent" name="Deals per event" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                    {D.byType.map(d => <Cell key={d.name} fill={TYPE_HEX[d.name as ExposureType]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard title="Platform Comparison" sub="Events, founders reached, connections and deals by format">
+              <div className="overflow-x-auto">
+                <table className="w-full text-[11px]">
+                  <thead>
+                    <tr>
+                      <th className="text-left text-gray-400 font-bold pb-3 pr-4 uppercase tracking-wider text-[9px]">Format</th>
+                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Events</th>
+                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Founders</th>
+                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Connections</th>
+                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Conn./Founder</th>
+                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Deals</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {D.byType.map(t => (
+                      <tr key={t.name} className="border-t border-gray-100">
+                        <td className="py-2.5 pr-4 whitespace-nowrap">
+                          <span className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: TYPE_HEX[t.name as ExposureType] }} />
+                            <span className="font-semibold text-gray-700">{t.name}</span>
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-2 text-center tabular-nums text-gray-700">{t.Events}</td>
+                        <td className="py-2.5 px-2 text-center tabular-nums text-gray-700">{t.Founders}</td>
+                        <td className="py-2.5 px-2 text-center tabular-nums text-gray-700">{t.Connections}</td>
+                        <td className="py-2.5 px-2 text-center font-bold tabular-nums" style={{ color: BRAND_DK }}>{t.ConnPerFounder}</td>
+                        <td className="py-2.5 px-2 text-center font-bold tabular-nums" style={{ color: BRAND_DK }}>{t.Deals}</td>
+                      </tr>
+                    ))}
+                    {!D.byType.length && (
+                      <tr><td colSpan={6} className="text-center text-gray-400 py-6">No events match the selected filters.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </ChartCard>
+          </div>
+
+          <div className="mt-4">
+            <ChartCard title="Geographic Spread" sub="Where founders are being exposed — events and founder placements by country">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {D.byCountry.map((row, i) => {
+                  const col = GREEN_RAMP[i % GREEN_RAMP.length];
+                  const max = D.byCountry[0]?.value || 1;
+                  return (
+                    <div key={row.name} className="flex items-center gap-2.5">
+                      <div className="w-[96px] text-[11px] text-gray-600 text-right flex-shrink-0 truncate">{row.name}</div>
+                      <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
+                        <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
+                      </div>
+                      <div className="text-[11px] text-gray-500 tabular-nums w-32 flex-shrink-0 text-right">
+                        <b style={{ color: col }}>{row.value}</b> events · {row.founders} founders
+                      </div>
+                    </div>
+                  );
+                })}
+                {!D.byCountry.length && <p className="text-[11px] text-gray-400 text-center py-6">No events match the selected filters.</p>}
+              </div>
+            </ChartCard>
+          </div>
+        </section>
+
+        <HentFooter source="HENT Ecosystem Engagement Log" />
+
       </div>
     </div>
   );
