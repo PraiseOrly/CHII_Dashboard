@@ -13,7 +13,7 @@ import { getPortalTheme, type Portal, type PortalTheme } from "@/theme/portals";
 // A page declares its portal once; every primitive below then picks up the right
 // colours automatically, so call sites never pass an accent.
 
-const PortalThemeContext = createContext<PortalTheme>(getPortalTheme("impact"));
+const PortalThemeContext = createContext<PortalTheme>(getPortalTheme("executive"));
 
 export function PortalThemeProvider({ portal, children }: { portal: Portal; children: React.ReactNode }) {
   return (

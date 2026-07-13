@@ -27,14 +27,14 @@ function useTheme(): [boolean, () => void] {
 }
 
 export const IMPACT_TABS = [
-  { label: "Overview",                    href: "/impact",                  color: "#002147", bg: "#EFF6FF" },
-  { label: "Outreach",                    href: "/impact/outreach",         color: "#0D9488", bg: "#F0FDFA" },
-  { label: "Youth in Work",               href: "/impact/youth-in-work",    color: "#0EA5E9", bg: "#F0F9FF" },
-  { label: "Wage Employment",             href: "/impact/wage-employment",  color: "#F59E0B", bg: "#FFFBEB" },
-  { label: "Entrepreneurship",            href: "/impact/entrepreneurship", color: "#7C3AED", bg: "#F5F3FF" },
-  { label: "Further Education",           href: "/impact/further-education", color: "#10B981", bg: "#ECFDF5" },
-  { label: "Impact Reports",              href: "/impact/reports",          color: "#2563EB", bg: "#EFF6FF" },
-  { label: "Impact Stories",              href: "/impact/stories",          color: "#EA580C", bg: "#FFF7ED" },
+  { label: "Overview",                    href: "/executive",                  color: "#002147", bg: "#EFF6FF" },
+  { label: "Outreach",                    href: "/executive/outreach",         color: "#0D9488", bg: "#F0FDFA" },
+  { label: "Youth in Work",               href: "/executive/youth-in-work",    color: "#0EA5E9", bg: "#F0F9FF" },
+  { label: "Wage Employment",             href: "/executive/wage-employment",  color: "#F59E0B", bg: "#FFFBEB" },
+  { label: "Entrepreneurship",            href: "/executive/entrepreneurship", color: "#7C3AED", bg: "#F5F3FF" },
+  { label: "Further Education",           href: "/executive/further-education", color: "#10B981", bg: "#ECFDF5" },
+  { label: "Impact Reports",              href: "/executive/reports",          color: "#2563EB", bg: "#EFF6FF" },
+  { label: "Impact Stories",              href: "/executive/stories",          color: "#EA580C", bg: "#FFF7ED" },
 ] as const;
 
 const PORTAL_LINKS = [
@@ -46,14 +46,14 @@ const PORTAL_LINKS = [
 export type ImpactTabLabel = typeof IMPACT_TABS[number]["label"];
 
 function getActiveTab(pathname: string): ImpactTabLabel {
-  if (pathname === "/impact")                          return "Overview";
-  if (pathname.startsWith("/impact/outreach"))         return "Outreach";
-  if (pathname.startsWith("/impact/youth-in-work"))    return "Youth in Work";
-  if (pathname.startsWith("/impact/wage-employment"))  return "Wage Employment";
-  if (pathname.startsWith("/impact/entrepreneurship")) return "Entrepreneurship";
-  if (pathname.startsWith("/impact/further-education")) return "Further Education";
-  if (pathname.startsWith("/impact/reports"))          return "Impact Reports";
-  if (pathname.startsWith("/impact/stories"))          return "Impact Stories";
+  if (pathname === "/executive")                          return "Overview";
+  if (pathname.startsWith("/executive/outreach"))         return "Outreach";
+  if (pathname.startsWith("/executive/youth-in-work"))    return "Youth in Work";
+  if (pathname.startsWith("/executive/wage-employment"))  return "Wage Employment";
+  if (pathname.startsWith("/executive/entrepreneurship")) return "Entrepreneurship";
+  if (pathname.startsWith("/executive/further-education")) return "Further Education";
+  if (pathname.startsWith("/executive/reports"))          return "Impact Reports";
+  if (pathname.startsWith("/executive/stories"))          return "Impact Stories";
   return "Overview";
 }
 
@@ -77,7 +77,7 @@ export default function ImpactNav() {
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-16 gap-2 sm:gap-3">
 
         {/* Logo */}
-        <Link href="/impact" className="flex items-center gap-2.5 flex-shrink-0 group">
+        <Link href="/executive" className="flex items-center gap-2.5 flex-shrink-0 group">
           <img src="/logos/CHII Logo (CLR).png" alt="CHII" width={24} height={24}
             style={{ height: 24, width: "auto", objectFit: "contain" }} />
         </Link>

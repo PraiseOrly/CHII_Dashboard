@@ -59,12 +59,12 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     ],
   },
 
-  impact: {
+  executive: {
     wordmark: "CHII",
     wordmarkLines: ["EXECUTIVE", "IMPACT", "DASHBOARD"],
-    rootHref: "/impact",
+    rootHref: "/executive",
     items: [
-      { label: "Overview", href: "/impact" },
+      { label: "Overview", href: "/executive" },
     ],
   },
 };

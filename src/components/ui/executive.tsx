@@ -5,7 +5,7 @@
 import { createPortalUi } from "./create-portal-ui";
 
 export const { theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatCard } =
-  createPortalUi("impact");
+  createPortalUi("executive");
 
 // Primitives that need no theming are re-exported so pages have one import site.
 export { ChartLegend, BarList, useCountUp } from ".";

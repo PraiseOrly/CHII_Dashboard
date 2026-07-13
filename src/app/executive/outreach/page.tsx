@@ -1,5 +1,5 @@
 "use client";
-import { ChartTip } from "@/components/ui/impact";
+import { ChartTip } from "@/components/ui/executive";
 
 import { useState, useMemo } from "react";
 import {
