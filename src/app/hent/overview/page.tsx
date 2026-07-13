@@ -50,12 +50,12 @@ const C_SKY    = "#3FA0D8";
 const PROG: Record<string, string> = {
   Hackathons:    "#1B4332",
   Masterclasses: "#1F9E9E",
-  "Field Visits": "#A6C13C",
+  "Study Trips": "#A6C13C",
   Mentorships:   "#BBD59B",
 };
 
-// Series colour order for the year charts (Hackathons, Masterclasses, Field Visits, Mentorships)
-const PROG_YEAR_COLORS = [PROG.Hackathons, PROG.Masterclasses, PROG["Field Visits"], PROG.Mentorships] as const;
+// Series colour order for the year charts (Hackathons, Masterclasses, Study Trips, Mentorships)
+const PROG_YEAR_COLORS = [PROG.Hackathons, PROG.Masterclasses, PROG["Study Trips"], PROG.Mentorships] as const;
 
 // â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function fmt$(n: number) {
@@ -121,25 +121,25 @@ const activityByYear = YEARS
     Year:          String(yr),
     Hackathons:    hackathons.filter(h => h.year === yr).length,
     Masterclasses: masterclasses.filter(m => m.year === yr).length,
-    "Field Visits": fieldVisits.filter(v => v.year === yr).length,
+    "Study Trips": fieldVisits.filter(v => v.year === yr).length,
     Mentorships:   mentorshipPrograms.filter(p => p.year === yr).length,
   }))
-  .filter(d => d.Hackathons + d.Masterclasses + d["Field Visits"] + d.Mentorships > 0);
+  .filter(d => d.Hackathons + d.Masterclasses + d["Study Trips"] + d.Mentorships > 0);
 
 const participantsByYear = YEARS
   .map(yr => ({
     Year:          String(yr),
     Hackathons:    hackathons.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
     Masterclasses: masterclasses.filter(m => m.year === yr).reduce((s, m) => s + m.attendees, 0),
-    "Field Visits": fieldVisits.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0),
+    "Study Trips": fieldVisits.filter(v => v.year === yr).reduce((s, v) => s + v.participants, 0),
     Mentorships:   mentorshipPrograms.filter(p => p.year === yr).reduce((s, p) => s + p.fellows, 0),
   }))
-  .filter(d => d.Hackathons + d.Masterclasses + d["Field Visits"] + d.Mentorships > 0);
+  .filter(d => d.Hackathons + d.Masterclasses + d["Study Trips"] + d.Mentorships > 0);
 
 const genderByProg = [
   { label: "Hackathons",    femalePct: Math.round(hackFem / hackPart * 100), maleColor: ORANGE  },
   { label: "Masterclasses", femalePct: Math.round(mcFem   / mcAtt    * 100), maleColor: TEAL    },
-  { label: "Field Visits",  femalePct: Math.round(fvFem   / fvPart   * 100), maleColor: AMBER   },
+  { label: "Study Trips",  femalePct: Math.round(fvFem   / fvPart   * 100), maleColor: AMBER   },
   { label: "Mentorships",   femalePct: Math.round(mfFem   / mfFel    * 100), maleColor: GREEN   },
 ];
 
@@ -179,13 +179,13 @@ const GEO_YEARS = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort();
 
 const satCompare = [
   { name: "Masterclasses", value: mcSat  },
-  { name: "Field Visits",  value: fvSat  },
+  { name: "Study Trips",  value: fvSat  },
   { name: "Mentorships",   value: mfSat  },
 ];
 
 const compCompare = [
   { name: "Masterclasses", value: mcComp },
-  { name: "Field Visits",  value: fvComp },
+  { name: "Study Trips",  value: fvComp },
   { name: "Mentorships",   value: mfComp },
 ];
 
@@ -198,7 +198,7 @@ const perfHeatmap = [
     Relevance:     parseFloat(avg(masterclasses.map(m => m.scores["Relevance of Support"])).toFixed(1)),
   },
   {
-    program:       "Field Visits",
+    program:       "Study Trips",
     Quality:       parseFloat(avg(fieldVisits.map(v => v.scores["Learning Experience"])).toFixed(1)),
     Usefulness:    parseFloat(avg(fieldVisits.map(v => v.scores["Practical Knowledge Gained"])).toFixed(1)),
     Accessibility: parseFloat(avg(fieldVisits.map(v => v.scores["Accessibility & Organisation"])).toFixed(1)),
@@ -218,7 +218,7 @@ const HEAT_COLS = ["Quality", "Usefulness", "Accessibility", "Relevance"] as con
 // Per-programme colour + line style, using the standardised palette
 const PROG_STYLE: Record<string, { color: string; dashed: boolean; fillOpacity: number }> = {
   "Masterclasses": { color: PALETTE.masterclasses, dashed: false, fillOpacity: 0.08 },
-  "Field Visits":  { color: PALETTE.fieldVisits,   dashed: false, fillOpacity: 0.08 },
+  "Study Trips":  { color: PALETTE.fieldVisits,   dashed: false, fillOpacity: 0.08 },
   "Mentorships":   { color: PALETTE.mentorships,   dashed: true,  fillOpacity: 0.06 },
 };
 const radarSeries: RadarSeries[] = perfHeatmap.map(row => {
@@ -252,7 +252,7 @@ const scaleShare = Math.round((stageData.find(s => s.name === "Scale")?.value ??
 
 const participantsByProgData = [
   { name: "Masterclasses", value: mcAtt },
-  { name: "Field Visits",  value: fvPart },
+  { name: "Study Trips",  value: fvPart },
   { name: "Mentorships",   value: mfFel },
   { name: "Hackathons",    value: hackPart },
 ].sort((a, b) => b.value - a.value);
@@ -261,14 +261,14 @@ const participantsByProgData = [
 const PROG_COMPARE: { name: string; reach: number; sat: number | null; comp: number | null }[] = [
   { name: "Hackathons",    reach: hackPart, sat: null,  comp: null  },
   { name: "Masterclasses", reach: mcAtt,    sat: mcSat, comp: mcComp },
-  { name: "Field Visits",  reach: fvPart,   sat: fvSat, comp: fvComp },
+  { name: "Study Trips",  reach: fvPart,   sat: fvSat, comp: fvComp },
   { name: "Mentorships",   reach: mfFel,    sat: mfSat, comp: mfComp },
 ];
 
 const _reachByProg = [
   { name: "Hackathons",    reach: hackPart },
   { name: "Masterclasses", reach: mcAtt },
-  { name: "Field Visits",  reach: fvPart },
+  { name: "Study Trips",  reach: fvPart },
   { name: "Mentorships",   reach: mfFel },
 ];
 const topReach = _reachByProg.reduce((a, b) => (b.reach > a.reach ? b : a));
@@ -445,7 +445,7 @@ function GenderBar({ label, femalePct, maleColor }: { label: string; femalePct: 
 const PROG_LEGEND = [
   ["Hackathons", PROG.Hackathons],
   ["Masterclasses", PROG.Masterclasses],
-  ["Field Visits", PROG["Field Visits"]],
+  ["Study Trips", PROG["Study Trips"]],
   ["Mentorships", PROG.Mentorships],
 ] as const;
 
@@ -808,7 +808,7 @@ export default function ExecutiveDashboard() {
             <ExecCard label="Hackathons"    value={hackathons.length}         icon={Lightbulb} />
             <ExecCard label="Masterclasses" value={masterclasses.length}      icon={Presentation} />
             <ExecCard label="Mentorships"   value={mentorshipPrograms.length} icon={Users} />
-            <ExecCard label="Field Visits"  value={fieldVisits.length}        icon={MapPin} />
+            <ExecCard label="Study Trips"  value={fieldVisits.length}        icon={MapPin} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -821,13 +821,13 @@ export default function ExecutiveDashboard() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
                   <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel />} />
-                  {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
+                  {(["Hackathons","Masterclasses","Study Trips","Mentorships"] as const).map((cat, i) => (
                     <Bar key={cat} dataKey={cat} fill={PROG_YEAR_COLORS[i]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((l, i) => (
+                {(["Hackathons","Masterclasses","Study Trips","Mentorships"] as const).map((l, i) => (
                   <span key={l} className="flex items-center gap-1.5">
                     <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PROG_YEAR_COLORS[i] }} />{l}
                   </span>
@@ -844,7 +844,7 @@ export default function ExecutiveDashboard() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip content={<HentChartTip hideLabel />} />
-                  {(["Hackathons","Masterclasses","Field Visits","Mentorships"] as const).map((cat, i) => (
+                  {(["Hackathons","Masterclasses","Study Trips","Mentorships"] as const).map((cat, i) => (
                     <Line key={cat} type="monotone" dataKey={cat}
                       stroke={PROG_YEAR_COLORS[i]} strokeWidth={2.5}
                       dot={{ r: 4, fill: PROG_YEAR_COLORS[i], strokeWidth: 0 }} activeDot={{ r: 6 }} />

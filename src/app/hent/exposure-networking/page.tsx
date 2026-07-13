@@ -124,13 +124,32 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, sub, Icon }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon;
+// Small "i" badge revealing an explanation on hover.
+function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      {show && (
+        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
+  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon; tip?: string;
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}` }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
+      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
+        {tip && <InfoDot tip={tip} />}
+      </div>
       <div className="flex items-center justify-center gap-2">
         <Icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
         <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
@@ -152,7 +171,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-function ChartCard({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+function ChartCard({ title, sub, info, children }: { title: string; sub?: string; info?: string; children: React.ReactNode }) {
   const cardRef = useRef<HTMLDivElement>(null);
   async function handleDownload() {
     if (!cardRef.current) return;
@@ -170,7 +189,10 @@ function ChartCard({ title, sub, children }: { title: string; sub?: string; chil
       <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
         <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
+          </div>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
         </div>
       </div>
@@ -286,6 +308,22 @@ export default function ExposureNetworkingPage() {
       {/* ── BODY ─── */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <KpiTile label="Events Held"        num={D.events}      displayFmt={n => String(Math.round(n))}          Icon={CalendarDays} sub="Pitch, conference & ecosystem"
+            tip="Exposure platforms delivered — pitch events, conferences, investor roundtables, ecosystem engagements and demo days." />
+          <KpiTile label="Founder Placements" num={D.founders}    displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        sub={`${D.femalePct}% female founders`}
+            tip="Total founder seats across all events. A founder attending two events counts twice." />
+          <KpiTile label="Investors Engaged"  num={D.investors}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Mic}          sub="Across all events"
+            tip="Investors present across all platforms — the capital side of the room founders are being put in front of." />
+          <KpiTile label="Connections Made"   num={D.connections} displayFmt={n => Math.round(n).toLocaleString()} Icon={Link2}        sub="Introductions brokered"
+            tip="Introductions brokered between founders and ecosystem stakeholders. This is the top of the relationship funnel." />
+          <KpiTile label="Agreements Signed"  num={D.mous}        displayFmt={n => String(Math.round(n))}          Icon={Handshake}    sub={`from ${D.deals} deals opened`}
+            tip="Formal agreements (MOUs, partnerships, investments) that resulted from these introductions — the end of the funnel." />
+          <KpiTile label="Visibility Score"   num={D.visibility}  displayFmt={n => `${n.toFixed(1)}/5`}            Icon={Star}         sub="Founder-rated value"
+            tip="How founders themselves rate the visibility and strategic value they gained, out of 5." />
+        </div>
+
         {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
           <SectionPills
@@ -313,30 +351,22 @@ export default function ExposureNetworkingPage() {
           </OutreachFilters>
         </div>
 
-        {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <KpiTile label="Events Held"        num={D.events}      displayFmt={n => String(Math.round(n))}          Icon={CalendarDays} sub="Pitch, conference & ecosystem" />
-          <KpiTile label="Founder Placements" num={D.founders}    displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        sub={`${D.femalePct}% female founders`} />
-          <KpiTile label="Investors Engaged"  num={D.investors}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Mic}          sub="Across all events" />
-          <KpiTile label="Connections Made"   num={D.connections} displayFmt={n => Math.round(n).toLocaleString()} Icon={Link2}        sub="Introductions brokered" />
-          <KpiTile label="Agreements Signed"  num={D.mous}        displayFmt={n => String(Math.round(n))}          Icon={Handshake}    sub={`from ${D.deals} deals opened`} />
-          <KpiTile label="Visibility Score"   num={D.visibility}  displayFmt={n => `${n.toFixed(1)}/5`}            Icon={Star}         sub="Founder-rated value" />
-        </div>
-
         {/* ── SECTION 1: Relationship funnel ─── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="From Connection to Commitment"
             sub="Whether the introductions made at these platforms actually convert into meetings, deals and formal agreements" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Relationship Funnel" sub="Connections → follow-ups → deals opened → agreements signed">
+            <ChartCard title="Relationship Funnel" sub="Connections → follow-ups → deals opened → agreements signed"
+              info="The core value chain of this intervention: an introduction is only worth something if it becomes a meeting, then a deal, then a signed agreement. The drop-off between steps shows where relationships stall.">
               <Funnel steps={D.funnel} />
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
                 {D.connections ? Math.round(D.mous / D.connections * 100) : 0}% of introductions convert into a formal agreement
               </p>
             </ChartCard>
 
-            <ChartCard title="Stakeholder Mix" sub="Who founders are being connected to across all platforms">
+            <ChartCard title="Stakeholder Mix" sub="Who founders are being connected to across all platforms"
+              info="The make-up of the room across all events — investors, industry partners, healthcare stakeholders, policy makers and peer founders. Reveals whether founders are meeting capital, customers or regulators.">
               <DonutRing data={D.byStakeholder} colors={DISTINCT}
                 total={D.byStakeholder.reduce((s, d) => s + d.value, 0)} totalLabel="Stakeholders"
                 height={300} legendPercent />
@@ -349,7 +379,8 @@ export default function ExposureNetworkingPage() {
           <SecHeader title="Reach Over Time" sub="Events delivered, founders placed and connections brokered each year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Events & Founder Placements per Year" sub="Delivery volume year on year">
+            <ChartCard title="Events & Founder Placements per Year" sub="Delivery volume year on year"
+              info="How many exposure platforms were delivered each year and how many founder seats they created.">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -369,7 +400,8 @@ export default function ExposureNetworkingPage() {
               </div>
             </ChartCard>
 
-            <ChartCard title="Connections Brokered per Year" sub="Introductions made between founders and ecosystem stakeholders">
+            <ChartCard title="Connections Brokered per Year" sub="Introductions made between founders and ecosystem stakeholders"
+              info="Introductions made each year. Rising connections without rising agreements would suggest reach is growing faster than conversion.">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -390,7 +422,8 @@ export default function ExposureNetworkingPage() {
             sub="Comparing pitch events, conferences, roundtables, ecosystem engagements and demo days on the connections and deals they produce" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Deals Opened per Event, by Platform Type" sub="Higher is a more deal-productive format">
+            <ChartCard title="Deals Opened per Event, by Platform Type" sub="Higher is a more deal-productive format"
+              info="Average number of deals or partnership conversations opened per event, by format. Use it to decide which formats deserve more investment.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={D.byType} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -404,7 +437,8 @@ export default function ExposureNetworkingPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Platform Comparison" sub="Events, founders reached, connections and deals by format">
+            <ChartCard title="Platform Comparison" sub="Events, founders reached, connections and deals by format"
+              info="Side-by-side view of each format. Connections-per-founder shows how densely a format networks each founder, regardless of how many attend.">
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
                   <thead>
@@ -443,7 +477,8 @@ export default function ExposureNetworkingPage() {
           </div>
 
           <div className="mt-4">
-            <ChartCard title="Geographic Spread" sub="Where founders are being exposed — events and founder placements by country">
+            <ChartCard title="Geographic Spread" sub="Where founders are being exposed — events and founder placements by country"
+              info="Which markets founders are being exposed to. Heavy concentration in one country may limit the breadth of the networks being built.">
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {D.byCountry.map((row, i) => {
                   const col = GREEN_RAMP[i % GREEN_RAMP.length];

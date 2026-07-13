@@ -139,13 +139,32 @@ function useCountUp(target: number, duration = 750): number {
   return val;
 }
 
-function KpiTile({ label, num, displayFmt, sub, Icon }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon;
+// Small "i" badge revealing an explanation on hover.
+function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      {show && (
+        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
+  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon; tip?: string;
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}` }}>
-      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)", marginBottom: 8 }}>{label}</p>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
+      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
+        {tip && <InfoDot tip={tip} />}
+      </div>
       <div className="flex items-center justify-center gap-2">
         <Icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
         <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
@@ -167,7 +186,7 @@ function SecHeader({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-function ChartCard({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+function ChartCard({ title, sub, info, children }: { title: string; sub?: string; info?: string; children: React.ReactNode }) {
   const cardRef = useRef<HTMLDivElement>(null);
   async function handleDownload() {
     if (!cardRef.current) return;
@@ -185,7 +204,10 @@ function ChartCard({ title, sub, children }: { title: string; sub?: string; chil
       <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
         <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
+            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
+          </div>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
         </div>
       </div>
@@ -306,6 +328,20 @@ export default function VentureFundingPage() {
       {/* ── BODY ─── */}
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <KpiTile label="Capital Deployed"  num={D.totalFunding}   displayFmt={fmt$}                                Icon={Banknote}    sub="Across all tranches"
+            tip="Total catalytic funding disbursed to ventures across every milestone tranche." />
+          <KpiTile label="Ventures Funded"   num={D.funded.length}  displayFmt={n => String(Math.round(n))}          Icon={Rocket}      sub={`of ${filtered.length} in portfolio`}
+            tip="Ventures that have received at least one tranche of catalytic funding." />
+          <KpiTile label="Milestone Rate"    num={D.milestoneRate}  displayFmt={n => `${Math.round(n)}%`}            Icon={CheckCircle2} sub={`${D.milestonesDone} milestones met`}
+            tip="Average share of agreed milestones delivered by funded ventures — funding is released against these." />
+          <KpiTile label="Progressed to Scale" num={D.progressed}   displayFmt={n => String(Math.round(n))}          Icon={TrendingUp}  sub="Scaling or investment-ready"
+            tip="Funded ventures that have advanced to the Scaling or Investment/Funding stage." />
+          <KpiTile label="Jobs Created"      num={D.jobs}           displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}       sub="By funded ventures"
+            tip="Total jobs created to date by ventures that received catalytic funding." />
+        </div>
+
         {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
           <SectionPills
@@ -333,30 +369,21 @@ export default function VentureFundingPage() {
           </OutreachFilters>
         </div>
 
-        {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <KpiTile label="Capital Deployed"  num={D.totalFunding}   displayFmt={fmt$}                                Icon={Banknote}    sub="Across all tranches" />
-          <KpiTile label="Ventures Funded"   num={D.funded.length}  displayFmt={n => String(Math.round(n))}          Icon={Rocket}      sub={`of ${filtered.length} in portfolio`} />
-          <KpiTile label="Avg Ticket Size"   num={D.avgTicket}      displayFmt={fmt$}                                Icon={Target}      sub="Per funded venture" />
-          <KpiTile label="Milestone Rate"    num={D.milestoneRate}  displayFmt={n => `${Math.round(n)}%`}            Icon={CheckCircle2} sub={`${D.milestonesDone} milestones met`} />
-          <KpiTile label="Progressed to Scale" num={D.progressed}   displayFmt={n => String(Math.round(n))}          Icon={TrendingUp}  sub="Scaling or investment-ready" />
-          <KpiTile label="Jobs Created"      num={D.jobs}           displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}       sub="By funded ventures" />
-        </div>
-
         {/* ── SECTION 1: Milestone-based deployment ─── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
           <SecHeader title="Milestone-Based Deployment"
             sub="What each tranche of catalytic funding is buying — validation, prototyping, customer discovery, pilots and early growth" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Capital by Milestone" sub="Funding deployed against each milestone purpose">
+            <ChartCard title="Capital by Milestone" sub="Funding deployed against each milestone purpose"
+              info="Every tranche of catalytic funding is released against a milestone. This shows how much capital each milestone purpose — validation, prototyping, customer discovery, pilots, early growth — has absorbed.">
               <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={D.byMilestone} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={50} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={44} tickFormatter={fmt$} />
+                <BarChart data={D.byMilestone} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }} barCategoryGap="24%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} tickFormatter={fmt$} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} width={128} interval={0} />
                   <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip money />} />
-                  <Bar dataKey="Funding" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                  <Bar dataKey="Funding" radius={[0, 4, 4, 0]} maxBarSize={22}>
                     {D.byMilestone.map(d => <Cell key={d.name} fill={MILESTONE_HEX[d.name as Milestone]} />)}
                   </Bar>
                 </BarChart>
@@ -376,7 +403,8 @@ export default function VentureFundingPage() {
               </div>
             </ChartCard>
 
-            <ChartCard title="Catalytic Funding Funnel" sub="From portfolio to funded, milestone-delivering and scaling ventures">
+            <ChartCard title="Catalytic Funding Funnel" sub="From portfolio to funded, milestone-delivering and scaling ventures"
+              info="How the portfolio narrows: how many ventures win catalytic funding, how many then deliver at least half their milestones, and how many go on to reach the Scale stage.">
               <Funnel steps={D.funnel} />
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
                 {filtered.length ? Math.round(D.funded.length / filtered.length * 100) : 0}% of the portfolio has received catalytic funding
@@ -390,7 +418,8 @@ export default function VentureFundingPage() {
           <SecHeader title="Deployment Over Time" sub="Capital deployed per cohort and the cumulative catalytic investment" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Capital Deployed per Cohort" sub="Amount disbursed and ventures funded each year">
+            <ChartCard title="Capital Deployed per Cohort" sub="Amount disbursed and ventures funded each year"
+              info="Catalytic funding disbursed to each venture cohort. Useful for spotting whether recent cohorts are being funded at the same rate as earlier ones.">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={D.byCohort} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -402,7 +431,8 @@ export default function VentureFundingPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Cumulative Capital Deployed" sub="Running total of catalytic funding across cohorts">
+            <ChartCard title="Cumulative Capital Deployed" sub="Running total of catalytic funding across cohorts"
+              info="Running total of all catalytic capital deployed to date. A steepening line means funding is accelerating.">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={D.byCohort} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -423,11 +453,13 @@ export default function VentureFundingPage() {
             sub="How capital is structured, where it lands, and whether funded ventures are hitting their milestones" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <ChartCard title="Funding Instrument Mix" sub="Ventures by funding instrument">
+            <ChartCard title="Funding Instrument Mix" sub="Ventures by funding instrument"
+              info="How funded ventures are capitalised — grant, angel, VC, revenue-based or bootstrapped. Shows whether catalytic funding is crowding in other capital.">
               <DonutRing data={D.byStatus} colors={DISTINCT} total={D.funded.length} totalLabel="Funded" height={300} legendPercent />
             </ChartCard>
 
-            <ChartCard title="Capital by Sector" sub="Catalytic funding deployed per health sector">
+            <ChartCard title="Capital by Sector" sub="Catalytic funding deployed per health sector"
+              info="Where catalytic capital lands across health sectors. Highlights concentration and any under-funded sectors.">
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {D.bySector.map((row, i) => {
                   const col = GREEN_RAMP[i % GREEN_RAMP.length];
@@ -448,7 +480,8 @@ export default function VentureFundingPage() {
           </div>
 
           <div className="mt-4">
-            <ChartCard title="Milestone Delivery — Top Funded Ventures" sub="Largest tranches and the milestone progress achieved against them">
+            <ChartCard title="Milestone Delivery — Top Funded Ventures" sub="Largest tranches and the milestone progress achieved against them"
+              info="The largest recipients of catalytic funding and how much of their agreed milestone plan they have actually delivered. Low progress against a large tranche is a flag.">
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
                   <thead>

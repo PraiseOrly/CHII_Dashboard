@@ -17,7 +17,7 @@ import {
 
 // â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NAVY    = "#0F4C3A"; // footer bg only (brand green)
-const ACCENT  = "#A6C13C"; // page identity — field visits = lime
+const ACCENT  = "#A6C13C"; // page identity — study trips = lime
 const SKY     = "#1F9E9E"; // teal
 const VIOLET  = "#6B8E5B"; // moss
 const TEAL    = "#2D8A8A"; // deep teal
@@ -286,7 +286,7 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
 
 // â”€â”€â”€ KPI tile map (7 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TILES = [
-  { label: "Total Field Visits",      clr: "#065F46" },  // emerald   -  page identity
+  { label: "Total Study Trips",      clr: "#065F46" },  // emerald   -  page identity
   { label: "Total Participants",      clr: "#1E3A8A" },  // deep blue
   { label: "Ventures Participating",  clr: "#6D28D9" },  // violet
   { label: "Organisations Visited",   clr: "#0E7490" },  // cyan
@@ -470,7 +470,7 @@ export default function FieldVisitsPage() {
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Field Visits</h1>
+            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Study Trips</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Industry excursions, participation and learning experience</p>
             <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
@@ -697,7 +697,7 @@ export default function FieldVisitsPage() {
           <SecHeader title="Attendance & Participation Trends"
             sub="Visit-level attendance and yearly gender breakdown" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Participants per Field Visit"
+            <ChartCard title="Participants per Study Trip"
               sub="Attendance count for each excursion in chronological order"
               accent={SKY}>
               <ResponsiveContainer width="100%" height={208}>
@@ -738,7 +738,7 @@ export default function FieldVisitsPage() {
           <SecHeader title="Most Impactful Visits & Frequently Visited Organisations"
             sub="Ranked by participant feedback scores and repeat-visit frequency" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Most Impactful Field Visits"
+            <ChartCard title="Most Impactful Study Trips"
               sub="Ranked by average participant feedback across all six dimensions"
               accent={AMBER}>
               <div className="space-y-3">
@@ -877,7 +877,7 @@ export default function FieldVisitsPage() {
         {/* GROWTH + COMPLETION ANALYTICS */}
         <section style={{ display: show(8) ? undefined : "none" }}>
           <SecHeader title="Participation Growth & Completion Analytics"
-            sub="Cumulative reach over time and completion rates across all field visits" />
+            sub="Cumulative reach over time and completion rates across all study trips" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <ChartCard title="Cumulative Participant Reach"
             sub="Running total across all visits  -  shows programme exposure growth"
@@ -892,7 +892,7 @@ export default function FieldVisitsPage() {
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
-          <ChartCard title="Completion Rate by Field Visit"
+          <ChartCard title="Completion Rate by Study Trip"
             sub="Percentage of registered participants completing each excursion"
             accent={EMERALD}>
             <ResponsiveContainer width="100%" height={208}>
@@ -928,7 +928,7 @@ export default function FieldVisitsPage() {
         </section>
 
         {/* FOOTER */}
-        <HentFooter source="HENT Field Visits M&amp;E" synced="28 May 2026, EAT" />
+        <HentFooter source="HENT Study Trips M&amp;E" synced="28 May 2026, EAT" />
 
       </div>
     </div>
