@@ -1,6 +1,6 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
-import { useCountUp } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import { DonutRing } from "@/components/charts/donut-chart";
@@ -289,53 +289,6 @@ const insights = [
 
 // â"€â"€â"€ Sub-components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, accent = PRIMARY, info, children }: {
-  title: string; sub?: string; accent?: string; info?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  function handleContextMenu(e: React.MouseEvent) {
-    e.preventDefault();
-    handleDownload();
-  }
-  return (
-    <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
-      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
 // White card with a green header bar
 function PlainCard({ title, sub, chip, fill, children }: {
   title: string; sub?: string; chip?: React.ReactNode; fill?: boolean; children: React.ReactNode;
@@ -451,18 +404,6 @@ const PROG_LEGEND = [
   ["Mentorships", PROG.Mentorships],
 ] as const;
 
-function ChartLegend() {
-  return (
-    <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-      {PROG_LEGEND.map(([l, c]) => (
-        <span key={l} className="flex items-center gap-1.5">
-          <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 function CustomDonut({
   data, colors, label,
   valueFormatter = (v: number) => `${v}`,
@@ -526,31 +467,6 @@ function CustomDonut({
 
 // â"€â"€â"€ Restructured-overview widgets â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
-function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
-  const max = steps[0]?.value || 1;
-  return (
-    <div className="space-y-2.5">
-      {steps.map((s, i) => {
-        const pct = Math.max(8, Math.round((s.value / max) * 100));
-        const conv = i > 0 && steps[i - 1].value > 0 ? Math.round((s.value / steps[i - 1].value) * 100) : null;
-        return (
-          <div key={s.label}>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-gray-700">{s.label}</span>
-              <span className="font-bold tabular-nums" style={{ color: "#0E4633" }}>
-                {s.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
-              </span>
-            </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(14,70,51,0.08)" }}>
-              <div className="h-full rounded-sm transition-all" style={{ width: `${pct}%`, backgroundColor: "#0E4633", opacity: 1 - i * 0.13 }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function CompareTable({ rows }: { rows: { name: string; reach: number; sat: number | null; comp: number | null }[] }) {
   return (
     <div className="overflow-x-auto">
@@ -613,22 +529,6 @@ function InsightList({ items }: { items: string[] }) {
 
 // â"€â"€â"€ Count-up animation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
-// Small "i" tooltip badge — mirrors the executive dashboard stat cards
-function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
-          {tip}
-        </span>
-      )}
-    </span>
-  );
-}
-
 function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon, tip }: {
   label: string; num: number; displayFmt: (n: number) => string;
   sub?: string; clr: string; pct?: number; bench?: number; Icon?: LucideIcon; tip?: string;
@@ -660,21 +560,6 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon, tip }: {
 // â"€â"€â"€ Executive-style chart tooltip (green swap of the impact ChartTip) â"€â"€â"€
 const TIP_GREEN = "#0F4C3A";
 function tipFmt(n: number) { return Math.round(n).toLocaleString(); }
-function HentChartTip({ active, payload, label, hideLabel, unit }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-      {!hideLabel && label != null && <p style={{ fontWeight: 700, color: TIP_GREEN, marginBottom: 4 }}>{label}</p>}
-      {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
-          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill || p.stroke, display: "inline-block" }} />
-          {p.name}: <b style={{ color: TIP_GREEN }}>{typeof p.value === "number" ? tipFmt(p.value) : p.value}{unit || ""}</b>
-        </p>
-      ))}
-    </div>
-  );
-}
-
 // â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 export default function ExecutiveDashboard() {
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
@@ -776,7 +661,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Programme Delivery"
+          <SectionHeader title="Programme Delivery"
             sub="How much programmes have we delivered across the four HENT programme types?" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <ExecCard label="Hackathons"    value={hackathons.length}         icon={Lightbulb} />
@@ -794,7 +679,7 @@ export default function ExecutiveDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip hideLabel />} />
                   {(["Hackathons","Masterclasses","Study Trips","Mentorships"] as const).map((cat, i) => (
                     <Bar key={cat} dataKey={cat} fill={PROG_YEAR_COLORS[i]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                   ))}
@@ -817,7 +702,7 @@ export default function ExecutiveDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip content={<HentChartTip hideLabel />} />
+                  <Tooltip content={<ChartTip hideLabel />} />
                   {(["Hackathons","Masterclasses","Study Trips","Mentorships"] as const).map((cat, i) => (
                     <Line key={cat} type="monotone" dataKey={cat}
                       stroke={PROG_YEAR_COLORS[i]} strokeWidth={2.5}
@@ -832,7 +717,7 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ SECTION 2: PARTICIPATION & GENDER â"€â"€â"€ */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Participant Reach"
+          <SectionHeader title="Participant Reach"
             sub="Who are we reaching — gender distribution, programme reach, and geographic spread" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -845,7 +730,7 @@ export default function ExecutiveDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip unit="%" />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip unit="%" />} />
                   <Bar dataKey="Female" stackId="g" fill={PURPLE} radius={[0, 0, 0, 0]} maxBarSize={46} />
                   <Bar dataKey="Male"   stackId="g" fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={46} />
                 </BarChart>
@@ -868,7 +753,7 @@ export default function ExecutiveDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
                   <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
                     {participantsByProgData.map((d) => (
                       <Cell key={d.name} fill={PROG[d.name] ?? PALETTE_NEUTRAL} />
@@ -923,7 +808,7 @@ export default function ExecutiveDashboard() {
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                       <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                       <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                      <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip />} />
+                      <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
                       <Bar dataKey="value" name="Ventures" radius={[4, 4, 0, 0]} maxBarSize={46}>
                         {regionChartData.map((d, i) => (
                           <Cell key={d.name} fill={GREEN_RAMP[i % GREEN_RAMP.length]} />
@@ -955,7 +840,7 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ SECTION 3: PROGRAMME PERFORMANCE â"€â"€â"€ */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Programme Performance"
+          <SectionHeader title="Programme Performance"
             sub="Are programmes delivering a high-quality experience? Satisfaction and completion compared across types" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
@@ -992,7 +877,7 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ SECTION 4: INNOVATION PIPELINE â"€â"€â"€ */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader title="Innovation Pipeline"
+          <SectionHeader title="Innovation Pipeline"
             sub="How hackathons convert participants into projects, startups and portfolio ventures" />
 
           {/* Innovation Output — stat cards in a row after the section title */}
@@ -1027,7 +912,7 @@ export default function ExecutiveDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip hideLabel />} />
                   <Bar dataKey="Projects" fill={INNO_COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                   <Bar dataKey="Startups" fill={INNO_COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                 </BarChart>
@@ -1048,7 +933,7 @@ export default function ExecutiveDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HentChartTip hideLabel unit="%" />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip hideLabel unit="%" />} />
                   <Line type="monotone" dataKey="Rate" name="Conversion rate" stroke={TEAL} strokeWidth={2.5}
                     dot={{ r: 4, fill: TEAL, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -1062,7 +947,7 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ SECTION 5: VENTURE ECOSYSTEM â"€â"€â"€ */}
         <section style={{ display: show(5) ? undefined : "none" }}>
-          <SecHeader title="Venture Ecosystem &amp; Impact"
+          <SectionHeader title="Venture Ecosystem &amp; Impact"
             sub="Portfolio summary and the jobs, funding and partnerships HENT ventures have generated" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <ExecCard label="Jobs Created"       value={TOTAL_JOBS.toLocaleString()} icon={Zap}        tip="Total jobs created across all portfolio ventures." />
@@ -1102,7 +987,7 @@ export default function ExecutiveDashboard() {
 
         {/* â"€â"€ KEY INSIGHTS (closing executive summary) â"€â"€â"€ */}
         <div>
-          <SecHeader title="Key Insights"
+          <SectionHeader title="Key Insights"
             sub="Executive highlights across delivery, participation, quality, innovation and impact" />
           <ChartCard title="Programme Highlights" sub="Auto-generated from the latest programme data" accent={PRIMARY}>
             <InsightList items={insights} />

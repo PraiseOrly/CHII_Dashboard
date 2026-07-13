@@ -1,4 +1,5 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
@@ -8,7 +9,6 @@ import {
 } from "recharts";
 import { Star, Zap, Briefcase } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";
@@ -66,48 +66,6 @@ function ratingLabel(score: number): string {
 }
 
 // â”€â”€â”€ Shared sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, accent = ACCENT, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }} title="Right-click to download this chart" className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {sub && <InfoDot tip={sub} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
 
 // Custom SVG donut  -  same as overview, guarantees hex fill colours
 const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
@@ -242,19 +200,6 @@ function Stars({ score }: { score: number }) {
           className={i <= Math.floor(score) ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
       ))}
       <span className="text-[10px] text-gray-500 ml-1">{score.toFixed(1)}</span>
-    </span>
-  );
-}
-
-function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>{tip}</span>
-      )}
     </span>
   );
 }
@@ -470,7 +415,7 @@ export default function MasterclassesPage() {
         {/* SECTION 1: RATINGS */}
         {show(1) && (
         <section>
-          <SecHeader title="Venture Ratings of Masterclasses"
+          <SectionHeader title="Venture Ratings of Masterclasses"
             sub={`${filtered.length} sessions rated across Quality, Usefulness, Accessibility, Relevance`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Rating Distribution by Criterion"
@@ -522,7 +467,7 @@ export default function MasterclassesPage() {
         {/* SECTION 2: DEMOGRAPHICS */}
         {show(2) && (
         <section>
-          <SecHeader title="Participant Demographics"
+          <SectionHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <ProfileCard label="Female Participants"  value={tot.female}              pct={femalePct}      total={tot.attendees} color={VIOLET_MC}  />
@@ -601,7 +546,7 @@ export default function MasterclassesPage() {
         {/* SECTION 3: ATTENDANCE TRENDS */}
         {show(3) && (
         <section>
-          <SecHeader title="Attendance Trends"
+          <SectionHeader title="Attendance Trends"
             sub="Session attendance and yearly gender breakdown" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Attendance by Session"
@@ -650,7 +595,7 @@ export default function MasterclassesPage() {
         {/* SECTION 4+6: GROWTH + COMPLETION  -  same row */}
         {show(4) && (
         <section>
-          <SecHeader title="Growth &amp; Completion Analytics"
+          <SectionHeader title="Growth &amp; Completion Analytics"
             sub="Cumulative reach and per-session completion rates across all masterclasses" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Cumulative Attendee Growth"
@@ -704,7 +649,7 @@ export default function MasterclassesPage() {
         {/* SECTION 5: TOP PERFORMING + MOST ENGAGED */}
         {show(5) && (
         <section>
-          <SecHeader title="Top Performing Masterclasses & Most Engaged Ventures"
+          <SectionHeader title="Top Performing Masterclasses & Most Engaged Ventures"
             sub="Highest-rated sessions and the ventures that attend most" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Top Performing Masterclasses"

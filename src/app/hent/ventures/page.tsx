@@ -1,4 +1,5 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -8,7 +9,6 @@ import {
 } from "recharts";
 import { Banknote, Briefcase, Info, Rocket, Target, Users, Zap, type LucideIcon } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";
@@ -145,36 +145,6 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
   );
 }
 
-function ChartCard({ title, sub, accent = PRIMARY, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} className="overflow-hidden flex flex-col" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5 flex-shrink-0" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {sub && <InfoDot tip={sub} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5 min-h-0">{children}</div>
-    </div>
-  );
-}
-
 // Pace bar designed for light tinted backgrounds
 function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }) {
   return (
@@ -183,19 +153,6 @@ function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }
         style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
       <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${PACE * 100}%`, backgroundColor: "#0E4633", borderRadius: 1 }} />
     </div>
-  );
-}
-
-function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>{tip}</span>
-      )}
-    </span>
   );
 }
 

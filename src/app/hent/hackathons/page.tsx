@@ -1,4 +1,5 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -8,7 +9,6 @@ import {
 } from "recharts";
 import { Briefcase, Zap } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";
@@ -92,48 +92,6 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
   );
 }
 
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, accent = ORANGE, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }} title="Right-click to download this chart" className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {sub && <InfoDot tip={sub} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
 function ProfileCard({ label, value, pct, total: tot, color }: {
   label: string; value: number; pct: number; total: number; color: string;
 }) {
@@ -149,19 +107,6 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
         <div className="h-full" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }} />
       </div>
     </div>
-  );
-}
-
-function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>{tip}</span>
-      )}
-    </span>
   );
 }
 
@@ -387,7 +332,7 @@ export default function HackathonsPage() {
         />
 
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Participant Profiles"
+          <SectionHeader title="Participant Profiles"
             sub={`${total.participants.toLocaleString()} participants across all hackathons`} />
 
           {/* Participant profile stat cards */}
@@ -456,7 +401,7 @@ export default function HackathonsPage() {
 
         {/* â”€â”€ SECTION 2: HACKATHONS PER YEAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Hackathons Conducted Per Year"
+          <SectionHeader title="Hackathons Conducted Per Year"
             sub="Event frequency and participant reach by year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Annual Hackathon Frequency"
@@ -494,7 +439,7 @@ export default function HackathonsPage() {
 
         {/* â”€â”€ SECTION 3: HACKATHON TRENDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Hackathon Trends"
+          <SectionHeader title="Hackathon Trends"
             sub="Year-on-year trends with male vs female comparison" />
 
           {/* Tab filters — pill style matching the section filters */}
@@ -552,7 +497,7 @@ export default function HackathonsPage() {
 
         {/* â”€â”€ SECTION 4: PARTICIPATION & PROJECT CATEGORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader title="Participation & Project Categories"
+          <SectionHeader title="Participation & Project Categories"
             sub={`${total.participants.toLocaleString()} participants  ·  ${total.projects} projects`} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -610,7 +555,7 @@ export default function HackathonsPage() {
 
         {/* â”€â”€ SECTION 5: INNOVATION LIFECYCLE â”€â”€â”€ */}
         <section style={{ display: show(5) ? undefined : "none" }}>
-          <SecHeader title="Hackathon Innovation Lifecycle"
+          <SectionHeader title="Hackathon Innovation Lifecycle"
             sub="The full SOP pipeline — from participant recruitment and team formation through prototyping and pitching, to the ventures and partnerships that survive it" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
