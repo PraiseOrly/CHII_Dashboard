@@ -322,33 +322,6 @@ function ExecCard({ label, value, sub, note, icon: Icon, tip }: {
   );
 }
 
-// ─── Count-up ────────────────────────────────────────────────────────────────
-function useCountUp(target: number, duration = 750): number {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (target === 0) return;
-    let start: number | null = null;
-    function tick(now: number) {
-      if (start === null) start = now;
-      const p = Math.min((now - start) / duration, 1);
-      setVal(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-      else setVal(target);
-    }
-    const id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [target, duration]);
-  return val;
-}
-
-function benchColor(pct: number, bench: number): string {
-  const r = bench > 0 ? pct / bench : 1;
-  if (r >= 1)    return "#16A34A";
-  if (r >= 0.95) return "#84CC16";
-  if (r >= 0.8)  return "#F59E0B";
-  return "#DC2626";
-}
-
 function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
   label: string; num: number; displayFmt: (n: number) => string;
   sub?: string; pct?: number; bench?: number; Icon?: LucideIcon; tip?: string;

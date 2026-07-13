@@ -36,22 +36,6 @@ function avg(arr: number[]): number {
 function fmt(n: number) { return Math.round(n).toLocaleString(); }
 function pct(n: number) { return `${Math.round(n)}%`; }
 
-function useCountUp(target: number, duration = 800): number {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    let start: number | null = null;
-    const id = requestAnimationFrame(function tick(now) {
-      if (start === null) start = now;
-      const p = Math.min((now - start) / duration, 1);
-      setVal(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-      else setVal(target);
-    });
-    return () => cancelAnimationFrame(id);
-  }, [target, duration]);
-  return val;
-}
-
 // â”€â”€â”€ Contextual filter components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Opt<T> = { label: string; value: T };
 

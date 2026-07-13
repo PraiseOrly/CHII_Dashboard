@@ -221,35 +221,6 @@ function Stars({ score }: { score: number }) {
   );
 }
 
-// â”€â”€â”€ Count-up animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function useCountUp(target: number, duration = 750): number {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (target === 0) return;
-    let start: number | null = null;
-    function tick(now: number) {
-      if (start === null) start = now;
-      const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setVal(target * eased);
-      if (p < 1) requestAnimationFrame(tick);
-      else setVal(target);
-    }
-    const id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [target, duration]);
-  return val;
-}
-
-// Red → amber → green based on progress against benchmark
-function benchColor(pct: number, bench: number): string {
-  const r = bench > 0 ? pct / bench : 1;
-  if (r >= 1)    return "#16A34A";
-  if (r >= 0.95) return "#84CC16";
-  if (r >= 0.8)  return "#F59E0B";
-  return "#DC2626";
-}
-
 function InfoDot({ tip, color = "#2D6A4F" }: { tip: string; color?: string }) {
   const [show, setShow] = useState(false);
   return (

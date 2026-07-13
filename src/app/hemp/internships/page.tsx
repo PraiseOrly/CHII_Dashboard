@@ -160,33 +160,6 @@ function FilterSelect({ label, value, onChange, options }: {
   );
 }
 
-function useCountUp(target: number, duration = 750): number {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (target === 0) return;
-    let start: number | null = null;
-    function tick(now: number) {
-      if (start === null) start = now;
-      const p = Math.min((now - start) / duration, 1);
-      setVal(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-      else setVal(target);
-    }
-    const id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [target, duration]);
-  return val;
-}
-
-// Red → amber → green based on progress against benchmark
-function benchColor(pct: number, bench: number): string {
-  const r = bench > 0 ? pct / bench : 1;
-  if (r >= 1)    return "#16A34A";
-  if (r >= 0.95) return "#84CC16";
-  if (r >= 0.8)  return "#BA7517";
-  return "#DC2626";
-}
-
 function KpiTile({ label, num, displayFmt, sub, Icon }: {
   label: string; num: number; displayFmt: (n: number) => string; sub: string; clr?: string;
   pct?: number; bench?: number; Icon?: LucideIcon;

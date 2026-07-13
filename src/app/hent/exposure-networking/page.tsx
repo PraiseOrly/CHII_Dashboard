@@ -106,25 +106,6 @@ function derive(rows: typeof exposureEvents) {
   };
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-function useCountUp(target: number, duration = 750): number {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (target === 0) { setVal(0); return; }
-    let start: number | null = null;
-    function tick(now: number) {
-      if (start === null) start = now;
-      const p = Math.min((now - start) / duration, 1);
-      setVal(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-      else setVal(target);
-    }
-    const id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [target, duration]);
-  return val;
-}
-
 // Small "i" badge revealing an explanation on hover.
 function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
   const [show, setShow] = useState(false);
