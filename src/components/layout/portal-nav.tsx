@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Sun, Moon, Download } from "lucide-react";
+import { LayoutGrid, Sun, Moon, Download, LogOut } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { getPortalTheme, type Portal } from "@/theme/portals";
 import { PORTAL_NAVS } from "@/config/navigation";
@@ -85,6 +85,16 @@ export default function PortalNav({ portal }: { portal: Portal }) {
           >
             <LayoutGrid size={11} />
             {config.wordmark} Portal
+          </Link>
+
+          <Link
+            href="/"
+            title="Sign out"
+            className="flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
+            style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+          >
+            <LogOut size={11} />
+            <span className="hidden sm:inline">Logout</span>
           </Link>
         </div>
       </div>

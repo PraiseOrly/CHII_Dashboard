@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown, Sun, Moon, Download } from "lucide-react";
+import { LayoutGrid, ChevronDown, Sun, Moon, Download, LogOut } from "lucide-react";
 
 const NAVY = "#042C53";
 
@@ -173,6 +173,17 @@ export default function ImpactNav() {
             </div>
           )}
         </div>
+
+        {/* Logout — returns to the sign-in page */}
+        <Link
+          href="/"
+          title="Sign out"
+          className="flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
+          style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+        >
+          <LogOut size={11} />
+          <span className="hidden sm:inline">Logout</span>
+        </Link>
 
         </div>
       </div>
