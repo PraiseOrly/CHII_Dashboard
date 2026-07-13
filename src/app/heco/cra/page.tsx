@@ -1,10 +1,10 @@
 "use client";
+import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
-import { ChartTip, ChartLegend } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import { DonutRing } from "@/components/charts/donut-chart";
 import {
@@ -153,112 +153,6 @@ function derive(
   };
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 210, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400 }}>
-          {tip}
-        </span>
-      )}
-    </span>
-  );
-}
-
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: SECTION }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: SECTION }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, info, children }: { title: string; sub?: string; info?: string; children: React.ReactNode }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }}
-      title="Right-click to download this chart"
-      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
-function Funnel({ steps, color = BRAND_DK }: { steps: { label: string; value: number }[]; color?: string }) {
-  const max = steps[0]?.value || 1;
-  return (
-    <div className="space-y-2.5">
-      {steps.map((step, i) => {
-        const pct = Math.max(8, Math.round((step.value / max) * 100));
-        const conv = i > 0 && steps[i - 1].value > 0 ? Math.round((step.value / steps[i - 1].value) * 100) : null;
-        return (
-          <div key={step.label}>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-gray-700">{step.label}</span>
-              <span className="font-bold tabular-nums" style={{ color }}>
-                {step.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
-              </span>
-            </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(20,48,107,0.08)" }}>
-              <div className="h-full rounded-sm" style={{ width: `${pct}%`, backgroundColor: color, opacity: 1 - i * 0.15 }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function BarList({ data, colors, labelWidth = 150 }: {
-  data: { name: string; value: number }[]; colors: string[]; labelWidth?: number;
-}) {
-  const max = data[0]?.value || 1;
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {data.map((row, i) => {
-        const col = colors[i % colors.length];
-        return (
-          <div key={row.name} className="flex items-center gap-2.5">
-            <div className="text-[11px] text-gray-600 text-right flex-shrink-0 truncate" style={{ width: labelWidth }}>{row.name}</div>
-            <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
-              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
-            </div>
-            <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
-          </div>
-        );
-      })}
-      {!data.length && <p className="text-[11px] text-gray-400 text-center py-6">No records match the selected filters.</p>}
-    </div>
-  );
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function CraPage() {
   const [fCohort, setFCohort]   = useState("All Cohorts");
@@ -286,6 +180,7 @@ export default function CraPage() {
   const show = (n: number) => activeSection === "all" || activeSection === n;
 
   return (
+    <PortalThemeProvider portal="heco">
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
       <PortalNav portal="heco" />
 
@@ -356,7 +251,7 @@ export default function CraPage() {
 
         {/* ══ PILLAR 1: PUBLIC SECTOR FELLOWSHIP ══════════════════════════════ */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Pillar 1 — Public Sector Fellowship"
+          <SectionHeader title="Pillar 1 — Public Sector Fellowship"
             sub="Upskilling healthcare executives through operational funding, research training and guidance in academic publication" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -394,7 +289,7 @@ export default function CraPage() {
 
         {/* ══ PILLAR 2: STUDENT HACKATHONS ════════════════════════════════════ */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Pillar 2 — Student Hackathons"
+          <SectionHeader title="Pillar 2 — Student Hackathons"
             sub="Hackathons supported by the Fellows through mentorship, to incubate student ventures — this is where Pillar 1 feeds Pillar 2" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -427,7 +322,7 @@ export default function CraPage() {
 
         {/* ══ PILLAR 3: PUBLIC HEALTH RESEARCH ════════════════════════════════ */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Pillar 3 — Public Health Research"
+          <SectionHeader title="Pillar 3 — Public Health Research"
             sub="Accelerating context-specific research through structural partnerships with regional health authorities" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

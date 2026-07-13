@@ -1,4 +1,5 @@
 "use client";
+import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import SectionPills from "@/components/filters/section-pills";
@@ -113,116 +114,6 @@ function derive(cohorts: typeof sieCohorts, visits: typeof sieSiteVisits) {
   };
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400 }}>
-          {tip}
-        </span>
-      )}
-    </span>
-  );
-}
-
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: SECTION }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: SECTION }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, info, children }: { title: string; sub?: string; info?: string; children: React.ReactNode }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }}
-      title="Right-click to download this chart"
-      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
-function ChartTip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(20,48,107,0.12)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-      {label != null && <p style={{ fontWeight: 700, color: BRAND_DK, marginBottom: 4 }}>{label}</p>}
-      {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
-          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill, display: "inline-block" }} />
-          {p.name}: <b style={{ color: BRAND_DK }}>{typeof p.value === "number" ? p.value.toLocaleString() : p.value}</b>
-        </p>
-      ))}
-    </div>
-  );
-}
-
-function ChartLegend({ items }: { items: readonly (readonly [string, string])[] }) {
-  return (
-    <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-      {items.map(([l, c]) => (
-        <span key={l} className="flex items-center gap-1.5">
-          <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
-  const max = steps[0]?.value || 1;
-  return (
-    <div className="space-y-2.5">
-      {steps.map((s, i) => {
-        const pct = Math.max(8, Math.round((s.value / max) * 100));
-        const conv = i > 0 && steps[i - 1].value > 0 ? Math.round((s.value / steps[i - 1].value) * 100) : null;
-        return (
-          <div key={s.label}>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-gray-700">{s.label}</span>
-              <span className="font-bold tabular-nums" style={{ color: BRAND_DK }}>
-                {s.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
-              </span>
-            </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(20,48,107,0.08)" }}>
-              <div className="h-full rounded-sm" style={{ width: `${pct}%`, backgroundColor: BRAND_DK, opacity: 1 - i * 0.13 }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function SiePage() {
   const [fYear, setFYear]       = useState("All Years");
@@ -244,6 +135,7 @@ export default function SiePage() {
   const show = (n: number) => activeSection === "all" || activeSection === n;
 
   return (
+    <PortalThemeProvider portal="hemp">
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
       <PortalNav portal="hemp" />
 
@@ -317,7 +209,7 @@ export default function SiePage() {
 
         {/* ── SECTION 1: The hybrid model ─── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="The Hybrid Model"
+          <SectionHeader title="The Hybrid Model"
             sub="How the programme splits between a virtual phase and the in-country immersion, and how many students make it all the way through" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -339,7 +231,7 @@ export default function SiePage() {
 
         {/* ── SECTION 2: What students are exposed to ─── */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="What Students Are Exposed To"
+          <SectionHeader title="What Students Are Exposed To"
             sub="The three things the immersion is designed to deliver — how health systems function, how innovation is applied, and what employment pathways exist" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -369,7 +261,7 @@ export default function SiePage() {
 
         {/* ── SECTION 3: Interdisciplinary intake & delivery ─── */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Interdisciplinary Intake & Delivery"
+          <SectionHeader title="Interdisciplinary Intake & Delivery"
             sub="The programme is explicitly for non-clinical students — this is the mix of disciplines it draws, and the activity pillars it delivers" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -413,7 +305,7 @@ export default function SiePage() {
 
         {/* ── SECTION 4: Cohort growth & top visits ─── */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader title="Cohort Growth & Highest-Value Visits"
+          <SectionHeader title="Cohort Growth & Highest-Value Visits"
             sub="How the programme has scaled cohort on cohort, and which site visits students rated most valuable" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 

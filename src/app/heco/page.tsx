@@ -1,10 +1,10 @@
 "use client";
+import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
-import { ChartTip, ChartLegend } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import { DonutRing } from "@/components/charts/donut-chart";
 import { fellows, craHackathons, researchPartnerships, CRA_PILLARS } from "@/data/heco/cra";
@@ -100,87 +100,6 @@ function derive(
   };
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 210, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400 }}>
-          {tip}
-        </span>
-      )}
-    </span>
-  );
-}
-
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: SECTION }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: SECTION }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, info, children }: { title: string; sub?: string; info?: string; children: React.ReactNode }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} onContextMenu={(e) => { e.preventDefault(); handleDownload(); }}
-      title="Right-click to download this chart"
-      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
-/** Values across the chain differ hugely in scale, so bars are sized against the max. */
-function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
-  const barMax = Math.max(...steps.map(x => x.value)) || 1;
-  return (
-    <div className="space-y-2.5">
-      {steps.map((step, i) => {
-        const pct = Math.max(6, Math.round((step.value / barMax) * 100));
-        return (
-          <div key={step.label}>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-gray-700">{step.label}</span>
-              <span className="font-bold tabular-nums" style={{ color: BRAND_DK }}>{step.value.toLocaleString()}</span>
-            </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(20,48,107,0.08)" }}>
-              <div className="h-full rounded-sm" style={{ width: `${pct}%`, backgroundColor: BRAND_DK, opacity: 1 - i * 0.13 }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function HecoOverviewPage() {
   const [fYear, setFYear]       = useState("All Years");
@@ -206,6 +125,7 @@ export default function HecoOverviewPage() {
   const show = (n: number) => activeSection === "all" || activeSection === n;
 
   return (
+    <PortalThemeProvider portal="heco">
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
       <PortalNav portal="heco" />
 
@@ -278,7 +198,7 @@ export default function HecoOverviewPage() {
 
         {/* ── SECTION 1: The three pillars ─── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="The Three Pillars"
+          <SectionHeader title="The Three Pillars"
             sub="The Centre advances its ecosystem mandate through the Public Sector Fellowship, Fellow-mentored student hackathons, and public health research partnerships" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -319,7 +239,7 @@ export default function HecoOverviewPage() {
 
         {/* ── SECTION 2: Activity over time ─── */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Activity Over Time" sub="How the three pillars have scaled year on year" />
+          <SectionHeader title="Activity Over Time" sub="How the three pillars have scaled year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Pillar Activity per Year" sub="Fellows enrolled, ventures incubated and studies run"
@@ -370,7 +290,7 @@ export default function HecoOverviewPage() {
 
         {/* ── SECTION 3: Geographic reach ─── */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Geographic Reach"
+          <SectionHeader title="Geographic Reach"
             sub="Where the ecosystem mandate is active — fellows, hackathons and research partnerships by country" />
           <ChartCard title="Ecosystem Footprint by Country" sub="Combined count of fellows, hackathons and research partnerships"
             info="Concentration in one country limits the 'ecosystem' claim. Breadth across health authorities is what makes the research pillar structural rather than local.">

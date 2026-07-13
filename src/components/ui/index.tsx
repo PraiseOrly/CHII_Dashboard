@@ -5,8 +5,27 @@
 // SecHeader in 18, useCountUp in 16, …). They now live here once and take an
 // `accent` colour so each portal can theme them.
 
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ComponentType } from "react";
 import { CHART, COLORS, TYPE } from "@/theme/tokens";
+import { getPortalTheme, type Portal, type PortalTheme } from "@/theme/portals";
+
+// ─── Portal theme context ────────────────────────────────────────────────────
+// A page declares its portal once; every primitive below then picks up the right
+// colours automatically, so call sites never pass an accent.
+
+const PortalThemeContext = createContext<PortalTheme>(getPortalTheme("impact"));
+
+export function PortalThemeProvider({ portal, children }: { portal: Portal; children: React.ReactNode }) {
+  return (
+    <PortalThemeContext.Provider value={getPortalTheme(portal)}>
+      {children}
+    </PortalThemeContext.Provider>
+  );
+}
+
+export function usePortalTheme(): PortalTheme {
+  return useContext(PortalThemeContext);
+}
 
 const DEFAULT_ACCENT = COLORS.blue900;
 
@@ -34,12 +53,14 @@ export function useCountUp(target: number, duration = 750): number {
 // ─── InfoDot ─────────────────────────────────────────────────────────────────
 
 /** Small "i" badge that reveals an explanation on hover. */
-export function InfoDot({ tip, color = DEFAULT_ACCENT }: { tip: string; color?: string }) {
+export function InfoDot({ tip, color }: { tip: string; color?: string }) {
+  const theme = usePortalTheme();
+  const accent = color ?? theme.brand;
   const [open, setOpen] = useState(false);
   return (
     <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
       onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
+      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${accent}22`, border: `1px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: accent, lineHeight: 1, userSelect: "none" }}>i</span>
       {open && (
         <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: COLORS.surface, color: COLORS.ink, fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
           {tip}
@@ -52,14 +73,16 @@ export function InfoDot({ tip, color = DEFAULT_ACCENT }: { tip: string; color?: 
 // ─── SectionHeader ───────────────────────────────────────────────────────────
 
 /** The rule + uppercase title that opens each dashboard section. */
-export function SectionHeader({ title, sub, accent = DEFAULT_ACCENT }: {
+export function SectionHeader({ title, sub, accent }: {
   title: string; sub?: string; accent?: string;
 }) {
+  const theme = usePortalTheme();
+  const color = accent ?? theme.section;
   return (
     <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: accent }} />
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
       <div>
-        <p style={{ ...TYPE.sectionTitle, color: accent }}>{title}</p>
+        <p style={{ ...TYPE.sectionTitle, color }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
       </div>
     </div>
@@ -69,7 +92,7 @@ export function SectionHeader({ title, sub, accent = DEFAULT_ACCENT }: {
 // ─── ChartCard ───────────────────────────────────────────────────────────────
 
 /** White card with a coloured header. Right-click downloads it as a PNG. */
-export function ChartCard({ title, sub, info, accent = DEFAULT_ACCENT, headerRight, children }: {
+export function ChartCard({ title, sub, info, accent, headerRight, children }: {
   title: string;
   sub?: string;
   info?: string;
@@ -77,6 +100,8 @@ export function ChartCard({ title, sub, info, accent = DEFAULT_ACCENT, headerRig
   headerRight?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const theme = usePortalTheme();
+  const headerColor = accent ?? theme.brand;
   const cardRef = useRef<HTMLDivElement>(null);
 
   async function download() {
@@ -97,7 +122,7 @@ export function ChartCard({ title, sub, info, accent = DEFAULT_ACCENT, headerRig
       className="overflow-hidden"
       style={{ backgroundColor: COLORS.surface, borderRadius: 10, border: CHART.cardBorder }}
     >
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: accent, padding: "12px 20px" }}>
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: headerColor, padding: "12px 20px" }}>
         <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: COLORS.pink }} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
@@ -149,11 +174,13 @@ export function StatCard({
 
 /** Stacked conversion funnel. Bars are scaled against the largest step, so
  *  steps measured in different units still produce a readable shape. */
-export function Funnel({ steps, accent = DEFAULT_ACCENT, showConversion = true }: {
+export function Funnel({ steps, accent, showConversion = true }: {
   steps: { label: string; value: number }[];
   accent?: string;
   showConversion?: boolean;
 }) {
+  const theme = usePortalTheme();
+  const color = accent ?? theme.deep;
   const max = Math.max(...steps.map(s => s.value), 1);
   return (
     <div className="space-y-2.5">
@@ -166,13 +193,13 @@ export function Funnel({ steps, accent = DEFAULT_ACCENT, showConversion = true }
           <div key={step.label}>
             <div className="flex items-center justify-between text-[11px] mb-1">
               <span className="font-semibold text-gray-700">{step.label}</span>
-              <span className="font-bold tabular-nums" style={{ color: accent }}>
+              <span className="font-bold tabular-nums" style={{ color }}>
                 {step.value.toLocaleString()}
                 {conversion !== null && <span className="text-gray-400 font-medium"> · {conversion}%</span>}
               </span>
             </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: `${accent}14` }}>
-              <div className="h-full rounded-sm" style={{ width: `${width}%`, backgroundColor: accent, opacity: 1 - i * 0.13 }} />
+            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: `${color}14` }}>
+              <div className="h-full rounded-sm" style={{ width: `${width}%`, backgroundColor: color, opacity: 1 - i * 0.13 }} />
             </div>
           </div>
         );
