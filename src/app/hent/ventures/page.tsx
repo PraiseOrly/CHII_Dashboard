@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import { Banknote, Briefcase, Info, Rocket, Target, Users, Zap, type LucideIcon } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend } from "@/components/ui";
+import { ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";

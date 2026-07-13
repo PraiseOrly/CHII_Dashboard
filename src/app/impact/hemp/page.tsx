@@ -1,4 +1,5 @@
 ﻿"use client";
+import { useCountUp } from "@/components/ui";
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import {

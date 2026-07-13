@@ -1,4 +1,5 @@
 ﻿"use client";
+import { benchColor } from "@/theme/tokens";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
   BarChart, Bar,
@@ -7,7 +8,7 @@ import {
 } from "recharts";
 import { Star, Zap, Briefcase } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend } from "@/components/ui";
+import { ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";

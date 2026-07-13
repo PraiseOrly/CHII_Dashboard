@@ -1,7 +1,7 @@
 "use client";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
-import { ChartLegend } from "@/components/ui";
+import { ChartLegend, useCountUp } from "@/components/ui";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import { DonutRing } from "@/components/charts/donut-chart";
