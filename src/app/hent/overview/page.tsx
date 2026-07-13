@@ -1,4 +1,5 @@
 ﻿"use client";
+import { InlineFilterSelect as FilterSelect } from "@/components/ui/hent";
 import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import PortalNav from "@/components/layout/portal-nav";
@@ -496,21 +497,6 @@ function CompareTable({ rows }: { rows: { name: string; reach: number; sat: numb
         </tbody>
       </table>
     </div>
-  );
-}
-
-function FilterSelect({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
-}) {
-  return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
-      {label}
-      <select value={value} onChange={e => onChange(e.target.value)}
-        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-    </label>
   );
 }
 

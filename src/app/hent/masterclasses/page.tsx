@@ -1,4 +1,5 @@
 ﻿"use client";
+import { FilterSelect } from "@/components/ui/hent";
 import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -44,20 +45,6 @@ const RATING_COLORS: Record<string, string> = {
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Youth-in-Work-style filter select (green theme)
-function FilterSelect<T extends string>({ label, value, onChange, options }: {
-  label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 130px" }}>
-      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
-      <select value={value} onChange={e => onChange(e.target.value as T)}
-        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(14,70,51,0.18)", borderRadius: 6, padding: "7px 9px", color: "#0E4633", backgroundColor: "white", cursor: "pointer" }}>
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
-    </div>
-  );
-}
-
 function ratingLabel(score: number): string {
   if (score >= 4.5) return "Very High";
   if (score >= 3.8) return "High";

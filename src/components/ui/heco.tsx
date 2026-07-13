@@ -4,7 +4,7 @@
 
 import { createPortalUi } from "./create-portal-ui";
 
-export const { theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatCard } =
+export const { theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatCard, FilterSelect, InlineFilterSelect } =
   createPortalUi("heco");
 
 // Primitives that need no theming are re-exported so pages have one import site.

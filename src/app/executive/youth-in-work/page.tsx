@@ -1,4 +1,5 @@
 "use client";
+import { FilterSelect } from "@/components/ui/executive";
 
 import { useState, useMemo } from "react";
 import {
@@ -13,7 +14,7 @@ import {
   YOUTH, VENTURES, PATHWAYS, PROGRAMS, PARTICIPANT_TYPES, GENDERS, COUNTRIES, SECTORS,
   EMPLOYER_TYPES, WORK_CATEGORIES, YEARS, COHORTS, EMPLOYED_PATHWAYS, VENTURE_PATHWAYS,
   type Pathway, type Program, type ParticipantType, type Gender, type Youth,
-} from "./_data";
+} from "@/data/executive/youth-in-work";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import HeaderDesign from "@/components/layout/header-design";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
@@ -215,23 +216,6 @@ function NamedBarTip({ active, payload, header, colorMap }: any) {
         <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: color, display: "inline-block" }} />
         {name}: <b style={{ color: NAVY }}>{fmt(value)}</b>
       </p>
-    </div>
-  );
-}
-
-function FilterSelect<T extends string | number>({ label, value, onChange, options }: {
-  label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 140px" }}>
-      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
-      <select value={String(value)} onChange={e => {
-        const match = options.find(o => String(o.value) === e.target.value);
-        if (match) onChange(match.value);
-      }}
-        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(0,33,71,0.15)", borderRadius: 6, padding: "7px 9px", color: NAVY, backgroundColor: "white", cursor: "pointer" }}>
-        {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
-      </select>
     </div>
   );
 }

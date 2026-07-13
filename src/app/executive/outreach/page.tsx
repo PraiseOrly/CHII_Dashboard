@@ -1,4 +1,5 @@
 "use client";
+import { FilterSelect } from "@/components/ui/executive";
 import { ChartTip } from "@/components/ui/executive";
 
 import { useState, useMemo } from "react";
@@ -14,7 +15,7 @@ import {
   OUTREACH_PARTICIPANTS, INSTITUTIONS, PILLARS, INTERVENTIONS,
   INTERVENTIONS_BY_PILLAR, GENDERS, STATUSES, TREND_YEARS,
   type OutreachParticipant, type Pillar, type Gender,
-} from "./_data";
+} from "@/data/executive/outreach";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import HeaderDesign from "@/components/layout/header-design";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
@@ -169,25 +170,6 @@ function PctTip({ active, payload, label }: any) {
 }
 
 /* labeled select for the filter bar */
-function FilterSelect<T extends string | number>({ label, value, onChange, options }: {
-  label: string; value: T; onChange: (v: T) => void;
-  options: { value: T; label: string }[];
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 150px" }}>
-      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
-      <select value={String(value)} onChange={e => {
-        const raw = e.target.value;
-        const match = options.find(o => String(o.value) === raw);
-        if (match) onChange(match.value);
-      }}
-        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(0,33,71,0.15)", borderRadius: 6, padding: "7px 9px", color: NAVY, backgroundColor: "white", cursor: "pointer" }}>
-        {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
-      </select>
-    </div>
-  );
-}
-
 /* ♀ woman / female symbol icon (lucide has no female glyph in this version) */
 function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
   return (

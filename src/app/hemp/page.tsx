@@ -1,4 +1,5 @@
 "use client";
+import { InlineFilterSelect as FilterSelect } from "@/components/ui/hemp";
 import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import SectionPills from "@/components/filters/section-pills";
@@ -327,21 +328,6 @@ function CompareTable({ rows }: { rows: { name: string; reach: number; sat: numb
         </tbody>
       </table>
     </div>
-  );
-}
-
-function FilterSelect({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
-}) {
-  return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(20,48,107,0.65)" }}>
-      {label}
-      <select value={value} onChange={e => onChange(e.target.value)}
-        className="cursor-pointer focus:outline-none"
-        style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(0,33,71,0.12)", fontSize: 11, color: "#374151", backgroundColor: "white" }}>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-    </label>
   );
 }
 

@@ -6,7 +6,7 @@ import { Info, ChevronDown, FileText, Video, MapPin, Film, BookOpen } from "luci
 import {
   STORIES, SUMMARY, PROGRAMS, MISSION_AREAS, HUMANITARIAN, NATIONALITIES, DISABILITY, GENDERS,
   type Story,
-} from "./_data";
+} from "@/data/executive/stories";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import HeaderDesign from "@/components/layout/header-design";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";

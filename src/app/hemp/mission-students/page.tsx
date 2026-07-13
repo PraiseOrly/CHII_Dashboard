@@ -1,4 +1,5 @@
 ﻿"use client";
+import { InlineFilterSelect as FilterSelect } from "@/components/ui/hemp";
 import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import { CHART } from "@/theme/tokens";
@@ -174,21 +175,6 @@ const SURVEY_ITEMS = [
 ] as const;
 
 // â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-function FilterSelect({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
-}) {
-  return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(20,48,107,0.6)" }}>
-      {label}
-      <select value={value} onChange={e => onChange(e.target.value)}
-        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: "#0C447C", border: "1px solid rgba(20,48,107,0.2)", backgroundColor: "white" }}>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-    </label>
-  );
-}
 
 function Card({ title, sub, children }: {
   accent?: string; title: string; sub?: string; children: React.ReactNode;

@@ -20,6 +20,7 @@ import {
   ChartTip as BaseChartTip,
   StatCard as BaseStatCard,
 } from ".";
+import { FilterSelect as BaseFilterSelect, InlineFilterSelect as BaseInlineFilterSelect } from "@/components/filters/filter-select";
 
 export function createPortalUi(portal: Portal) {
   const theme = getPortalTheme(portal);
@@ -56,5 +57,26 @@ export function createPortalUi(portal: Portal) {
     return <BaseStatCard {...props} fill={props.fill ?? theme.brand} />;
   }
 
-  return { theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatCard };
+  /** Stacked select for the filter popover. */
+  function FilterSelect<T extends string | number>(
+    props: React.ComponentProps<typeof BaseFilterSelect<T>>,
+  ) {
+    return <BaseFilterSelect<T> {...props} tint={props.tint ?? theme.deep} />;
+  }
+
+  /** Label-beside-select for a header filter bar. */
+  function InlineFilterSelect(props: React.ComponentProps<typeof BaseInlineFilterSelect>) {
+    return (
+      <BaseInlineFilterSelect
+        {...props}
+        tint={props.tint ?? theme.deep}
+        labelTint={props.labelTint ?? theme.brand}
+      />
+    );
+  }
+
+  return {
+    theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatCard,
+    FilterSelect, InlineFilterSelect,
+  };
 }

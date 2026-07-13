@@ -1,4 +1,5 @@
 "use client";
+import { InlineFilterSelect as FilterSelect } from "@/components/ui/hent";
 import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
@@ -122,21 +123,6 @@ function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
       </div>
       {sub && <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>}
     </div>
-  );
-}
-
-function FilterSelect({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
-}) {
-  return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
-      {label}
-      <select value={value} onChange={e => onChange(e.target.value)}
-        className="cursor-pointer focus:outline-none"
-        style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(0,33,71,0.12)", fontSize: 11, color: "#374151", backgroundColor: "white" }}>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-    </label>
   );
 }
 

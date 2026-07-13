@@ -1,4 +1,5 @@
 "use client";
+import { FilterSelect } from "@/components/ui/executive";
 import { ChartTip } from "@/components/ui/executive";
 
 import { useState, useMemo } from "react";
@@ -14,7 +15,7 @@ import {
   FE_STUDENTS, GENDERS, QUALIFICATIONS, FIELDS, FUNDING_SOURCES, DESTINATIONS,
   RELEVANCE, COUNTRIES, PROGRAMMES, YEARS,
   type Gender,
-} from "./_data";
+} from "@/data/executive/further-education";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import HeaderDesign from "@/components/layout/header-design";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
@@ -131,23 +132,6 @@ function RankBar({ data, color = BAND, width = 130 }: { data: { name: string; va
         </Bar>
       </BarChart>
     </ResponsiveContainer>
-  );
-}
-
-function FilterSelect<T extends string | number>({ label, value, onChange, options }: {
-  label: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[];
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 140px" }}>
-      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>
-      <select value={String(value)} onChange={e => {
-        const match = options.find(o => String(o.value) === e.target.value);
-        if (match) onChange(match.value);
-      }}
-        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(0,33,71,0.15)", borderRadius: 6, padding: "7px 9px", color: NAVY, backgroundColor: "white", cursor: "pointer" }}>
-        {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
-      </select>
-    </div>
   );
 }
 
