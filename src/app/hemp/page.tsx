@@ -1,4 +1,5 @@
 "use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
@@ -214,67 +215,6 @@ const insights = [
   `Programme completion among mission students stands at ${completionPct}%.`,
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: SECTION }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: SECTION }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-// Small "i" tooltip badge
-function InfoDot({ tip, color = BRAND }: { tip: string; color?: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-flex", flexShrink: 0, cursor: "pointer" }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      <span style={{ width: 11, height: 11, borderRadius: "50%", backgroundColor: `${color}22`, border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color, lineHeight: 1, userSelect: "none" }}>i</span>
-      {show && (
-        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#111827", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 190, boxShadow: "0 6px 20px rgba(0,0,0,0.22)", zIndex: 100, textAlign: "left", pointerEvents: "none", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
-          {tip}
-        </span>
-      )}
-    </span>
-  );
-}
-
-function ChartCard({ title, sub, info, children }: {
-  title: string; sub?: string; accent?: string; info?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  function handleContextMenu(e: React.MouseEvent) { e.preventDefault(); handleDownload(); }
-  return (
-    <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
-      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-            {(info || sub) && <InfoDot tip={(info || sub)!} color="#FFFFFF" />}
-          </div>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
-
 function PlainCard({ title, sub, chip, fill, children }: {
   title: string; sub?: string; chip?: React.ReactNode; fill?: boolean; children: React.ReactNode;
 }) {
@@ -340,21 +280,6 @@ function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
 
 // ─── Chart tooltip ───────────────────────────────────────────────────────────
 function tipFmt(n: number) { return Math.round(n).toLocaleString(); }
-function HempChartTip({ active, payload, label, hideLabel, unit }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(20,48,107,0.15)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-      {!hideLabel && label != null && <p style={{ fontWeight: 700, color: BRAND_DK, marginBottom: 4 }}>{label}</p>}
-      {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
-          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill || p.stroke, display: "inline-block" }} />
-          {p.name}: <b style={{ color: BRAND_DK }}>{typeof p.value === "number" ? tipFmt(p.value) : p.value}{unit || ""}</b>
-        </p>
-      ))}
-    </div>
-  );
-}
-
 function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const max = data[0]?.value ?? 1;
   return (
@@ -368,31 +293,6 @@ function ColorBarList({ data, colors }: { data: { name: string; value: number }[
               <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
             </div>
             <div className="text-[11px] font-bold w-8 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
-  const max = steps[0]?.value || 1;
-  return (
-    <div className="space-y-2.5">
-      {steps.map((s, i) => {
-        const pct = Math.max(8, Math.round((s.value / max) * 100));
-        const conv = i > 0 && steps[i - 1].value > 0 ? Math.round((s.value / steps[i - 1].value) * 100) : null;
-        return (
-          <div key={s.label}>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-gray-700">{s.label}</span>
-              <span className="font-bold tabular-nums" style={{ color: BRAND_DK }}>
-                {s.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
-              </span>
-            </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(20,48,107,0.08)" }}>
-              <div className="h-full rounded-sm transition-all" style={{ width: `${pct}%`, backgroundColor: BRAND, opacity: 1 - i * 0.13 }} />
-            </div>
           </div>
         );
       })}
@@ -568,7 +468,7 @@ export default function HEMPOverview() {
 
         {/* ── SECTION 1: PROGRAMME DELIVERY ── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Programme Delivery" sub="How much programming has HEMP delivered across HealthX, internships and mission cohorts?" />
+          <SectionHeader title="Programme Delivery" sub="How much programming has HEMP delivered across HealthX, internships and mission cohorts?" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <ExecCard label="HealthX Sessions" value={hxSessions}     icon={Activity} />
             <ExecCard label="Internship Orgs"  value={intOrgs}        icon={Building2} />
@@ -583,7 +483,7 @@ export default function HEMPOverview() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HempChartTip hideLabel />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip hideLabel />} />
                   <Bar dataKey="HealthX"     fill={PROG.HealthX}     radius={[4, 4, 0, 0]} maxBarSize={16} />
                   <Bar dataKey="Internships" fill={PROG.Internships} radius={[4, 4, 0, 0]} maxBarSize={16} />
                 </BarChart>
@@ -603,7 +503,7 @@ export default function HEMPOverview() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip content={<HempChartTip hideLabel />} />
+                  <Tooltip content={<ChartTip hideLabel />} />
                   {(["HealthX","Internships","Mission Students"] as const).map((cat, i) => (
                     <Line key={cat} type="monotone" dataKey={cat} stroke={PROG_YEAR_COLORS[i]} strokeWidth={2.5}
                       dot={{ r: 4, fill: PROG_YEAR_COLORS[i], strokeWidth: 0 }} activeDot={{ r: 6 }} />
@@ -623,7 +523,7 @@ export default function HEMPOverview() {
 
         {/* ── SECTION 2: PARTICIPANT REACH ── */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Participant Reach" sub="Who are we reaching — gender distribution, programme reach, and geographic spread" />
+          <SectionHeader title="Participant Reach" sub="Who are we reaching — gender distribution, programme reach, and geographic spread" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Gender Distribution" sub="Female vs male share by programme">
@@ -633,7 +533,7 @@ export default function HEMPOverview() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HempChartTip unit="%" />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip unit="%" />} />
                   <Bar dataKey="Female" stackId="g" fill="#185FA5"  maxBarSize={46} />
                   <Bar dataKey="Male"   stackId="g" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={46} />
                 </BarChart>
@@ -650,7 +550,7 @@ export default function HEMPOverview() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HempChartTip />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
                   <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
                     {participantsByProgData.map((d) => (<Cell key={d.name} fill={PROG[d.name] ?? PALETTE_NEUTRAL} />))}
                   </Bar>
@@ -694,7 +594,7 @@ export default function HEMPOverview() {
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                       <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                       <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                      <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HempChartTip />} />
+                      <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
                       <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
                         {regionChartData.map((d, i) => (<Cell key={d.name} fill={WARM_RAMP[i % WARM_RAMP.length]} />))}
                       </Bar>
@@ -723,7 +623,7 @@ export default function HEMPOverview() {
 
         {/* ── SECTION 3: PROGRAMME PERFORMANCE ── */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Programme Performance" sub="Are programmes delivering a high-quality experience? Satisfaction and completion compared across types" />
+          <SectionHeader title="Programme Performance" sub="Are programmes delivering a high-quality experience? Satisfaction and completion compared across types" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <div className="lg:col-span-8">
               <PlainCard title="HealthX satisfaction by dimension" sub="Average score per dimension (out of 5), by session type">
@@ -754,7 +654,7 @@ export default function HEMPOverview() {
 
         {/* ── SECTION 4: GRADUATE OUTCOMES ── */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader title="Graduate Outcomes & Innovation" sub="How mission students convert into graduates, employment and ventures" />
+          <SectionHeader title="Graduate Outcomes & Innovation" sub="How mission students convert into graduates, employment and ventures" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <ExecCard label="Graduates"              value={completed.length}  icon={GraduationCap} />
             <ExecCard label="Employment Conversions" value={intConversions}    icon={TrendingUp} />
@@ -789,7 +689,7 @@ export default function HEMPOverview() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HempChartTip hideLabel />} />
+                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip hideLabel />} />
                   <Bar dataKey="Graduates" fill={OUT_COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                   <Bar dataKey="Ventures"  fill={OUT_COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                 </BarChart>
@@ -807,7 +707,7 @@ export default function HEMPOverview() {
 
         {/* ── SECTION 5: ECOSYSTEM & IMPACT ── */}
         <section style={{ display: show(5) ? undefined : "none" }}>
-          <SecHeader title="Ecosystem & Impact" sub="Partner network, student tracks and internship sector distribution" />
+          <SectionHeader title="Ecosystem & Impact" sub="Partner network, student tracks and internship sector distribution" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <ExecCard label="Internship Orgs"      value={intOrgs}   icon={Building2}  tip="Host organisations offering internship placements." />
             <ExecCard label="HealthX Partnerships" value={hxPship}   icon={Handshake}  tip="MOUs and facility collaborations formed through HealthX." />
@@ -831,7 +731,7 @@ export default function HEMPOverview() {
 
         {/* ── KEY INSIGHTS ── */}
         <div>
-          <SecHeader title="Key Insights" sub="Executive highlights across delivery, participation, quality, outcomes and impact" />
+          <SectionHeader title="Key Insights" sub="Executive highlights across delivery, participation, quality, outcomes and impact" />
           <ChartCard title="Programme Highlights" sub="Auto-generated from the latest HEMP data">
             <InsightList items={insights} />
           </ChartCard>

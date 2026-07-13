@@ -1,6 +1,6 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
@@ -173,47 +173,6 @@ function KpiTile({ label, num, displayFmt, sub, Icon }: {
       Icon={Icon ?? Briefcase}
       tooltip={label}
     />
-  );
-}
-
-function SecHeader({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#185FA5" }} />
-      <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#185FA5", letterSpacing: "0.01em" }}>{title}</h2>
-        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, accent = AMBER, children }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  function handleContextMenu(e: React.MouseEvent) { e.preventDefault(); handleDownload(); }
-  return (
-    <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
-      className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#14306B", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
   );
 }
 
@@ -426,7 +385,7 @@ export default function InternshipsPage() {
 
         {/* â”€â”€ SECTION 1: SECTOR PROFILES â”€â”€â”€ */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Sector Profiles"
+          <SectionHeader title="Sector Profiles"
             sub={`${total.students} students across ${total.orgs} organisations in ${countries.length} countries`} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
@@ -505,7 +464,7 @@ export default function InternshipsPage() {
 
         {/* â”€â”€ SECTION 2: ANNUAL TRENDS â”€â”€â”€ */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Annual Placement Trends"
+          <SectionHeader title="Annual Placement Trends"
             sub="Organisation and student placement volume year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -549,7 +508,7 @@ export default function InternshipsPage() {
 
         {/* â”€â”€ SECTION 3: TRENDS & ANALYSIS â”€â”€â”€ */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Placement Outcomes"
+          <SectionHeader title="Placement Outcomes"
             sub="Employment conversion and gender trend analysis" />
 
           <div className="flex gap-1 mb-4 bg-white rounded shadow-sm px-1 py-1 w-fit">
@@ -640,7 +599,7 @@ export default function InternshipsPage() {
 
         {/* â”€â”€ SECTION 5: COHORT OUTCOMES (HEMP) â”€â”€â”€ */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader
+          <SectionHeader
             title="Cohort Outcomes (Internal  ·  SFH  ·  WAG  ·  KASHA)"
             sub="Internship participation + post-internship placement outcomes" />
 
@@ -869,7 +828,7 @@ export default function InternshipsPage() {
 
         {/* â”€â”€ SECTION: PROGRAMME LIFECYCLE (SOP) â”€â”€â”€ */}
         <section style={{ display: show(5) ? undefined : "none" }}>
-          <SecHeader title="Internship Programme Lifecycle"
+          <SectionHeader title="Internship Programme Lifecycle"
             sub="The full SOP pipeline — partnership engagement, recruitment and eligibility screening, matching, pre-internship training, onboarding, supervision, M&amp;E and close-out" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -949,7 +908,7 @@ export default function InternshipsPage() {
         <section style={{ display: show(6) ? undefined : "none" }}>
 
 
-          <SecHeader title="Geographic Coverage"
+          <SectionHeader title="Geographic Coverage"
             sub={`Internship placements across ${countries.length} countries`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 

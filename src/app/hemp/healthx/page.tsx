@@ -1,4 +1,5 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import { useState, useEffect, useMemo } from "react";
 import {
   BarChart, Bar, AreaChart, Area, LineChart, Line,
@@ -6,7 +7,6 @@ import {
 } from "recharts";
 import { Briefcase, Building2, Download, FileText, Link2, MapPin, Handshake, TrendingUp, Users } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
@@ -208,18 +208,6 @@ function heatColor(v: number): string {
   return ROSE;
 }
 
-function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
-  return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#185FA5" }} />
-      <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#185FA5", letterSpacing: "0.01em" }}>{title}</h2>
-        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
 function Card({ title, sub, children }: {
   accent?: string; title: string; sub?: string; children: React.ReactNode;
 }) {
@@ -364,7 +352,7 @@ export default function HealthXPage() {
 
         {/* â”€â”€ SECTION 1: PIPELINE + FEEDBACK â”€â”€â”€ */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader title="Partnership Pipeline &amp; Student Feedback"
+          <SectionHeader title="Partnership Pipeline &amp; Student Feedback"
             sub="Visit-to-MOU conversion funnel alongside student experience quality ratings" />
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
@@ -530,7 +518,7 @@ export default function HealthXPage() {
 
         {/* â”€â”€ SECTION 2: VISITS BY ORG TYPE â”€â”€â”€ */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader title="Visits by Organisation Type"
+          <SectionHeader title="Visits by Organisation Type"
             sub="Count of HealthX sessions per host organisation category  -  absolute numbers" accent={BLUE} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -609,7 +597,7 @@ export default function HealthXPage() {
 
         {/* â”€â”€ SECTION 3: ANNUAL ACTIVITY â”€â”€â”€ */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader title="Annual Activity" sub="Session frequency and student reach year on year" />
+          <SectionHeader title="Annual Activity" sub="Session frequency and student reach year on year" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <Card accent={TEAL} title="Sessions Delivered per Year"
@@ -649,7 +637,7 @@ export default function HealthXPage() {
 
         {/* â”€â”€ SECTION 4: PERFORMANCE & GEOGRAPHY â”€â”€â”€ */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader title="Satisfaction &amp; Geographic Reach"
+          <SectionHeader title="Satisfaction &amp; Geographic Reach"
             sub="Score breakdown by session type  ·  country coverage by participant volume" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -723,7 +711,7 @@ export default function HealthXPage() {
 
         {/* ══ CAREER EXPOSURE PLATFORM — "Explore What's Next" ══════════════ */}
         <section style={{ display: show(5) ? undefined : "none" }}>
-          <SecHeader title="Career Exposure Platform — Explore What&apos;s Next"
+          <SectionHeader title="Career Exposure Platform — Explore What&apos;s Next"
             sub="The multi-institutional symposium: pre-event readiness sessions, the health careers exhibition, and the internship, employment and project leads it generates" />
 
           {/* Symposium KPIs */}

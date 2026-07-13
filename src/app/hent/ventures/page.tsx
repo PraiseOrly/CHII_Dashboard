@@ -313,18 +313,6 @@ const G_BAND = "#0E4633";
 const G_HEAD = "#0E4633";
 const G_TICK = "#A6C13C";
 
-function SectionHeader({ title, blurb }: { title: string; blurb: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: "#2D6A4F" }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: "#2D6A4F" }}>{title}</p>
-        <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{blurb}</p>
-      </div>
-    </div>
-  );
-}
-
 function Panel({ title, subtitle, info, children }: {
   title: string; subtitle: string; info?: string; children: React.ReactNode;
 }) {
@@ -551,7 +539,7 @@ export default function HENTPortfolio() {
 
         {show(1) && (
         <section className="space-y-3">
-          <SectionHeader title="Growth & Jobs" blurb="Founder onboarding momentum and jobs created through 2026" />
+          <SectionHeader title="Growth & Jobs" sub="Founder onboarding momentum and jobs created through 2026" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Engagement Trend */}
@@ -588,7 +576,7 @@ export default function HENTPortfolio() {
 
         {show(2) && (
         <section className="space-y-3">
-          <SectionHeader title="Portfolio Composition" blurb="Sector mix and founder gender across the portfolio" />
+          <SectionHeader title="Portfolio Composition" sub="Sector mix and founder gender across the portfolio" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ventures by Sector */}
             <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures · current filter`} accent={PRIMARY}>
@@ -610,7 +598,7 @@ export default function HENTPortfolio() {
 
         {show(3) && (
         <section className="space-y-3">
-          <SectionHeader title="Geography & Engagement" blurb="Geographic spread, jobs by country, stage mix, and event participation" />
+          <SectionHeader title="Geography & Engagement" sub="Geographic spread, jobs by country, stage mix, and event participation" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ventures by Country  -  MCF vs Non-MCF diverging */}
             <ChartCard title="Ventures by Country" sub="MCF vs Non-MCF" accent={PRIMARY}>

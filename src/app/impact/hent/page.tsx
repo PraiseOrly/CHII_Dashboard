@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useCountUp } from "@/components/ui";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/impact";
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
@@ -84,57 +84,6 @@ function HeaderDropdown<T extends string>({ options, value, onChange }: {
         <option key={o.value} value={o.value} style={{ color: "#111827", backgroundColor: "white" }}>{o.label}</option>
       ))}
     </select>
-  );
-}
-
-// â”€â”€â”€ UI atoms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function SecHeader({ title, sub, accent = VIOLET }: { title: string; sub?: string; accent?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: accent }} />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: accent }}>{title}</p>
-        {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, sub, accent = VIOLET, children, headerRight }: {
-  title: string; sub?: string; accent?: string; children: React.ReactNode; headerRight?: React.ReactNode;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  async function handleDownload() {
-    if (!cardRef.current) return;
-    const h2c = (await import("html2canvas")).default;
-    const canvas = await h2c(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
-    const a = document.createElement("a");
-    a.download = title.replace(/[^a-z0-9]/gi, "_") + ".png";
-    a.href = canvas.toDataURL();
-    a.click();
-  }
-  return (
-    <div ref={cardRef} className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 flex items-start justify-between gap-3" style={{ backgroundColor: accent }}>
-        <div className="flex items-start gap-2.5">
-          <div className="w-[3px] h-[14px] rounded-full mt-[1px] flex-shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">{title}</p>
-            {sub && <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-          {headerRight}
-          <button onClick={handleDownload} title="Download chart"
-            style={{ color: "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "white"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.7)"; }}>
-            <Download size={12} />
-          </button>
-        </div>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
   );
 }
 
@@ -352,7 +301,7 @@ export default function HENTImpactPage() {
 
         {/* â”€â”€ Venture Portfolio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
-          <SecHeader title="Enterprise Portfolio Analytics" sub="Stage progression, sector distribution, and funding status of HENT enterprises" accent={VIOLET} />
+          <SectionHeader title="Enterprise Portfolio Analytics" sub="Stage progression, sector distribution, and funding status of HENT enterprises" accent={VIOLET} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Stage Distribution"
@@ -442,7 +391,7 @@ export default function HENTImpactPage() {
 
         {/* â”€â”€ Programme Volume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
-          <SecHeader title="Programme Participation Over Time" sub="Year-on-year reach per HENT initiative" accent={ORANGE} />
+          <SectionHeader title="Programme Participation Over Time" sub="Year-on-year reach per HENT initiative" accent={ORANGE} />
 
           <ChartCard
             title="HENT Programme Growth"
@@ -492,7 +441,7 @@ export default function HENTImpactPage() {
 
         {/* â”€â”€ Programme Quality â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <section>
-          <SecHeader title="Programme Quality & Outcomes" sub="Satisfaction scores, completion rates, and fellowship outcomes" accent={SKY} />
+          <SectionHeader title="Programme Quality & Outcomes" sub="Satisfaction scores, completion rates, and fellowship outcomes" accent={SKY} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <ChartCard title="Satisfaction & Completion" sub="Quality benchmarks per HENT programme" accent={SKY}>

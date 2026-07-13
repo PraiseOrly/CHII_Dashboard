@@ -1,4 +1,5 @@
 "use client";
+import { ChartTip } from "@/components/ui/impact";
 
 import { useState, useMemo } from "react";
 import {
@@ -148,21 +149,6 @@ function Panel({ title, subtitle, info, children }: { title: string; subtitle: s
         title="Right-click to download as PNG">
         {children}
       </div>
-    </div>
-  );
-}
-
-function ChartTip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-      {label != null && <p style={{ fontWeight: 700, color: NAVY, marginBottom: 4 }}>{label}</p>}
-      {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5 }}>
-          <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill, display: "inline-block" }} />
-          {p.name}: <b style={{ color: NAVY }}>{fmt(p.value)}</b>
-        </p>
-      ))}
     </div>
   );
 }

@@ -710,7 +710,9 @@ export default function ExecutiveDashboard() {
                   ))}
                 </LineChart>
               </ResponsiveContainer>
-              <ChartLegend />
+              <ChartLegend items={(["Hackathons", "Masterclasses", "Study Trips", "Mentorships"] as const).map(
+                (cat, i) => [cat, PROG_YEAR_COLORS[i]] as const,
+              )} />
             </ChartCard>
           </div>
         </section>

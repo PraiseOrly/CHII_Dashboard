@@ -1,6 +1,6 @@
 ﻿"use client";
+import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
-import { ChartTip, ChartLegend } from "@/components/ui";
 import { CHART } from "@/theme/tokens";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
@@ -190,18 +190,6 @@ function FilterSelect({ label, value, onChange, options }: {
   );
 }
 
-function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
-  return (
-    <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#185FA5" }} />
-      <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#185FA5", letterSpacing: "0.01em" }}>{title}</h2>
-        {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
 function Card({ title, sub, children }: {
   accent?: string; title: string; sub?: string; children: React.ReactNode;
 }) {
@@ -376,7 +364,7 @@ export default function MissionStudentsPage() {
 
         {/* â•â• SECTION A: MENTORSHIP  -  indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SecHeader
+          <SectionHeader
             accent={INDIGO}
             title="Mentorship Program"
             sub={`${totalMentors} mentors recruited  ·  ${totalEnrolled} students enrolled  ·  ${avgFeedbackPct}% avg feedback rate`}
@@ -465,7 +453,7 @@ export default function MissionStudentsPage() {
 
         {/* â•â• SECTION B: GUEST FACULTY  -  teal + sky identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SecHeader
+          <SectionHeader
             accent={TEAL}
             title="Guest Faculty &amp; Sessions"
             sub={`${totalSessions} lectures held  ·  ${feedbackGPct}% feedback collected  ·  ${disaggPct}% feedback disaggregated`}
@@ -552,7 +540,7 @@ export default function MissionStudentsPage() {
 
         {/* â•â• SECTION C: CURATOR RESOURCES  -  orange + green + amber identity â•â•â• */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SecHeader
+          <SectionHeader
             accent={ORANGE}
             title="Mission Curator Resources"
             sub={`${totalCareerEvt} career events  ·  ${totalTraining} training courses  ·  ${totalOneOnOne} one-on-one sessions`}
@@ -661,7 +649,7 @@ export default function MissionStudentsPage() {
 
         {/* â•â• SECTION D: SURVEY STATUS  -  rose identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section style={{ display: show(4) ? undefined : "none" }}>
-          <SecHeader
+          <SectionHeader
             accent={ROSE_900}
             title="Survey &amp; Data Status"
             sub="Checklist of active feedback mechanisms  -  amber items require attention"
