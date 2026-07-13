@@ -296,7 +296,7 @@ export default function CraPage() {
 
             <ChartCard title="Venture Incubation Funnel" sub="Participants → teams → ventures incubated → still active"
               info="The survival step matters most: ventures incubated is a delivery number, ventures still active is an impact number.">
-              <Funnel steps={D.ventureFunnel} color={PILLAR_HEX["Student Hackathons"]} />
+              <Funnel steps={D.ventureFunnel} accent={PILLAR_HEX["Student Hackathons"]} />
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
                 {D.ventures ? Math.round(D.activeVents / D.ventures * 100) : 0}% of incubated ventures are still active
               </p>
@@ -329,7 +329,7 @@ export default function CraPage() {
 
             <ChartCard title="Research-to-Policy Funnel" sub="Studies → publications → policy briefs → adopted into policy"
               info="Research only counts as ecosystem impact if it reaches policy. The final step — adoption by a health authority — is the one that matters.">
-              <Funnel steps={D.researchFunnel} color={PILLAR_HEX["Public Health Research"]} />
+              <Funnel steps={D.researchFunnel} accent={PILLAR_HEX["Public Health Research"]} />
               <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
                 {D.studies ? Math.round(D.adoptions / D.studies * 100) : 0}% of studies have been adopted into policy
               </p>
@@ -363,5 +363,6 @@ export default function CraPage() {
         <PortalFooter portal="heco" source="HECO CRA Programme M&amp;E" />
       </div>
     </div>
+    </PortalThemeProvider>
   );
 }

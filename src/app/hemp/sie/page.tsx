@@ -365,5 +365,6 @@ export default function SiePage() {
 
       </div>
     </div>
+    </PortalThemeProvider>
   );
 }

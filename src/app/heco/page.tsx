@@ -317,5 +317,6 @@ export default function HecoOverviewPage() {
         <PortalFooter portal="heco" source="HECO Consolidated Database" />
       </div>
     </div>
+    </PortalThemeProvider>
   );
 }

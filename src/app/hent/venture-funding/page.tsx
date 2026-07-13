@@ -1,8 +1,7 @@
 "use client";
-import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend } from "@/components/ui";
+import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
-import { ChartLegend, useCountUp } from "@/components/ui";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import { DonutRing } from "@/components/charts/donut-chart";
@@ -417,5 +416,6 @@ export default function VentureFundingPage() {
 
       </div>
     </div>
+    </PortalThemeProvider>
   );
 }

@@ -291,5 +291,6 @@ export default function GlobalHealthPage() {
         <PortalFooter portal="hemp" source="HEMP Global Health Course M&amp;E" />
       </div>
     </div>
+    </PortalThemeProvider>
   );
 }
