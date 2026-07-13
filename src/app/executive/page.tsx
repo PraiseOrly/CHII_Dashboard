@@ -17,11 +17,11 @@ import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
 import Link from "next/link";
-import AfricaChoropleth from "./AfricaChoropleth";
-import DignifiedWork from "./DignifiedWork";
-import OutreachAccess from "./OutreachAccess";
-import ProgramImpactMatrix from "./ProgramImpactMatrix";
-import ProgramQuality from "./ProgramQuality";
+import AfricaChoropleth from "@/components/executive/africa-choropleth";
+import DignifiedWork from "@/components/executive/dignified-work";
+import OutreachAccess from "@/components/executive/outreach-access";
+import ProgramImpactMatrix from "@/components/executive/program-impact-matrix";
+import ProgramQuality from "@/components/executive/program-quality";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 
