@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Sun, Moon, Download, LogOut } from "lucide-react";
+import { Sun, Moon, Download, LogOut } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { getPortalTheme, type Portal } from "@/theme/portals";
 import { PORTAL_NAVS } from "@/config/navigation";
@@ -77,15 +77,6 @@ export default function PortalNav({ portal }: { portal: Portal }) {
           >
             <Download size={12} />
           </button>
-
-          <Link
-            href="/"
-            className="hidden sm:flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
-            style={{ borderColor: "#E5E7EB", color: accent, backgroundColor: "white" }}
-          >
-            <LayoutGrid size={11} />
-            {config.wordmark} Portal
-          </Link>
 
           <Link
             href="/"
