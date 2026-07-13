@@ -21,17 +21,24 @@ import {
 } from "recharts";
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
-// Green theme mirrored from the HENT Executive Dashboard.
-const BRAND    = "#2D6A4F"; // brand green (chrome, headers, pills, borders)
-const BRAND_DK = "#0E4633"; // deep green for value text
-const TEAL     = "#1B4332"; // HealthX (forest)
-const AMBER    = "#1F9E9E"; // Internships (dusty teal-green)
-const VIOLET   = "#A6C13C"; // Mission Students (olive/lime)
-const SKY      = "#BBD59B"; // pale sage (4th session type)
-const GREEN    = "#40916C";
-const ROSE     = "#F43F5E"; // female gender bars (distinct accent)
+// Blue/navy theme mirrored from the CHII Executive (Impact) Dashboard.
+const HERO     = "#102C5E"; // page header + footer hero fill
+const BRAND    = "#14306B"; // chart-card headers, pills, borders
+const SECTION  = "#185FA5"; // section bars + section titles
+const BRAND_DK = "#0C447C"; // deep blue for value text
+// Executive chart-series palette (bars & trend series)
+const TH_NAVY   = "#102C5E";
+const TH_BLUE   = "#479BD6";
+const TH_ORANGE = "#D45F2C";
 
-// Per-programme identity colours — muted green family, distinct by hue.
+const TEAL     = TH_NAVY;   // HealthX
+const AMBER    = TH_BLUE;   // Internships
+const VIOLET   = TH_ORANGE; // Mission Students
+const SKY      = "#7F77DD"; // indigo 400 (4th session type)
+const GREEN    = "#0F6E56"; // teal 600
+const ROSE     = "#BA7517"; // amber 400 (attention only)
+
+// Per-programme identity colours — the executive's chart-series hues.
 const PROG: Record<string, string> = {
   HealthX:            TEAL,
   Internships:        AMBER,
@@ -39,11 +46,11 @@ const PROG: Record<string, string> = {
 };
 const PROG_YEAR_COLORS = [PROG.HealthX, PROG.Internships, PROG["Mission Students"]] as const;
 
-// Very distinct multi-hue palette for donut charts (no repeats)
-const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
-// Green-family ramp for categorical charts (countries, regions, sectors)
-const WARM_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5","#7FB9B7","#5A7D3F","#9DC3A0","#245C51","#D2E3BE"];
-const PALETTE_NEUTRAL = "#888780";
+// Donut palette — executive design tokens only, ordered for maximum hue separation
+const DISTINCT = ["#185FA5","#0F6E56","#534AB7","#BA7517","#479BD6","#1D9E75","#7F77DD","#D45F2C","#14306B","#085041","#2F5FD1","#85B7EB","#378ADD","#5F5E5A","#102C5E"];
+// Blue-family ramp for categorical charts (countries, regions, sectors)
+const WARM_RAMP = ["#14306B","#185FA5","#2F5FD1","#378ADD","#479BD6","#85B7EB","#0C447C","#102C5E","#0F6E56","#1D9E75","#534AB7","#7F77DD","#BA7517","#D45F2C","#5F5E5A"];
+const PALETTE_NEUTRAL = "#5F5E5A"; // executive gray 600
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function avg(arr: number[]): number {
@@ -181,7 +188,7 @@ const outcomesByYear = YEARS
     return { Year: String(yr), Graduates: grads, Ventures: vents, Rate: grads ? Math.round((vents / grads) * 100) : 0 };
   })
   .filter(d => d.Graduates + d.Ventures > 0);
-const OUT_COLORS = ["#2D6A4F", "#A6C13C"] as const; // Graduates, Ventures
+const OUT_COLORS = [TH_NAVY, TH_BLUE] as const; // Graduates, Ventures
 
 // ─── Ecosystem ───────────────────────────────────────────────────────────────
 const trackCounts = (["Health Innovation", "Health Management", "Health Policy", "Digital Health"] as const)
@@ -207,9 +214,9 @@ const insights = [
 function SecHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: BRAND }} />
+      <div className="w-[3px] h-5 rounded-full flex-shrink-0" style={{ backgroundColor: SECTION }} />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: BRAND }}>{title}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: SECTION }}>{title}</p>
         {sub && <p className="text-[10px] text-gray-400 mt-0.5 font-medium">{sub}</p>}
       </div>
     </div>
@@ -250,7 +257,7 @@ function ChartCard({ title, sub, info, children }: {
     <div ref={cardRef} onContextMenu={handleContextMenu} title="Right-click to download this chart"
       className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
       <div className="flex items-center gap-2.5" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
@@ -308,7 +315,7 @@ function ExecCard({ label, value, sub, note, icon: Icon, center = false, tip }: 
           {tip && <InfoDot tip={tip} />}
         </div>
         {sub  && <p style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{sub}</p>}
-        {note && <p className="mt-1.5 pt-1.5" style={{ fontSize: 9, color: "#6B7280", borderTop: "1px solid rgba(45,106,79,0.15)" }}>{note}</p>}
+        {note && <p className="mt-1.5 pt-1.5" style={{ fontSize: 9, color: "#6B7280", borderTop: "1px solid rgba(20,48,107,0.15)" }}>{note}</p>}
       </div>
     </div>
   );
@@ -347,18 +354,18 @@ function KpiTile({ label, num, displayFmt, sub, pct, bench, Icon, tip }: {
 }) {
   const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(45,106,79,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(20,48,107,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
       <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(45,106,79,0.6)" }}>{label}</p>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(20,48,107,0.6)" }}>{label}</p>
         {tip && <InfoDot tip={tip} />}
       </div>
       <div className="flex items-center justify-center gap-2">
         {Icon && <Icon size={18} style={{ color: BRAND_DK, opacity: 0.9, flexShrink: 0 }} />}
         <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
       </div>
-      {sub && <p style={{ fontSize: 9.5, color: "rgba(45,106,79,0.6)", marginTop: 4 }}>{sub}</p>}
+      {sub && <p style={{ fontSize: 9.5, color: "rgba(20,48,107,0.6)", marginTop: 4 }}>{sub}</p>}
       {pct !== undefined && (
-        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(45,106,79,0.14)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
+        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(20,48,107,0.14)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
           <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : BRAND, borderRadius: 4 }} />
           {bench !== undefined && (
             <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
@@ -374,7 +381,7 @@ function tipFmt(n: number) { return Math.round(n).toLocaleString(); }
 function HempChartTip({ active, payload, label, hideLabel, unit }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(45,106,79,0.15)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+    <div style={{ backgroundColor: "white", border: "1px solid rgba(20,48,107,0.15)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
       {!hideLabel && label != null && <p style={{ fontWeight: 700, color: BRAND_DK, marginBottom: 4 }}>{label}</p>}
       {payload.map((p: any, i: number) => (
         <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
@@ -421,7 +428,7 @@ function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
                 {s.value.toLocaleString()}{conv !== null && <span className="text-gray-400 font-medium"> · {conv}%</span>}
               </span>
             </div>
-            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(45,106,79,0.08)" }}>
+            <div className="h-6 rounded-sm overflow-hidden" style={{ backgroundColor: "rgba(20,48,107,0.08)" }}>
               <div className="h-full rounded-sm transition-all" style={{ width: `${pct}%`, backgroundColor: BRAND, opacity: 1 - i * 0.13 }} />
             </div>
           </div>
@@ -465,11 +472,11 @@ function FilterSelect({ label, value, onChange, options }: {
   label: string; value: string; onChange: (v: string) => void; options: string[];
 }) {
   return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.65)" }}>
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(20,48,107,0.65)" }}>
       {label}
       <select value={value} onChange={e => onChange(e.target.value)}
         className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: BRAND_DK, border: "1px solid rgba(45,106,79,0.25)", backgroundColor: "white" }}>
+        style={{ color: BRAND_DK, border: "1px solid rgba(20,48,107,0.25)", backgroundColor: "white" }}>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
     </label>
@@ -526,30 +533,30 @@ export default function HEMPOverview() {
   }, [regionYear]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
       <HEMPNav />
 
       {/* ── EXECUTIVE HEADER ── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: BRAND, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(214,236,224,0.82)" }}>Mission students, HealthX, internships and graduate impact</p>
-            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(214,236,224,0.5)" }}>
-              <span><span style={{ color: "rgba(214,236,224,0.85)", fontWeight: 600 }}>Data source:</span> HEMP Programmes M&amp;E</span>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>Mission students, HealthX, internships and graduate impact</p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.85)", fontWeight: 600 }}>Data source:</span> HEMP Programmes M&amp;E</span>
               <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(214,236,224,0.85)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
+              <span><span style={{ color: "rgba(181,212,244,0.85)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
               <span aria-hidden="true">·</span>
               <span>{totalStudents} students · {hxSessions} HealthX sessions</span>
               <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(214,236,224,0.85)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
+              <span><span style={{ color: "rgba(181,212,244,0.85)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
             </div>
           </div>
         </div>
@@ -574,7 +581,7 @@ export default function HEMPOverview() {
             const on = n === 0 ? activeSection === "all" : activeSection === n;
             return (
               <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? BRAND : "rgba(45,106,79,0.2)"}`, backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280" }}>
+                style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer", border: `1px solid ${on ? BRAND : "rgba(20,48,107,0.2)"}`, backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280" }}>
                 {label}
               </button>
             );
@@ -649,13 +656,13 @@ export default function HEMPOverview() {
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} unit="%" domain={[0, 100]} />
                   <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<HempChartTip unit="%" />} />
-                  <Bar dataKey="Female" stackId="g" fill="#2D6A4F"  maxBarSize={46} />
-                  <Bar dataKey="Male"   stackId="g" fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={46} />
+                  <Bar dataKey="Female" stackId="g" fill="#185FA5"  maxBarSize={46} />
+                  <Bar dataKey="Male"   stackId="g" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={46} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#2D6A4F" }} /> Female</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A6C13C" }} /> Male</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> Female</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#85B7EB" }} /> Male</span>
               </div>
             </ChartCard>
 
@@ -688,7 +695,8 @@ export default function HEMPOverview() {
                 <FilterSelect label="Year" value={geoYear} onChange={setGeoYear} options={["All Years", ...GEO_YEARS.map(String)]} />
               </div>
               {geoCountryData.length ? (
-                <HentAfricaMap data={geoCountryData} region={geoRegion} onRegionChange={setGeoRegion} regions={["All Regions", ...GEO_REGIONS]} />
+                <HentAfricaMap data={geoCountryData} region={geoRegion} onRegionChange={setGeoRegion} regions={["All Regions", ...GEO_REGIONS]}
+                  lightColor="#C7DFFE" deepColor="#185FA5" tooltipColor="#042C53" />
               ) : (
                 <p className="text-[11px] text-gray-400 text-center py-6">No records match the selected filters.</p>
               )}
@@ -852,23 +860,23 @@ export default function HEMPOverview() {
         </div>
 
         {/* ── FOOTER STRIP ── */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: BRAND, minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: HERO, minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design2.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}>
-                <span style={{ color: "#B7E4C7", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}>
+                <span style={{ color: "#85B7EB", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT
               </span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}>
-                <span style={{ color: "#B7E4C7", fontWeight: 600 }}>Source:</span> HEMP Programmes M&amp;E
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}>
+                <span style={{ color: "#85B7EB", fontWeight: 600 }}>Source:</span> HEMP Programmes M&amp;E
               </span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(214,236,224,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(181,212,244,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
                 Contact Analyst
               </a>
             </div>

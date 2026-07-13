@@ -18,25 +18,47 @@ const AFRICA_ISO = new Set([
   710, 728, 729, 834, 768, 788, 800, 894, 716,
 ]);
 
-const ACCENT = "#2D6A4F";
+// Default (HENT) sequential green scale. HEMP overrides with the executive blue.
+const LIGHT_DEFAULT = "#C8DDB5";
+const DEEP_DEFAULT  = "#1B4332";
+const TIP_DEFAULT   = "#0F4C3A";
 
-// Sequential green scale, deep (high) → light (low), by share of the max value
-function getColor(value: number, max: number): string {
-  if (!value || !max) return "#E5E7EB";
-  const t = Math.min(value / max, 1);
-  const lerp = (a: number, b: number) => Math.round(a + t * (b - a));
-  // light #C8DDB5 → deep #1B4332
-  return `rgb(${lerp(200, 27)}, ${lerp(221, 67)}, ${lerp(181, 50)})`;
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
+}
+
+// Sequential scale, deep (high) → light (low), by share of the max value
+function makeGetColor(lightHex: string, deepHex: string) {
+  const light = hexToRgb(lightHex);
+  const deep  = hexToRgb(deepHex);
+  return (value: number, max: number): string => {
+    if (!value || !max) return "#E5E7EB";
+    const t = Math.min(value / max, 1);
+    const lerp = (a: number, b: number) => Math.round(a + t * (b - a));
+    return `rgb(${lerp(light[0], deep[0])}, ${lerp(light[1], deep[1])}, ${lerp(light[2], deep[2])})`;
+  };
 }
 
 export default function HentAfricaMap({
   data, region, onRegionChange, regions,
+  lightColor = LIGHT_DEFAULT,
+  deepColor = DEEP_DEFAULT,
+  tooltipColor = TIP_DEFAULT,
 }: {
   data: { name: string; value: number }[];
   region?: string;
   onRegionChange?: (r: string) => void;
   regions?: string[];
+  lightColor?: string;
+  deepColor?: string;
+  tooltipColor?: string;
 }) {
+  const getColor = makeGetColor(lightColor, deepColor);
   const current: Record<string, number> = {};
   data.forEach(d => { current[d.name] = d.value; });
   const maxVal = Math.max(...data.map(d => d.value), 1);
@@ -116,7 +138,7 @@ export default function HentAfricaMap({
           {tooltip && (
             <div style={{
               position: "fixed", left: tooltip.x + 12, top: tooltip.y - 38,
-              backgroundColor: "#0F4C3A", color: "white", padding: "5px 10px", borderRadius: 6,
+              backgroundColor: tooltipColor, color: "white", padding: "5px 10px", borderRadius: 6,
               fontSize: 11, pointerEvents: "none", zIndex: 9999, whiteSpace: "nowrap",
               boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
             }}>
@@ -131,7 +153,7 @@ export default function HentAfricaMap({
           <div>
             <p style={{ fontSize: 9, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Scale</p>
             <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
-              <div style={{ width: 12, height: 80, borderRadius: 4, flexShrink: 0, background: "linear-gradient(to bottom, #1B4332, #C8DDB5)" }} />
+              <div style={{ width: 12, height: 80, borderRadius: 4, flexShrink: 0, background: `linear-gradient(to bottom, ${deepColor}, ${lightColor})` }} />
               <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: 80 }}>
                 <span style={{ fontSize: 10, color: "#6B7280" }}>High</span>
                 <span style={{ fontSize: 10, color: "#6B7280" }}>Low</span>
@@ -151,7 +173,7 @@ export default function HentAfricaMap({
                   <span style={{ fontSize: 11, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {country.length > 13 ? country.slice(0, 13) + "…" : country}
                   </span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: ACCENT, flexShrink: 0 }}>{value}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: deepColor, flexShrink: 0 }}>{value}</span>
                 </div>
               ))}
             </div>

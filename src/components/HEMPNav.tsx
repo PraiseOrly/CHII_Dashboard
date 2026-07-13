@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LayoutGrid, Sun, Moon, Download } from "lucide-react";
 
-const GREEN = "#0E4633";
+const GREEN = "#14306B"; // executive navy (nav wordmark, active tab, portal button)
 
 function useTheme(): [boolean, () => void] {
   const [dark, setDark] = useState(false);
@@ -76,7 +76,7 @@ export default function HEMPNav() {
                 key={label}
                 href={href}
                 className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-16 transition-colors group flex-shrink-0"
-                style={{ color: isActive ? GREEN : "rgba(14,70,51,0.5)" }}
+                style={{ color: isActive ? GREEN : "rgba(20,48,107,0.5)" }}
               >
                 {!isActive && (
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"

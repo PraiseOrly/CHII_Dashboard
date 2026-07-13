@@ -27,21 +27,21 @@ import {
 // â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Page identity (header KPIs only): purple/violet
 // Keep section header accents as-is for brand consistency.
-const VIOLET      = "#2D6A4F"; // page identity now green (mirrors exec theme)
-const VIOLET_MID  = "#40916C";
-const VIOLET_DARK = "#0E4633";
-const NAVY        = "#002147";
+const VIOLET      = "#14306B"; // page identity now navy (mirrors exec theme)
+const VIOLET_MID  = "#2F5FD1";
+const VIOLET_DARK = "#0C447C";
+const NAVY        = "#14306B";
 
 // Section header accents
-const INDIGO      = "#4338CA";
-const INDIGO_MID  = "#4F46E5";
-const TEAL        = "#0D9488";
-const SKY         = "#0EA5E9";
-const PURPLE_MED  = "#9333EA";
-const ORANGE      = "#EA580C";
-const GREEN       = "#10B981";
-const AMBER       = "#F59E0B";
-const ROSE_900    = "#9D174D";
+const INDIGO      = "#14306B";
+const INDIGO_MID  = "#2F5FD1";
+const TEAL        = "#185FA5";
+const SKY         = "#7F77DD";
+const PURPLE_MED  = "#534AB7";
+const ORANGE      = "#D45F2C";
+const GREEN       = "#1D9E75";
+const AMBER       = "#BA7517";
+const ROSE_900    = "#D45F2C";
 const AMBER_BG    = "#FEF3C7";
 const AMBER_TEXT  = "#92400E";
 
@@ -49,22 +49,22 @@ const AMBER_TEXT  = "#92400E";
 // Using a dedicated palette per chart so categories are visually distinct.
 const MS = {
   // Mentorship series: mentors / enrolled / feedback
-  MENTORS:  "#4338CA", // indigo-700
-  ENROLLED: "#A855F7", // violet
-  FEEDBACK: "#10B981", // emerald-500
+  MENTORS:  "#14306B", // indigo-700
+  ENROLLED: "#479BD6", // violet
+  FEEDBACK: "#1D9E75", // emerald-500
 
   // Guest faculty series: sessions / feedback / disaggregated
-  FAC_SESSIONS:      "#0D9488", // teal
-  FAC_FEEDBACK:      "#0EA5E9", // sky
-  FAC_DISAGGREGATED: "#F59E0B", // amber
+  FAC_SESSIONS:      "#185FA5", // teal
+  FAC_FEEDBACK:      "#7F77DD", // sky
+  FAC_DISAGGREGATED: "#BA7517", // amber
 
   // Curator series: career events / training / 1-on-1
-  CUR_CAREER: "#EA580C", // orange
-  CUR_TRAIN: "#22C55E", // green-500 (distinct from amber/emerald)
-  CUR_ONEON1: "#9333EA", // purple
+  CUR_CAREER: "#D45F2C", // orange
+  CUR_TRAIN: "#085041", // green-500 (distinct from amber/emerald)
+  CUR_ONEON1: "#534AB7", // purple
 
   // Courses completed line
-  COURSES_COMPLETED: "#10B981", // emerald
+  COURSES_COMPLETED: "#1D9E75", // emerald
 
   // Tooltip/markers use bright variants if needed (kept simple here)
 } as const;
@@ -169,11 +169,11 @@ function FilterSelect({ label, value, onChange, options }: {
   label: string; value: string; onChange: (v: string) => void; options: string[];
 }) {
   return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(20,48,107,0.6)" }}>
       {label}
       <select value={value} onChange={e => onChange(e.target.value)}
         className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
+        style={{ color: "#0C447C", border: "1px solid rgba(20,48,107,0.2)", backgroundColor: "white" }}>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
     </label>
@@ -201,9 +201,9 @@ function useCountUp(target: number, duration = 750): number {
 function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#2D6A4F" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#185FA5" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#2D6A4F", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#185FA5", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -215,8 +215,8 @@ function Card({ title, sub, children }: {
 }) {
   return (
     <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#14306B", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -289,36 +289,32 @@ export default function MissionStudentsPage() {
   const animRes     = useCountUp(totalCuratorRes);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
       <HEMPNav />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
 
         {/* Full design elements anchored to the left & right edges */}
-        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mission Students</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#B7E4C7" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#B7E4C7" }}>HEMP</span>
-              </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(214,236,224,0.82)" }}>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>
               Mentorship  ·  Guest Faculty  ·  Mission Curator  -  three pillars of student support in HEMP
             </p>
           </div>
@@ -393,12 +389,12 @@ export default function MissionStudentsPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* FILTER BAR */}
-        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(14,70,51,0.12)" }}>
-          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#2D6A4F" }}>Filters</span>
+        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(20,48,107,0.12)" }}>
+          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#14306B" }}>Filters</span>
           <FilterSelect label="Year" value={fYear} onChange={setFYear} options={["All Years", ...YEARS.map(String)]} />
           {fYear !== "All Years" && (
             <button onClick={() => setFYear("All Years")}
-              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(14,70,51,0.6)" }}>
+              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(20,48,107,0.6)" }}>
               Reset
             </button>
           )}
@@ -508,7 +504,7 @@ export default function MissionStudentsPage() {
 
               <StatTile
                 icon={Mic}
-                iconBg="#CCFBF1"
+                iconBg="#E1F5EE"
                 iconColor={TEAL}
                 label="Lectures Held"
                 value={totalSessions}
@@ -605,7 +601,7 @@ export default function MissionStudentsPage() {
 
               <StatTile
                 icon={BookOpen}
-                iconBg="#D1FAE5"
+                iconBg="#E1F5EE"
                 iconColor={GREEN}
                 label="Training Courses"
                 value={totalTraining}
@@ -761,19 +757,19 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#102C5E", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design2.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Source:</span> HEMP Mission Students M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(214,236,224,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}><span style={{ color: "#85B7EB", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}><span style={{ color: "#85B7EB", fontWeight: 600 }}>Source:</span> HEMP Mission Students M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(181,212,244,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
             </div>
           </div>
         </div>

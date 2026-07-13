@@ -12,17 +12,17 @@ import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 // Primary: teal (partnership / field theme)
 // Supporting: blue
 // Warning: amber
-const TEAL        = "#1B4332"; // forest (HealthX primary, mirrors overview)
-const TEAL_MID    = "#2D6A4F";
-const TEAL_DEEP   = "#0E4633";
-const BLUE        = "#40916C"; // supporting green
-const BLUE_LIGHT  = "#52B788";
-const AMBER       = "#F59E0B";
-const NAVY        = "#002147";
-const GREEN       = "#10B981";
-const INDIGO      = "#1F9E9E"; // dusty teal-green (avg badge)
-const ROSE        = "#F43F5E";
-const VIOLET      = "#A6C13C"; // olive (distinct category accent)
+const TEAL        = "#185FA5"; // blue 600 (HealthX primary, mirrors overview)
+const TEAL_MID    = "#14306B";
+const TEAL_DEEP   = "#0C447C";
+const BLUE        = "#2F5FD1"; // supporting blue
+const BLUE_LIGHT  = "#378ADD";
+const AMBER       = "#BA7517";
+const NAVY        = "#14306B";
+const GREEN       = "#1D9E75";
+const INDIGO      = "#534AB7"; // indigo 600 (avg badge)
+const ROSE        = "#D45F2C";
+const VIOLET      = "#0F6E56"; // teal 600 (distinct category accent)
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function avg(arr: number[]): number {
@@ -119,7 +119,7 @@ const TYPE_COLOR: Record<string, string> = {
   "Industry Tour":         AMBER,
 };
 
-const COUNTRY_HEX = [TEAL, BLUE_LIGHT, AMBER, VIOLET, GREEN, INDIGO, ROSE, "#A855F7", "#EC4899", "#6B7280"];
+const COUNTRY_HEX = [TEAL, BLUE_LIGHT, AMBER, VIOLET, GREEN, INDIGO, ROSE, "#7F77DD", "#2F5FD1", "#5F5E5A"];
 
 // â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -127,11 +127,11 @@ function FilterSelect({ label, value, onChange, options }: {
   label: string; value: string; onChange: (v: string) => void; options: string[];
 }) {
   return (
-    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(14,70,51,0.6)" }}>
+    <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(20,48,107,0.6)" }}>
       {label}
       <select value={value} onChange={e => onChange(e.target.value)}
         className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: "#0E4633", border: "1px solid rgba(14,70,51,0.2)", backgroundColor: "white" }}>
+        style={{ color: "#0C447C", border: "1px solid rgba(20,48,107,0.2)", backgroundColor: "white" }}>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
     </label>
@@ -166,9 +166,9 @@ function heatColor(v: number): string {
 function SecHeader({ title, sub }: { title: string; sub?: string; accent?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#2D6A4F" }} />
+      <span className="rounded-full flex-shrink-0" style={{ width: 4, height: 16, backgroundColor: "#185FA5" }} />
       <div>
-        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#2D6A4F", letterSpacing: "0.01em" }}>{title}</h2>
+        <h2 className="font-extrabold leading-tight" style={{ fontSize: 14, color: "#185FA5", letterSpacing: "0.01em" }}>{title}</h2>
         {sub && <p className="mt-0.5" style={{ fontSize: 11, color: "#6B7280" }}>{sub}</p>}
       </div>
     </div>
@@ -180,8 +180,8 @@ function Card({ title, sub, children }: {
 }) {
   return (
     <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#2D6A4F", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.8)" }} />
+      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#14306B", padding: "11px 20px" }}>
+        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
           {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
@@ -216,36 +216,32 @@ export default function HealthXPage() {
   const animPart    = useCountUp(hxPart);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
       <HEMPNav />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
 
         {/* Full design elements anchored to the left & right edges */}
-        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-        <img src="/images/hempdesign.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+        <img src="/images/design1.png" alt="" aria-hidden="true"
+          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX</h1>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Briefcase size={11} style={{ color: "#B7E4C7" }} />
-                <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#B7E4C7" }}>HEMP</span>
-              </span>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(214,236,224,0.82)" }}>
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>
               Field-based learning  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {visitsCompleted} sessions  ·  {countries.length} countries
             </p>
           </div>
@@ -320,14 +316,14 @@ export default function HealthXPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
-        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(14,70,51,0.12)" }}>
-          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#2D6A4F" }}>Filters</span>
+        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(20,48,107,0.12)" }}>
+          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#14306B" }}>Filters</span>
           <FilterSelect label="Year"    value={fYear}    onChange={setFYear}    options={["All Years", ...YEARS.map(String)]} />
           <FilterSelect label="Country" value={fCountry} onChange={setFCountry} options={["All Countries", ...ALL_COUNTRIES]} />
           <FilterSelect label="Type"    value={fType}    onChange={setFType}    options={["All Types", ...HX_SESSION_TYPES]} />
           {(fYear !== "All Years" || fCountry !== "All Countries" || fType !== "All Types") && (
             <button onClick={() => { setFYear("All Years"); setFCountry("All Countries"); setFType("All Types"); }}
-              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(14,70,51,0.6)" }}>
+              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(20,48,107,0.6)" }}>
               Reset
             </button>
           )}
@@ -507,7 +503,7 @@ export default function HealthXPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <Card accent={BLUE} title="Sessions by Organisation Type"
-              sub="Blue fill bars  -  absolute session counts per org category">
+              sub="Absolute session counts per org category">
               <div className="space-y-4 py-1">
                 {orgTypeData.map(row => (
                   <div key={row.name} className="flex items-center gap-3">
@@ -538,7 +534,7 @@ export default function HealthXPage() {
                   const sessions = filtered.filter(h => h.orgType === type);
                   const part     = sessions.reduce((s, h) => s + h.participants, 0);
                   const pct      = Math.round(part / hxPart * 100);
-                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#08331F"];
+                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#081F3F"];
                   return (
                     <div key={type}>
                       <div className="flex items-center justify-between text-xs mb-1.5">
@@ -564,7 +560,7 @@ export default function HealthXPage() {
               <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2 text-center">
                 {ORG_TYPES.map((type, i) => {
                   const count = filtered.filter(h => h.orgType === type).length;
-                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#08331F"];
+                  const tealShades = [TEAL, TEAL_MID, TEAL_DEEP, "#081F3F"];
                   return (
                     <div key={type}>
                       <p className="text-sm font-black" style={{ color: tealShades[i] }}>{count}</p>
@@ -627,7 +623,7 @@ export default function HealthXPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <Card accent={TEAL_MID} title="Satisfaction Heatmap  -  Session Type Ã— Dimension"
-              sub="Avg score  ·  Teal â‰¥4.5  ·  Blue â‰¥4.0  ·  Amber â‰¥3.5">
+              sub="Avg score  ·  Navy â‰¥4.5  ·  Blue â‰¥4.0  ·  Amber â‰¥3.5  ·  Orange below">
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px]">
                   <thead>
@@ -695,19 +691,19 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#2D6A4F", minHeight: 116, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#102C5E", minHeight: 116, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <img src="/images/hempdesign.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none", opacity: 0.55 }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design2.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
             <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.85)" }}><span style={{ color: "#B7E4C7", fontWeight: 600 }}>Source:</span> HEMP HealthX M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(214,236,224,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(214,236,224,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}><span style={{ color: "#85B7EB", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}><span style={{ color: "#85B7EB", fontWeight: 600 }}>Source:</span> HEMP HealthX M&amp;E</span>
+              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
+              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(181,212,244,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
             </div>
           </div>
         </div>
