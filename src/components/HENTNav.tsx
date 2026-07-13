@@ -27,12 +27,14 @@ function useTheme(): [boolean, () => void] {
 }
 
 export const HENT_NAV_ITEMS = [
-  { label: "Overview",                 href: "/hent/overview"       },
-  { label: "Ventures",                 href: "/hent/ventures"       },
-  { label: "Masterclasses",            href: "/hent/masterclasses"  },
-  { label: "Hackathons",               href: "/hent/hackathons"     },
-  { label: "Mentorship & Fellowships", href: "/hent/mentorship"     },
-  { label: "Field Visits",             href: "/hent/fieldvisits"    },
+  { label: "Overview",                            href: "/hent/overview"            },
+  { label: "Ventures",                            href: "/hent/ventures"            },
+  { label: "Venture Funding",                     href: "/hent/venture-funding"     },
+  { label: "Masterclass",                         href: "/hent/masterclasses"       },
+  { label: "Hackathon",                           href: "/hent/hackathons"          },
+  { label: "Mentorship",                          href: "/hent/mentorship"          },
+  { label: "Exposure & Networking Opportunities", href: "/hent/exposure-networking" },
+  { label: "Study Trips",                         href: "/hent/fieldvisits"         },
 ] as const;
 
 export type HENTNavLabel = typeof HENT_NAV_ITEMS[number]["label"];
@@ -54,10 +56,12 @@ export default function HENTNav() {
         {/* Logo lockup */}
         <Link href="/hent/overview" className="flex items-center gap-2.5 flex-shrink-0 group">
           <span className="flex items-center gap-1.5" style={{ color: "#0E4633" }}>
-            <span className="text-[30px] font-semibold tracking-tight leading-none">HEALTH</span>
-            <span className="flex flex-col leading-tight">
-              <span className="text-[13px] font-medium tracking-tight whitespace-nowrap">ENTREPRENEURSHIP</span>
-              <span className="text-[13px] font-medium tracking-tight">PILLAR</span>
+            <span className="text-[30px] font-semibold tracking-tight leading-none">HENT</span>
+            {/* Three stacked lines must sit shorter than the 30px HENT wordmark */}
+            <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
+              <span className="text-[9px] font-medium tracking-tight">HEALTH</span>
+              <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">ENTREPRENEURSHIP</span>
+              <span className="text-[9px] font-medium tracking-tight">PILLAR</span>
             </span>
           </span>
         </Link>
