@@ -1,5 +1,7 @@
 ﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
+import ExecFilterBar from "@/components/ExecFilterBar";
+import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { missionStudents } from "@/data/hemp/missionStudents";
 import {
   AlertTriangle,
@@ -12,7 +14,7 @@ import {
   Users,
   Briefcase,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
   Area,
   AreaChart,
@@ -244,24 +246,20 @@ function MetricBar({ label, value, displayValue, max, color }: {
   );
 }
 
-function StatTile({ icon: Icon, iconBg, iconColor, label, value, valueColor, sub }: {
-  icon: React.ElementType; iconBg: string; iconColor: string;
-  label: string; value: string | number; valueColor: string; sub: string;
+function StatTile({ icon: Icon, label, value, sub }: {
+  icon: ComponentType<any>; iconBg?: string; iconColor?: string;
+  label: string; value: string | number; valueColor?: string; sub: string;
 }) {
+  const numeric = typeof value === "number" ? value : parseFloat(String(value).replace(/[^0-9.\-]/g, "")) || 0;
   return (
-    <div className="bg-white rounded border border-gray-100 shadow-sm p-4 flex items-center gap-4">
-      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-        style={{ backgroundColor: iconBg }}>
-        <Icon size={17} style={{ color: iconColor }} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">{label}</p>
-        <p className="text-2xl font-black tabular-nums leading-none mt-0.5" style={{ color: valueColor }}>
-          {value}
-        </p>
-        <p className="text-[9px] text-gray-400 mt-0.5">{sub}</p>
-      </div>
-    </div>
+    <StatsKpiCard
+      label={label}
+      num={numeric}
+      displayFmt={typeof value === "number" ? undefined : () => String(value)}
+      sub={sub}
+      Icon={Icon}
+      tooltip={label}
+    />
   );
 }
 
@@ -284,9 +282,6 @@ export default function MissionStudentsPage() {
     ms.status === "Active" && (fYear === "All Years" || String(ms.cohort) === fYear)
   ).length, [fYear]);
 
-  const animActive  = useCountUp(activeMission);
-  const animCourses = useCountUp(totalCourses);
-  const animRes     = useCountUp(totalCuratorRes);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
@@ -302,7 +297,7 @@ export default function MissionStudentsPage() {
         {/* Full design elements anchored to the left & right edges */}
         <img src="/images/design1.png" alt="" aria-hidden="true"
           style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
+        <img src="/images/design2.png" alt="" aria-hidden="true"
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
@@ -314,9 +309,18 @@ export default function MissionStudentsPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mission Students</h1>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>
-              Mentorship  ·  Guest Faculty  ·  Mission Curator  -  three pillars of student support in HEMP
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              Mentorship, guest faculty and mission curator — three pillars of student support
             </p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Mission Students M&amp;E</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
+              <span aria-hidden="true">·</span>
+              <span>{activeMission} students active</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
+            </div>
           </div>
         </div>
       </header>
@@ -325,63 +329,29 @@ export default function MissionStudentsPage() {
       {/* â”€â”€ THREE HEADLINE KPIs â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-6 pt-6">
 
-          {/* â”€â”€ THREE HEADLINE KPIs  -  distinct stat card colours â”€â”€â”€ */}
+          {/* â”€â”€ THREE HEADLINE KPIs â”€â”€â”€ */}
           <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-            <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: MS.MENTORS, borderColor: MS.MENTORS }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                <Users size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>Health Mission Students Active</p>
-                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
-                  {Math.round(animActive)}
-                </p>
-                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  Currently enrolled in mission pillars
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: MS.ENROLLED, borderColor: MS.ENROLLED }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                <BookOpen size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>Courses Completed (Canvas / Coursera)</p>
-                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
-                  {Math.round(animCourses)}
-                </p>
-                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  Across all cohorts  ·  2021 - 2026
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: MS.CUR_CAREER, borderColor: MS.CUR_CAREER }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                <Package size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>Resources by Mission Curators</p>
-                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
-                  {Math.round(animRes)}
-                </p>
-                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  Events  ·  courses  ·  1-on-1 sessions
-                </p>
-              </div>
-            </div>
-
+            <StatsKpiCard
+              label="Health Mission Students Active"
+              num={activeMission}
+              sub="Currently enrolled in mission pillars"
+              Icon={Users}
+              tooltip="Mission students currently active across the three support pillars."
+            />
+            <StatsKpiCard
+              label="Courses Completed (Canvas / Coursera)"
+              num={totalCourses}
+              sub="Across all cohorts  ·  2021 - 2026"
+              Icon={BookOpen}
+              tooltip="Online courses completed by mission students on Canvas and Coursera."
+            />
+            <StatsKpiCard
+              label="Resources by Mission Curators"
+              num={totalCuratorRes}
+              sub="Events  ·  courses  ·  1-on-1 sessions"
+              Icon={Package}
+              tooltip="Career events, training courses and 1-on-1 sessions delivered by mission curators."
+            />
           </div>
       </div>
 
@@ -389,16 +359,13 @@ export default function MissionStudentsPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* FILTER BAR */}
-        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(20,48,107,0.12)" }}>
-          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#14306B" }}>Filters</span>
-          <FilterSelect label="Year" value={fYear} onChange={setFYear} options={["All Years", ...YEARS.map(String)]} />
-          {fYear !== "All Years" && (
-            <button onClick={() => setFYear("All Years")}
-              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(20,48,107,0.6)" }}>
-              Reset
-            </button>
-          )}
-        </div>
+        <ExecFilterBar
+          filters={[
+            { label: "Year", value: fYear, onChange: setFYear, options: ["All Years", ...YEARS.map(String)] },
+          ]}
+          dirty={fYear !== "All Years"}
+          onReset={() => setFYear("All Years")}
+        />
 
         {/* â•â• SECTION A: MENTORSHIP  -  indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <section>

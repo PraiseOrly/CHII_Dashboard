@@ -6,6 +6,8 @@ import {
 } from "recharts";
 import { Briefcase, Download, FileText, MapPin, Handshake, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
+import ExecFilterBar from "@/components/ExecFilterBar";
+import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 
 // â”€â”€â”€ Color language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -210,10 +212,6 @@ export default function HealthXPage() {
     orgTypeData, orgTypeMax, sessionsPerYear, participantsPerYear, hxHeatmap, countryData,
   } = useMemo(() => derive(filtered), [filtered]);
 
-  // â”€â”€ Animate headline numbers â”€â”€
-  const animVisits  = useCountUp(visitsCompleted);
-  const animPships  = useCountUp(totalPships);
-  const animPart    = useCountUp(hxPart);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
@@ -229,7 +227,7 @@ export default function HealthXPage() {
         {/* Full design elements anchored to the left & right edges */}
         <img src="/images/design1.png" alt="" aria-hidden="true"
           style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
+        <img src="/images/design2.png" alt="" aria-hidden="true"
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
@@ -241,9 +239,18 @@ export default function HealthXPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX</h1>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>
-              Field-based learning  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {visitsCompleted} sessions  ·  {countries.length} countries
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              Field-based learning across health facilities, industry and innovation challenges
             </p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP HealthX M&amp;E</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
+              <span aria-hidden="true">·</span>
+              <span>{visitsCompleted} sessions · {countries.length} countries</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
+            </div>
           </div>
         </div>
       </header>
@@ -254,61 +261,27 @@ export default function HealthXPage() {
 
           {/* â”€â”€ THREE HEADLINE METRICS â”€â”€â”€ */}
           <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-            <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: TEAL, borderColor: TEAL }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                <MapPin size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>Health Hub Visits Completed</p>
-                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
-                  {Math.round(animVisits)}
-                </p>
-                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {countries.length} countries
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: TEAL_MID, borderColor: TEAL_MID }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                <Handshake size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>Active Partnerships (MOUs Signed)</p>
-                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
-                  {Math.round(animPships)}
-                </p>
-                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {mouSigned} org sites with formal agreements
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border p-5 flex items-center gap-4"
-              style={{ backgroundColor: BLUE, borderColor: BLUE }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                <Users size={18} style={{ color: "rgba(255,255,255,0.9)" }} />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.65)" }}>Students with Field Exposure</p>
-                <p className="text-3xl font-black tabular-nums leading-none text-white mt-1">
-                  {Math.round(animPart).toLocaleString()}
-                </p>
-                <p className="text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {femalePct}% female  ·  {avgComp}% avg completion
-                </p>
-              </div>
-            </div>
-
+            <StatsKpiCard
+              label="Health Hub Visits Completed"
+              num={visitsCompleted}
+              sub={`${YEARS[0]} - ${YEARS[YEARS.length - 1]}  ·  ${countries.length} countries`}
+              Icon={MapPin}
+              tooltip="HealthX field sessions delivered with host organisations."
+            />
+            <StatsKpiCard
+              label="Active Partnerships (MOUs Signed)"
+              num={totalPships}
+              sub={`${mouSigned} org sites with formal agreements`}
+              Icon={Handshake}
+              tooltip="Partnership agreements formed through HealthX field visits."
+            />
+            <StatsKpiCard
+              label="Students with Field Exposure"
+              num={hxPart}
+              sub={`${femalePct}% female  ·  ${avgComp}% avg completion`}
+              Icon={Users}
+              tooltip="Students who took part in a HealthX experiential session."
+            />
           </div>
       </div>
 
@@ -316,18 +289,15 @@ export default function HealthXPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
-        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(20,48,107,0.12)" }}>
-          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#14306B" }}>Filters</span>
-          <FilterSelect label="Year"    value={fYear}    onChange={setFYear}    options={["All Years", ...YEARS.map(String)]} />
-          <FilterSelect label="Country" value={fCountry} onChange={setFCountry} options={["All Countries", ...ALL_COUNTRIES]} />
-          <FilterSelect label="Type"    value={fType}    onChange={setFType}    options={["All Types", ...HX_SESSION_TYPES]} />
-          {(fYear !== "All Years" || fCountry !== "All Countries" || fType !== "All Types") && (
-            <button onClick={() => { setFYear("All Years"); setFCountry("All Countries"); setFType("All Types"); }}
-              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(20,48,107,0.6)" }}>
-              Reset
-            </button>
-          )}
-        </div>
+        <ExecFilterBar
+          filters={[
+            { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
+            { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...ALL_COUNTRIES] },
+            { label: "Type",    value: fType,    onChange: setFType,    options: ["All Types", ...HX_SESSION_TYPES] },
+          ]}
+          dirty={fYear !== "All Years" || fCountry !== "All Countries" || fType !== "All Types"}
+          onReset={() => { setFYear("All Years"); setFCountry("All Countries"); setFType("All Types"); }}
+        />
 
         {/* â”€â”€ SECTION 1: PIPELINE + FEEDBACK â”€â”€â”€ */}
         <section>

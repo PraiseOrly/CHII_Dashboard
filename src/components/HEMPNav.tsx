@@ -56,10 +56,12 @@ export default function HEMPNav() {
         {/* Logo lockup */}
         <Link href="/hemp" className="flex items-center gap-2.5 flex-shrink-0 group">
           <span className="flex items-center gap-1.5" style={{ color: GREEN }}>
-            <span className="text-[30px] font-semibold tracking-tight leading-none">HEALTH</span>
-            <span className="flex flex-col leading-tight">
-              <span className="text-[13px] font-medium tracking-tight whitespace-nowrap">EMPLOYMENT</span>
-              <span className="text-[13px] font-medium tracking-tight">PILLAR</span>
+            <span className="text-[30px] font-semibold tracking-tight leading-none">HEMP</span>
+            {/* Three stacked lines must sit shorter than the 30px HEMP wordmark */}
+            <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
+              <span className="text-[9px] font-medium tracking-tight">HEALTH</span>
+              <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">EMPLOYMENT</span>
+              <span className="text-[9px] font-medium tracking-tight">PILLAR</span>
             </span>
           </span>
         </Link>

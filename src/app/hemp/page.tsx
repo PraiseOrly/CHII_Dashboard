@@ -1,5 +1,6 @@
 "use client";
 import HEMPNav from "@/components/HEMPNav";
+import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { DonutRing } from "@/components/DonutChart";
 import HentAfricaMap from "@/components/HentAfricaMap";
 import { type RadarSeries } from "@/components/SatisfactionRadar";
@@ -293,31 +294,28 @@ function PlainCard({ title, sub, chip, fill, children }: {
   );
 }
 
-function ExecCard({ label, value, sub, note, icon: Icon, center = false, tip }: {
+// Executive stat card. `value` may already be formatted ("42%", "1,204", "$1.2M"),
+// so animate the numeric part and re-apply the original formatting.
+function ExecCard({ label, value, sub, note, icon: Icon, tip }: {
   label: string; value: string | number; sub?: string; note?: string; icon?: LucideIcon; center?: boolean; tip?: string;
 }) {
+  const isNum = typeof value === "number";
+  const numeric = isNum ? value : parseFloat(String(value).replace(/[^0-9.\-]/g, "")) || 0;
+  const isPct = !isNum && String(value).trim().endsWith("%");
+  const fmt = isNum
+    ? (n: number) => Math.round(n).toLocaleString()
+    : isPct
+      ? (n: number) => `${Math.round(n)}%`
+      : () => String(value);
   return (
-    <div className="rounded-[10px]" style={{
-      backgroundColor: "#ffffff", border: `1px solid ${BRAND}`, padding: "13px 15px",
-      display: "flex", flexDirection: center ? "column" : "row", alignItems: "center",
-      justifyContent: "center", textAlign: center ? "center" : "left", gap: center ? 6 : 11,
-      position: "relative", overflow: "visible",
-    }}>
-      {Icon && (
-        <span className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 36 }}>
-          <Icon size={20} style={{ color: BRAND }} />
-        </span>
-      )}
-      <div style={{ minWidth: 0 }}>
-        <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: BRAND, lineHeight: 1.05 }}>{value}</p>
-        <div className="flex items-center gap-1" style={{ justifyContent: center ? "center" : "flex-start", marginTop: 2 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
-          {tip && <InfoDot tip={tip} />}
-        </div>
-        {sub  && <p style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>{sub}</p>}
-        {note && <p className="mt-1.5 pt-1.5" style={{ fontSize: 9, color: "#6B7280", borderTop: "1px solid rgba(20,48,107,0.15)" }}>{note}</p>}
-      </div>
-    </div>
+    <StatsKpiCard
+      label={label}
+      num={numeric}
+      displayFmt={fmt}
+      sub={sub ?? note ?? ""}
+      Icon={Icon ?? Activity}
+      tooltip={tip ?? label}
+    />
   );
 }
 
@@ -348,31 +346,19 @@ function benchColor(pct: number, bench: number): string {
   return "#DC2626";
 }
 
-function KpiTile({ label, num, displayFmt, sub, pct, bench, Icon, tip }: {
+function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
   label: string; num: number; displayFmt: (n: number) => string;
   sub?: string; pct?: number; bench?: number; Icon?: LucideIcon; tip?: string;
 }) {
-  const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(20,48,107,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(20,48,107,0.6)" }}>{label}</p>
-        {tip && <InfoDot tip={tip} />}
-      </div>
-      <div className="flex items-center justify-center gap-2">
-        {Icon && <Icon size={18} style={{ color: BRAND_DK, opacity: 0.9, flexShrink: 0 }} />}
-        <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
-      </div>
-      {sub && <p style={{ fontSize: 9.5, color: "rgba(20,48,107,0.6)", marginTop: 4 }}>{sub}</p>}
-      {pct !== undefined && (
-        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(20,48,107,0.14)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : BRAND, borderRadius: 4 }} />
-          {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
-          )}
-        </div>
-      )}
-    </div>
+    <StatsKpiCard
+      label={label}
+      num={num}
+      displayFmt={displayFmt}
+      sub={sub ?? ""}
+      Icon={Icon ?? Activity}
+      tooltip={tip ?? label}
+    />
   );
 }
 
@@ -475,8 +461,8 @@ function FilterSelect({ label, value, onChange, options }: {
     <label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(20,48,107,0.65)" }}>
       {label}
       <select value={value} onChange={e => onChange(e.target.value)}
-        className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: BRAND_DK, border: "1px solid rgba(20,48,107,0.25)", backgroundColor: "white" }}>
+        className="cursor-pointer focus:outline-none"
+        style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(0,33,71,0.12)", fontSize: 11, color: "#374151", backgroundColor: "white" }}>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
     </label>
@@ -542,7 +528,7 @@ export default function HEMPOverview() {
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
         <img src="/images/design1.png" alt="" aria-hidden="true"
           style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
+        <img src="/images/design2.png" alt="" aria-hidden="true"
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
         <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>

@@ -1,5 +1,7 @@
 ﻿"use client";
 import HEMPNav from "@/components/HEMPNav";
+import ExecFilterBar from "@/components/ExecFilterBar";
+import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
 import { Briefcase, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -181,28 +183,19 @@ function benchColor(pct: number, bench: number): string {
   return "#DC2626";
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub: string; clr: string;
+function KpiTile({ label, num, displayFmt, sub, Icon }: {
+  label: string; num: number; displayFmt: (n: number) => string; sub: string; clr?: string;
   pct?: number; bench?: number; Icon?: LucideIcon;
 }) {
-  const animated = useCountUp(num);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "12px 14px", textAlign: "center", border: "1px solid rgba(20,48,107,0.12)", borderLeft: "5px solid #14306B" }}>
-      <p style={{ fontSize: 9.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(20,48,107,0.55)", marginBottom: 6 }}>{label}</p>
-      <div className="flex items-center justify-center gap-1.5">
-        {Icon && <Icon size={16} style={{ color: "#14306B", opacity: 0.85, flexShrink: 0 }} />}
-        <p style={{ fontSize: 18, fontWeight: 800, color: "#14306B", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      </div>
-      <p style={{ fontSize: 9, color: "rgba(20,48,107,0.55)", marginTop: 3 }}>{sub}</p>
-      {pct !== undefined && (
-        <div className="relative" style={{ marginTop: 8, height: 4, borderRadius: 4, backgroundColor: "rgba(20,48,107,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#14306B", borderRadius: 4 }} />
-          {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#14306B", borderRadius: 1 }} />
-          )}
-        </div>
-      )}
-    </div>
+    <StatsKpiCard
+      label={label}
+      num={num}
+      displayFmt={displayFmt}
+      sub={sub}
+      Icon={Icon ?? Briefcase}
+      tooltip={label}
+    />
   );
 }
 
@@ -359,7 +352,7 @@ export default function InternshipsPage() {
         {/* Full design elements anchored to the left & right edges */}
         <img src="/images/design1.png" alt="" aria-hidden="true"
           style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
+        <img src="/images/design2.png" alt="" aria-hidden="true"
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
@@ -371,9 +364,18 @@ export default function InternshipsPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internships</h1>
             </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>
-              Workplace placements  ·  {YEARS[0]} - {YEARS[YEARS.length - 1]}  ·  {total.orgs} organisations  ·  {total.students} students placed
+            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              Workplace placements, host organisations and employment conversion
             </p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Internships M&amp;E</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
+              <span aria-hidden="true">·</span>
+              <span>{total.orgs} organisations · {total.students} students placed</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
+            </div>
           </div>
         </div>
       </header>
@@ -395,18 +397,15 @@ export default function InternshipsPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
-        <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg px-4 py-3 border" style={{ borderColor: "rgba(20,48,107,0.12)" }}>
-          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#14306B" }}>Filters</span>
-          <FilterSelect label="Year"    value={fYear}    onChange={setFYear}    options={["All Years", ...YEARS.map(String)]} />
-          <FilterSelect label="Country" value={fCountry} onChange={setFCountry} options={["All Countries", ...ALL_COUNTRIES]} />
-          <FilterSelect label="Sector"  value={fSector}  onChange={setFSector}  options={["All Sectors", ...INTERNSHIP_SECTORS]} />
-          {(fYear !== "All Years" || fCountry !== "All Countries" || fSector !== "All Sectors") && (
-            <button onClick={() => { setFYear("All Years"); setFCountry("All Countries"); setFSector("All Sectors"); }}
-              className="text-[10px] font-semibold uppercase tracking-wide ml-auto" style={{ color: "rgba(20,48,107,0.6)" }}>
-              Reset
-            </button>
-          )}
-        </div>
+        <ExecFilterBar
+          filters={[
+            { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
+            { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...ALL_COUNTRIES] },
+            { label: "Sector",  value: fSector,  onChange: setFSector,  options: ["All Sectors", ...INTERNSHIP_SECTORS] },
+          ]}
+          dirty={fYear !== "All Years" || fCountry !== "All Countries" || fSector !== "All Sectors"}
+          onReset={() => { setFYear("All Years"); setFCountry("All Countries"); setFSector("All Sectors"); }}
+        />
 
         {/* â”€â”€ SECTION 1: SECTOR PROFILES â”€â”€â”€ */}
         <section>

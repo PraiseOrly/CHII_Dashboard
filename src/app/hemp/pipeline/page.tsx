@@ -3,7 +3,8 @@ import HEMPNav from "@/components/HEMPNav";
 import { healthXSessions } from "@/data/hemp/healthx";
 import { internships } from "@/data/hemp/internships";
 import { missionStudents } from "@/data/hemp/missionStudents";
-import { Briefcase } from "lucide-react";
+import { Activity, Award, Briefcase, Building2, GraduationCap, Rocket, TrendingUp, type LucideIcon } from "lucide-react";
+import StatsKpiCard from "@/app/impact/StatsKpiCard";
 
 // â”€â”€â”€ Pipeline aggregates â”€â”€â”€
 const hxPart         = healthXSessions.reduce((s, h) => s + h.participants, 0);
@@ -15,14 +16,14 @@ const employed       = completed.filter(s => s.employment === "Employed" || s.em
 const employPct      = completed.length ? Math.round(employed.length / completed.length * 100) : 0;
 const ventures       = missionStudents.filter(s => s.ventureCreated);
 
-const pipelineSteps: { value: string; label: string; note: string }[] = [
-  { value: String(totalStudents),    label: "Mission Students",       note: "Recruited into the programme" },
-  { value: hxPart.toLocaleString(),  label: "HealthX Experiences",    note: "Experiential learning touchpoints" },
-  { value: String(intStudents),      label: "Internship Placements",  note: "Placed with host organisations" },
-  { value: String(intConversions),   label: "Employment Conversions", note: "Internships that led to a hire" },
-  { value: String(completed.length), label: "Graduates",              note: "Completed the programme" },
-  { value: `${employPct}%`,          label: "Employment Rate",        note: "Employed or running a venture" },
-  { value: String(ventures.length),  label: "Ventures Created",       note: "Student-founded startups" },
+const pipelineSteps: { value: string; label: string; note: string; icon: LucideIcon }[] = [
+  { value: String(totalStudents),    label: "Mission Students",       note: "Recruited into the programme",      icon: GraduationCap },
+  { value: hxPart.toLocaleString(),  label: "HealthX Experiences",    note: "Experiential learning touchpoints", icon: Activity },
+  { value: String(intStudents),      label: "Internship Placements",  note: "Placed with host organisations",    icon: Building2 },
+  { value: String(intConversions),   label: "Employment Conversions", note: "Internships that led to a hire",    icon: TrendingUp },
+  { value: String(completed.length), label: "Graduates",              note: "Completed the programme",           icon: Award },
+  { value: `${employPct}%`,          label: "Employment Rate",        note: "Employed or running a venture",     icon: Briefcase },
+  { value: String(ventures.length),  label: "Ventures Created",       note: "Student-founded startups",          icon: Rocket },
 ];
 
 export default function HEMPPipelinePage() {
@@ -45,6 +46,15 @@ export default function HEMPPipelinePage() {
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
               HEMP&apos;s talent-development journey — from recruitment to employment and entrepreneurship
             </p>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Programmes M&amp;E</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
+              <span aria-hidden="true">·</span>
+              <span>{pipelineSteps.length} pipeline stages</span>
+              <span aria-hidden="true">·</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
+            </div>
           </div>
         </div>
       </header>
@@ -70,18 +80,27 @@ export default function HEMPPipelinePage() {
           </div>
           <div className="p-5">
             <div className="flex flex-wrap items-stretch justify-center gap-2">
-              {pipelineSteps.map((s, i) => (
-                <div key={s.label} className="flex items-stretch" style={{ flex: "1 1 120px" }}>
-                  <div className="flex-1 rounded-lg text-center px-2 py-3" style={{ border: "1px solid rgba(20,48,107,0.12)", borderTop: "3px solid #14306B" }}>
-                    <p className="font-black tabular-nums" style={{ fontSize: 20, color: "#14306B", lineHeight: 1 }}>{s.value}</p>
-                    <p className="text-[9.5px] font-semibold text-gray-700 mt-1 leading-tight">{s.label}</p>
-                    <p className="text-[8.5px] text-gray-400 mt-1 leading-tight">{s.note}</p>
+              {pipelineSteps.map((s, i) => {
+                const numeric = parseFloat(s.value.replace(/[^0-9.\-]/g, "")) || 0;
+                const isPct = s.value.trim().endsWith("%");
+                return (
+                  <div key={s.label} className="flex items-stretch" style={{ flex: "1 1 120px" }}>
+                    <div className="flex-1">
+                      <StatsKpiCard
+                        label={s.label}
+                        num={numeric}
+                        displayFmt={isPct ? (n) => `${Math.round(n)}%` : (n) => Math.round(n).toLocaleString()}
+                        sub={s.note}
+                        Icon={s.icon}
+                        tooltip={s.note}
+                      />
+                    </div>
+                    {i < pipelineSteps.length - 1 && (
+                      <div className="flex items-center px-0.5" style={{ color: "rgba(20,48,107,0.4)", fontSize: 16 }}>→</div>
+                    )}
                   </div>
-                  {i < pipelineSteps.length - 1 && (
-                    <div className="flex items-center px-0.5" style={{ color: "rgba(20,48,107,0.4)", fontSize: 16 }}>→</div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
