@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { Star, MapPin, Users, Handshake, Zap, Briefcase } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
 import HentFooter from "@/components/HentFooter";
 import SectionPills from "@/components/SectionPills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
@@ -445,8 +446,6 @@ export default function FieldVisitsPage() {
     { sub: "Participants completing", num: tot.completion,    fmt: (n: number) => `${Math.round(n)}%` },
   ];
 
-  const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8fafc" }}>
       <HENTNav />
@@ -706,8 +705,8 @@ export default function FieldVisitsPage() {
                   <XAxis dataKey="Visit" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Participants"]} />
-                  <Bar dataKey="Participants" fill={SKY} radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Participants" fill={SKY} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -723,11 +722,12 @@ export default function FieldVisitsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Female" fill={VIOLET} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Male"   fill={SKY}    radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Female", VIOLET], ["Male", SKY]]} />
             </ChartCard>
           </div>
         </section>
@@ -804,8 +804,8 @@ export default function FieldVisitsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} partnerships`, "Partnerships"]} />
-                  <Bar dataKey="Partnerships" fill={EMERALD} radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Partnerships" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -887,7 +887,7 @@ export default function FieldVisitsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                 <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} participants`, "Cumulative Participants"]} />
+                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                 <Line type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -906,8 +906,8 @@ export default function FieldVisitsPage() {
                 <XAxis dataKey="Visit" tick={{ fontSize: 11, fill: "#6B7280" }}
                   axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
-                <Bar dataKey="Completion %" fill={EMERALD} radius={[0, 0, 0, 0]} />
+                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Bar dataKey="Completion %" fill={EMERALD} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">

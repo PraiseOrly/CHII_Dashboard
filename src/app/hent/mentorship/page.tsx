@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { Star, Award, Users, Target, Zap, Briefcase } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
 import HentFooter from "@/components/HentFooter";
 import SectionPills from "@/components/SectionPills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
@@ -449,8 +450,6 @@ export default function MentorshipPage() {
     { sub: "Participants completing", num: tot.completion, fmt: (n: number) => `${Math.round(n)}%` },
   ];
 
-  const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <HENTNav />
@@ -804,8 +803,8 @@ export default function MentorshipPage() {
                   <XAxis dataKey="Program" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} fellows`, "Fellows"]} />
-                  <Bar dataKey="Fellows" fill={SKY} radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Fellows" fill={SKY} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -821,11 +820,12 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Female" fill={VIOLET} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Male"   fill={SKY}    radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Female", VIOLET], ["Male", SKY]]} />
             </ChartCard>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -844,12 +844,13 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Expose" fill={SKY}    radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Build"  fill={PRIMARY} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Scale"  fill={INDIGO}  radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Expose" fill={SKY}    radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Build"  fill={PRIMARY} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Scale"  fill={INDIGO}  radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Expose", SKY], ["Build", PRIMARY], ["Scale", INDIGO]]} />
             </ChartCard>
             <ChartCard title="Cumulative Fellow Growth"
               sub="Running total of fellows  -  shows programme reach expansion over time"
@@ -859,7 +860,7 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} total fellows`, "Cumulative Fellows"]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Cumulative Fellows" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -954,8 +955,8 @@ export default function MentorshipPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} graduates`, "Graduates"]} />
-                  <Bar dataKey="Graduates" fill={EMERALD} radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Graduates" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-3 grid grid-cols-4 gap-3 pt-3 border-t border-gray-100 text-center">
@@ -1023,8 +1024,8 @@ export default function MentorshipPage() {
                 <XAxis dataKey="Programme" tick={{ fontSize: 11, fill: "#6B7280" }}
                   axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
-                <Bar dataKey="Completion %" fill={EMERALD} radius={[0, 0, 0, 0]} />
+                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Bar dataKey="Completion %" fill={EMERALD} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">

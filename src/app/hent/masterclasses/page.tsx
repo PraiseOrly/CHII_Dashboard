@@ -7,6 +7,7 @@ import {
 } from "recharts";
 import { Star, Zap, Briefcase } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
 import HentFooter from "@/components/HentFooter";
 import SectionPills from "@/components/SectionPills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
@@ -38,8 +39,6 @@ const SOCIAL_COLORS = ["#1B4332", "#40916C", "#A6C13C"];
 const RATING_COLORS: Record<string, string> = {
   "Very High": "#1B4332", High: "#40916C", Moderate: "#A6C13C", Low: "#C44536",
 };
-
-const TOOLTIP_STYLE = { fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" };
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Youth-in-Work-style filter select (green theme)
@@ -641,8 +640,8 @@ export default function MasterclassesPage() {
                   <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} attendees`, "Attendees"]} />
-                  <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -663,11 +662,12 @@ export default function MasterclassesPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="Female" fill={VIOLET_MC} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Male"   fill={SKY}       radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Female" fill={VIOLET_MC} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Male"   fill={SKY}       radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Female", VIOLET_MC], ["Male", SKY]]} />
             </ChartCard>
           </div>
         </section>
@@ -687,7 +687,7 @@ export default function MasterclassesPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v} total attendees`, "Cumulative Attendees"]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Cumulative Attendees"
                     stroke={VIOLET_MC} strokeWidth={2.5} dot={{ r: 4, fill: VIOLET_MC, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -703,8 +703,8 @@ export default function MasterclassesPage() {
                   <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
                     axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${v}%`, "Completion"]} />
-                  <Bar dataKey="Completion %" fill={TEAL} radius={[0, 0, 0, 0]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                  <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">

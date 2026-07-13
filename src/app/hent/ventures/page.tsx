@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { Banknote, Briefcase, Info, Rocket, Target, Users, Zap, type LucideIcon } from "lucide-react";
 import HENTNav, { getActiveLabel } from "@/components/HENTNav";
+import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
 import HentFooter from "@/components/HentFooter";
 import SectionPills from "@/components/SectionPills";
 import OutreachFilters, { FilterSelect } from "@/components/OutreachFilters";
@@ -622,7 +623,7 @@ export default function HENTPortfolio() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2.5} dot={{ r: 4, fill: SKY, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -635,7 +636,7 @@ export default function HENTPortfolio() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Q" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Bar dataKey="Jobs" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

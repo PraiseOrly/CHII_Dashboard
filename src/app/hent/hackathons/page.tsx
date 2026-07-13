@@ -7,6 +7,7 @@ import {
 } from "recharts";
 import { Briefcase, Zap } from "lucide-react";
 import HENTNav from "@/components/HENTNav";
+import { ChartTip, ChartLegend, TIP_CURSOR } from "@/components/HentChart";
 import HentFooter from "@/components/HentFooter";
 import SectionPills from "@/components/SectionPills";
 import { DonutRing } from "@/components/DonutChart";
@@ -493,10 +494,7 @@ export default function HackathonsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                    formatter={(v: number) => [`${v} event${v !== 1 ? "s" : ""}`, "Hackathons"]}
-                  />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Bar dataKey="Hackathons" fill={ORANGE} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -510,10 +508,7 @@ export default function HackathonsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                    formatter={(v: number) => [`${v.toLocaleString()} participants`, "Reach"]}
-                  />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Participants"
                     stroke={TEAL} strokeWidth={2.5} dot={{ r: 4, fill: TEAL, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -571,14 +566,12 @@ export default function HackathonsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                 <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
-                <Tooltip
-                  contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                  formatter={(v: number, name: string) => [trendFormatter(v), name]}
-                />
-                <Bar dataKey={trendCategories[1]} fill={SKY}    radius={[0, 0, 0, 0]} />
-                <Bar dataKey={trendCategories[0]} fill={VIOLET} radius={[0, 0, 0, 0]} />
+                <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
+                <Bar dataKey={trendCategories[1]} fill={SKY}    radius={[4, 4, 0, 0]} />
+                <Bar dataKey={trendCategories[0]} fill={VIOLET} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+            <ChartLegend items={[[trendCategories[1], SKY], [trendCategories[0], VIOLET]]} />
           </ChartCard>
         </section>
 
@@ -701,7 +694,7 @@ export default function HackathonsPage() {
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="l" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
                   <YAxis yAxisId="r" orientation="right" unit="%" domain={[0, 100]} tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={36} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Bar yAxisId="l" dataKey="Projects" fill="#1B4332" radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Bar yAxisId="l" dataKey="Startups" fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={18} />
                   <Line yAxisId="r" type="monotone" dataKey="Rate" name="Conversion rate" stroke="#1F9E9E" strokeWidth={2.5}
