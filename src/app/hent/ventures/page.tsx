@@ -627,6 +627,7 @@ export default function HENTPortfolio() {
                   <Line type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2.5} dot={{ r: 4, fill: SKY, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Founders onboarded", SKY]]} />
             </ChartCard>
 
             {/* Jobs Created */}
@@ -640,6 +641,7 @@ export default function HENTPortfolio() {
                   <Bar dataKey="Jobs" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Jobs created", EMERALD]]} />
             </ChartCard>
 
           </div>

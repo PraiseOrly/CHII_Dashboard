@@ -1,6 +1,7 @@
 "use client";
 import HENTNav from "@/components/HENTNav";
 import HentFooter from "@/components/HentFooter";
+import { ChartLegend } from "@/components/HentChart";
 import SectionPills from "@/components/SectionPills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import { DonutRing } from "@/components/DonutChart";
@@ -429,6 +430,7 @@ export default function VentureFundingPage() {
                   <Bar dataKey="Deployed" fill="#1B4332" radius={[4, 4, 0, 0]} maxBarSize={38} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Capital deployed", "#1B4332"]]} />
             </ChartCard>
 
             <ChartCard title="Cumulative Capital Deployed" sub="Running total of catalytic funding across cohorts"
@@ -443,6 +445,7 @@ export default function VentureFundingPage() {
                     dot={{ r: 4, fill: "#1F9E9E", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Cumulative capital", "#1F9E9E"]]} />
             </ChartCard>
           </div>
         </section>

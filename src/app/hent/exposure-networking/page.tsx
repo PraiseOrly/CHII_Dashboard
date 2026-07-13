@@ -1,6 +1,7 @@
 "use client";
 import HENTNav from "@/components/HENTNav";
 import HentFooter from "@/components/HentFooter";
+import { ChartLegend } from "@/components/HentChart";
 import SectionPills from "@/components/SectionPills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/OutreachFilters";
 import { DonutRing } from "@/components/DonutChart";
@@ -412,6 +413,7 @@ export default function ExposureNetworkingPage() {
                     dot={{ r: 4, fill: "#1F9E9E", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Connections brokered", "#1F9E9E"]]} />
             </ChartCard>
           </div>
         </section>
@@ -435,6 +437,7 @@ export default function ExposureNetworkingPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={D.byType.map(t => [t.name, TYPE_HEX[t.name as ExposureType]] as const)} />
             </ChartCard>
 
             <ChartCard title="Platform Comparison" sub="Events, founders reached, connections and deals by format"

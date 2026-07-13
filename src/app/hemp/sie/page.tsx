@@ -1,7 +1,8 @@
 "use client";
 import HEMPNav from "@/components/HEMPNav";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
-import ExecFilterBar from "@/components/ExecFilterBar";
+import ExecFilterRow from "@/components/ExecSelect";
+import HempFooter from "@/components/HempFooter";
 import { DonutRing } from "@/components/DonutChart";
 import {
   sieCohorts, sieSiteVisits,
@@ -286,8 +287,7 @@ export default function SiePage() {
         </div>
 
         {/* Filters */}
-        <ExecFilterBar
-          accent={BRAND}
+        <ExecFilterRow
           filters={[
             { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
             { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...COUNTRIES] },
@@ -449,6 +449,8 @@ export default function SiePage() {
             </ChartCard>
           </div>
         </section>
+
+        <HempFooter source="HEMP SIE Programme M&amp;E" />
 
       </div>
     </div>

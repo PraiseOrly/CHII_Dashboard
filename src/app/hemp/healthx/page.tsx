@@ -6,7 +6,9 @@ import {
 } from "recharts";
 import { Briefcase, Building2, Download, FileText, Link2, MapPin, Handshake, TrendingUp, Users } from "lucide-react";
 import HEMPNav from "@/components/HEMPNav";
-import ExecFilterBar from "@/components/ExecFilterBar";
+import { ChartTip, ChartLegend, GRID_STROKE, AXIS_TICK, TIP_CURSOR } from "@/components/HempChart";
+import ExecFilterRow from "@/components/ExecSelect";
+import HempFooter from "@/components/HempFooter";
 import StatsKpiCard from "@/app/impact/StatsKpiCard";
 import { healthXSessions, ORG_TYPES } from "@/data/hemp/healthx";
 import {
@@ -346,7 +348,7 @@ export default function HealthXPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* â”€â”€ FILTER BAR â”€â”€â”€ */}
-        <ExecFilterBar
+        <ExecFilterRow
           filters={[
             { label: "Year",    value: fYear,    onChange: setFYear,    options: ["All Years", ...YEARS.map(String)] },
             { label: "Country", value: fCountry, onChange: setFCountry, options: ["All Countries", ...ALL_COUNTRIES] },
@@ -613,8 +615,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                    formatter={(v: number) => [`${v} session${v !== 1 ? "s" : ""}`, "HealthX"]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Bar dataKey="Sessions" fill={TEAL} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -633,8 +634,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB", boxShadow: "0 4px 6px rgba(0,0,0,.05)" }}
-                    formatter={(v: number) => [`${v.toLocaleString()} students`, "Reach"]} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Area type="monotone" dataKey="Participants" stroke={BLUE_LIGHT} strokeWidth={2} fill="url(#hxGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -741,8 +741,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }}
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Bar dataKey="Leads"     fill="#185FA5" radius={[4, 4, 0, 0]} maxBarSize={30} />
                   <Bar dataKey="Converted" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={30} />
                 </BarChart>
@@ -785,8 +784,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={52} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }}
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Bar dataKey="Registered" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={24} />
                   <Bar dataKey="Attended"   fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={24} />
                 </BarChart>
@@ -807,7 +805,7 @@ export default function HealthXPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={34} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E5E7EB" }} />
+                  <Tooltip cursor={TIP_CURSOR} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Students"  stroke="#14306B" strokeWidth={2.5} dot={{ r: 4, fill: "#14306B", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   <Line type="monotone" dataKey="Leads"     stroke="#0F6E56" strokeWidth={2.5} dot={{ r: 4, fill: "#0F6E56", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   <Line type="monotone" dataKey="Employers" stroke="#D45F2C" strokeWidth={2.5} dot={{ r: 4, fill: "#D45F2C", strokeWidth: 0 }} activeDot={{ r: 6 }} />
@@ -825,22 +823,7 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", backgroundColor: "#102C5E", minHeight: 116, display: "flex", alignItems: "center" }}>
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design2.png" alt="" aria-hidden="true" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
-          <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>Africa&apos;s Oasis for Health &amp; Education Transformation</span>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}><span style={{ color: "#85B7EB", fontWeight: 600 }}>Data Last Synced:</span> 04 Jun 2026, EAT</span>
-              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
-              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.85)" }}><span style={{ color: "#85B7EB", fontWeight: 600 }}>Source:</span> HEMP HealthX M&amp;E</span>
-              <span style={{ fontSize: 11, color: "rgba(181,212,244,0.5)" }}>|</span>
-              <a href="mailto:insights@chii.org" style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(181,212,244,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>Contact Analyst</a>
-            </div>
-          </div>
-        </div>
+        <HempFooter source="HEMP HealthX M&amp;E" synced="04 Jun 2026, EAT" />
 
       </div>
     </div>

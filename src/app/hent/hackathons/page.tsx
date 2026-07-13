@@ -498,6 +498,7 @@ export default function HackathonsPage() {
                   <Bar dataKey="Hackathons" fill={ORANGE} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Hackathons held", ORANGE]]} />
             </ChartCard>
 
             <ChartCard title="Participant Reach per Year"
@@ -513,6 +514,7 @@ export default function HackathonsPage() {
                     stroke={TEAL} strokeWidth={2.5} dot={{ r: 4, fill: TEAL, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Participants", TEAL]]} />
             </ChartCard>
           </div>
         </section>

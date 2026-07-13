@@ -709,6 +709,7 @@ export default function FieldVisitsPage() {
                   <Bar dataKey="Participants" fill={SKY} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Participants", SKY]]} />
             </ChartCard>
             <ChartCard title="Participation by Gender per Year"
               sub="Female vs male participants across all visits per year"
@@ -808,6 +809,7 @@ export default function FieldVisitsPage() {
                   <Bar dataKey="Partnerships" fill={EMERALD} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Partnerships", EMERALD]]} />
             </ChartCard>
             <ChartCard title="Partnership Outcomes by Visit"
               sub="Visits with highest collaboration results"
@@ -891,6 +893,7 @@ export default function FieldVisitsPage() {
                 <Line type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
+              <ChartLegend items={[["Cumulative participants", EMERALD]]} />
           </ChartCard>
           <ChartCard title="Completion Rate by Study Trip"
             sub="Percentage of registered participants completing each excursion"

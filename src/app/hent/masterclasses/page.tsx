@@ -644,6 +644,7 @@ export default function MasterclassesPage() {
                   <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Attendees", ORANGE_MC]]} />
             </ChartCard>
 
             <ChartCard title="Attendance by Gender per Year"
@@ -692,6 +693,7 @@ export default function MasterclassesPage() {
                     stroke={VIOLET_MC} strokeWidth={2.5} dot={{ r: 4, fill: VIOLET_MC, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Cumulative attendees", VIOLET_MC]]} />
             </ChartCard>
 
             <ChartCard title="Completion Rate by Session"

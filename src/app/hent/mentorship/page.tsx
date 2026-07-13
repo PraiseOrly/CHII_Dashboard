@@ -807,6 +807,7 @@ export default function MentorshipPage() {
                   <Bar dataKey="Fellows" fill={SKY} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Fellows", SKY]]} />
             </ChartCard>
             <ChartCard title="Participation by Gender per Year"
               sub="Female vs male fellows  -  yearly comparison"
@@ -864,6 +865,7 @@ export default function MentorshipPage() {
                   <Line type="monotone" dataKey="Cumulative Fellows" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
+              <ChartLegend items={[["Cumulative fellows", EMERALD]]} />
             </ChartCard>
           </div>
         </section>
