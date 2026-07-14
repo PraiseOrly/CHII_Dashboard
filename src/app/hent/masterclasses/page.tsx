@@ -222,7 +222,7 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
 
 // â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MasterclassesPage() {
-  const [yearFilter,  setYearFilter]  = useState<"All"|"2023"|"2024"|"2025"|"2026">("All");
+  const [yearFilter,  setYearFilter]  = useState<"All"|"2022"|"2023"|"2024"|"2025"|"2026">("All");
   const [topicFilter, setTopicFilter] = useState<"All"|MCTopic>("All");
   const [genderView,  setGenderView]  = useState<"All"|"Female"|"Male">("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
@@ -298,7 +298,7 @@ export default function MasterclassesPage() {
     .slice(0, 6)
     .map((v, i) => ({ name: v.name, sector: v.sector, sessions: Math.max(1, filtered.length - i * 2), engagement: v.founderEngagement }));
 
-  const genderTrend = [2023, 2024, 2025, 2026].map(yr => {
+  const genderTrend = [2022, 2023, 2024, 2025, 2026].map(yr => {
     const yms = filtered.filter(m => m.year === yr);
     return {
       Year: String(yr),
@@ -391,7 +391,7 @@ export default function MasterclassesPage() {
             onReset={() => { setYearFilter("All"); setTopicFilter("All"); setGenderView("All"); }}
           >
             <OFilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Years" }, ...(["2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
+              options={[{ value: "All" as const, label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
             <OFilterSelect label="Topic" value={topicFilter} onChange={setTopicFilter} accent="#0E4633"
               options={[{ value: "All" as const, label: "All Topics" }, ...MC_TOPICS.map(t => ({ value: t, label: t }))]} />
             <OFilterSelect label="Gender" value={genderView} onChange={setGenderView} accent="#0E4633"

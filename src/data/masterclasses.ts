@@ -33,6 +33,28 @@ export interface Masterclass {
 
 export const masterclasses: Masterclass[] = [
   {
+    id: "M00a", name: "Intro to Health Entrepreneurship",
+    topic: "Business Development", date: "2022-05-17", year: 2022, month: 5,
+    attendees: 24, femaleAttendees: 10, studentAttendees: 18, completionRate: 79,
+    venturesRepresented: 19, femaleLedVentures: 7,
+    scores: { "Quality of Content": 3.9, "Usefulness": 4.1, "Accessibility": 3.7, "Relevance of Support": 3.8 },
+    byAge: { "18-25": 11, "26-35": 9, "36-45": 3, "46+": 1 },
+    byRegion: { "East Africa": 13, "West Africa": 6, "South Africa": 3, "North Africa": 1, Other: 1 },
+    byStage: { Expose: 13, Build: 8, Scale: 3 },
+    bySocial: { "MCF Scholars": 8, PWD: 1, "Refugee-Displaced": 1 },
+  },
+  {
+    id: "M00b", name: "Validating a Health Venture Idea",
+    topic: "Health Innovation", date: "2022-09-28", year: 2022, month: 9,
+    attendees: 27, femaleAttendees: 12, studentAttendees: 19, completionRate: 84,
+    venturesRepresented: 22, femaleLedVentures: 8,
+    scores: { "Quality of Content": 4.1, "Usefulness": 4.2, "Accessibility": 3.6, "Relevance of Support": 4.0 },
+    byAge: { "18-25": 12, "26-35": 11, "36-45": 3, "46+": 1 },
+    byRegion: { "East Africa": 15, "West Africa": 7, "South Africa": 3, "North Africa": 1, Other: 1 },
+    byStage: { Expose: 14, Build: 9, Scale: 4 },
+    bySocial: { "MCF Scholars": 9, PWD: 1, "Refugee-Displaced": 1 },
+  },
+  {
     id: "M01", name: "Business Model Canvas Workshop",
     topic: "Business Development", date: "2023-02-10", year: 2023, month: 2,
     attendees: 32, femaleAttendees: 14, studentAttendees: 21, completionRate: 88,
