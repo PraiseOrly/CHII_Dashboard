@@ -119,7 +119,7 @@ export default function LoginPage() {
             />
 
             {/* Everything else is centred in the space that's left */}
-            <div className="flex flex-col justify-center flex-1" style={{ paddingTop: 20 }}>
+            <div className="flex flex-col justify-center flex-1" style={{ paddingTop: 8 }}>
               <p style={{ fontSize: 13.5, lineHeight: 1.65, color: BODY }}>
                 Access programme data, monitor outcomes, and generate insights across HENT,
                 HEMP, and HECO.
