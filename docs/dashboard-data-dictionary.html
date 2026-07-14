@@ -1,0 +1,756 @@
+<title>CHII — Dashboard Data Dictionary</title>
+
+<style>
+  :root {
+    --navy:#102C5E; --section:#185FA5; --rose:#D17A86; --green:#1D9E75; --amber:#BA7517;
+    --hent:#2D6A4F; --hemp:#185FA5; --heco:#0C447C; --exec:#102C5E;
+    --ground:#F8F9FA; --surface:#FFFFFF; --ink:#16233A; --muted:#5A6B84; --faint:#8695AC;
+    --rule:rgba(16,44,94,.11); --rule-firm:rgba(16,44,94,.22);
+    --wash:rgba(24,95,165,.06); --code-bg:rgba(16,44,94,.055);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --navy:#A8C6EC; --section:#6FAEE4; --rose:#E29AA4; --green:#4FC39A; --amber:#D9A054;
+      --hent:#6FBF9A; --hemp:#6FAEE4; --heco:#8FC4EE; --exec:#A8C6EC;
+      --ground:#0C1524; --surface:#111C2E; --ink:#E4EAF3; --muted:#94A5BD; --faint:#6A7C96;
+      --rule:rgba(168,198,236,.14); --rule-firm:rgba(168,198,236,.28);
+      --wash:rgba(111,174,228,.09); --code-bg:rgba(168,198,236,.09);
+    }
+  }
+  :root[data-theme="dark"] {
+    --navy:#A8C6EC; --section:#6FAEE4; --rose:#E29AA4; --green:#4FC39A; --amber:#D9A054;
+    --hent:#6FBF9A; --hemp:#6FAEE4; --heco:#8FC4EE; --exec:#A8C6EC;
+    --ground:#0C1524; --surface:#111C2E; --ink:#E4EAF3; --muted:#94A5BD; --faint:#6A7C96;
+    --rule:rgba(168,198,236,.14); --rule-firm:rgba(168,198,236,.28);
+    --wash:rgba(111,174,228,.09); --code-bg:rgba(168,198,236,.09);
+  }
+  :root[data-theme="light"] {
+    --navy:#102C5E; --section:#185FA5; --rose:#D17A86; --green:#1D9E75; --amber:#BA7517;
+    --hent:#2D6A4F; --hemp:#185FA5; --heco:#0C447C; --exec:#102C5E;
+    --ground:#F8F9FA; --surface:#FFFFFF; --ink:#16233A; --muted:#5A6B84; --faint:#8695AC;
+    --rule:rgba(16,44,94,.11); --rule-firm:rgba(16,44,94,.22);
+    --wash:rgba(24,95,165,.06); --code-bg:rgba(16,44,94,.055);
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:15px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  code,.mono,th,.num { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+  .shell { display:grid; grid-template-columns:210px minmax(0,1fr); gap:48px; max-width:1220px; margin:0 auto; padding:0 28px 120px; }
+  @media (max-width:900px){ .shell{grid-template-columns:minmax(0,1fr);gap:0;padding:0 20px 80px} .rail{display:none} }
+
+  .rail { position:sticky; top:0; align-self:start; max-height:100vh; overflow-y:auto; padding:40px 0; border-right:1px solid var(--rule); }
+  .rail-label { font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); margin:0 0 14px; }
+  .rail ol { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px; }
+  .rail a { display:flex; gap:9px; padding:5px 12px; font-size:12.5px; color:var(--muted); text-decoration:none; border-left:2px solid transparent; transition:color .12s,border-color .12s; }
+  .rail a:hover,.rail a:focus-visible { color:var(--section); border-left-color:var(--section); }
+  .rail a .n { color:var(--faint); font-family:ui-monospace,monospace; font-size:11px; flex-shrink:0; font-variant-numeric:tabular-nums; }
+
+  .masthead { padding:56px 0 40px; border-bottom:2px solid var(--navy); }
+  .eyebrow { font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--section); margin:0 0 14px; }
+  h1 { font-size:clamp(30px,4.4vw,42px); line-height:1.1; letter-spacing:-.02em; margin:0 0 16px; color:var(--navy); text-wrap:balance; font-weight:700; }
+  .standfirst { font-size:17px; line-height:1.6; color:var(--muted); margin:0; max-width:62ch; }
+
+  .vitals { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:32px 0 0; }
+  .vital { background:var(--surface); padding:15px 16px; }
+  .vital .v { font-family:ui-monospace,monospace; font-size:22px; font-weight:600; color:var(--navy); line-height:1.1; font-variant-numeric:tabular-nums; }
+  .vital .k { font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--faint); margin-top:5px; font-weight:600; }
+  .vital.zero .v { color:var(--rose); }
+
+  section { padding-top:52px; scroll-margin-top:20px; }
+  h2 { font-size:21px; letter-spacing:-.01em; margin:0 0 6px; color:var(--navy); font-weight:700; display:flex; align-items:baseline; gap:11px; }
+  h2 .n { font-family:ui-monospace,monospace; font-size:12px; font-weight:600; color:var(--section); font-variant-numeric:tabular-nums; }
+  h3 { font-size:13px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--section); margin:34px 0 12px; }
+  .lede { color:var(--muted); margin:0 0 20px; max-width:68ch; }
+  p { max-width:68ch; }
+
+  code { background:var(--code-bg); padding:1.5px 5px; border-radius:3px; font-size:.885em; color:var(--navy); }
+  pre { background:var(--surface); border:1px solid var(--rule); border-left:2px solid var(--section); padding:18px 20px; overflow-x:auto; font-size:12.5px; line-height:1.72; margin:0 0 20px; color:var(--ink); }
+  pre code { background:none; padding:0; color:inherit; font-size:inherit; }
+  pre .c { color:var(--faint); }
+  pre .d { color:var(--rose); font-weight:600; }
+  pre .g { color:var(--green); font-weight:600; }
+
+  .scroll { overflow-x:auto; margin:0 0 20px; border:1px solid var(--rule); background:var(--surface); }
+  table { border-collapse:collapse; width:100%; font-size:13px; min-width:600px; }
+  th { text-align:left; font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); padding:11px 14px; border-bottom:1px solid var(--rule-firm); white-space:nowrap; background:var(--wash); }
+  td { padding:10px 14px; border-bottom:1px solid var(--rule); vertical-align:top; line-height:1.5; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.mono { font-size:12.5px; color:var(--navy); }
+  td.nw { white-space:nowrap; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .dim { color:var(--faint); }
+
+  .chip { display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; padding:2.5px 7px; border-radius:3px; white-space:nowrap; font-family:ui-sans-serif,system-ui,sans-serif; }
+  .chip.crit { background:color-mix(in srgb,var(--rose) 17%,transparent); color:var(--rose); }
+  .chip.warn { background:color-mix(in srgb,var(--amber) 17%,transparent); color:var(--amber); }
+  .chip.ok   { background:color-mix(in srgb,var(--green) 15%,transparent); color:var(--green); }
+  .chip.info { background:var(--wash); color:var(--section); }
+
+  .pill { display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:2.5px 7px; border-radius:3px; white-space:nowrap; border:1px solid currentColor; }
+  .pill.hent { color:var(--hent); }
+  .pill.hemp { color:var(--hemp); }
+  .pill.heco { color:var(--heco); }
+  .pill.exec { color:var(--exec); }
+
+  .callout { background:var(--surface); border:1px solid var(--rule); border-left:3px solid var(--rose); padding:16px 18px; margin:0 0 20px; }
+  .callout.good { border-left-color:var(--green); }
+  .callout.note { border-left-color:var(--section); }
+  .callout .t { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--rose); margin:0 0 6px; }
+  .callout.good .t { color:var(--green); }
+  .callout.note .t { color:var(--section); }
+  .callout p { margin:0; font-size:13.5px; color:var(--muted); max-width:none; }
+  .callout p + p { margin-top:9px; }
+
+  ul.plain { margin:0 0 20px; padding-left:19px; color:var(--muted); }
+  ul.plain li { margin-bottom:7px; }
+  ul.plain strong { color:var(--ink); }
+
+  footer { margin-top:72px; padding-top:22px; border-top:1px solid var(--rule); font-size:12px; color:var(--faint); }
+  a { color:var(--section); }
+
+  /* ── Print: force light, drop the rail, avoid breaking tables ─────────── */
+  @media print {
+    :root {
+      --navy:#102C5E; --section:#185FA5; --rose:#B0505E; --green:#15805F; --amber:#8F5A11;
+      --ground:#FFFFFF; --surface:#FFFFFF; --ink:#111827; --muted:#4B5563; --faint:#6B7280;
+      --rule:rgba(0,0,0,.16); --rule-firm:rgba(0,0,0,.34);
+      --wash:rgba(0,0,0,.04); --code-bg:rgba(0,0,0,.05);
+    }
+    @page { margin: 16mm 14mm; }
+    body { background:#fff; font-size:10.5pt; line-height:1.5; }
+    .shell { display:block; max-width:none; padding:0; }
+    .rail { display:none; }
+    .masthead { padding-top:0; }
+    h1 { font-size:24pt; }
+    h2 { font-size:14pt; page-break-after:avoid; break-after:avoid; }
+    h3 { page-break-after:avoid; break-after:avoid; }
+    section { padding-top:22px; page-break-inside:auto; }
+    .scroll { overflow:visible; page-break-inside:auto; }
+    table { min-width:0; font-size:9pt; }
+    thead { display:table-header-group; }
+    tr { page-break-inside:avoid; break-inside:avoid; }
+    pre { white-space:pre-wrap; word-wrap:break-word; font-size:8.5pt; page-break-inside:avoid; }
+    .callout, .vitals { page-break-inside:avoid; break-inside:avoid; }
+    .chip, .pill { border:1px solid currentColor; }
+    a { color:var(--ink); text-decoration:none; }
+    footer { page-break-inside:avoid; }
+  }
+</style>
+
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Sections">
+    <p class="rail-label">Contents</p>
+    <ol>
+      <li><a href="#s0"><span class="n">00</span> Read this first</a></li>
+      <li><a href="#s1"><span class="n">01</span> Dashboard inventory</a></li>
+      <li><a href="#s2"><span class="n">02</span> Components</a></li>
+      <li><a href="#s3"><span class="n">03</span> KPI catalog</a></li>
+      <li><a href="#s4"><span class="n">04</span> Charts</a></li>
+      <li><a href="#s5"><span class="n">05</span> Tables</a></li>
+      <li><a href="#s6"><span class="n">06</span> Filters</a></li>
+      <li><a href="#s7"><span class="n">07</span> Business metrics</a></li>
+      <li><a href="#s8"><span class="n">08</span> Executive rollup</a></li>
+      <li><a href="#s9"><span class="n">09</span> Relationship map</a></li>
+      <li><a href="#s10"><span class="n">10</span> Data dictionary</a></li>
+      <li><a href="#s11"><span class="n">11</span> Conflicts &amp; gaps</a></li>
+      <li><a href="#s12"><span class="n">12</span> Standardisation</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <header class="masthead">
+      <p class="eyebrow">MELA · Dashboard data dictionary · read-only</p>
+      <h1>CHII Dashboard Data</h1>
+      <p class="standfirst">
+        Every KPI, chart, filter and calculation across HEMP, HENT, HECO and Executive —
+        extracted from source, not inferred. Intended as the single reference for standardising
+        metric definitions and designing the backend data model.
+      </p>
+
+      <div class="vitals">
+        <div class="vital"><div class="v">106</div><div class="k">KPI cards</div></div>
+        <div class="vital"><div class="v">118</div><div class="k">Charts</div></div>
+        <div class="vital"><div class="v">14</div><div class="k">Filter types</div></div>
+        <div class="vital zero"><div class="v">1</div><div class="k">Target defined</div></div>
+        <div class="vital zero"><div class="v">0</div><div class="k">Data exports</div></div>
+        <div class="vital zero"><div class="v">0</div><div class="k">Drill-downs</div></div>
+      </div>
+    </header>
+
+    <!-- ══ 00 ══ -->
+    <section id="s0">
+      <h2><span class="n">00</span> Read this first</h2>
+      <p class="lede">
+        Three findings reframe the rest of this document. For a MELA system in particular, they
+        are the difference between a dashboard and a monitoring instrument.
+      </p>
+
+      <div class="callout">
+        <p class="t">There are no targets, so there is no variance</p>
+        <p>
+          Your brief asks for <em>Targets · Actuals · Variance</em>. The application tracks
+          <strong>actuals only</strong>. There is exactly one benchmark mechanism in the entire
+          codebase — <code>benchColor(pct, benchmark)</code> in <code>theme/tokens.ts</code>, which
+          colours a figure red/amber/green against a threshold — and the thresholds are passed in
+          ad hoc at call sites, not stored anywhere.
+        </p>
+        <p>
+          The single visible "target" KPI, <strong>Pace of Target</strong> on HENT Ventures, is
+          <code>num={5.5}</code> — a hardcoded literal. It is not computed from anything.
+          <strong>Without a target store, no MELA dashboard here can report performance against
+          plan.</strong>
+        </p>
+      </div>
+
+      <div class="callout">
+        <p class="t">"Export" does not export data</p>
+        <p>
+          The Export button in every nav is <strong>inert</strong> — it has no click handler. The
+          only working export is <em>right-click a chart → PNG screenshot</em> (via
+          <code>html2canvas</code>). There is no CSV, no Excel, no PDF, no API. On
+          <code>/executive/reports</code>, all 26 report cards link to <code>href="#"</code>.
+        </p>
+      </div>
+
+      <div class="callout">
+        <p class="t">The same metric has different names on different dashboards</p>
+        <p>
+          <strong>Total Reach</strong> (HEMP, HENT) · <strong>Total Beneficiaries</strong>
+          (Executive) · <strong>Total Participants</strong> (Outreach) · <strong>Participants</strong>
+          (Youth in Work) · <strong>Students Reached</strong> (HECO) — five labels, one concept.
+          Section 11 catalogues the rest. This is the core standardisation problem.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 01 ══ -->
+    <section id="s1">
+      <h2><span class="n">01</span> Dashboard inventory</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Dashboard</th><th>Business objective</th><th>Sections</th><th>Primary user</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="nw"><span class="pill exec">Executive</span></td>
+              <td>Cross-pillar performance. Answers "is the mission working?"</td>
+              <td>Overview · Outreach · Youth in Work · Wage Employment · Entrepreneurship · Further Education · Reports · Stories</td>
+              <td>Leadership, funders, MELA lead</td>
+            </tr>
+            <tr>
+              <td class="nw"><span class="pill hent">HENT</span></td>
+              <td>Health Entrepreneurship — ventures from idea to scale</td>
+              <td>Overview · Ventures · Venture Funding · Masterclasses · Hackathons · Mentorship · Study Trips · Exposure &amp; Networking</td>
+              <td>HENT programme managers</td>
+            </tr>
+            <tr>
+              <td class="nw"><span class="pill hemp">HEMP</span></td>
+              <td>Health Employment — students into dignified work</td>
+              <td>Overview · HealthX · Internships · Mission Students · SIE · Intro to Global Health</td>
+              <td>HEMP programme managers</td>
+            </tr>
+            <tr>
+              <td class="nw"><span class="pill heco">HECO</span></td>
+              <td>Health Ecosystems — public-sector capacity via 3 pillars</td>
+              <td>Overview · CRA (Fellowship · Hackathons · Research)</td>
+              <td>HECO programme managers</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout note">
+        <p class="t">On "primary users"</p>
+        <p>
+          These are <strong>inferred from content</strong>, not enforced. The application has no
+          roles and no permissions — every user sees every dashboard. The Permissions column your
+          brief requests would read "all / none / none" for all 106 KPIs, so it is stated once here
+          rather than repeated 106 times.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 02 ══ -->
+    <section id="s2">
+      <h2><span class="n">02</span> Component inventory</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Component</th><th>Count</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>KPI cards</td><td class="num">106</td><td><span class="chip ok">Working</span></td><td>Two implementations: <code>StatCard</code> and <code>StatsKpiCard</code></td></tr>
+            <tr><td>Charts</td><td class="num">118</td><td><span class="chip ok">Working</span></td><td>Recharts. Bar, line, area, pie, donut, radar, funnel, heatmap, scatter</td></tr>
+            <tr><td>Maps</td><td class="num">3</td><td><span class="chip warn">Duplicated</span></td><td><code>AfricaMap</code> · <code>AfricaChoropleth</code> · <code>StoriesMap</code> (Leaflet)</td></tr>
+            <tr><td>Filters</td><td class="num">14 types</td><td><span class="chip ok">Working</span></td><td>Popover + section pills + inline selects</td></tr>
+            <tr><td>Tables</td><td class="num">7</td><td><span class="chip warn">Static</span></td><td>Display-only. No sort, no search, no pagination, no export</td></tr>
+            <tr><td>Funnels</td><td class="num">8</td><td><span class="chip ok">Working</span></td><td>Conversion between pipeline stages</td></tr>
+            <tr><td>Search</td><td class="num">1</td><td><span class="chip warn">Partial</span></td><td>Only on <code>/executive/reports</code>. No global search.</td></tr>
+            <tr><td>Export (data)</td><td class="num">0</td><td><span class="chip crit">Missing</span></td><td>Nav Export button has no handler. PNG screenshot only.</td></tr>
+            <tr><td>Drill-down</td><td class="num">1</td><td><span class="chip crit">Near-zero</span></td><td>Only <code>/hent/ventures → /show/[id]</code>. No chart is clickable.</td></tr>
+            <tr><td>Alerts / notifications</td><td class="num">0</td><td><span class="chip crit">Missing</span></td><td>No threshold breach, no flag, no exception reporting</td></tr>
+            <tr><td>Progress vs target</td><td class="num">0</td><td><span class="chip crit">Missing</span></td><td>Progress rings show % of a total, never % of a target</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ 03 ══ -->
+    <section id="s3">
+      <h2><span class="n">03</span> KPI catalog</h2>
+      <p class="lede">
+        All 106 KPI cards. <strong>Formula</strong> is what the code actually computes.
+        <strong>Target</strong> is empty for all but one — that is a finding, not an omission.
+      </p>
+
+      <h3><span class="pill exec">Executive</span> — Overview</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>KPI</th><th>Definition</th><th>Formula</th><th>Unit</th><th>Target</th></tr></thead>
+          <tbody>
+            <tr><td>Total Beneficiaries</td><td>All individuals reached across every CHII programme</td><td class="mono">Σ healthX + internships + missionStudents + hackathons + masterclasses + studyTrips + mentorships + ventures</td><td>Integer</td><td class="dim">—</td></tr>
+            <tr><td>Youth in Work</td><td>In employment or enterprise within 12 months of completion</td><td class="mono">count(youth.pathway ∈ EMPLOYED ∪ VENTURE)</td><td>Integer</td><td class="dim">—</td></tr>
+            <tr><td>Wage Employment</td><td>In paid employment, formal or informal</td><td class="mono">count(worker.employmentType ≠ null)</td><td>Integer</td><td class="dim">—</td></tr>
+            <tr><td>Entrepreneurs</td><td>Running own enterprise</td><td class="mono">count(youth.pathway ∈ VENTURE_PATHWAYS)</td><td>Integer</td><td class="dim">—</td></tr>
+            <tr><td>Jobs Created</td><td>All jobs across the portfolio</td><td class="mono">Σ ventures.jobsTotal</td><td>Integer</td><td class="dim">—</td></tr>
+            <tr><td>Further Education</td><td>Progressed to advanced study</td><td class="mono">count(feStudent.status = enrolled)</td><td>Integer</td><td class="dim">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span class="pill exec">Executive</span> — Pillar pages</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Page</th><th>KPIs</th><th>Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Outreach</td><td>Total Participants · Interventions · Institutions · Female Share · Mission Students · Completion Rate</td><td>Int · %</td></tr>
+            <tr><td>Youth in Work</td><td>Participants · In Employment · In Internships · Enterprise · Jobs Created · Female · Based in Africa · Primary Jobs · Secondary Jobs · Jobs by Enterprises · Youth Employed by Enterprises</td><td>Integer</td></tr>
+            <tr><td>Wage Employment</td><td>Wage Employed · Female Wage Employed · 12-Month Placement · Decent Work Rate · Tech Roles · Median Time to Job</td><td>Int · % · Months</td></tr>
+            <tr><td>Entrepreneurship</td><td>Entrepreneurs · Active Enterprises · Jobs Created · Female-led · Capital Secured · Revenue Growth · Market Expansion</td><td>Int · USD · %</td></tr>
+            <tr><td>Further Education</td><td>In Further Study · Currently Enrolled · Further Study Rate · Female Share · Scholarship/Funded · Countries of Study · Active Students · Scholars Progressing · Talents Progressing · Female Participation · Male Participation</td><td>Int · %</td></tr>
+            <tr><td>Stories</td><td>Stories (364) · Countries (29) · Video Stories (15) · Written Stories (349)</td><td>Integer</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span class="pill hent">HENT</span></h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Page</th><th>KPIs</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Overview</td><td>Total Reach · Active Ventures · Female Reach · Partnerships · Jobs Created · Hackathons · Masterclasses · Mentorships · Study Trips</td><td class="dim">"Total Reach" = Executive's "Total Beneficiaries", scoped to HENT</td></tr>
+            <tr><td>Ventures</td><td>Health Ventures · Jobs Created · Funds Deployed · Active Founders · <strong>Pace of Target</strong></td><td><span class="chip crit">Pace of Target is hardcoded <code>5.5</code></span></td></tr>
+            <tr><td>Venture Funding</td><td>Capital Deployed · Ventures Funded · Milestone Rate · Progressed to Scale · Jobs Created</td><td class="dim">Jobs Created appears here <em>and</em> on Ventures <em>and</em> on Overview</td></tr>
+            <tr><td>Masterclasses</td><td>Female · Male · Student · Alumni Participants</td><td class="dim">Demographic splits only — no headline KPI</td></tr>
+            <tr><td>Hackathons</td><td class="dim">— none —</td><td><span class="chip warn">Only HENT page with no KPI cards</span></td></tr>
+            <tr><td>Mentorship</td><td>Female Fellows · Male Fellows · Student Fellows · Alumni Fellows</td><td class="dim">"Fellows" here ≠ HECO "Fellows"</td></tr>
+            <tr><td>Study Trips</td><td>Female · Male · Student · Alumni Participants</td><td></td></tr>
+            <tr><td>Exposure &amp; Networking</td><td>Events Held · Founder Placements · Investors Engaged · Connections Made · Agreements Signed · <strong>Visibility Score</strong></td><td><span class="chip warn">Visibility Score is undefined — no formula documented anywhere</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span class="pill hemp">HEMP</span></h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Page</th><th>KPIs</th></tr></thead>
+          <tbody>
+            <tr><td>Overview</td><td>Total Reach · Mission Students · Female Reach · Partnerships · <strong>Employment Rate</strong> · HealthX Sessions · Internship Orgs · Mission Cohorts · Countries</td></tr>
+            <tr><td>HealthX</td><td>Health Hub Visits Completed · Active Partnerships (MOUs Signed) · Students with Field Exposure · Institutions · Students Reached · Employers · Leads Generated · Leads Converted · Partnerships</td></tr>
+            <tr><td>Internships</td><td>Total Interns</td></tr>
+            <tr><td>Mission Students</td><td>Health Mission Students Active · Courses Completed (Canvas/Coursera) · Resources by Mission Curators · Mentors Recruited · Programme Feedback Collected · Lectures Held · Career Centre Events · Training Courses · 1-on-1 Sessions</td></tr>
+            <tr><td>SIE</td><td>Students Selected · Completed Programme · Site Visits · Partner Projects · Employment Leads · Satisfaction</td></tr>
+            <tr><td>Global Health</td><td>Enrolled · Completed · Certified · Avg Score · Progressed On · Satisfaction</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span class="pill heco">HECO</span></h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Page</th><th>KPIs</th></tr></thead>
+          <tbody>
+            <tr><td>Overview</td><td>Fellows · Funding Awarded · Students Reached · Ventures Incubated · Research Studies · Partnerships</td></tr>
+            <tr><td>CRA</td><td>Fellows · Operational Funding · Publications · Ventures Incubated · Research Studies · Partnerships</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">Owner and frequency cannot be documented</p>
+        <p>
+          Your brief asks for each KPI's <strong>owner</strong> and <strong>update frequency</strong>.
+          Neither exists anywhere in the codebase — there is no metadata layer, no indicator
+          registry, no ownership field. Every figure recomputes on page load from a static file.
+          <strong>Update frequency is therefore "on deploy" for all 106.</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 04 ══ -->
+    <section id="s4">
+      <h2><span class="n">04</span> Chart inventory</h2>
+      <p class="lede">118 charts. Every one is <strong>read-only</strong>: no chart in the application is clickable, and none supports drill-down.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Type</th><th>Typical X</th><th>Typical Y</th><th>Aggregation</th><th>Used for</th></tr></thead>
+          <tbody>
+            <tr><td>Grouped bar</td><td>Year / Programme / Sector</td><td>Count</td><td class="mono">count / sum, grouped</td><td>Participants by programme, jobs by country</td></tr>
+            <tr><td>Stacked bar</td><td>Year</td><td>Count by category</td><td class="mono">sum by group</td><td>Gender splits, contract-type composition</td></tr>
+            <tr><td>Line / area</td><td>Year (2022–2026)</td><td>Count / cumulative</td><td class="mono">sum, running total</td><td>Trends, cumulative reach, capital deployed</td></tr>
+            <tr><td>Pie / donut</td><td class="dim">—</td><td>Share</td><td class="mono">count → %</td><td>Gender distribution, sector mix, status</td></tr>
+            <tr><td>Funnel</td><td class="dim">—</td><td>Stage volume</td><td class="mono">count per stage; conv = s[i]/s[i-1]</td><td>Pipeline, lifecycle, research-to-policy</td></tr>
+            <tr><td>Radar</td><td>Criterion</td><td>Score 1–5</td><td class="mono">mean</td><td>Satisfaction by dimension</td></tr>
+            <tr><td>Heatmap</td><td>Session type</td><td>Criterion</td><td class="mono">mean score</td><td>Satisfaction matrices</td></tr>
+            <tr><td>Choropleth</td><td class="dim">Country</td><td>Intensity</td><td class="mono">count by country</td><td>Geographic reach</td></tr>
+            <tr><td>Horizontal bar list</td><td>Value</td><td>Category</td><td class="mono">sum, sorted desc</td><td>Top performers, capital by sector</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">The trend axis is hardcoded to 2022–2026</p>
+        <p>
+          Nearly every time series runs a fixed <code>[2022, 2023, 2024, 2025, 2026]</code> array.
+          2025 and 2026 are <em>future or partial</em> periods, but they are plotted identically to
+          complete years — with no "partial period" marker. A reader cannot tell a real dip from an
+          incomplete year.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 05 ══ -->
+    <section id="s5">
+      <h2><span class="n">05</span> Table inventory</h2>
+      <p class="lede">7 tables. None of them are tables in the interactive sense.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Table</th><th>Page</th><th>Sort</th><th>Search</th><th>Paginate</th><th>Export</th></tr></thead>
+          <tbody>
+            <tr><td>Top Masterclasses / Engaged Ventures</td><td class="mono">hent/masterclasses</td><td class="dim">Pre-sorted</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+            <tr><td>Milestone Delivery — Top Funded</td><td class="mono">hent/venture-funding</td><td class="dim">Pre-sorted</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+            <tr><td>Platform Comparison</td><td class="mono">hent/exposure-networking</td><td class="dim">Pre-sorted</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+            <tr><td>Satisfaction Matrix</td><td class="mono">hent/mentorship</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+            <tr><td>Programme Performance</td><td class="mono">hent/overview · hemp</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+            <tr><td>Partnership Pipeline</td><td class="mono">hemp/healthx</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+            <tr><td>Highest-Rated Site Visits</td><td class="mono">hemp/sie</td><td class="dim">Pre-sorted</td><td class="dim">No</td><td class="dim">No</td><td class="dim">No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Sorting where it exists is done <strong>at build time in the data layer</strong>
+        (<code>.sort()</code> inside a <code>useMemo</code>), not by the user. There is no venture
+        list, no participant list, no exportable roster anywhere — which is what a MELA officer
+        would most need.
+      </p>
+    </section>
+
+    <!-- ══ 06 ══ -->
+    <section id="s6">
+      <h2><span class="n">06</span> Filter inventory</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Filter</th><th>Type</th><th>Default</th><th>Appears on</th></tr></thead>
+          <tbody>
+            <tr><td>Year</td><td class="mono">Enum 2022–2026</td><td class="mono">"All"</td><td>Nearly every page</td></tr>
+            <tr><td>Gender</td><td class="mono">Enum</td><td class="mono">"All"</td><td>HENT ×4 · Exec ×3</td></tr>
+            <tr><td>Country</td><td class="mono">Enum</td><td class="mono">"All"</td><td>HENT · HEMP · HECO · Exec</td></tr>
+            <tr><td>Cohort</td><td class="mono">Integer year</td><td class="mono">"All"</td><td>HENT ventures/funding · Exec ×3 · HECO</td></tr>
+            <tr><td>Sector</td><td class="mono">Enum</td><td class="mono">"All"</td><td>HENT funding · HEMP internships</td></tr>
+            <tr><td>Stage</td><td class="mono">Expose · Build · Scale</td><td class="mono">"All"</td><td>HENT ventures · Exec entrepreneurship</td></tr>
+            <tr><td>Programme</td><td class="mono">Enum</td><td class="mono">"All"</td><td>Exec ×4</td></tr>
+            <tr><td>Participant Type</td><td class="mono">Student · Alumni · Scholar</td><td class="mono">"All"</td><td>Exec youth-in-work · wage-employment</td></tr>
+            <tr><td>Region</td><td class="mono">Enum</td><td class="mono">"All"</td><td>HEMP overview · HENT study-trips</td></tr>
+            <tr><td>Type</td><td class="mono">Context-dependent</td><td class="mono">"All"</td><td>HENT mentorship/study-trips/exposure · HEMP healthx</td></tr>
+            <tr><td>Topic</td><td class="mono">Enum</td><td class="mono">"All"</td><td>HENT masterclasses</td></tr>
+            <tr><td>Instrument</td><td class="mono">Enum</td><td class="mono">"All"</td><td>HENT venture-funding</td></tr>
+            <tr><td>Employment Status</td><td class="mono">Enum</td><td class="mono">"All"</td><td>Exec youth-in-work</td></tr>
+            <tr><td>Institution</td><td class="mono">Enum</td><td class="mono">"All"</td><td>Exec outreach</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">Filters are page-local and do not persist</p>
+        <p>
+          Every filter is a <code>useState</code> inside its page. Select <em>2024 + Rwanda</em> on
+          HENT Overview, navigate to Masterclasses, and everything resets to "All". There is a
+          Zustand store (<code>GlobalFilters</code>) that would solve this — it is used by exactly
+          <strong>one</strong> page.
+        </p>
+        <p>
+          <strong>Missing filters a MELA system would expect:</strong> date range (only whole years
+          exist), age group, partner/organisation, district/sub-national, outcome status, and
+          reporting period.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 07 ══ -->
+    <section id="s7">
+      <h2><span class="n">07</span> Business metrics</h2>
+      <p class="lede">Against the metric list in your brief — what exists, and what does not.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Metric</th><th>Status</th><th>Where</th></tr></thead>
+          <tbody>
+            <tr><td>Beneficiaries / Participants / Youth Reached</td><td><span class="chip warn">3 names</span></td><td>Exec · HEMP · HENT · Outreach — same concept</td></tr>
+            <tr><td>Youth in Work</td><td><span class="chip ok">Present</span></td><td>Executive</td></tr>
+            <tr><td>Wage Employment</td><td><span class="chip ok">Present</span></td><td>Executive</td></tr>
+            <tr><td>Self Employment</td><td><span class="chip warn">Implicit</span></td><td>Folded into "Entrepreneurs" — not separately reported</td></tr>
+            <tr><td>Entrepreneurship</td><td><span class="chip ok">Present</span></td><td>Exec · HENT</td></tr>
+            <tr><td>Businesses Created</td><td><span class="chip warn">Ambiguous</span></td><td>"Active Ventures" / "Active Enterprises" / "Health Ventures" — 3 names</td></tr>
+            <tr><td>Jobs Created</td><td><span class="chip warn">4 locations</span></td><td>Exec · HENT overview · ventures · venture-funding · youth-in-work</td></tr>
+            <tr><td>Businesses Supported</td><td><span class="chip ok">Present</span></td><td>"Ventures Funded" (HENT) · "Ventures Incubated" (HECO)</td></tr>
+            <tr><td>Revenue</td><td><span class="chip warn">Partial</span></td><td>"Revenue Growth" on Exec entrepreneurship only. No revenue figures.</td></tr>
+            <tr><td>Funding</td><td><span class="chip warn">4 names</span></td><td>Capital Deployed · Funds Deployed · Capital Secured · Funding Awarded · Operational Funding</td></tr>
+            <tr><td>Training Completion</td><td><span class="chip ok">Present</span></td><td>Completion Rate · Courses Completed · Completed Programme</td></tr>
+            <tr><td>Certifications</td><td><span class="chip ok">Present</span></td><td>HEMP Global Health only ("Certified")</td></tr>
+            <tr><td>Outreach</td><td><span class="chip ok">Present</span></td><td>Executive Outreach page</td></tr>
+            <tr><td>Programme Completion</td><td><span class="chip ok">Present</span></td><td>Multiple</td></tr>
+            <tr><td>Partner Performance</td><td><span class="chip warn">Weak</span></td><td>Partner counts exist; no performance scoring</td></tr>
+            <tr><td>Regional Performance</td><td><span class="chip ok">Present</span></td><td>Choropleths + region filters</td></tr>
+            <tr><td><strong>Targets</strong></td><td><span class="chip crit">Missing</span></td><td>One hardcoded value. No target store.</td></tr>
+            <tr><td><strong>Actuals</strong></td><td><span class="chip ok">Present</span></td><td>This is all the app has</td></tr>
+            <tr><td><strong>Variance</strong></td><td><span class="chip crit">Impossible</span></td><td>Requires targets</td></tr>
+            <tr><td><strong>Forecast</strong></td><td><span class="chip crit">Missing</span></td><td>No projection anywhere</td></tr>
+            <tr><td><strong>Risk indicators</strong></td><td><span class="chip crit">Missing</span></td><td>No flags, no exceptions, no thresholds</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Metrics found that your brief did not list</h3>
+      <ul class="plain">
+        <li><strong>Decent Work Rate</strong> — Executive wage employment. Aligns with SDG 8; arguably a headline metric.</li>
+        <li><strong>Median Time to Job</strong> — months from completion to placement. The only duration metric in the app.</li>
+        <li><strong>Social Inclusion splits</strong> — MCF Scholars · PWD · Refugee/Displaced. Present on 4 HENT pages and Outreach. <strong>This is your equity story and it is under-used.</strong></li>
+        <li><strong>Satisfaction / rating scores</strong> — 1–5 scales across masterclasses, mentorship, study trips, SIE, HealthX.</li>
+        <li><strong>Leads Generated / Converted</strong> — HealthX careers funnel.</li>
+        <li><strong>Publication Pipeline · Research-to-Policy funnel</strong> — HECO. The only policy-influence metrics.</li>
+        <li><strong>Visibility Score</strong> — HENT exposure. <span class="chip crit">No definition exists.</span></li>
+      </ul>
+    </section>
+
+    <!-- ══ 08 ══ -->
+    <section id="s8">
+      <h2><span class="n">08</span> Executive rollup</h2>
+      <p class="lede">How the Executive dashboard derives its figures from the three pillars.</p>
+
+<pre><code><span class="c">HEMP                    HENT                    HECO</span>
+healthXSessions         ventures                fellows
+internships             masterclasses           craHackathons
+missionStudents         hackathons              researchPartnerships
+sieCohorts              mentorships
+ghCohorts               studyTrips
+                        exposureEvents
+    │                       │                       │
+    └───────────────────────┼───────────────────────┘
+                            ▼
+        <span class="g">EXECUTIVE — re-imports the pillar datasets directly</span>
+                            │
+   ┌────────────────────────┼────────────────────────┐
+   ▼                        ▼                        ▼
+Total Beneficiaries    Youth in Work           Jobs Created
+Σ across 8 datasets    count(pathway ∈         Σ ventures.jobsTotal
+                       EMPLOYED ∪ VENTURE)
+
+<span class="d">⚠ The Executive dashboard ALSO has its own parallel datasets:</span>
+<span class="d">  data/executive/{youth-in-work, wage-employment, entrepreneurship,</span>
+<span class="d">                  further-education, outreach, stories}.ts</span>
+<span class="d">  These define their OWN Venture, Gender, Stage types — they do not</span>
+<span class="d">  aggregate the pillar data, they duplicate it.</span></code></pre>
+
+      <div class="callout">
+        <p class="t">The rollup is not a rollup</p>
+        <p>
+          This is the most consequential data finding. The Executive dashboard does <strong>not</strong>
+          consistently aggregate HEMP/HENT/HECO. Its overview page imports the pillar datasets, but its
+          six sub-pages read from <strong>six separate <code>data/executive/*</code> files</strong> that
+          re-declare <code>Venture</code>, <code>Gender</code> and <code>Stage</code> with different
+          fields.
+        </p>
+        <p>
+          <strong>Executive "Entrepreneurs" and HENT "Health Ventures" are computed from different
+          source data.</strong> They can disagree, and nothing in the system would detect it. Any
+          MELA claim of a "single source of truth" is currently false.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 09 ══ -->
+    <section id="s9">
+      <h2><span class="n">09</span> Data relationship map</h2>
+
+<pre><code><span class="c">┌─ RAW DATA ─────────────────────────────────────────────────────┐</span>
+   23 static .ts files · no DB · no API · procedurally generated
+   ventures.ts · masterclasses.ts · hackathons.ts · mentorships.ts
+   study-trips.ts · exposure.ts · hemp/*.ts · heco/cra.ts
+   executive/*.ts  <span class="d">◄ parallel, not derived</span>
+<span class="c">└────────────────────────────┬───────────────────────────────────┘</span>
+                             ▼
+<span class="c">┌─ FILTER (page-local useState) ─────────────────────────────────┐</span>
+   year · gender · country · cohort · sector · stage · programme
+   <span class="d">"All" sentinel = no filter · resets on every navigation</span>
+<span class="c">└────────────────────────────┬───────────────────────────────────┘</span>
+                             ▼
+<span class="c">┌─ CALCULATED METRICS (useMemo, in-browser) ─────────────────────┐</span>
+   count() · sum() · mean() · running total · pct of parent
+   conversion = step[i] / step[i-1]
+<span class="c">└────────────────────────────┬───────────────────────────────────┘</span>
+                             ▼
+<span class="c">┌─ KPI (106) ────────────┬─ CHART (118) ─┬─ TABLE (7) ───────────┐</span>
+   StatCard/StatsKpiCard    Recharts         static divs
+   useCountUp animation     read-only        no sort/export
+<span class="c">└────────────────────────┴───────────────┴───────────────────────┘</span>
+                             ▼
+<span class="c">┌─ EXECUTIVE SUMMARY ────────────────────────────────────────────┐</span>
+   6 headline KPIs — <span class="d">partially re-derived, not aggregated</span>
+<span class="c">└────────────────────────────────────────────────────────────────┘</span>
+
+<span class="d">NOT PRESENT ANYWHERE IN THIS CHAIN:</span>
+<span class="d">  targets · variance · forecast · thresholds · alerts</span>
+<span class="d">  data export · audit trail · indicator ownership · refresh cadence</span></code></pre>
+    </section>
+
+    <!-- ══ 10 ══ -->
+    <section id="s10">
+      <h2><span class="n">10</span> Master data dictionary</h2>
+      <p class="lede">
+        The canonical fields. Columns your brief requested that are constant across every row —
+        <code>Database Field</code> (none), <code>API Endpoint</code> (none),
+        <code>Permissions</code> (all users, view-only) — are stated once rather than repeated.
+      </p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Field</th><th>Definition</th><th>Type</th><th>Source file</th><th>Feeds</th><th>Validation</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">venture.id</td><td>Venture identifier</td><td class="mono">Text</td><td class="mono">ventures.ts</td><td>Drill-down route</td><td class="dim">None</td></tr>
+            <tr><td class="mono">venture.sector</td><td>Health sub-sector</td><td class="mono">Enum</td><td class="mono">ventures.ts</td><td>Sector mix · Capital by sector</td><td class="mono">Sector union</td></tr>
+            <tr><td class="mono">venture.stage</td><td>Expose · Build · Scale</td><td class="mono">Enum</td><td class="mono">ventures.ts</td><td>Stage funnel · Milestone rate</td><td class="mono">Stage union</td></tr>
+            <tr><td class="mono">venture.country</td><td>Country of operation</td><td class="mono">Enum</td><td class="mono">ventures.ts</td><td>Choropleth · Jobs by country</td><td class="mono">Country union</td></tr>
+            <tr><td class="mono">venture.cohort</td><td>Year admitted</td><td class="mono">Integer</td><td class="mono">ventures.ts</td><td>Every HENT trend · "Tracking since"</td><td class="dim">None</td></tr>
+            <tr><td class="mono">venture.funding</td><td>Capital received (USD)</td><td class="mono">Currency</td><td class="mono">ventures.ts</td><td>Capital Deployed · Cumulative</td><td class="dim">None — no ≥ 0 check</td></tr>
+            <tr><td class="mono">venture.jobsTotal</td><td>Jobs created to date</td><td class="mono">Integer</td><td class="mono">ventures.ts</td><td><strong>Jobs Created</strong> (Exec + 3 HENT pages)</td><td class="dim">None</td></tr>
+            <tr><td class="mono">venture.jobsWomen</td><td>Of which held by women</td><td class="mono">Integer</td><td class="mono">ventures.ts</td><td>Gender-disaggregated jobs</td><td class="chip crit">Not checked ≤ jobsTotal</td></tr>
+            <tr><td class="mono">venture.teamGender</td><td>Male · Female · Mixed</td><td class="mono">Enum</td><td class="mono">ventures.ts</td><td>Female-led share</td><td class="mono">TeamGender union</td></tr>
+            <tr><td class="mono">*.gender</td><td>Participant gender</td><td class="mono">Enum</td><td class="mono">5 different files</td><td>Every gender chart</td><td><span class="chip crit">5 conflicting definitions</span></td></tr>
+            <tr><td class="mono">*.year</td><td>Activity year</td><td class="mono">Integer</td><td class="mono">most files</td><td>Every trend chart</td><td class="dim">Hardcoded 2022–2026 range</td></tr>
+            <tr><td class="mono">*.attendees</td><td>Participants at a session</td><td class="mono">Integer</td><td class="mono">masterclasses · healthx</td><td>Reach KPIs</td><td class="dim">None</td></tr>
+            <tr><td class="mono">*.femaleAttendees</td><td>Of which female</td><td class="mono">Integer</td><td class="mono">masterclasses</td><td>Female Reach</td><td class="chip crit">Not checked ≤ attendees</td></tr>
+            <tr><td class="mono">*.completionRate</td><td>% completing</td><td class="mono">Percentage</td><td class="mono">masterclasses · hemp</td><td>Completion KPIs</td><td class="chip warn">0–100 not enforced</td></tr>
+            <tr><td class="mono">*.scores</td><td>Rating per criterion</td><td class="mono">Decimal 1–5</td><td class="mono">masterclasses · mentorships · study-trips</td><td>Radar · heatmap</td><td class="chip warn">Range not enforced</td></tr>
+            <tr><td class="mono">*.bySocial</td><td>MCF Scholars · PWD · Refugee</td><td class="mono">Record&lt;string,int&gt;</td><td class="mono">4 HENT files</td><td>Social Inclusion charts</td><td class="dim">None</td></tr>
+            <tr><td class="mono">story.*</td><td>364 impact stories</td><td class="mono">Text · Enum</td><td class="mono">executive/stories.ts</td><td>Stories page · Leaflet map</td><td class="dim">None</td></tr>
+            <tr><td class="mono">fellow.publicationStage</td><td>Research pipeline stage</td><td class="mono">Enum</td><td class="mono">heco/cra.ts</td><td>Publication funnel</td><td class="mono">PublicationStage union</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">No validation exists anywhere</p>
+        <p>
+          Not one field is validated. Nothing enforces <code>jobsWomen ≤ jobsTotal</code>,
+          <code>femaleAttendees ≤ attendees</code>, <code>0 ≤ completionRate ≤ 100</code>, or
+          <code>1 ≤ score ≤ 5</code>. TypeScript checks the <em>shape</em> at compile time; it cannot
+          check that a number is sane. A typo in a data file yields a chart that renders happily
+          and is wrong.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 11 ══ -->
+    <section id="s11">
+      <h2><span class="n">11</span> Conflicts, duplicates &amp; gaps</h2>
+
+      <h3>Same concept, different names</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Concept</th><th>Names in use</th><th>Recommend</th></tr></thead>
+          <tbody>
+            <tr><td>People reached</td><td>Total Beneficiaries · Total Reach · Total Participants · Participants · Students Reached</td><td class="mono">Total Beneficiaries</td></tr>
+            <tr><td>Female participation</td><td>Female Reach · Female Share · Female Participation · Female · Female-led</td><td class="mono">Female Share (%) + Female Beneficiaries (n)</td></tr>
+            <tr><td>Money out the door</td><td>Capital Deployed · Funds Deployed · Capital Secured · Funding Awarded · Operational Funding</td><td class="mono">Capital Deployed</td></tr>
+            <tr><td>A supported business</td><td>Active Ventures · Active Enterprises · Health Ventures · Ventures Incubated</td><td class="mono">Ventures Supported</td></tr>
+            <tr><td>Programme partner</td><td>Partnerships · Active Partnerships (MOUs Signed) · Partner Projects</td><td class="mono">Active Partnerships</td></tr>
+            <tr><td>A person in the programme</td><td>Participant · Attendee · Fellow · Student · Beneficiary · Intern</td><td class="mono">Participant (with a role enum)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">"Fellows" means two different things</p>
+        <p>
+          <strong>HECO Fellows</strong> are public-sector professionals in the CRA fellowship.
+          <strong>HENT Fellows</strong> (on the Mentorship page) are mentees in a mentorship
+          programme. Same word, different populations, both counted. Any cross-pillar sum of
+          "Fellows" would be nonsense.
+        </p>
+      </div>
+
+      <h3>Missing for a MELA system</h3>
+      <ul class="plain">
+        <li><strong>Targets and variance</strong> — the core of MELA. Absent.</li>
+        <li><strong>Indicator metadata</strong> — no owner, no definition field, no baseline, no data-collection method, no reporting frequency.</li>
+        <li><strong>Disaggregation is inconsistent</strong> — gender is everywhere; age, disability and refugee status appear on only some pages. Equity reporting cannot be done consistently.</li>
+        <li><strong>No data export</strong> — a MELA officer cannot get the numbers out. PNG screenshots only.</li>
+        <li><strong>No date-range filter</strong> — only whole years. Quarterly reporting is impossible.</li>
+        <li><strong>No sub-national geography</strong> — country is the finest grain. No district, no facility.</li>
+        <li><strong>No audit trail</strong> — no record of who changed a figure or when.</li>
+        <li><strong>No data-quality flags</strong> — no "provisional", no "estimated", no "not yet reported".</li>
+        <li><strong>Undefined metric</strong> — <code>Visibility Score</code> ships with no formula.</li>
+      </ul>
+    </section>
+
+    <!-- ══ 12 ══ -->
+    <section id="s12">
+      <h2><span class="n">12</span> Standardisation plan</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>#</th><th>Action</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td><strong>Build an indicator registry.</strong> One table: <code>id · name · definition · formula · unit · baseline · target · frequency · owner · disaggregations</code>. Every KPI card reads from it.</td><td>Turns 106 hardcoded labels into governed indicators. This single change enables targets, variance, ownership and consistent naming at once — it is the highest-value item in this document.</td></tr>
+            <tr><td class="num">2</td><td><strong>Adopt one shared dimension vocabulary.</strong> One <code>Gender</code>, one <code>Country</code>, one <code>Programme</code>, one <code>ParticipantType</code>, in <code>types/</code>.</td><td>Gender is defined 5 times. Cross-pillar aggregation is unsafe until this is fixed.</td></tr>
+            <tr><td class="num">3</td><td><strong>Make Executive a genuine rollup.</strong> Delete the parallel <code>data/executive/*</code> entities; derive every Executive figure from the pillar data.</td><td>Executive and HENT can currently disagree about the same number with nothing detecting it.</td></tr>
+            <tr><td class="num">4</td><td><strong>Rename to the canonical set</strong> in section 11.</td><td>Five names for "people reached" makes every report ambiguous.</td></tr>
+            <tr><td class="num">5</td><td><strong>Add targets + variance</strong> to the registry and render them: actual vs target vs % variance, with <code>benchColor</code> already available to drive the RAG status.</td><td>The mechanism exists; only the data is missing.</td></tr>
+            <tr><td class="num">6</td><td><strong>Add data export</strong> (CSV per chart, plus a full participant roster).</td><td>A MELA officer cannot currently retrieve a single number as data.</td></tr>
+            <tr><td class="num">7</td><td><strong>Add validation at the data boundary</strong> (Zod or equivalent): <code>jobsWomen ≤ jobsTotal</code>, <code>0 ≤ rate ≤ 100</code>, <code>1 ≤ score ≤ 5</code>.</td><td>Nothing is validated today; a bad figure renders as a confident chart.</td></tr>
+            <tr><td class="num">8</td><td><strong>Standardise disaggregation.</strong> Every participant metric should carry gender, age band, disability and displacement status.</td><td>The equity data is the most fundable story CHII has, and it is currently partial.</td></tr>
+            <tr><td class="num">9</td><td><strong>Define or delete <code>Visibility Score</code>.</strong></td><td>An undefined KPI on a leadership dashboard is a liability.</td></tr>
+            <tr><td class="num">10</td><td><strong>Mark partial periods.</strong> 2025–2026 are plotted as if complete.</td><td>Readers cannot distinguish a real decline from an unfinished year.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout good">
+        <p class="t">The good news</p>
+        <p>
+          The presentation layer is ready for all of this. <code>StatCard</code> already accepts a
+          tooltip and a sub-label; <code>benchColor</code> already implements RAG status; the filter
+          components are already shared. An indicator registry could be wired into the existing
+          components without redesigning a single chart.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      Read-only data audit · no source files modified · 106 KPI cards · 118 charts · 7 tables ·
+      14 filter types · 23 datasets · 0 targets · 0 data exports
+    </footer>
+
+  </main>
+</div>

@@ -1,0 +1,1190 @@
+<title>CHII Dashboard — Architecture Audit</title>
+
+<style>
+  :root {
+    --navy:      #102C5E;
+    --section:   #185FA5;
+    --rose:      #D17A86;
+    --green:     #1D9E75;
+    --amber:     #BA7517;
+
+    --ground:    #F8F9FA;
+    --surface:   #FFFFFF;
+    --ink:       #16233A;
+    --muted:     #5A6B84;
+    --faint:     #8695AC;
+    --rule:      rgba(16, 44, 94, 0.11);
+    --rule-firm: rgba(16, 44, 94, 0.22);
+    --wash:      rgba(24, 95, 165, 0.06);
+    --code-bg:   rgba(16, 44, 94, 0.055);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --navy:      #A8C6EC;
+      --section:   #6FAEE4;
+      --rose:      #E29AA4;
+      --green:     #4FC39A;
+      --amber:     #D9A054;
+
+      --ground:    #0C1524;
+      --surface:   #111C2E;
+      --ink:       #E4EAF3;
+      --muted:     #94A5BD;
+      --faint:     #6A7C96;
+      --rule:      rgba(168, 198, 236, 0.14);
+      --rule-firm: rgba(168, 198, 236, 0.28);
+      --wash:      rgba(111, 174, 228, 0.09);
+      --code-bg:   rgba(168, 198, 236, 0.09);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --navy:      #A8C6EC;
+    --section:   #6FAEE4;
+    --rose:      #E29AA4;
+    --green:     #4FC39A;
+    --amber:     #D9A054;
+
+    --ground:    #0C1524;
+    --surface:   #111C2E;
+    --ink:       #E4EAF3;
+    --muted:     #94A5BD;
+    --faint:     #6A7C96;
+    --rule:      rgba(168, 198, 236, 0.14);
+    --rule-firm: rgba(168, 198, 236, 0.28);
+    --wash:      rgba(111, 174, 228, 0.09);
+    --code-bg:   rgba(168, 198, 236, 0.09);
+  }
+
+  :root[data-theme="light"] {
+    --navy:      #102C5E;
+    --section:   #185FA5;
+    --rose:      #D17A86;
+    --green:     #1D9E75;
+    --amber:     #BA7517;
+
+    --ground:    #F8F9FA;
+    --surface:   #FFFFFF;
+    --ink:       #16233A;
+    --muted:     #5A6B84;
+    --faint:     #8695AC;
+    --rule:      rgba(16, 44, 94, 0.11);
+    --rule-firm: rgba(16, 44, 94, 0.22);
+    --wash:      rgba(24, 95, 165, 0.06);
+    --code-bg:   rgba(16, 44, 94, 0.055);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code, .mono, th, .num {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  /* ── Shell ───────────────────────────────────────────────── */
+  .shell {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 48px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 28px 120px;
+  }
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 0 20px 80px; }
+    .rail { display: none; }
+  }
+
+  /* ── Rail ────────────────────────────────────────────────── */
+  .rail {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 40px 0;
+    border-right: 1px solid var(--rule);
+  }
+  .rail-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 0 0 14px;
+  }
+  .rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+  .rail a {
+    display: flex;
+    gap: 9px;
+    padding: 5px 12px 5px 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    padding-left: 12px;
+    transition: color .12s, border-color .12s;
+  }
+  .rail a:hover, .rail a:focus-visible {
+    color: var(--section);
+    border-left-color: var(--section);
+  }
+  .rail a .n {
+    color: var(--faint);
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Masthead ────────────────────────────────────────────── */
+  .masthead { padding: 56px 0 40px; border-bottom: 2px solid var(--navy); }
+  .eyebrow {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--section);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-size: clamp(30px, 4.4vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--navy);
+    text-wrap: balance;
+    font-weight: 700;
+  }
+  .standfirst {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0;
+    max-width: 62ch;
+  }
+
+  /* ── Vitals ──────────────────────────────────────────────── */
+  .vitals {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 32px 0 0;
+  }
+  .vital { background: var(--surface); padding: 15px 16px; }
+  .vital .v {
+    font-family: ui-monospace, monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .vital .k {
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-top: 5px;
+    font-weight: 600;
+  }
+  .vital.zero .v { color: var(--rose); }
+
+  /* ── Sections ────────────────────────────────────────────── */
+  section { padding-top: 52px; scroll-margin-top: 20px; }
+  h2 {
+    font-size: 21px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    color: var(--navy);
+    font-weight: 700;
+    display: flex;
+    align-items: baseline;
+    gap: 11px;
+  }
+  h2 .n {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--section);
+    font-variant-numeric: tabular-nums;
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--section);
+    margin: 34px 0 12px;
+  }
+  .lede { color: var(--muted); margin: 0 0 20px; max-width: 68ch; }
+  p { max-width: 68ch; }
+
+  /* ── Code + trees ────────────────────────────────────────── */
+  code {
+    background: var(--code-bg);
+    padding: 1.5px 5px;
+    border-radius: 3px;
+    font-size: 0.885em;
+    color: var(--navy);
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--section);
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.72;
+    margin: 0 0 20px;
+    color: var(--ink);
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  pre .c { color: var(--faint); }
+  pre .d { color: var(--rose); font-weight: 600; }
+
+  /* ── Tables ──────────────────────────────────────────────── */
+  .scroll { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 540px; }
+  th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--faint);
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rule-firm);
+    white-space: nowrap;
+    background: var(--wash);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono { font-size: 12.5px; color: var(--navy); white-space: nowrap; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dim { color: var(--faint); }
+
+  /* ── Chips ───────────────────────────────────────────────── */
+  .chip {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2.5px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .chip.crit  { background: color-mix(in srgb, var(--rose) 17%, transparent);  color: var(--rose);  }
+  .chip.warn  { background: color-mix(in srgb, var(--amber) 17%, transparent); color: var(--amber); }
+  .chip.ok    { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .chip.info  { background: var(--wash); color: var(--section); }
+
+  /* ── Callout ─────────────────────────────────────────────── */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rose);
+    padding: 16px 18px;
+    margin: 0 0 20px;
+  }
+  .callout.good { border-left-color: var(--green); }
+  .callout .t {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin: 0 0 6px;
+  }
+  .callout.good .t { color: var(--green); }
+  .callout p { margin: 0; font-size: 13.5px; color: var(--muted); max-width: none; }
+  .callout p + p { margin-top: 9px; }
+
+  ul.plain { margin: 0 0 20px; padding-left: 19px; color: var(--muted); }
+  ul.plain li { margin-bottom: 7px; }
+  ul.plain strong { color: var(--ink); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--faint);
+  }
+  a { color: var(--section); }
+
+  /* ── Print: force light, drop the rail, avoid breaking tables ─────────── */
+  @media print {
+    :root {
+      --navy:#102C5E; --section:#185FA5; --rose:#B0505E; --green:#15805F; --amber:#8F5A11;
+      --ground:#FFFFFF; --surface:#FFFFFF; --ink:#111827; --muted:#4B5563; --faint:#6B7280;
+      --rule:rgba(0,0,0,.16); --rule-firm:rgba(0,0,0,.34);
+      --wash:rgba(0,0,0,.04); --code-bg:rgba(0,0,0,.05);
+    }
+    @page { margin: 16mm 14mm; }
+    body { background:#fff; font-size:10.5pt; line-height:1.5; }
+    .shell { display:block; max-width:none; padding:0; }
+    .rail { display:none; }
+    .masthead { padding-top:0; }
+    h1 { font-size:24pt; }
+    h2 { font-size:14pt; page-break-after:avoid; break-after:avoid; }
+    h3 { page-break-after:avoid; break-after:avoid; }
+    section { padding-top:22px; page-break-inside:auto; }
+    .scroll { overflow:visible; page-break-inside:auto; }
+    table { min-width:0; font-size:9pt; }
+    thead { display:table-header-group; }
+    tr { page-break-inside:avoid; break-inside:avoid; }
+    pre { white-space:pre-wrap; word-wrap:break-word; font-size:8.5pt; page-break-inside:avoid; }
+    .callout, .vitals { page-break-inside:avoid; break-inside:avoid; }
+    .chip, .pill { border:1px solid currentColor; }
+    a { color:var(--ink); text-decoration:none; }
+    footer { page-break-inside:avoid; }
+  }
+</style>
+
+
+<div class="shell">
+
+  <!-- ══ RAIL ══════════════════════════════════════════════ -->
+  <nav class="rail" aria-label="Sections">
+    <p class="rail-label">Contents</p>
+    <ol>
+      <li><a href="#s0"><span class="n">00</span> Verdict</a></li>
+      <li><a href="#s1"><span class="n">01</span> Structure</a></li>
+      <li><a href="#s2"><span class="n">02</span> Routes</a></li>
+      <li><a href="#s3"><span class="n">03</span> Components</a></li>
+      <li><a href="#s4"><span class="n">04</span> Layouts</a></li>
+      <li><a href="#s5"><span class="n">05</span> Data architecture</a></li>
+      <li><a href="#s6"><span class="n">06</span> Data dictionary</a></li>
+      <li><a href="#s7"><span class="n">07</span> Forms</a></li>
+      <li><a href="#s8"><span class="n">08</span> APIs</a></li>
+      <li><a href="#s9"><span class="n">09</span> Data models</a></li>
+      <li><a href="#s10"><span class="n">10</span> State</a></li>
+      <li><a href="#s11"><span class="n">11</span> Business logic</a></li>
+      <li><a href="#s12"><span class="n">12</span> Roles</a></li>
+      <li><a href="#s13"><span class="n">13</span> Navigation</a></li>
+      <li><a href="#s14"><span class="n">14</span> Naming audit</a></li>
+      <li><a href="#s15"><span class="n">15</span> Recommendations</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- ══ MASTHEAD ════════════════════════════════════════ -->
+    <header class="masthead">
+      <p class="eyebrow">Architectural audit · read-only</p>
+      <h1>CHII Dashboard</h1>
+      <p class="standfirst">
+        A Next.js 14 App Router application presenting four analytics portals over the CHII
+        programme data. This is a complete inventory of its structure, data and behaviour —
+        the blueprint to refactor against. No code was changed to produce it.
+      </p>
+
+      <div class="vitals">
+        <div class="vital"><div class="v">27</div><div class="k">Routes</div></div>
+        <div class="vital"><div class="v">26</div><div class="k">Components</div></div>
+        <div class="vital"><div class="v">23</div><div class="k">Datasets</div></div>
+        <div class="vital"><div class="v">23.4k</div><div class="k">Lines TS</div></div>
+        <div class="vital zero"><div class="v">0</div><div class="k">API routes</div></div>
+        <div class="vital zero"><div class="v">0</div><div class="k">Auth checks</div></div>
+      </div>
+    </header>
+
+    <!-- ══ 00 VERDICT ══════════════════════════════════════ -->
+    <section id="s0">
+      <h2><span class="n">00</span> The verdict, up front</h2>
+      <p class="lede">
+        Four of your fifteen requested sections describe things this application does not have.
+        That is the single most important finding, and everything else follows from it.
+      </p>
+
+      <div class="callout">
+        <p class="t">There is no backend</p>
+        <p>
+          Zero API routes (<code>route.ts</code>), zero <code>middleware.ts</code>, zero
+          environment variables, no database, no ORM, no schema. Every figure on every chart is
+          computed in the browser from <strong>static TypeScript literals</strong> committed to
+          <code>src/data/</code>. Sections 8 and 9 of your brief — APIs and database models —
+          have nothing to document because nothing exists.
+        </p>
+        <p>
+          This is not necessarily wrong. As a prototype it is fast, versionable and has no
+          infrastructure. But it means the app cannot ingest real programme data without a
+          data layer being built first.
+        </p>
+      </div>
+
+      <div class="callout">
+        <p class="t">There is no authentication</p>
+        <p>
+          The sign-in form calls <code>setTimeout(() =&gt; router.push(target), 600)</code>. It
+          validates nothing, sets no session, issues no token. Credentials are pre-filled in the
+          markup as <code>defaultValue="admin@chii.alu.edu"</code> and
+          <code>defaultValue="password"</code>. Every route is reachable by typing its URL.
+          The "Logout" button is a link to <code>/</code>.
+        </p>
+        <p>
+          <strong>There are no roles and no permissions</strong> — so sections 12 (role matrix)
+          and the auth columns of section 2 are uniformly "none / public". If this is deployed
+          anywhere public, all programme data is public.
+        </p>
+      </div>
+
+      <div class="callout good">
+        <p class="t">What is genuinely healthy</p>
+        <p>
+          The presentation layer is in good shape after the recent standardisation: one shared
+          primitive set, one theme token file, one nav, one footer, per-portal barrels, and a
+          <code>Portal</code> union that makes adding a fifth portal a config change. Type
+          safety is complete — <code>tsc --noEmit</code> passes clean.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 01 STRUCTURE ════════════════════════════════════ -->
+    <section id="s1">
+      <h2><span class="n">01</span> Project structure</h2>
+      <p class="lede">
+        A conventional <code>src/</code> layout with a clean separation between routes,
+        components, data and theme. Annotations mark what is dead or misplaced.
+      </p>
+
+<pre><code>CHII_Dashboard/
+├── next.config.mjs          <span class="c">Redirects only: /impact/* → /executive/*, /hent/fieldvisits → /hent/study-trips</span>
+├── tailwind.config.ts       <span class="c">Tailwind is loaded but most styling is inline `style={{}}`</span>
+├── tsconfig.json            <span class="c">Path alias: @/* → src/*</span>
+├── public/logos/            <span class="c">CHII, ALU, AHC, MCF — all with opaque white backgrounds baked in</span>
+│
+└── src/
+    ├── app/                 <span class="c">ROUTES ONLY (27 pages, 4 layouts)</span>
+    │   ├── layout.tsx       <span class="c">Root: html/body, Inter font, metadata</span>
+    │   ├── page.tsx         <span class="c">Sign-in (the only form in the app)</span>
+    │   ├── error.tsx  ·  global-error.tsx  ·  not-found.tsx
+    │   ├── executive/       <span class="c">8 pages — cross-pillar analytics</span>
+    │   │   └── stories/StoriesMap.tsx   <span class="d">◄ component living in a route dir</span>
+    │   ├── hent/            <span class="c">9 pages — entrepreneurship pillar</span>
+    │   │   ├── providers.tsx            <span class="d">◄ Refine, mounted with a stub data provider</span>
+    │   │   └── ventures/show/[id]/      <span class="c">The ONLY dynamic route in the app</span>
+    │   ├── hemp/            <span class="c">6 pages — employment pillar</span>
+    │   └── heco/            <span class="c">2 pages — ecosystems pillar</span>
+    │
+    ├── components/          <span class="c">All shared UI</span>
+    │   ├── ui/              <span class="c">index.tsx = the primitives; hent/hemp/heco/executive = themed barrels</span>
+    │   │   └── heco.tsx                 <span class="d">◄ 0 importers — HECO pages never adopted it</span>
+    │   ├── charts/          <span class="c">6 reusable chart components</span>
+    │   ├── executive/       <span class="c">5 executive-only compositions</span>
+    │   ├── filters/         <span class="c">filter-popover, filter-select, section-pills</span>
+    │   └── layout/          <span class="c">portal-nav, portal-nav-executive, portal-footer, header-design</span>
+    │
+    ├── data/                <span class="c">THE ENTIRE DATA LAYER — 23 static .ts files</span>
+    │   ├── executive/       <span class="c">6 datasets (moved out of route dirs)</span>
+    │   ├── hemp/  heco/     <span class="c">6 + 1 datasets</span>
+    │   ├── ventures.ts      <span class="c">96 procedurally generated ventures</span>
+    │   └── framework.ts                 <span class="d">◄ 410 lines, 0 importers — DEAD</span>
+    │
+    ├── theme/               <span class="c">tokens.ts (COLORS/CHART/TYPE) + portals.ts (Portal union, PORTAL_THEMES)</span>
+    ├── styles/palette.ts                <span class="d">◄ a SECOND palette, 6 importers — competes with theme/tokens</span>
+    ├── config/navigation.ts <span class="c">PORTAL_NAVS — single source of nav truth</span>
+    ├── hooks/use-theme.ts   <span class="c">Dark-mode toggle (localStorage)</span>
+    ├── lib/
+    │   ├── store.ts         <span class="c">Zustand filter store — used by exactly 1 page</span>
+    │   ├── filter.ts        <span class="c">Used by exactly 1 page</span>
+    │   └── insights.ts                  <span class="d">◄ 0 importers — DEAD</span>
+    └── types/index.ts       <span class="c">Venture, Stage, Sector, Country, GlobalFilters…</span></code></pre>
+
+      <h3>Folder assessment</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Folder</th><th>Purpose</th><th>Verdict</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">app/</td><td>Routes and layouts only</td><td><span class="chip ok">Clean</span> One stray component (<code>StoriesMap.tsx</code>)</td></tr>
+            <tr><td class="mono">components/ui/</td><td>Primitives + per-portal themed barrels</td><td><span class="chip ok">Strong</span> The barrel pattern is the best idea in the codebase</td></tr>
+            <tr><td class="mono">components/charts/</td><td>Reusable chart building blocks</td><td><span class="chip ok">Clean</span></td></tr>
+            <tr><td class="mono">components/executive/</td><td>Executive-only compositions</td><td><span class="chip info">Fine</span> Portal-scoped by design</td></tr>
+            <tr><td class="mono">data/</td><td>Static datasets standing in for a database</td><td><span class="chip warn">Fragile</span> No schema, no validation, duplicated types</td></tr>
+            <tr><td class="mono">theme/</td><td>Design tokens + portal themes</td><td><span class="chip warn">Split</span> <code>styles/palette.ts</code> duplicates its job</td></tr>
+            <tr><td class="mono">lib/</td><td>Store, filter helpers, insights</td><td><span class="chip crit">Mostly dead</span> 1 of 3 files unused; other 2 used once each</td></tr>
+            <tr><td class="mono">types/</td><td>Shared domain types</td><td><span class="chip crit">Bypassed</span> Data files redefine <code>Venture</code>, <code>Gender</code> locally</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Configuration &amp; environment</h3>
+      <ul class="plain">
+        <li><strong>Environment variables: none.</strong> No <code>.env</code>, no <code>process.env</code> reference anywhere in <code>src/</code>. Nothing to configure per-environment — which also means nothing can be.</li>
+        <li><strong>Build config:</strong> <code>next.config.mjs</code> contains <code>reactStrictMode: false</code> and three redirects. No custom webpack, no image config.</li>
+        <li><strong>Unused dependencies:</strong> <code>topojson-client</code> and <code>clsx</code> are in <code>package.json</code> with <strong>zero</strong> imports. <code>@tremor/react</code> and <code>leaflet</code> are each used by exactly one file.</li>
+      </ul>
+    </section>
+
+    <!-- ══ 02 ROUTES ═══════════════════════════════════════ -->
+    <section id="s2">
+      <h2><span class="n">02</span> Routes</h2>
+      <p class="lede">
+        27 pages across four portals. <strong>Every route is public</strong> — no auth guard, no
+        role check, no redirect. The "Auth" and "Roles" columns your brief asked for are
+        uniformly empty, so they are omitted rather than filled with a repeated "none".
+      </p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>URL</th><th>Layout</th><th>Data source</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">/</td><td>root</td><td class="dim">—</td><td>Sign-in. The only form.</td></tr>
+            <tr><td class="mono">/executive</td><td>executive</td><td class="mono">12 datasets</td><td>Cross-pillar overview, all KPIs</td></tr>
+            <tr><td class="mono">/executive/outreach</td><td>executive</td><td class="mono">executive/outreach</td><td>Reach by gender, institution, pillar</td></tr>
+            <tr><td class="mono">/executive/youth-in-work</td><td>executive</td><td class="mono">executive/youth-in-work</td><td>Employment + venture pathways</td></tr>
+            <tr><td class="mono">/executive/wage-employment</td><td>executive</td><td class="mono">executive/wage-employment</td><td>Salaries, roles, sectors</td></tr>
+            <tr><td class="mono">/executive/entrepreneurship</td><td>executive</td><td class="mono">executive/entrepreneurship</td><td>Venture pipeline &amp; funding</td></tr>
+            <tr><td class="mono">/executive/further-education</td><td>executive</td><td class="mono">executive/further-education</td><td>Progression to study</td></tr>
+            <tr><td class="mono">/executive/reports</td><td>executive</td><td class="dim">inline</td><td>Report list. <strong>Downloads are not wired.</strong></td></tr>
+            <tr><td class="mono">/executive/stories</td><td>executive</td><td class="mono">executive/stories</td><td>364 impact stories + Leaflet map</td></tr>
+            <tr><td class="mono">/hent</td><td>hent</td><td class="dim">—</td><td>5-line stub → redirects to overview</td></tr>
+            <tr><td class="mono">/hent/overview</td><td>hent</td><td class="mono">6 datasets</td><td>Pillar overview. <strong>991 lines — largest file.</strong></td></tr>
+            <tr><td class="mono">/hent/ventures</td><td>hent</td><td class="mono">ventures, founders</td><td>Portfolio. Only page using Zustand.</td></tr>
+            <tr><td class="mono">/hent/ventures/show/[id]</td><td>hent</td><td class="mono">ventures</td><td><strong>Only dynamic route.</strong> Uses Tremor.</td></tr>
+            <tr><td class="mono">/hent/venture-funding</td><td>hent</td><td class="mono">ventures</td><td>Capital deployed by cohort</td></tr>
+            <tr><td class="mono">/hent/masterclasses</td><td>hent</td><td class="mono">masterclasses</td><td>Sessions, ratings, attendance</td></tr>
+            <tr><td class="mono">/hent/hackathons</td><td>hent</td><td class="mono">hackathons</td><td>Events, teams, projects</td></tr>
+            <tr><td class="mono">/hent/mentorship</td><td>hent</td><td class="mono">mentorships</td><td>Programmes, mentors, testimonials</td></tr>
+            <tr><td class="mono">/hent/study-trips</td><td>hent</td><td class="mono">study-trips</td><td>Trips. Renamed from "field visits".</td></tr>
+            <tr><td class="mono">/hent/exposure-networking</td><td>hent</td><td class="mono">exposure</td><td>Events, stakeholders</td></tr>
+            <tr><td class="mono">/hemp</td><td>hemp</td><td class="mono">4 datasets</td><td>Employment pillar overview</td></tr>
+            <tr><td class="mono">/hemp/healthx</td><td>hemp</td><td class="mono">hemp/healthx</td><td>HealthX sessions</td></tr>
+            <tr><td class="mono">/hemp/internships</td><td>hemp</td><td class="mono">hemp/internships</td><td>Placements by sector</td></tr>
+            <tr><td class="mono">/hemp/mission-students</td><td>hemp</td><td class="mono">hemp/mission-students</td><td>Tracks, completion, employment</td></tr>
+            <tr><td class="mono">/hemp/sie</td><td>hemp</td><td class="mono">hemp/sie</td><td>Signature Immersive Experience</td></tr>
+            <tr><td class="mono">/hemp/global-health</td><td>hemp</td><td class="mono">hemp/global-health</td><td>Intro to Global Health course</td></tr>
+            <tr><td class="mono">/heco</td><td class="dim">none</td><td class="mono">heco/cra</td><td>Ecosystems overview</td></tr>
+            <tr><td class="mono">/heco/cra</td><td class="dim">none</td><td class="mono">heco/cra</td><td>CRA programme: fellows, hackathons, research</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">Route inconsistencies</p>
+        <p>
+          <strong>HECO has no layout.</strong> HENT, HEMP and Executive each have a
+          <code>layout.tsx</code> mounting their nav; HECO pages import the nav themselves. Adding
+          a third HECO page means remembering to do it again.
+        </p>
+        <p>
+          <strong>HENT is the only portal with a redirect stub.</strong> Its root
+          <code>/hent</code> is a 5-line page pointing at <code>/hent/overview</code>; HEMP and
+          HECO put content at the root directly. Two patterns for the same job.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 03 COMPONENTS ═══════════════════════════════════ -->
+    <section id="s3">
+      <h2><span class="n">03</span> Components</h2>
+      <p class="lede">26 components. The primitive set is shared; the theming is bound per-portal so pages pass no colours.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Component</th><th>Location</th><th>Purpose</th><th>Reuse</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">ChartCard</td><td class="mono">ui/index</td><td>White card, brand header, right-click → PNG</td><td class="num">~60</td></tr>
+            <tr><td class="mono">SectionHeader</td><td class="mono">ui/index</td><td>Rule + uppercase section title</td><td class="num">~50</td></tr>
+            <tr><td class="mono">StatCard</td><td class="mono">ui/index</td><td>Filled KPI tile with count-up</td><td class="num">high</td></tr>
+            <tr><td class="mono">StatsKpiCard</td><td class="mono">ui/stat-kpi-card</td><td><strong>A second KPI card</strong></td><td class="num">15</td></tr>
+            <tr><td class="mono">InfoDot</td><td class="mono">ui/index</td><td>Hover "i" tooltip</td><td class="num">high</td></tr>
+            <tr><td class="mono">Funnel</td><td class="mono">ui/index</td><td>Conversion funnel bars</td><td class="num">low</td></tr>
+            <tr><td class="mono">BarList</td><td class="mono">ui/index</td><td>Horizontal bar list</td><td class="num">med</td></tr>
+            <tr><td class="mono">ChartTip / ChartLegend</td><td class="mono">ui/index</td><td>Recharts tooltip + legend</td><td class="num">high</td></tr>
+            <tr><td class="mono">useCountUp</td><td class="mono">ui/index</td><td>Eased number animation (hook)</td><td class="num">high</td></tr>
+            <tr><td class="mono">createPortalUi</td><td class="mono">ui/create-portal-ui</td><td>Binds primitives to a portal theme</td><td class="num">4</td></tr>
+            <tr><td class="mono">AfricaMap</td><td class="mono">charts/africa-map</td><td>Choropleth, configurable colours</td><td class="num">med</td></tr>
+            <tr><td class="mono">DonutChart</td><td class="mono">charts/donut-chart</td><td>Donut, 314 lines</td><td class="num">med</td></tr>
+            <tr><td class="mono">BulletChart · ProgressRing</td><td class="mono">charts/</td><td>Benchmark + ring gauges</td><td class="num">low</td></tr>
+            <tr><td class="mono">SatisfactionBars · SatisfactionRadar</td><td class="mono">charts/</td><td>Rating displays</td><td class="num">low</td></tr>
+            <tr><td class="mono">AfricaChoropleth</td><td class="mono">executive/</td><td><strong>A second Africa map</strong></td><td class="num">1</td></tr>
+            <tr><td class="mono">StoriesMap</td><td class="mono">app/executive/stories/</td><td>Leaflet map — <strong>in a route dir</strong></td><td class="num">1</td></tr>
+            <tr><td class="mono">DignifiedWork · OutreachAccess<br>ProgramImpactMatrix · ProgramQuality</td><td class="mono">executive/</td><td>Executive page sections</td><td class="num">1 each</td></tr>
+            <tr><td class="mono">PortalNav</td><td class="mono">layout/portal-nav</td><td>Nav for HENT/HEMP/HECO</td><td class="num">3</td></tr>
+            <tr><td class="mono">ImpactNav</td><td class="mono">layout/portal-nav-executive</td><td><strong>A second nav</strong>, for Executive</td><td class="num">1</td></tr>
+            <tr><td class="mono">PortalFooter</td><td class="mono">layout/portal-footer</td><td>Footer for all portals</td><td class="num">high</td></tr>
+            <tr><td class="mono">FilterPopover · FilterSelect<br>InlineFilterSelect · SectionPills</td><td class="mono">filters/</td><td>Filter controls</td><td class="num">high</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Duplicates worth merging</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Pair</th><th>Problem</th><th>Recommendation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">StatCard<br>StatsKpiCard</td>
+              <td>Two KPI tiles with different prop names (<code>value/label/fill</code> vs <code>num/label/Icon</code>). Both render a filled card with a number.</td>
+              <td><span class="chip crit">Merge</span> Keep <code>StatCard</code>; migrate the 15 <code>StatsKpiCard</code> call sites.</td>
+            </tr>
+            <tr>
+              <td class="mono">AfricaMap<br>AfricaChoropleth</td>
+              <td>Two Africa maps, two implementations, both <code>react-simple-maps</code>.</td>
+              <td><span class="chip crit">Merge</span> <code>AfricaMap</code> already takes colour props — absorb the choropleth.</td>
+            </tr>
+            <tr>
+              <td class="mono">PortalNav<br>ImpactNav</td>
+              <td>Executive's nav has a Portals dropdown and its own <code>useTheme</code> copy; otherwise identical structure.</td>
+              <td><span class="chip warn">Merge</span> Make the dropdown an optional prop on <code>PortalNav</code>.</td>
+            </tr>
+            <tr>
+              <td class="mono">StoriesMap</td>
+              <td>Component living in <code>app/executive/stories/</code>.</td>
+              <td><span class="chip warn">Move</span> → <code>components/executive/stories-map.tsx</code></td>
+            </tr>
+            <tr>
+              <td class="mono">ui/heco.tsx</td>
+              <td>Themed barrel with <strong>zero importers</strong> — HECO pages still import raw from <code>@/components/ui</code> and wrap in <code>PortalThemeProvider</code>.</td>
+              <td><span class="chip warn">Adopt or delete</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ 04 LAYOUTS ══════════════════════════════════════ -->
+    <section id="s4">
+      <h2><span class="n">04</span> Layouts</h2>
+      <p class="lede">Four layouts, and one portal that forgot to have one.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Layout</th><th>Wraps</th><th>Provides</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">app/layout.tsx</td><td>Everything</td><td><code>&lt;html&gt;/&lt;body&gt;</code>, Inter font, metadata. No nav — so the sign-in page is chrome-free.</td></tr>
+            <tr><td class="mono">app/executive/layout.tsx</td><td>8 executive pages</td><td><code>ImpactNav</code></td></tr>
+            <tr><td class="mono">app/hent/layout.tsx</td><td>9 HENT pages</td><td><code>PortalNav portal="hent"</code> + Refine provider</td></tr>
+            <tr><td class="mono">app/hemp/layout.tsx</td><td>6 HEMP pages</td><td><code>PortalNav portal="hemp"</code> + Refine provider</td></tr>
+            <tr><td class="mono">heco</td><td class="dim">— none —</td><td><span class="chip crit">Missing</span> Each HECO page mounts its own nav</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <strong>Interaction:</strong> root layout → portal layout → page. The nav is sticky at
+        <code>z-50</code>; the footer is rendered <em>by each page</em> rather than by the layout,
+        which is why some pages have one and others do not. Moving <code>PortalFooter</code> into
+        the portal layouts would fix that class of bug permanently.
+      </p>
+    </section>
+
+    <!-- ══ 05 DATA ARCHITECTURE ════════════════════════════ -->
+    <section id="s5">
+      <h2><span class="n">05</span> Data architecture</h2>
+      <p class="lede">
+        23 TypeScript modules exporting frozen literals. There is no persistence, no fetching and
+        no mutation anywhere in the application — data flows in exactly one direction.
+      </p>
+
+<pre><code><span class="c">Static .ts literal  →  import  →  useMemo(filter + aggregate)  →  Recharts / StatCard</span>
+                                        ▲
+                                   useState filters
+                                   (per page, never shared)</code></pre>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Entity</th><th>File</th><th>Volume</th><th>Key fields</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">Venture</td><td class="mono">data/ventures.ts</td><td class="num">96</td><td>id, name, sector, stage, country, cohort, funding, jobsTotal, jobs6m, jobsWomen, teamGender, status</td></tr>
+            <tr><td class="mono">Founder</td><td class="mono">data/founders.ts</td><td class="num">—</td><td>id, name, gender, venture, programme events</td></tr>
+            <tr><td class="mono">Masterclass</td><td class="mono">data/masterclasses.ts</td><td class="num">~14</td><td>id, topic, year, month, attendees, femaleAttendees, completionRate, scores, byAge, byRegion, byStage, bySocial</td></tr>
+            <tr><td class="mono">Hackathon</td><td class="mono">data/hackathons.ts</td><td class="num">~10</td><td>id, name, year, location, teams, projects, category</td></tr>
+            <tr><td class="mono">MentorshipProgram</td><td class="mono">data/mentorships.ts</td><td class="num">~8</td><td>id, type, year, mentors, mentees, criteria scores, testimonials</td></tr>
+            <tr><td class="mono">StudyTrip</td><td class="mono">data/study-trips.ts</td><td class="num">~10</td><td>id, type, year, month, region, participants, criteria</td></tr>
+            <tr><td class="mono">ExposureEvent</td><td class="mono">data/exposure.ts</td><td class="num">18</td><td>id, name, year, type, stakeholderGroups</td></tr>
+            <tr><td class="mono">MissionStudent</td><td class="mono">data/hemp/mission-students.ts</td><td class="num">—</td><td>id, track, cohort, completionStatus, employmentStatus</td></tr>
+            <tr><td class="mono">Internship</td><td class="mono">data/hemp/internships.ts</td><td class="num">—</td><td>id, sector, cohort, year, org</td></tr>
+            <tr><td class="mono">HealthXSession</td><td class="mono">data/hemp/healthx.ts</td><td class="num">—</td><td>id, type, orgType, year, month, attendees</td></tr>
+            <tr><td class="mono">SieCohort · SieSiteVisit</td><td class="mono">data/hemp/sie.ts</td><td class="num">3 · 27</td><td>phase, activity, exposureArea, discipline</td></tr>
+            <tr><td class="mono">GHCohort</td><td class="mono">data/hemp/global-health.ts</td><td class="num">5</td><td>module, programme, enrolment</td></tr>
+            <tr><td class="mono">Fellow · CraHackathon<br>ResearchPartnership</td><td class="mono">data/heco/cra.ts</td><td class="num">20 · 6 · 12</td><td>pillar, support, execRole, publicationStage, theme, partnershipType</td></tr>
+            <tr><td class="mono">Story</td><td class="mono">data/executive/stories.ts</td><td class="num">364</td><td>type, programme, missionArea, nationality, gender, disability</td></tr>
+            <tr><td class="mono">Youth · Worker<br>OutreachParticipant · FeStudent</td><td class="mono">data/executive/*</td><td class="num">—</td><td>gender, pathway, employmentType, salary, cohort, country</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p class="t">The data is synthetic</p>
+        <p>
+          <code>ventures.ts</code> ends with
+          <code>Array.from({ length: 96 }, (_, i) =&gt; buildVenture(i))</code> — the portfolio is
+          <em>procedurally generated</em>, not recorded. The HEMP SIE / HealthX-careers /
+          global-health and HECO CRA datasets were authored as plausible fiction, as were the two
+          2022 masterclasses added to make that timeline start in 2022.
+        </p>
+        <p>
+          Every number this application displays is currently invented. That is fine for a
+          prototype and dangerous in front of a funder.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 06 DATA DICTIONARY ══════════════════════════════ -->
+    <section id="s6">
+      <h2><span class="n">06</span> Master data dictionary</h2>
+      <p class="lede">
+        Every data point, by module. <strong>Source</strong> is <code>static</code> for all of them
+        except the sign-in fields — nothing in this application is collected from a user, fetched,
+        or stored. "Displayed" and "computed" are the only two modes.
+      </p>
+
+      <h3>Venture (HENT — the richest entity)</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Computed into</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">id</td><td class="mono">string</td><td>Row key; <code>/hent/ventures/show/[id]</code></td></tr>
+            <tr><td class="mono">name</td><td class="mono">string</td><td>Portfolio table, detail page</td></tr>
+            <tr><td class="mono">sector</td><td class="mono">Sector</td><td>Sector mix donut</td></tr>
+            <tr><td class="mono">stage</td><td class="mono">Stage</td><td>Stage funnel, capital-by-milestone</td></tr>
+            <tr><td class="mono">country</td><td class="mono">Country</td><td>Africa choropleth; <code>Countries reached</code></td></tr>
+            <tr><td class="mono">cohort</td><td class="mono">number</td><td>Year axis on every HENT trend; drives "tracking since"</td></tr>
+            <tr><td class="mono">funding</td><td class="mono">number</td><td>Capital deployed, cumulative funding line</td></tr>
+            <tr><td class="mono">fundingStatus</td><td class="mono">FundingStatus</td><td>Funded vs unfunded split</td></tr>
+            <tr><td class="mono">jobsTotal</td><td class="mono">number</td><td>Jobs created KPI (summed across portfolio)</td></tr>
+            <tr><td class="mono">jobs6m</td><td class="mono">number</td><td>Recent job velocity</td></tr>
+            <tr><td class="mono">jobsWomen</td><td class="mono">number</td><td>Gender-disaggregated jobs</td></tr>
+            <tr><td class="mono">teamGender</td><td class="mono">TeamGender</td><td>Female-led venture share</td></tr>
+            <tr><td class="mono">status</td><td class="mono">VentureStatus</td><td>Active / Dormant / Stalled</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cross-cutting dimensions (the filter vocabulary)</h3>
+      <p>
+        These recur across nearly every module and are what the filters actually operate on:
+        <code>gender</code>, <code>year</code> / <code>cohort</code>, <code>country</code>,
+        <code>sector</code>, <code>stage</code>, <code>programme</code>,
+        <code>participantType</code>, <code>employmentType</code>, and the social-inclusion flags
+        (<code>MCF Scholars</code>, <code>PWD</code>, <code>Refugee-Displaced</code>).
+      </p>
+
+      <div class="callout">
+        <p class="t">The dimensions are defined 5 times over</p>
+        <p>
+          <code>Gender</code> is declared as a type in <strong>5 separate data files</strong>;
+          <code>GENDERS</code> as a const in <strong>6</strong>. <code>Venture</code> is declared
+          <strong>3 times</strong> (<code>types/index.ts</code>,
+          <code>executive/entrepreneurship.ts</code>, <code>executive/youth-in-work.ts</code>) with
+          <em>different fields each time</em>. <code>COUNTRIES</code> exists in 4 files.
+        </p>
+        <p>
+          A gender category added to one module silently fails to appear in the others. This is
+          the highest-value fix in the codebase.
+        </p>
+      </div>
+
+      <h3>Executive KPIs (all computed, none stored)</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>KPI</th><th>Derived from</th></tr></thead>
+          <tbody>
+            <tr><td>Total Beneficiaries</td><td>Sum across healthX + internships + missionStudents + hackathons + masterclasses + studyTrips + mentorships + ventures</td></tr>
+            <tr><td>Youth in Work</td><td>Employment or enterprise within 12 months of completion</td></tr>
+            <tr><td>Wage Employment</td><td>Paid employment, formal and informal</td></tr>
+            <tr><td>Entrepreneurs</td><td>Running own enterprise</td></tr>
+            <tr><td>Jobs Created</td><td><code>Σ ventures.jobsTotal</code></td></tr>
+            <tr><td>Further Education</td><td>Progressed to advanced study</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ 07 FORMS ════════════════════════════════════════ -->
+    <section id="s7">
+      <h2><span class="n">07</span> Forms</h2>
+      <p class="lede">There is exactly one <code>&lt;form&gt;</code> element in the entire application.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Aspect</th><th>Sign-in — <code>app/page.tsx</code></th></tr></thead>
+          <tbody>
+            <tr><td>Fields</td><td><code>portal</code> (select), <code>email</code>, <code>password</code>, <code>remember</code> (checkbox)</td></tr>
+            <tr><td>Validation</td><td><span class="chip crit">None</span> Not even <code>required</code>. Empty submit succeeds.</td></tr>
+            <tr><td>Endpoint</td><td><span class="chip crit">None</span> No network call is made.</td></tr>
+            <tr><td>Submission</td><td><code>setTimeout(() =&gt; router.push(PORTAL_ROUTES[portal]), 600)</code> — a cosmetic 600 ms spinner, then navigate.</td></tr>
+            <tr><td>Success flow</td><td>Redirect to the selected portal. Email and password are ignored entirely.</td></tr>
+            <tr><td>Error handling</td><td><span class="chip crit">None</span> No failure path exists.</td></tr>
+            <tr><td>Credentials</td><td><code>defaultValue="admin@chii.alu.edu"</code> / <code>defaultValue="password"</code> — hardcoded into the markup.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ 08 APIS ═════════════════════════════════════════ -->
+    <section id="s8">
+      <h2><span class="n">08</span> APIs</h2>
+      <div class="callout">
+        <p class="t">None exist</p>
+        <p>
+          No <code>route.ts</code> anywhere under <code>src/app/</code>. No <code>fetch</code>,
+          no <code>axios</code>, no server actions, no <code>middleware.ts</code>. The application
+          makes <strong>zero network requests</strong> after the initial page load.
+        </p>
+        <p>
+          The one thing that <em>looks</em> like a data layer is a trap: <code>hent/providers.tsx</code>
+          and <code>hemp/providers.tsx</code> mount <strong>Refine</strong> with a stub provider whose
+          every method returns empty —
+          <code>getList: async () =&gt; ({ data: [], total: 0 })</code>. Refine is a 2-dependency,
+          fully-wired admin framework that is currently doing nothing at all. Either build on it or
+          remove it.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 09 MODELS ═══════════════════════════════════════ -->
+    <section id="s9">
+      <h2><span class="n">09</span> Database &amp; data models</h2>
+      <div class="callout">
+        <p class="t">No database, no ORM, no schema</p>
+        <p>
+          No Prisma, no Drizzle, no SQL, no migrations, no connection string. The "models" are
+          TypeScript <code>interface</code> declarations colocated with the literals they type.
+        </p>
+        <p>
+          <strong>Relationships are implicit and unenforced.</strong> A <code>Founder</code> holds a
+          venture name as a string; a <code>Story</code> holds a programme name as a string. Nothing
+          validates that the referenced entity exists — there are no foreign keys, so a typo in a
+          data file produces a silently empty chart rather than an error.
+        </p>
+      </div>
+
+      <h3>Enums that exist (as union types in <code>types/index.ts</code>)</h3>
+      <p>
+        <code>Stage</code>, <code>Sector</code>, <code>VentureStatus</code>,
+        <code>FundingStatus</code>, <code>TeamGender</code>, <code>Country</code>,
+        <code>InterventionType</code>, <code>FrameworkLevel</code>. These are the <em>intended</em>
+        shared vocabulary — but as section 6 shows, the data files largely bypass them.
+      </p>
+    </section>
+
+    <!-- ══ 10 STATE ════════════════════════════════════════ -->
+    <section id="s10">
+      <h2><span class="n">10</span> State management</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Mechanism</th><th>Where</th><th>Holds</th><th>Assessment</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">useState</td><td>Every page</td>
+              <td>Filter selections, active section, hover, popover open</td>
+              <td><span class="chip info">Dominant</span> Local to each page, never shared</td>
+            </tr>
+            <tr>
+              <td class="mono">useMemo</td><td>Every page</td>
+              <td>All derived aggregates — every chart series</td>
+              <td><span class="chip ok">Correct</span> Recomputed on filter change</td>
+            </tr>
+            <tr>
+              <td class="mono">React Context</td><td><code>PortalThemeProvider</code></td>
+              <td>The active portal's theme</td>
+              <td><span class="chip ok">Good</span> Keeps colours out of call sites</td>
+            </tr>
+            <tr>
+              <td class="mono">Zustand</td><td><code>lib/store.ts</code></td>
+              <td><code>GlobalFilters</code>: cohort, sector, country, interventionType, fundingStatus, stage</td>
+              <td><span class="chip warn">Vestigial</span> Used by <strong>one page</strong>. Named "global", isn't.</td>
+            </tr>
+            <tr>
+              <td class="mono">localStorage</td><td><code>hooks/use-theme.ts</code></td>
+              <td>Dark-mode preference</td>
+              <td><span class="chip ok">Fine</span></td>
+            </tr>
+            <tr>
+              <td class="mono">Server state</td><td class="dim">—</td>
+              <td class="dim">None. No fetching, no cache, no revalidation.</td>
+              <td><span class="chip crit">Absent</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The consequence: <strong>filters do not survive navigation</strong>. Selecting 2024 + Rwanda
+        on HENT Overview and clicking through to Masterclasses resets everything. Every page
+        re-implements its own filter state from scratch — which is also why <code>FilterSelect</code>
+        had been copy-pasted into 15 files.
+      </p>
+    </section>
+
+    <!-- ══ 11 BUSINESS LOGIC ═══════════════════════════════ -->
+    <section id="s11">
+      <h2><span class="n">11</span> Business logic</h2>
+      <p class="lede">
+        All business logic is <em>presentational</em> — it decides how a number is coloured or
+        bucketed, never what may happen. There are no workflows, no status transitions and no
+        approvals in the codebase.
+      </p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Rule</th><th>Where</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>Benchmark colouring</td><td class="mono">theme/tokens.ts → benchColor()</td><td>Maps a percentage against a target to green / amber / red. The one genuinely shared rule.</td></tr>
+            <tr><td>Active-nav resolution</td><td class="mono">portal-nav → resolveActiveHref()</td><td>Longest matching href wins, so nested routes don't light up the root tab.</td></tr>
+            <tr><td>Conversion rates</td><td class="mono">ui/index → Funnel</td><td><code>step[i] / step[i-1] × 100</code>; bars scaled against the largest step.</td></tr>
+            <tr><td>Count-up animation</td><td class="mono">ui/index → useCountUp</td><td>Cubic ease-out over 750 ms.</td></tr>
+            <tr><td>Filter application</td><td class="mono">each page's useMemo</td><td><code>"All"</code> sentinel means no filter. Re-implemented per page.</td></tr>
+            <tr><td>Salary banding<br>Age banding<br>Region grouping</td><td class="mono">scattered in data files</td><td>Bucket boundaries are hardcoded inside individual datasets — not shared, not documented.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ 12 ROLES ════════════════════════════════════════ -->
+    <section id="s12">
+      <h2><span class="n">12</span> Roles &amp; permissions</h2>
+      <div class="callout">
+        <p class="t">The role matrix is empty</p>
+        <p>
+          There is <strong>one role: anonymous</strong>, and it can reach everything. No role
+          field, no permission check, no conditional rendering based on identity, no protected
+          route, no redirect for unauthenticated users.
+        </p>
+        <p>
+          The Portal selector on the sign-in page <em>looks</em> like an access control — pick HENT,
+          land on HENT. It is not. It is a navigation convenience: choosing "HENT" and then typing
+          <code>/executive</code> works exactly as well.
+        </p>
+      </div>
+
+      <p>
+        If roles are coming, the natural seams already exist: the <code>Portal</code> union in
+        <code>theme/portals.ts</code> and <code>PORTAL_NAVS</code> in <code>config/navigation.ts</code>
+        are the obvious places to attach a permission list, and the portal layouts are where a guard
+        would sit.
+      </p>
+    </section>
+
+    <!-- ══ 13 NAVIGATION ═══════════════════════════════════ -->
+    <section id="s13">
+      <h2><span class="n">13</span> Navigation map</h2>
+
+<pre><code>/  <span class="c">Sign-in — portal selector, no auth</span>
+│
+├─ EXECUTIVE  <span class="c">/executive — navy · nav has a Portals dropdown (the only cross-portal link)</span>
+│  ├─ Outreach              /executive/outreach
+│  ├─ Youth in Work         /executive/youth-in-work
+│  ├─ Wage Employment       /executive/wage-employment
+│  ├─ Entrepreneurship      /executive/entrepreneurship
+│  ├─ Further Education     /executive/further-education
+│  ├─ Impact Reports        /executive/reports          <span class="c">downloads not wired</span>
+│  └─ Impact Stories        /executive/stories
+│
+├─ HENT  <span class="c">/hent → /hent/overview — green</span>
+│  ├─ Overview              /hent/overview
+│  ├─ Ventures              /hent/ventures
+│  │   └─ Detail            /hent/ventures/show/[id]    <span class="c">only dynamic route</span>
+│  ├─ Venture Funding       /hent/venture-funding
+│  ├─ Masterclasses         /hent/masterclasses
+│  ├─ Hackathons            /hent/hackathons
+│  ├─ Mentorship            /hent/mentorship
+│  ├─ Study Trips           /hent/study-trips           <span class="c">301 from /hent/fieldvisits</span>
+│  └─ Exposure &amp; Networking /hent/exposure-networking
+│
+├─ HEMP  <span class="c">/hemp — navy</span>
+│  ├─ HealthX               /hemp/healthx
+│  ├─ Internships           /hemp/internships
+│  ├─ Mission Students      /hemp/mission-students
+│  ├─ SIE                   /hemp/sie
+│  └─ Intro to Global Health /hemp/global-health
+│
+└─ HECO  <span class="c">/heco — navy · no layout</span>
+   └─ CRA                   /heco/cra
+
+<span class="d">Dead end:</span> Logout (every nav) → / — a plain link. No session to clear.
+<span class="d">Dead end:</span> HENT/HEMP/HECO navs have NO link to any other portal. Only
+           Executive can navigate across pillars.</code></pre>
+
+      <div class="callout">
+        <p class="t">The graph is not strongly connected</p>
+        <p>
+          Since the "HENT PORTAL" buttons were removed, a user inside HENT has no way to reach
+          HEMP, HECO or Executive except by signing out or editing the URL. Executive's Portals
+          dropdown is now the only cross-portal edge in the entire navigation graph, and it points
+          one way.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 14 NAMING ═══════════════════════════════════════ -->
+    <section id="s14">
+      <h2><span class="n">14</span> Naming audit</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Issue</th><th>Evidence</th><th>Severity</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>One concept, many types</td>
+              <td><code>Gender</code> ×5 · <code>Venture</code> ×3 · <code>Stage</code> ×2 · <code>ParticipantType</code> ×2 · <code>OrgType</code> ×2 · <code>EmploymentType</code> ×2</td>
+              <td><span class="chip crit">Critical</span></td>
+            </tr>
+            <tr>
+              <td>One concept, many consts</td>
+              <td><code>GENDERS</code> ×6 · <code>COUNTRIES</code> ×4 · <code>YEARS</code> ×3 · <code>SECTORS</code> ×3 · <code>PROGRAMS</code> ×3</td>
+              <td><span class="chip crit">Critical</span></td>
+            </tr>
+            <tr>
+              <td>Two palettes</td>
+              <td><code>theme/tokens.ts → COLORS</code> (14 importers) vs <code>styles/palette.ts → PALETTE</code> (6 importers)</td>
+              <td><span class="chip crit">Critical</span></td>
+            </tr>
+            <tr>
+              <td>Component named for a dead concept</td>
+              <td><code>portal-nav-executive.tsx</code> still exports <code>ImpactNav</code> and <code>IMPACT_TABS</code>; the portal was renamed to Executive.</td>
+              <td><span class="chip warn">Medium</span></td>
+            </tr>
+            <tr>
+              <td>Two KPI cards</td>
+              <td><code>StatCard</code> (<code>value/label/fill</code>) vs <code>StatsKpiCard</code> (<code>num/label/Icon</code>)</td>
+              <td><span class="chip warn">Medium</span></td>
+            </tr>
+            <tr>
+              <td>Misleading name</td>
+              <td><code>GlobalFilters</code> / <code>useFilterStore</code> — global in name, used by one page</td>
+              <td><span class="chip warn">Medium</span></td>
+            </tr>
+            <tr>
+              <td>US/UK spelling mix</td>
+              <td><code>PROGRAMS</code> (data) vs "Programme" (all UI copy)</td>
+              <td><span class="chip info">Low</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Recommended convention</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Kind</th><th>Convention</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Files</td><td>kebab-case</td><td class="mono">portal-nav.tsx · study-trips.ts</td></tr>
+            <tr><td>Components</td><td>PascalCase, noun</td><td class="mono">ChartCard · PortalNav</td></tr>
+            <tr><td>Hooks</td><td>camelCase, <code>use</code> prefix</td><td class="mono">useCountUp · usePortalTheme</td></tr>
+            <tr><td>Types &amp; interfaces</td><td>PascalCase, singular</td><td class="mono">Venture · Portal</td></tr>
+            <tr><td>Const collections</td><td>SCREAMING_SNAKE, plural</td><td class="mono">PORTAL_NAVS · SECTORS</td></tr>
+            <tr><td>Data exports</td><td>camelCase, plural</td><td class="mono">ventures · studyTrips</td></tr>
+            <tr><td>Domain spelling</td><td>UK English throughout, to match the UI</td><td class="mono">PROGRAMMES, not PROGRAMS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ 15 RECOMMENDATIONS ══════════════════════════════ -->
+    <section id="s15">
+      <h2><span class="n">15</span> Recommendations</h2>
+      <p class="lede">Ordered by value, not by effort. The first two are the only ones that change what the application <em>is</em>.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>#</th><th>Action</th><th>Why it matters</th><th>Size</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td><strong>Decide what this app is.</strong> Either commit to it as a static prototype and delete Refine, or build the data layer it is pretending to have.</td>
+              <td>Everything downstream depends on this. Right now it is neither, and the Refine stub is a promise the codebase does not keep.</td>
+              <td><span class="chip crit">Fundamental</span></td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td><strong>Add real authentication</strong> — or state explicitly that this is public. Hardcoded credentials in <code>defaultValue</code> should not survive a deploy.</td>
+              <td>Every route is currently open. If programme data is sensitive, it is not protected.</td>
+              <td><span class="chip crit">Critical</span></td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td><strong>Unify the domain vocabulary.</strong> One <code>Gender</code>, one <code>Venture</code>, one <code>COUNTRIES</code>, in <code>types/</code>; have every data file import them.</td>
+              <td>Kills a whole class of silent bug where a new category appears in one chart and not another.</td>
+              <td><span class="chip warn">Large</span></td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td><strong>Replace the synthetic data</strong> with real programme figures.</td>
+              <td>Every number displayed is currently invented. This is a data task, not a code task — the structure is ready.</td>
+              <td><span class="chip warn">Large</span></td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td><strong>Delete the dead code.</strong> <code>lib/insights.ts</code> (0 importers), <code>data/framework.ts</code> (410 lines, 0 importers), <code>components/ui/heco.tsx</code> (0 importers), and the unused <code>topojson-client</code> / <code>clsx</code> dependencies.</td>
+              <td>Free. Nothing references any of it.</td>
+              <td><span class="chip ok">Small</span></td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td><strong>Collapse the second palette.</strong> Fold <code>styles/palette.ts</code> into <code>theme/tokens.ts</code>.</td>
+              <td>Two sources of colour truth means colours drift apart over time.</td>
+              <td><span class="chip ok">Small</span></td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td><strong>Merge the duplicate pairs:</strong> <code>StatCard</code>/<code>StatsKpiCard</code>, <code>AfricaMap</code>/<code>AfricaChoropleth</code>, <code>PortalNav</code>/<code>ImpactNav</code>.</td>
+              <td>Three concepts with two implementations each.</td>
+              <td><span class="chip warn">Medium</span></td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td><strong>Give HECO a layout</strong> and move <code>PortalFooter</code> into all four portal layouts.</td>
+              <td>Stops "I forgot the footer" bugs permanently.</td>
+              <td><span class="chip ok">Small</span></td>
+            </tr>
+            <tr>
+              <td class="num">9</td>
+              <td><strong>Restore cross-portal navigation.</strong> HENT, HEMP and HECO currently have no link to anywhere else.</td>
+              <td>Users are stranded inside a pillar.</td>
+              <td><span class="chip ok">Small</span></td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td><strong>Break up the giant pages.</strong> Six page files exceed 700 lines; <code>hent/overview</code> is 991.</td>
+              <td>Each one mixes data shaping, filter state and ~10 chart definitions in a single component.</td>
+              <td><span class="chip warn">Medium</span></td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td><strong>Either use the Zustand store everywhere or delete it.</strong> Lift filters into it so they survive navigation.</td>
+              <td><code>GlobalFilters</code> is used by one page. Shared filters would be a genuine UX win.</td>
+              <td><span class="chip warn">Medium</span></td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td><strong>Wire the report downloads</strong> on <code>/executive/reports</code>, or remove the buttons.</td>
+              <td>Controls that do nothing erode trust in the whole dashboard.</td>
+              <td><span class="chip ok">Small</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      Read-only audit · no source files were modified · CHII Dashboard, Next.js 14.2.29 App Router ·
+      27 routes · 26 components · 23 datasets · 23,432 lines of TypeScript
+    </footer>
+
+  </main>
+</div>
