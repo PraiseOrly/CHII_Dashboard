@@ -1,9 +1,11 @@
+import type { Gender } from "@/types";
+export type { Gender };
+export { GENDERS } from "@/types";
 /* ════════════════════════════════════════════════════════
    Further Education — synthetic dataset
    Deterministic (seeded) so SSR and CSR render identically.
 ═══════════════════════════════════════════════════════ */
 
-export type Gender = "Female" | "Male" | "Other";
 
 export interface FeStudent {
   id: number;
@@ -21,7 +23,6 @@ export interface FeStudent {
   active: boolean;             // currently enrolled this cycle
 }
 
-export const GENDERS: Gender[] = ["Female", "Male", "Other"];
 export const QUALIFICATIONS = ["Bachelor's top-up", "Postgraduate diploma", "Master's", "Doctorate", "Professional cert"];
 export const FIELDS = ["Business & Management", "Engineering & Tech", "Public Health / Policy", "Education", "Sciences", "Arts / Other"];
 export const FUNDING_SOURCES = ["Scholarship / funded", "Self-funded", "Employer", "Loan"];
@@ -65,7 +66,7 @@ function build(n: number): FeStudent[] {
     const studyOpts = STUDY_COUNTRIES[destination];
     out.push({
       id: i + 1,
-      gender: pick<Gender>(r, [["Female", 0.59], ["Male", 0.38], ["Other", 0.03]]),
+      gender: pick<Gender>(r, [["Female", 0.59], ["Male", 0.38], ["Non-binary", 0.03]]),
       scholar: r() < 0.55,
       country: pick<string>(r, [
         ["Rwanda", 0.22], ["Kenya", 0.18], ["Nigeria", 0.15], ["Ghana", 0.1],

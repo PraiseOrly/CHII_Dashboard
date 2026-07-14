@@ -26,7 +26,7 @@ const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
 const PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E", "#D17A86", "#C5D2E0"];
-const GENDER_COLOR: Record<string, string> = { Female: "#102C5E", Male: "#479BD6", Other: "#D45F2C" };
+const GENDER_COLOR: Record<string, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
 const C_ACCENT = "#102C5E";
 const FUNDING_COLOR: Record<string, string> = {
   "Scholarship / funded": "#102C5E", "Self-funded": "#479BD6", "Employer": "#D45F2C", "Loan": "#A81B2D",
@@ -412,7 +412,7 @@ export default function FurtherEducationPage() {
             <MiniKpi center Icon={Globe} label="Countries Represented" value={fmt(d.countriesRepresented)} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Gender Distribution" subtitle="Female · Male · Other"
+            <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary"
               info="Gender distribution of graduates in further education.">
               <Donut data={d.genderData} colors={GENDER_COLOR} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>

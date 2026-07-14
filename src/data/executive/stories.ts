@@ -1,3 +1,4 @@
+export { GENDERS } from "@/types";
 /* ════════════════════════════════════════════════════════
    Impact Stories — synthetic dataset
 ═══════════════════════════════════════════════════════ */
@@ -26,7 +27,6 @@ export const MISSION_AREAS = ["Digital Health", "MedTech", "Biotech & Pharma", "
 export const HUMANITARIAN = ["Refugee", "Asylum Seeker", "Internally Displaced Person (IDP)", "None"];
 export const NATIONALITIES = ["Rwanda", "Kenya", "Nigeria", "Ghana", "South Africa", "Uganda", "Ethiopia", "Senegal", "Zimbabwe", "DR Congo"];
 export const DISABILITY = ["Yes", "None"];
-export const GENDERS = ["Female", "Male", "Other"];
 
 export const STORIES: Story[] = [
   { id: 1, name: "Peter Mwangi", type: "Video story", program: "BSc Software Eng", missionArea: "Digital Health", humanitarianStatus: "None", nationality: "Kenya", disabilityStatus: "None", gender: "Male", location: "Nairobi, Kenya", lat: -1.2921, lng: 36.8219, body: "Peter built an edtech platform reaching 12,000 learners across East Africa.", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
@@ -46,7 +46,7 @@ export const STORIES: Story[] = [
   { id: 15, name: "Aisha Bello", type: "Video story", program: "Computer Science", missionArea: "Digital Health", humanitarianStatus: "None", nationality: "Nigeria", disabilityStatus: "Yes", gender: "Female", location: "Kano, Nigeria", lat: 12.0022, lng: 8.5920, body: "Aisha builds screen-reader-friendly learning tools for blind students.", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
   { id: 16, name: "Brian Otieno", type: "Text story", program: "Global Challenges", missionArea: "Maternal Health", humanitarianStatus: "None", nationality: "Kenya", disabilityStatus: "None", gender: "Male", location: "Kisumu, Kenya", lat: -0.0917, lng: 34.7680, body: "Brian's agritech reduces post-harvest losses for lakeside farmers." },
   { id: 17, name: "Sarah Niyonsaba", type: "Text story", program: "Entrepreneurial Leadership", missionArea: "Public Health & Accessibility", humanitarianStatus: "Internally Displaced Person (IDP)", nationality: "Rwanda", disabilityStatus: "None", gender: "Female", location: "Huye, Rwanda", lat: -2.5967, lng: 29.7392, body: "Sarah runs a community pharmacy network in underserved districts." },
-  { id: 18, name: "Tariro Moyo", type: "Text story", program: "BSc Software Eng", missionArea: "MedTech", humanitarianStatus: "None", nationality: "Zimbabwe", disabilityStatus: "None", gender: "Other", location: "Bulawayo, Zimbabwe", lat: -20.1325, lng: 28.6265, body: "Tariro created a digital wallet for cross-border informal trade." },
+  { id: 18, name: "Tariro Moyo", type: "Text story", program: "BSc Software Eng", missionArea: "MedTech", humanitarianStatus: "None", nationality: "Zimbabwe", disabilityStatus: "None", gender: "Non-binary", location: "Bulawayo, Zimbabwe", lat: -20.1325, lng: 28.6265, body: "Tariro created a digital wallet for cross-border informal trade." },
   { id: 19, name: "Joseph Mutua", type: "Video story", program: "International Business", missionArea: "Digital Health", humanitarianStatus: "None", nationality: "Uganda", disabilityStatus: "None", gender: "Male", location: "Gulu, Uganda", lat: 2.7746, lng: 32.2990, body: "Joseph's social enterprise funds scholarships through ethical trade.", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
   { id: 20, name: "Mariam Sow", type: "Text story", program: "Computer Science", missionArea: "Fitness & Preventive Health", humanitarianStatus: "None", nationality: "Senegal", disabilityStatus: "Yes", gender: "Female", location: "Saint-Louis, Senegal", lat: 16.0179, lng: -16.4896, body: "Mariam develops flood-prediction tools for coastal communities." },
 ];

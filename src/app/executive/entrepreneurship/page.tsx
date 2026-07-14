@@ -26,7 +26,7 @@ const NAVY = "#14306B";
 const BAND = "#14306B";
 const TICK = "#D17A86";
 const PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E", "#D17A86", "#C5D2E0"];
-const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", Other: "#D45F2C" };
+const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
 const C_ACCENT = "#102C5E";
 const C_FEMALE = "#479BD6";
 
@@ -674,7 +674,7 @@ export default function EntrepreneurshipPage() {
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
-            <Panel title="Jobs by Gender" subtitle="Male · Female · Other"
+            <Panel title="Jobs by Gender" subtitle="Male · Female · Non-binary"
               info="Gender distribution of jobs created by enterprises.">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={ji.byGender} margin={{ top: 18, right: 12, bottom: 0, left: 4 }}>

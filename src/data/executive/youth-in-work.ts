@@ -1,3 +1,6 @@
+import type { Gender, ParticipantType } from "@/types";
+export type { Gender, ParticipantType };
+export { GENDERS } from "@/types";
 /* ════════════════════════════════════════════════════════
    Youth in Work — synthetic dataset
    Deterministic (seeded) so SSR and CSR render identically.
@@ -7,9 +10,7 @@
    ventures — plus the jobs those ventures create.
 ═══════════════════════════════════════════════════════ */
 
-export type Gender = "Female" | "Male" | "Non-binary";
 export type Program = "HEMP" | "HENT" | "HECO";
-export type ParticipantType = "Student" | "Alumni" | "Venture Employee";
 
 export type Pathway =
   | "Wage Employment"
@@ -57,7 +58,6 @@ export interface Venture {
 }
 
 export const PROGRAMS: Program[] = ["HEMP", "HENT", "HECO"];
-export const GENDERS: Gender[] = ["Female", "Male", "Non-binary"];
 export const PARTICIPANT_TYPES: ParticipantType[] = ["Student", "Alumni", "Venture Employee"];
 
 export const PATHWAYS: Pathway[] = [

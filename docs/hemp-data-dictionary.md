@@ -7,7 +7,7 @@ Students into dignified work. HEMP is the broadest pillar by programme count —
 | | |
 |---|---|
 | Pages | **6** |
-| KPI cards | **38** |
+| KPI cards | **44** |
 | Charts | **35** |
 | Datasets | **6** |
 | Brand colour | Navy `#185FA5` |
@@ -69,7 +69,12 @@ Students into dignified work. HEMP is the broadest pillar by programme count —
 | | Institutions · Students Reached · Employers | `count()` | Integer |
 | | Leads Generated · Leads Converted | `count(leads)` | Integer |
 | | Partnerships | `count(partnerships)` | Integer |
-| **Internships** | Total Interns | `count(internships)` | Integer |
+| **Internships** | Host Organisations | `count(distinct orgs)` | Integer |
+| | Students Placed | `count(internships)` | Integer |
+| | Employment Conv. | `converted / placed × 100` | % |
+| | Countries | `count(distinct countries)` | Integer |
+| | Mentor-led Orgs | `count(orgs with mentor)` | Integer |
+| | Avg Satisfaction | `mean(score)` | Decimal 1–5 |
 | **Mission Students** | Health Mission Students Active | `count(status = active)` | Integer |
 | | Courses Completed (Canvas / Coursera) | `Σ courses` | Integer |
 | | Resources by Mission Curators | `Σ resources` | Integer |

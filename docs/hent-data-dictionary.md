@@ -7,7 +7,7 @@ Ventures from idea to scale. HENT is the deepest of the four dashboards: 8 pages
 | | |
 |---|---|
 | Pages | **8** (+1 drill-down) |
-| KPI cards | **31** |
+| KPI cards | **45** |
 | Charts | **44** |
 | Datasets | **7** |
 | Brand colour | Green `#2D6A4F` |
@@ -75,9 +75,24 @@ Ventures from idea to scale. HENT is the deepest of the four dashboards: 8 pages
 | | Progressed to Scale | `count(stage = Scale)` | Integer |
 | | Jobs Created | `Σ ventures.jobsTotal` | Integer |
 | **Masterclasses** | Female · Male · Student · Alumni Participants | `Σ attendee splits` | Integer |
-| **Hackathons** | *none* | — | — |
-| **Mentorship** | Female · Male · Student · Alumni **Fellows** | `Σ fellow splits` | Integer |
-| **Study Trips** | Female · Male · Student · Alumni Participants | `Σ participant splits` | Integer |
+| **Hackathons** | Total Hackathons | `count(hackathons)` | Integer |
+| | Participants | `Σ hackathons.participants` | Integer |
+| | Winning Teams | `Σ hackathons.winningTeams` | Integer |
+| | Projects Developed | `Σ hackathons.projects` | Integer |
+| | Startups Created | `Σ hackathons.startupsCreated` | Integer |
+| | Partnerships | `Σ hackathons.partnerships` | Integer |
+| **Mentorship** | Total Fellows | `Σ fellows` | Integer |
+| | Mentor Engagements | `Σ engagements` | Integer |
+| | Female Fellows | `Σ female fellows` | Integer |
+| | Avg Completion Rate | `mean(completionRate)` | % |
+| | *(+ demographic splits: Female · Male · Student · Alumni Fellows)* | `Σ splits` | Integer |
+| **Study Trips** | Total Study Trips | `count(studyTrips)` | Integer |
+| | Total Participants | `Σ participants` | Integer |
+| | Ventures Participating | `count(distinct ventures)` | Integer |
+| | Organisations Visited | `count(distinct orgs)` | Integer |
+| | Avg Attendance / Visit | `Σ participants / count(trips)` | Decimal |
+| | Avg Completion Rate | `mean(completionRate)` | % |
+| | *(+ demographic splits: Female · Male · Student · Alumni Participants)* | `Σ splits` | Integer |
 | **Exposure & Networking** | Events Held | `count(exposureEvents)` | Integer |
 | | Founder Placements | `Σ placements` | Integer |
 | | Investors Engaged | `Σ investors` | Integer |
@@ -173,7 +188,6 @@ Ventures from idea to scale. HENT is the deepest of the four dashboards: 8 pages
 |---|---|
 | **Pace of Target is fake** | `num={5.5}` hardcoded. The only target KPI in the app. |
 | **Visibility Score is undefined** | Ships on the Exposure page with no formula. |
-| **Hackathons has no KPI cards** | The only HENT page without any. Charts only. |
 | **"Fellows" collides with HECO** | HENT Fellows = mentorship mentees. HECO Fellows = public-sector professionals. Same word, different populations. Never sum them. |
 | **`hent/overview` is 991 lines** | The largest file in the codebase — filter state, data shaping and ~10 charts in one component. |
 | **Refine is mounted but inert** | `hent/providers.tsx` wires up Refine with a stub provider returning `{ data: [], total: 0 }`. |
@@ -190,8 +204,7 @@ Ventures from idea to scale. HENT is the deepest of the four dashboards: 8 pages
 4. **Validate `jobsWomen ≤ jobsTotal` and `femaleAttendees ≤ attendees`** at the data boundary.
 5. **Promote `bySocial`** — the MCF Scholars / PWD / Refugee splits deserve a dedicated equity view, not one chart per page.
 6. **Break up `hent/overview`** (991 lines) into section components.
-7. **Add KPI cards to Hackathons** for consistency with the other seven pages.
-8. **Extract the shared programme shape.** Masterclasses, mentorships and study-trips have near-identical fields (`year`, `attendees`, `scores`, `byAge`, `byRegion`, `bySocial`) declared three times.
+7. **Extract the shared programme shape.** Masterclasses, mentorships and study-trips have near-identical fields (`year`, `attendees`, `scores`, `byAge`, `byRegion`, `bySocial`) declared three times.
 
 ---
 

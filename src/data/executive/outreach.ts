@@ -1,8 +1,10 @@
+import type { Gender } from "@/types";
+export type { Gender };
+export { GENDERS } from "@/types";
 // Synthetic Outreach dataset — seeded so values are stable across renders.
 // Models participants engaging in CHII outreach interventions (HENT · HEMP · HECO)
 // across partner institutions. Includes "mission students" who also engage in outreach.
 
-export type Gender = "Female" | "Male" | "Non-binary";
 export type Institution = "ALX" | "ALU" | "ALCHE" | "Other";
 export type Pillar = "HEMP" | "HENT" | "HECO";
 export type EngagementStatus = "Completed" | "Active" | "In-progress" | "Dropped";
@@ -36,7 +38,6 @@ const PILLAR_OF: Record<string, Pillar> = Object.fromEntries(
     .flatMap(([p, list]) => list.map(i => [i, p]))
 );
 
-export const GENDERS: Gender[] = ["Female", "Male", "Non-binary"];
 export const STATUSES: EngagementStatus[] = ["Completed", "Active", "In-progress", "Dropped"];
 
 /* approximate relative weight of each intervention's reach */

@@ -34,9 +34,11 @@ The Executive dashboard has **two incompatible data strategies running side by s
 /executive/further-education    imports: executive/further-education
 /executive/outreach             imports: executive/outreach
 /executive/stories              imports: executive/stories
-   ✖ six PARALLEL datasets that re-declare Venture, Gender and Stage
-     with different fields — they do not aggregate the pillars, they
-     duplicate them
+   ⚠ six SEPARATE datasets — an outcomes layer, not a copy of the pillars.
+     They carry fields no pillar dataset has (salaryBand, roleLevel,
+     timeToEmployment, qualification), so they cannot simply be derived
+     away. What WAS wrong — a shared Gender type declared 5 times with
+     two incompatible spellings — is now FIXED.
 ```
 
 **Consequences:**
@@ -206,8 +208,9 @@ The Executive dashboard has the **richest filter set** in the application. The `
 | Issue | Severity | Detail |
 |---|---|---|
 | **HECO is excluded from every total** | **Critical** | `executive/page.tsx` imports no HECO data. Cross-pillar figures are wrong. |
-| **Six parallel datasets, not a rollup** | **Critical** | Sub-pages duplicate rather than aggregate the pillars. Executive and HENT can disagree. |
-| **`Venture` declared a third time** | **Critical** | `types/index.ts`, `executive/entrepreneurship.ts` and `executive/youth-in-work.ts` all define `Venture` with different fields. |
+| **Six separate outcome datasets** | Medium | Sub-pages read their own datasets, which carry fields (salary, role level, time-to-job) that no pillar dataset has. They are an outcomes layer, not a duplicate — but nothing reconciles them against the pillars. |
+| **`Venture` declared a third time** | High | `types/index.ts`, `executive/entrepreneurship.ts` and `executive/youth-in-work.ts` all define `Venture` with different fields. |
+| ~~`Gender` declared 5 times~~ | ✔ **FIXED** | Was `"Other"` in 4 files and `"Non-binary"` in 2 — incompatible. Now one `Gender` in `types/index.ts`, canonical `"Non-binary"`. |
 | **No targets** | **Critical** | Six headline KPIs, zero targets. Leadership cannot see performance against plan. |
 | **`SUMMARY` is hardcoded** | High | `stories.ts` exports `{ stories: 364, … }` as a literal rather than deriving it from the `STORIES` array. They can drift apart. |
 | **Report downloads are dead** | High | All 26 cards on `/executive/reports` link to `href="#"`. |
@@ -242,7 +245,7 @@ The Executive dashboard has the **richest filter set** in the application. The `
 ## 9. Recommendations — Executive
 
 1. **Add HECO to the rollup.** Every cross-pillar total is currently wrong. This is a correctness bug.
-2. **Delete the six parallel `executive/*` entities** and derive every Executive figure from the pillar datasets. Until this is done, "single source of truth" is not true.
+2. **Reconcile the six `executive/*` outcome datasets against the pillars.** Do NOT delete them — they hold salary, role level and time-to-job, which no pillar dataset has. Instead, make participant identity shared so an Executive worker can be traced back to a HEMP student.
 3. **Add targets to the six headline KPIs.** `benchColor()` already implements RAG status — only the target data is missing.
 4. **Derive `SUMMARY` from `STORIES`** instead of hardcoding `{ stories: 364, … }`.
 5. **Wire the report downloads,** or remove the 26 dead cards.

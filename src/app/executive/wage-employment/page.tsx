@@ -28,7 +28,7 @@ const TICK = "#D17A86";
 const C_TOTAL = "#102C5E";
 const C_FEMALE = "#479BD6";
 
-const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", Other: "#D45F2C" };
+const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
 const EMP_COLOR: Record<string, string> = {
   "Full-time": "#102C5E", "Part-time": "#479BD6", "Temporary": "#A81B2D", "Contract": "#D45F2C",
 };
@@ -422,7 +422,7 @@ export default function WageEmploymentPage() {
           <SectionHeader title="Workforce Profile" blurb="Who is employed?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 16 }} className="we-two">
             <style>{`@media (max-width: 720px){ .we-two{ grid-template-columns: 1fr !important; } }`}</style>
-            <Panel title="Gender Distribution" subtitle="Female · Male · Other"
+            <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary"
               info="Distribution of employed participants by gender.">
               <Donut data={genderData} colors={GENDER_COLOR} total={total} totalLabel="Employed" height={340} legendPercent />
             </Panel>

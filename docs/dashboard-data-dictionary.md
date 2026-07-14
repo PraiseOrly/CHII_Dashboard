@@ -6,7 +6,7 @@ Every KPI, chart, filter and calculation across HEMP, HENT, HECO and Executive, 
 
 | | |
 |---|---|
-| KPI cards | **106** |
+| KPI cards | **128** |
 | Charts | **118** |
 | Tables | **7** |
 | Filter types | **14** |
@@ -45,7 +45,7 @@ The Export button in every nav is **inert** — it has no click handler. The onl
 | **HEMP** | Health Employment — students into dignified work | Overview · HealthX · Internships · Mission Students · SIE · Intro to Global Health | HEMP programme managers |
 | **HECO** | Health Ecosystems — public-sector capacity via 3 pillars | Overview · CRA (Fellowship · Hackathons · Research) | HECO programme managers |
 
-> **On "primary users":** these are *inferred from content*, not enforced. The application has no roles and no permissions — every user sees every dashboard. The Permissions column your brief requests would read "all / none / none" for all 106 KPIs, so it is stated once here rather than repeated 106 times.
+> **On "primary users":** these are *inferred from content*, not enforced. The application has no roles and no permissions — every user sees every dashboard. The Permissions column your brief requests would read "all / none / none" for all 128 KPIs, so it is stated once here rather than repeated 128 times.
 
 ---
 
@@ -53,7 +53,7 @@ The Export button in every nav is **inert** — it has no click handler. The onl
 
 | Component | Count | Status | Notes |
 |---|---|---|---|
-| KPI cards | 106 | Working | Two implementations: `StatCard` and `StatsKpiCard` |
+| KPI cards | 128 | Working | Two implementations: `StatCard` and `StatsKpiCard` |
 | Charts | 118 | Working | Recharts. Bar, line, area, pie, donut, radar, funnel, heatmap, scatter |
 | Maps | 3 | Duplicated | `AfricaMap` · `AfricaChoropleth` · `StoriesMap` (Leaflet) |
 | Filters | 14 types | Working | Popover + section pills + inline selects |
@@ -69,7 +69,7 @@ The Export button in every nav is **inert** — it has no click handler. The onl
 
 ## 3. KPI catalog
 
-All 106 KPI cards. **Formula** is what the code actually computes. **Target** is empty for all but one — that is a finding, not an omission.
+All 128 KPI cards. **Formula** is what the code actually computes. **Target** is empty for all but one — that is a finding, not an omission.
 
 ### Executive — Overview
 
@@ -101,9 +101,9 @@ All 106 KPI cards. **Formula** is what the code actually computes. **Target** is
 | Ventures | Health Ventures · Jobs Created · Funds Deployed · Active Founders · **Pace of Target** | ⚠ **Pace of Target is hardcoded `5.5`** |
 | Venture Funding | Capital Deployed · Ventures Funded · Milestone Rate · Progressed to Scale · Jobs Created | Jobs Created appears here *and* on Ventures *and* on Overview |
 | Masterclasses | Female · Male · Student · Alumni Participants | Demographic splits only — no headline KPI |
-| Hackathons | *none* | ⚠ Only HENT page with no KPI cards |
-| Mentorship | Female Fellows · Male Fellows · Student Fellows · Alumni Fellows | "Fellows" here ≠ HECO "Fellows" |
-| Study Trips | Female · Male · Student · Alumni Participants | |
+| Hackathons | Total Hackathons · Participants · Winning Teams · Projects Developed · Startups Created · Partnerships | |
+| Mentorship | Total Fellows · Mentor Engagements · Female Fellows · Avg Completion Rate (+ demographic splits) | "Fellows" here ≠ HECO "Fellows" |
+| Study Trips | Total Study Trips · Total Participants · Ventures Participating · Organisations Visited · Avg Attendance/Visit · Avg Completion Rate (+ splits) | |
 | Exposure & Networking | Events Held · Founder Placements · Investors Engaged · Connections Made · Agreements Signed · **Visibility Score** | ⚠ **Visibility Score is undefined — no formula anywhere** |
 
 ### HEMP
@@ -112,7 +112,7 @@ All 106 KPI cards. **Formula** is what the code actually computes. **Target** is
 |---|---|
 | Overview | Total Reach · Mission Students · Female Reach · Partnerships · **Employment Rate** · HealthX Sessions · Internship Orgs · Mission Cohorts · Countries |
 | HealthX | Health Hub Visits Completed · Active Partnerships (MOUs Signed) · Students with Field Exposure · Institutions · Students Reached · Employers · Leads Generated · Leads Converted · Partnerships |
-| Internships | Total Interns |
+| Internships | Host Organisations · Students Placed · Employment Conv. · Countries · Mentor-led Orgs · Avg Satisfaction |
 | Mission Students | Health Mission Students Active · Courses Completed (Canvas/Coursera) · Resources by Mission Curators · Mentors Recruited · Programme Feedback Collected · Lectures Held · Career Centre Events · Training Courses · 1-on-1 Sessions |
 | SIE | Students Selected · Completed Programme · Site Visits · Partner Projects · Employment Leads · Satisfaction |
 | Global Health | Enrolled · Completed · Certified · Avg Score · Progressed On · Satisfaction |
@@ -124,7 +124,7 @@ All 106 KPI cards. **Formula** is what the code actually computes. **Target** is
 | Overview | Fellows · Funding Awarded · Students Reached · Ventures Incubated · Research Studies · Partnerships |
 | CRA | Fellows · Operational Funding · Publications · Ventures Incubated · Research Studies · Partnerships |
 
-> **Owner and frequency cannot be documented.** Your brief asks for each KPI's owner and update frequency. Neither exists anywhere in the codebase — there is no metadata layer, no indicator registry, no ownership field. Every figure recomputes on page load from a static file. **Update frequency is therefore "on deploy" for all 106.**
+> **Owner and frequency cannot be documented.** Your brief asks for each KPI's owner and update frequency. Neither exists anywhere in the codebase — there is no metadata layer, no indicator registry, no ownership field. Every figure recomputes on page load from a static file. **Update frequency is therefore "on deploy" for all 128.**
 
 ---
 
@@ -285,7 +285,7 @@ Total Beneficiaries    Youth in Work           Jobs Created
    conversion = step[i] / step[i-1]
 └────────────────────────────┬───────────────────────────────────┘
                              ▼
-┌─ KPI (106) ────────────┬─ CHART (118) ─┬─ TABLE (7) ───────────┐
+┌─ KPI (128) ────────────┬─ CHART (118) ─┬─ TABLE (7) ───────────┐
    StatCard/StatsKpiCard    Recharts         static divs
    useCountUp animation     read-only        no sort/export
 └────────────────────────┴───────────────┴───────────────────────┘
@@ -363,7 +363,7 @@ The canonical fields. Columns your brief requested that are constant across ever
 
 | # | Action | Why |
 |---|---|---|
-| 1 | **Build an indicator registry.** One table: `id · name · definition · formula · unit · baseline · target · frequency · owner · disaggregations`. Every KPI card reads from it. | Turns 106 hardcoded labels into governed indicators. This single change enables targets, variance, ownership and consistent naming at once — it is the highest-value item in this document. |
+| 1 | **Build an indicator registry.** One table: `id · name · definition · formula · unit · baseline · target · frequency · owner · disaggregations`. Every KPI card reads from it. | Turns 128 hardcoded labels into governed indicators. This single change enables targets, variance, ownership and consistent naming at once — it is the highest-value item in this document. |
 | 2 | **Adopt one shared dimension vocabulary.** One `Gender`, one `Country`, one `Programme`, one `ParticipantType`, in `types/`. | Gender is defined 5 times. Cross-pillar aggregation is unsafe until this is fixed. |
 | 3 | **Make Executive a genuine rollup.** Delete the parallel `data/executive/*` entities; derive every Executive figure from the pillar data. | Executive and HENT can currently disagree about the same number with nothing detecting it. |
 | 4 | **Rename to the canonical set** in section 11. | Five names for "people reached" makes every report ambiguous. |
@@ -378,4 +378,4 @@ The canonical fields. Columns your brief requested that are constant across ever
 
 ---
 
-*Read-only data audit · no source files modified · 106 KPI cards · 118 charts · 7 tables · 14 filter types · 23 datasets · 0 targets · 0 data exports*
+*Read-only data audit · no source files modified · 128 KPI cards · 118 charts · 7 tables · 14 filter types · 23 datasets · 0 targets · 0 data exports*

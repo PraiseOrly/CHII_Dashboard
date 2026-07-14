@@ -1,9 +1,11 @@
+import type { Gender } from "@/types";
+export type { Gender };
+export { GENDERS } from "@/types";
 /* ════════════════════════════════════════════════════════
    Entrepreneurship — synthetic dataset
    Deterministic (seeded) so SSR and CSR render identically.
 ═══════════════════════════════════════════════════════ */
 
-export type Gender = "Female" | "Male" | "Other";
 export type Stage = "Idea" | "Pre-seed" | "Seed" | "Early-stage" | "Growth" | "Scaling" | "Mature" | "Closed";
 export type Status = "Pre-seed" | "Seed" | "Early-stage" | "Growth" | "Scaling" | "Closed" | "Non-operational";
 export type FundingSource = "Personal / bootstrap" | "Grant" | "Angel / investor" | "Accelerator" | "Loan";
@@ -21,7 +23,6 @@ export interface Venture {
   rating: number;          // 1–5
 }
 
-export const GENDERS: Gender[] = ["Female", "Male", "Other"];
 export const STAGES: Stage[] = ["Idea", "Pre-seed", "Seed", "Early-stage", "Growth", "Scaling", "Mature", "Closed"];
 export const STATUSES: Status[] = ["Pre-seed", "Seed", "Early-stage", "Growth", "Scaling", "Closed", "Non-operational"];
 export const FUNDING_SOURCES: FundingSource[] = ["Personal / bootstrap", "Grant", "Angel / investor", "Accelerator", "Loan"];
@@ -55,7 +56,7 @@ function buildVentures(n: number): Venture[] {
   for (let i = 0; i < n; i++) {
     out.push({
       id: i + 1,
-      gender: pick<Gender>(r, [["Female", 0.44], ["Male", 0.53], ["Other", 0.03]]),
+      gender: pick<Gender>(r, [["Female", 0.44], ["Male", 0.53], ["Non-binary", 0.03]]),
       stage: pick<Stage>(r, [
         ["Idea", 0.2], ["Pre-seed", 0.22], ["Seed", 0.18], ["Early-stage", 0.15],
         ["Growth", 0.1], ["Scaling", 0.06], ["Mature", 0.04], ["Closed", 0.05],

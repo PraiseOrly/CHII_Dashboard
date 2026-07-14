@@ -176,7 +176,7 @@
       </p>
 
       <div class="vitals">
-        <div class="vital"><div class="v">106</div><div class="k">KPI cards</div></div>
+        <div class="vital"><div class="v">128</div><div class="k">KPI cards</div></div>
         <div class="vital"><div class="v">118</div><div class="k">Charts</div></div>
         <div class="vital"><div class="v">14</div><div class="k">Filter types</div></div>
         <div class="vital zero"><div class="v">1</div><div class="k">Target defined</div></div>
@@ -272,8 +272,8 @@
         <p>
           These are <strong>inferred from content</strong>, not enforced. The application has no
           roles and no permissions — every user sees every dashboard. The Permissions column your
-          brief requests would read "all / none / none" for all 106 KPIs, so it is stated once here
-          rather than repeated 106 times.
+          brief requests would read "all / none / none" for all 128 KPIs, so it is stated once here
+          rather than repeated 128 times.
         </p>
       </div>
     </section>
@@ -286,7 +286,7 @@
         <table>
           <thead><tr><th>Component</th><th>Count</th><th>Status</th><th>Notes</th></tr></thead>
           <tbody>
-            <tr><td>KPI cards</td><td class="num">106</td><td><span class="chip ok">Working</span></td><td>Two implementations: <code>StatCard</code> and <code>StatsKpiCard</code></td></tr>
+            <tr><td>KPI cards</td><td class="num">128</td><td><span class="chip ok">Working</span></td><td>Two implementations: <code>StatCard</code> and <code>StatsKpiCard</code></td></tr>
             <tr><td>Charts</td><td class="num">118</td><td><span class="chip ok">Working</span></td><td>Recharts. Bar, line, area, pie, donut, radar, funnel, heatmap, scatter</td></tr>
             <tr><td>Maps</td><td class="num">3</td><td><span class="chip warn">Duplicated</span></td><td><code>AfricaMap</code> · <code>AfricaChoropleth</code> · <code>StoriesMap</code> (Leaflet)</td></tr>
             <tr><td>Filters</td><td class="num">14 types</td><td><span class="chip ok">Working</span></td><td>Popover + section pills + inline selects</td></tr>
@@ -306,7 +306,7 @@
     <section id="s3">
       <h2><span class="n">03</span> KPI catalog</h2>
       <p class="lede">
-        All 106 KPI cards. <strong>Formula</strong> is what the code actually computes.
+        All 128 KPI cards. <strong>Formula</strong> is what the code actually computes.
         <strong>Target</strong> is empty for all but one — that is a finding, not an omission.
       </p>
 
@@ -349,9 +349,9 @@
             <tr><td>Ventures</td><td>Health Ventures · Jobs Created · Funds Deployed · Active Founders · <strong>Pace of Target</strong></td><td><span class="chip crit">Pace of Target is hardcoded <code>5.5</code></span></td></tr>
             <tr><td>Venture Funding</td><td>Capital Deployed · Ventures Funded · Milestone Rate · Progressed to Scale · Jobs Created</td><td class="dim">Jobs Created appears here <em>and</em> on Ventures <em>and</em> on Overview</td></tr>
             <tr><td>Masterclasses</td><td>Female · Male · Student · Alumni Participants</td><td class="dim">Demographic splits only — no headline KPI</td></tr>
-            <tr><td>Hackathons</td><td class="dim">— none —</td><td><span class="chip warn">Only HENT page with no KPI cards</span></td></tr>
-            <tr><td>Mentorship</td><td>Female Fellows · Male Fellows · Student Fellows · Alumni Fellows</td><td class="dim">"Fellows" here ≠ HECO "Fellows"</td></tr>
-            <tr><td>Study Trips</td><td>Female · Male · Student · Alumni Participants</td><td></td></tr>
+            <tr><td>Hackathons</td><td>Total Hackathons · Participants · Winning Teams · Projects Developed · Startups Created · Partnerships</td><td class="dim">—</td></tr>
+            <tr><td>Mentorship</td><td>Total Fellows · Mentor Engagements · Female Fellows · Avg Completion Rate (+ splits)</td><td class="dim">"Fellows" here ≠ HECO "Fellows"</td></tr>
+            <tr><td>Study Trips</td><td>Total Study Trips · Total Participants · Ventures Participating · Organisations Visited · Avg Attendance/Visit · Avg Completion Rate</td><td></td></tr>
             <tr><td>Exposure &amp; Networking</td><td>Events Held · Founder Placements · Investors Engaged · Connections Made · Agreements Signed · <strong>Visibility Score</strong></td><td><span class="chip warn">Visibility Score is undefined — no formula documented anywhere</span></td></tr>
           </tbody>
         </table>
@@ -364,7 +364,7 @@
           <tbody>
             <tr><td>Overview</td><td>Total Reach · Mission Students · Female Reach · Partnerships · <strong>Employment Rate</strong> · HealthX Sessions · Internship Orgs · Mission Cohorts · Countries</td></tr>
             <tr><td>HealthX</td><td>Health Hub Visits Completed · Active Partnerships (MOUs Signed) · Students with Field Exposure · Institutions · Students Reached · Employers · Leads Generated · Leads Converted · Partnerships</td></tr>
-            <tr><td>Internships</td><td>Total Interns</td></tr>
+            <tr><td>Internships</td><td>Host Organisations · Students Placed · Employment Conv. · Countries · Mentor-led Orgs · Avg Satisfaction</td></tr>
             <tr><td>Mission Students</td><td>Health Mission Students Active · Courses Completed (Canvas/Coursera) · Resources by Mission Curators · Mentors Recruited · Programme Feedback Collected · Lectures Held · Career Centre Events · Training Courses · 1-on-1 Sessions</td></tr>
             <tr><td>SIE</td><td>Students Selected · Completed Programme · Site Visits · Partner Projects · Employment Leads · Satisfaction</td></tr>
             <tr><td>Global Health</td><td>Enrolled · Completed · Certified · Avg Score · Progressed On · Satisfaction</td></tr>
@@ -389,7 +389,7 @@
           Your brief asks for each KPI's <strong>owner</strong> and <strong>update frequency</strong>.
           Neither exists anywhere in the codebase — there is no metadata layer, no indicator
           registry, no ownership field. Every figure recomputes on page load from a static file.
-          <strong>Update frequency is therefore "on deploy" for all 106.</strong>
+          <strong>Update frequency is therefore "on deploy" for all 128.</strong>
         </p>
       </div>
     </section>
@@ -610,7 +610,7 @@ Total Beneficiaries    Youth in Work           Jobs Created
    conversion = step[i] / step[i-1]
 <span class="c">└────────────────────────────┬───────────────────────────────────┘</span>
                              ▼
-<span class="c">┌─ KPI (106) ────────────┬─ CHART (118) ─┬─ TABLE (7) ───────────┐</span>
+<span class="c">┌─ KPI (128) ────────────┬─ CHART (118) ─┬─ TABLE (7) ───────────┐</span>
    StatCard/StatsKpiCard    Recharts         static divs
    useCountUp animation     read-only        no sort/export
 <span class="c">└────────────────────────┴───────────────┴───────────────────────┘</span>
@@ -722,7 +722,7 @@ Total Beneficiaries    Youth in Work           Jobs Created
         <table>
           <thead><tr><th>#</th><th>Action</th><th>Why</th></tr></thead>
           <tbody>
-            <tr><td class="num">1</td><td><strong>Build an indicator registry.</strong> One table: <code>id · name · definition · formula · unit · baseline · target · frequency · owner · disaggregations</code>. Every KPI card reads from it.</td><td>Turns 106 hardcoded labels into governed indicators. This single change enables targets, variance, ownership and consistent naming at once — it is the highest-value item in this document.</td></tr>
+            <tr><td class="num">1</td><td><strong>Build an indicator registry.</strong> One table: <code>id · name · definition · formula · unit · baseline · target · frequency · owner · disaggregations</code>. Every KPI card reads from it.</td><td>Turns 128 hardcoded labels into governed indicators. This single change enables targets, variance, ownership and consistent naming at once — it is the highest-value item in this document.</td></tr>
             <tr><td class="num">2</td><td><strong>Adopt one shared dimension vocabulary.</strong> One <code>Gender</code>, one <code>Country</code>, one <code>Programme</code>, one <code>ParticipantType</code>, in <code>types/</code>.</td><td>Gender is defined 5 times. Cross-pillar aggregation is unsafe until this is fixed.</td></tr>
             <tr><td class="num">3</td><td><strong>Make Executive a genuine rollup.</strong> Delete the parallel <code>data/executive/*</code> entities; derive every Executive figure from the pillar data.</td><td>Executive and HENT can currently disagree about the same number with nothing detecting it.</td></tr>
             <tr><td class="num">4</td><td><strong>Rename to the canonical set</strong> in section 11.</td><td>Five names for "people reached" makes every report ambiguous.</td></tr>
@@ -748,7 +748,7 @@ Total Beneficiaries    Youth in Work           Jobs Created
     </section>
 
     <footer>
-      Read-only data audit · no source files modified · 106 KPI cards · 118 charts · 7 tables ·
+      Read-only data audit · no source files modified · 128 KPI cards · 118 charts · 7 tables ·
       14 filter types · 23 datasets · 0 targets · 0 data exports
     </footer>
 

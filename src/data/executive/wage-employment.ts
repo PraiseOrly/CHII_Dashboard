@@ -1,3 +1,6 @@
+import type { Gender, ParticipantType } from "@/types";
+export type { Gender, ParticipantType };
+export { GENDERS } from "@/types";
 /* ════════════════════════════════════════════════════════
    Wage Employment — synthetic dataset
    Deterministic (seeded) so SSR and CSR render identically.
@@ -8,11 +11,9 @@
    programs produced them, and whether the work is meaningful.)
 ═══════════════════════════════════════════════════════ */
 
-export type Gender = "Female" | "Male" | "Other";
 export type EmploymentType = "Full-time" | "Part-time" | "Temporary" | "Contract";
 export type RoleLevel = "Entry" | "Mid" | "Senior" | "Lead/Manager" | "Exec";
 export type Arrangement = "Remote" | "On-site" | "Hybrid";
-export type ParticipantType = "Alumni" | "Student";
 export type OrgType =
   | "Private company"
   | "Startup"
@@ -40,10 +41,12 @@ export interface Worker {
   salaryUSD: number;        // monthly
 }
 
-export const GENDERS: Gender[] = ["Female", "Male", "Other"];
 export const EMPLOYMENT_TYPES: EmploymentType[] = ["Full-time", "Part-time", "Temporary", "Contract"];
 export const ROLE_LEVELS: RoleLevel[] = ["Entry", "Mid", "Senior", "Lead/Manager", "Exec"];
 export const ARRANGEMENTS: Arrangement[] = ["Remote", "On-site", "Hybrid"];
+/** Wage employment records no venture employees — the population exists (see
+ *  youth-in-work) but does not appear in this dataset, so it is not offered
+ *  as a filter option here. */
 export const PARTICIPANT_TYPES: ParticipantType[] = ["Alumni", "Student"];
 export const ORG_TYPES: OrgType[] = ["Private company", "Startup", "NGO/Nonprofit", "Government", "Public sector", "Multinational"];
 
@@ -115,7 +118,7 @@ function buildWorkers(n: number): Worker[] {
 
     out.push({
       id: i + 1,
-      gender: pick<Gender>(r, [["Female", 0.54], ["Male", 0.43], ["Other", 0.03]]),
+      gender: pick<Gender>(r, [["Female", 0.54], ["Male", 0.43], ["Non-binary", 0.03]]),
       participantType: pick<ParticipantType>(r, [["Alumni", 0.82], ["Student", 0.18]]),
       program: pick<string>(r, [
         ["BSc Software Eng", 0.3], ["Computer Science", 0.26], ["Entrepreneurial Leadership", 0.24],

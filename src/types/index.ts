@@ -50,6 +50,29 @@ export type FundingStatus =
   | "Revenue-Based"
   | "None";
 
+/** Participant gender. The single definition — every dataset imports this.
+ *
+ *  It was previously declared in five data files, two of which used "Non-binary"
+ *  and three "Other". A participant counted on one dashboard could not be
+ *  represented on another, so cross-dashboard gender totals silently disagreed.
+ *  Do not redeclare it locally. */
+export type Gender = "Female" | "Male" | "Non-binary";
+export const GENDERS: Gender[] = ["Female", "Male", "Non-binary"];
+
+/** How a person relates to CHII when an outcome is recorded against them.
+ *
+ *  Previously declared twice: wage-employment omitted "Venture Employee"
+ *  entirely, so that population could not be represented there at all, while
+ *  youth-in-work branches on it (a venture employee counts as employed).
+ *
+ *  The type carries all three values. Which of them actually OCCUR is a
+ *  property of each dataset, not of the type — so each dataset still declares
+ *  its own PARTICIPANT_TYPES list for filter options, and a filter never offers
+ *  a value with no records behind it. */
+export type ParticipantType = "Student" | "Alumni" | "Venture Employee";
+
+/** The gender of a venture's founding team — a different concept from the
+ *  gender of a person, which is why "Mixed" exists here and nowhere else. */
 export type TeamGender = "Male" | "Female" | "Mixed";
 
 export const COUNTRIES = [
