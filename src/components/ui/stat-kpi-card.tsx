@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, type ComponentType } from "react";
+import { benchColor } from "@/theme/tokens";
 
 function useCountUp(target: number, duration = 1000): number {
   const [val, setVal] = useState(0);
@@ -28,6 +29,11 @@ interface Props {
   border?: string;
   Icon: ComponentType<any>;
   tooltip: string;
+  /** The value as a percentage, when the KPI is a rate. Required for `bench`. */
+  pct?: number;
+  /** Target this KPI is measured against. Renders an "N% of target" line and
+   *  colours it red → amber → green via benchColor. Ignored without `pct`. */
+  bench?: number;
 }
 
 export default function StatsKpiCard({
@@ -41,9 +47,12 @@ export default function StatsKpiCard({
   border = "none",
   Icon,
   tooltip,
+  pct,
+  bench,
 }: Props) {
   const animated = useCountUp(num);
   const [showTip, setShowTip] = useState(false);
+  const hasTarget = pct !== undefined && bench !== undefined;
 
   return (
     <div style={{
@@ -116,6 +125,26 @@ export default function StatsKpiCard({
           {displayFmt(animated)}
         </p>
       </div>
+
+      {/* Performance against target — the only place the app reports variance */}
+      {hasTarget && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginTop: 7 }}>
+          <span
+            style={{
+              width: 6, height: 6, borderRadius: "50%",
+              backgroundColor: benchColor(pct!, bench!),
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ fontSize: 9.5, color: lbl, opacity: 0.85, letterSpacing: "0.02em" }}>
+            Target {bench}%
+            <span style={{ opacity: 0.6 }}>
+              {" · "}
+              {pct! >= bench! ? "+" : "−"}{Math.abs(pct! - bench!)} pts
+            </span>
+          </span>
+        </div>
+      )}
     </div>
   );
 }

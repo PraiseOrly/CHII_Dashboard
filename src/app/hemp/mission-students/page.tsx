@@ -6,6 +6,7 @@ import { CHART } from "@/theme/tokens";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import PortalFooter from "@/components/layout/portal-footer";
+import GlobalHealthSection from "@/components/hemp/global-health-section";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import { missionStudents } from "@/data/hemp/mission-students";
 import {
@@ -336,6 +337,7 @@ export default function MissionStudentsPage() {
               { label: "Guest Faculty", value: "2" },
               { label: "Mission Curator", value: "3" },
               { label: "Data Quality", value: "4" },
+              { label: "Intro to Global Health", value: "5" },
             ]}
           />
           <OutreachFilters
@@ -694,6 +696,14 @@ export default function MissionStudentsPage() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* ══ SECTION E: INTRO TO GLOBAL HEALTH ══════════════════════════════
+            Was its own route (/hemp/global-health). It is the foundational
+            course mission students take, so it belongs here. Honours this
+            page's year filter. */}
+        <section style={{ display: show(5) ? undefined : "none" }}>
+          <GlobalHealthSection year={fYear} />
         </section>
 
         {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}

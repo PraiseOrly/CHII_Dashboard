@@ -1,4 +1,7 @@
 "use client";
+import { sieCohorts } from "@/data/hemp/sie";
+import { ghCohorts } from "@/data/hemp/global-health";
+import { healthXSymposia } from "@/data/hemp/healthx-careers";
 import { InlineFilterSelect as FilterSelect } from "@/components/ui/hemp";
 import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
@@ -85,11 +88,24 @@ const ventures      = missionStudents.filter(s => s.ventureCreated);
 const completionPct = Math.round(completed.length / totalStudents * 100);
 const employPct     = completed.length ? Math.round(employed.length / completed.length * 100) : 0;
 
+// SIE, Intro to Global Health and the HealthX careers symposia are HEMP
+// programmes too. They were missing from the pillar rollup, so HEMP's headline
+// reach under-reported its own delivery.
+const sieSelected  = sieCohorts.reduce((s, c) => s + c.selected, 0);
+const sieFem       = sieCohorts.reduce((s, c) => s + c.female,   0);
+
+const ghEnrolled   = ghCohorts.reduce((s, c) => s + c.enrolled, 0);
+const ghFem        = ghCohorts.reduce((s, c) => s + c.female,   0);
+
+const symStudents  = healthXSymposia.reduce((s, x) => s + x.studentsAttending, 0);
+const symFem       = healthXSymposia.reduce((s, x) => s + x.femaleStudents,    0);
+
 const FEMALE_PCT_HX  = Math.round(hxFem      / hxPart       * 100);
 const FEMALE_PCT_IN  = Math.round(intFem     / intStudents   * 100);
 const FEMALE_PCT_ST  = Math.round(studentFem / totalStudents * 100);
-const TOTAL_REACH    = hxPart + intStudents + totalStudents;
-const TOTAL_FEM      = hxFem + intFem + studentFem;
+
+const TOTAL_REACH    = hxPart + intStudents + totalStudents + sieSelected + ghEnrolled + symStudents;
+const TOTAL_FEM      = hxFem  + intFem      + studentFem    + sieFem      + ghFem      + symFem;
 const FEMALE_PCT_ALL = Math.round(TOTAL_FEM / TOTAL_REACH * 100);
 const AVG_SAT        = parseFloat(((hxSatAvg + intSatAvg) / 2).toFixed(1));
 const TOTAL_PSHIP    = hxPship + intOrgs;
@@ -125,6 +141,9 @@ const participantsByProgData = [
   { name: "HealthX",            value: hxPart },
   { name: "Internships",        value: intStudents },
   { name: "Mission Students",   value: totalStudents },
+  { name: "SIE",                value: sieSelected },
+  { name: "Global Health",      value: ghEnrolled },
+  { name: "Career Symposia",    value: symStudents },
 ].sort((a, b) => b.value - a.value);
 
 // ─── Geographic reach ────────────────────────────────────────────────────────
@@ -263,7 +282,7 @@ function ExecCard({ label, value, sub, note, icon: Icon, tip }: {
   );
 }
 
-function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
+function KpiTile({ label, num, displayFmt, sub, pct, bench, Icon, tip }: {
   label: string; num: number; displayFmt: (n: number) => string;
   sub?: string; pct?: number; bench?: number; Icon?: LucideIcon; tip?: string;
 }) {
@@ -273,6 +292,8 @@ function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
       num={num}
       displayFmt={displayFmt}
       sub={sub ?? ""}
+      pct={pct}
+      bench={bench}
       Icon={Icon ?? Activity}
       tooltip={tip ?? label}
     />
@@ -416,7 +437,7 @@ export default function HEMPOverview() {
 
         {/* ── KPI STRIP ── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <KpiTile label="Total Reach"     num={TOTAL_REACH}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        tip="Total people reached across mission students, HealthX and internships." />
+          <KpiTile label="Total Reach"     num={TOTAL_REACH}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        tip="Total people reached across mission students, HealthX, internships, SIE, Intro to Global Health and the HealthX career symposia." />
           <KpiTile label="Mission Students" num={totalStudents} displayFmt={n => String(Math.round(n))}          Icon={GraduationCap} tip="Students enrolled in the HEMP mission programme." />
           <KpiTile label="Female Reach"    num={FEMALE_PCT_ALL} displayFmt={n => `${Math.round(n)}%`}            Icon={Sparkles}     pct={FEMALE_PCT_ALL} bench={50} tip={`Share of participants who are female (${TOTAL_FEM.toLocaleString()} people).`} />
           <KpiTile label="Partnerships"    num={TOTAL_PSHIP}    displayFmt={n => String(Math.round(n))}          Icon={Handshake}    tip="HealthX partnerships plus internship host organisations." />

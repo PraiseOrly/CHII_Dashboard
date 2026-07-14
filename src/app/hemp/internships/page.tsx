@@ -7,7 +7,7 @@ import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import PortalFooter from "@/components/layout/portal-footer";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
-import { INTERNSHIP_SECTORS, internships, type InternshipCohort } from "@/data/hemp/internships";
+import { INTERNSHIP_SECTORS, internships, type InternshipPartner } from "@/data/hemp/internships";
 import { Briefcase, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
@@ -586,24 +586,24 @@ export default function InternshipsPage() {
         {/* â”€â”€ SECTION 5: COHORT OUTCOMES (HEMP) â”€â”€â”€ */}
         <section style={{ display: show(4) ? undefined : "none" }}>
           <SectionHeader
-            title="Cohort Outcomes (Internal  ·  SFH  ·  WAG  ·  KASHA)"
+            title="Partner Outcomes (Internal  ·  SFH  ·  WAG  ·  KASHA)"
             sub="Internship participation + post-internship placement outcomes" />
 
           {(() => {
-            const COHORTS: InternshipCohort[] = ["Internal", "SFH", "WAG", "KASHA"];
-            const COHORT_COLORS: Record<InternshipCohort, string> = {
+            const PARTNERS: InternshipPartner[] = ["Internal", "SFH", "WAG", "KASHA"];
+            const PARTNER_COLORS: Record<InternshipPartner, string> = {
               Internal: "#BA7517", // amber
               SFH: "#534AB7", // violet
               WAG: "#185FA5", // teal
               KASHA: "#1D9E75", // green
             };
 
-            const cohortTotals = COHORTS.map(c => {
-              const row = filtered.filter(i => i.cohort === c);
+            const partnerTotals = PARTNERS.map(c => {
+              const row = filtered.filter(i => i.partner === c);
               const interns = row.reduce((s, i) => s + i.students, 0);
               const placements = row.reduce((s, i) => s + i.placementsAfterInternship, 0);
               return {
-                cohort: c,
+                partner: c,
                 interns,
                 placements,
                 share: total.students ? Math.round((interns / total.students) * 100) : 0,
@@ -611,28 +611,28 @@ export default function InternshipsPage() {
               };
             }).sort((a, b) => b.interns - a.interns);
 
-            const totalPlacementsAfter = cohortTotals.reduce((s, r) => s + r.placements, 0);
+            const totalPlacementsAfter = partnerTotals.reduce((s, r) => s + r.placements, 0);
             const internshipToPlacementRate = total.students ? Math.round((totalPlacementsAfter / total.students) * 100) : 0;
 
-            const cohortBarData = COHORTS.map(c => {
-              const row = cohortTotals.find(x => x.cohort === c)!;
+            const partnerBarData = PARTNERS.map(c => {
+              const row = partnerTotals.find(x => x.partner === c)!;
               return { name: c, Interns: row.interns };
             });
 
-            const cohortDonutData = cohortTotals.map(r => ({ name: r.cohort, value: r.interns }));
-            const COHORT_COLOR_LIST = COHORTS.map(c => COHORT_COLORS[c]);
+            const partnerDonutData = partnerTotals.map(r => ({ name: r.partner, value: r.interns }));
+            const COHORT_COLOR_LIST = PARTNERS.map(c => PARTNER_COLORS[c]);
 
             const yearlyCohort = YEARS.map(yr => {
-              const byCohort: Record<InternshipCohort, number> = {
+              const byCohort: Record<InternshipPartner, number> = {
                 Internal: 0,
                 SFH: 0,
                 WAG: 0,
                 KASHA: 0,
               };
               filtered
-                .filter(i => i.year === Number(yr) && i.cohort)
+                .filter(i => i.year === Number(yr) && i.partner)
                 .forEach(i => {
-                  byCohort[i.cohort] += i.students;
+                  byCohort[i.partner] += i.students;
                 });
               return {
                 Year: String(yr),
@@ -640,9 +640,9 @@ export default function InternshipsPage() {
               };
             });
 
-            const placedNotPlaced = cohortTotals.map(r => {
+            const placedNotPlaced = partnerTotals.map(r => {
               const notPlaced = Math.max(r.interns - r.placements, 0);
-              return { cohort: r.cohort, placed: r.placements, notPlaced };
+              return { partner: r.partner, placed: r.placements, notPlaced };
             });
 
             return (
@@ -656,7 +656,7 @@ export default function InternshipsPage() {
                     clr="#185FA5"
                   />
                   {(["Internal", "SFH", "WAG", "KASHA"] as const).map((c) => {
-                    const row = cohortTotals.find(x => x.cohort === c)!;
+                    const row = partnerTotals.find(x => x.partner === c)!;
                     return (
                       <KpiTile
                         key={c}
@@ -664,7 +664,7 @@ export default function InternshipsPage() {
                         num={row.interns}
                         displayFmt={(n) => String(Math.round(n))}
                         sub={`${row.share}% share  ·  ${row.placementRate}% rate`}
-                        clr={COHORT_COLORS[c]}
+                        clr={PARTNER_COLORS[c]}
                       />
                     );
                   })}
@@ -672,21 +672,21 @@ export default function InternshipsPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <ChartCard
-                    title="Interns by Cohort"
+                    title="Interns by Partner"
                     sub="Participation volume comparison"
                     accent="#534AB7"
                   >
                     <ResponsiveContainer width="100%" height={220}>
-                      <BarChart data={cohortBarData} barCategoryGap="30%" barGap={2}>
+                      <BarChart data={partnerBarData} barCategoryGap="30%" barGap={2}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                         <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                        {COHORTS.map((c) => (
+                        {PARTNERS.map((c) => (
                           <Bar
                             key={c}
                             dataKey="Interns"
-                            fill={COHORT_COLORS[c]}
+                            fill={PARTNER_COLORS[c]}
                             radius={[4, 4, 0, 0]}
                             isAnimationActive={false}
                           />
@@ -694,11 +694,11 @@ export default function InternshipsPage() {
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="mt-4 space-y-2 text-[11px] text-gray-600">
-                      {cohortTotals.map((r) => (
-                        <div key={r.cohort} className="flex items-center justify-between">
+                      {partnerTotals.map((r) => (
+                        <div key={r.partner} className="flex items-center justify-between">
                           <span className="flex items-center gap-1.5 truncate">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COHORT_COLORS[r.cohort] }} />
-                            {r.cohort}
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PARTNER_COLORS[r.partner] }} />
+                            {r.partner}
                           </span>
                           <span className="font-bold text-gray-700 tabular-nums">
                             {r.interns} ({r.share}%)
@@ -709,23 +709,23 @@ export default function InternshipsPage() {
                   </ChartCard>
 
                   <ChartCard
-                    title="Cohort Distribution"
-                    sub="Share of total interns across cohorts"
+                    title="Partner Distribution"
+                    sub="Share of total interns across partner organisations"
                     accent="#BA7517"
                   >
                     <CustomDonut
-                      data={cohortDonutData}
+                      data={partnerDonutData}
                       colors={COHORT_COLOR_LIST}
                       className="h-44"
                       label={`${total.students}`}
                       valueFormatter={(v: number) => `${v} interns`}
                     />
                     <div className="mt-3 space-y-1">
-                      {cohortTotals.map((r, i) => (
-                        <div key={r.cohort} className="flex items-center justify-between text-[11px]">
+                      {partnerTotals.map((r, i) => (
+                        <div key={r.partner} className="flex items-center justify-between text-[11px]">
                           <span className="flex items-center gap-1.5 text-gray-600">
                             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COHORT_COLOR_LIST[i] }} />
-                            {r.cohort}
+                            {r.partner}
                           </span>
                           <span className="font-bold text-gray-700 ml-2">
                             {r.interns} ({r.share}%)
@@ -738,8 +738,8 @@ export default function InternshipsPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <ChartCard
-                    title="Yearly Cohort Growth"
-                    sub="Intern participation by cohort per year"
+                    title="Yearly Partner Growth"
+                    sub="Intern participation by partner organisation per year"
                     accent="#479BD6"
                   >
                     <ResponsiveContainer width="100%" height={220}>
@@ -748,11 +748,11 @@ export default function InternshipsPage() {
                         <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                        {COHORTS.map((c) => (
+                        {PARTNERS.map((c) => (
                           <Bar
                             key={c}
                             dataKey={c}
-                            fill={COHORT_COLORS[c]}
+                            fill={PARTNER_COLORS[c]}
                             radius={[0, 0, 0, 0]}
                             stackId="coh"
                           />
@@ -760,9 +760,9 @@ export default function InternshipsPage() {
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="flex flex-wrap gap-4 mt-4 text-[11px] text-gray-600">
-                      {COHORTS.map((c) => (
+                      {PARTNERS.map((c) => (
                         <span key={c} className="flex items-center gap-1.5">
-                          <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: COHORT_COLORS[c] }} />{c}
+                          <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PARTNER_COLORS[c] }} />{c}
                         </span>
                       ))}
                     </div>
@@ -770,7 +770,7 @@ export default function InternshipsPage() {
 
                   <ChartCard
                     title="Placement Conversion"
-                    sub={`Placement share across cohorts  ·  Internship-to-placement rate: ${internshipToPlacementRate}%`}
+                    sub={`Placement share across partners  ·  Internship-to-placement rate: ${internshipToPlacementRate}%`}
                     accent="#0F6E56"
                   >
                     <ResponsiveContainer width="100%" height={220}>
@@ -779,11 +779,11 @@ export default function InternshipsPage() {
                         <XAxis dataKey="cohort" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                        {COHORTS.map((c) => (
+                        {PARTNERS.map((c) => (
                           <Bar
                             key={c + "-placed"}
                             dataKey="placed"
-                            fill={COHORT_COLORS[c]}
+                            fill={PARTNER_COLORS[c]}
                             stackId="place"
                             radius={[4, 4, 0, 0]}
                           />
