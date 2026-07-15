@@ -1,5 +1,4 @@
 "use client";
-import PortalFooter from "@/components/layout/portal-footer";
 
 import { useState, useMemo } from "react";
 import { Search, Download, ArrowRight, FileText } from "lucide-react";
@@ -292,7 +291,6 @@ export default function ImpactReportsPage() {
 
         <div style={{ marginTop: 24 }}>
           <FeaturedImpactStory footer />
-          <PortalFooter portal="executive" />
         </div>
       </div>
     </div>

@@ -136,16 +136,16 @@ export default function ImpactNav() {
         <div className="relative flex-shrink-0" ref={ref}>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="hidden sm:flex items-center gap-1 text-[11px] px-2.5 py-1.5 rounded-md border font-medium transition-colors"
+            className="hidden sm:flex items-center gap-1 text-[10px] px-2 py-1 rounded-md border font-medium transition-colors"
             style={{
               borderColor: open ? "#9CA3AF" : "#E5E7EB",
               color: open ? "#111827" : "#6B7280",
               backgroundColor: open ? "#F9FAFB" : "white",
             }}
           >
-            <LayoutGrid size={11} />
+            <LayoutGrid size={10} />
             Portals
-            <ChevronDown size={10} className="transition-transform" style={{ transform: open ? "rotate(180deg)" : "none" }} />
+            <ChevronDown size={9} className="transition-transform" style={{ transform: open ? "rotate(180deg)" : "none" }} />
           </button>
 
           {open && (
@@ -158,32 +158,27 @@ export default function ImpactNav() {
                   key={p.label}
                   href={p.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors"
+                  className="flex items-center px-3 py-2.5 hover:bg-gray-50 transition-colors"
                 >
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: p.bg }}>
-                    <span className="text-[10px] font-black" style={{ color: p.color }}>{p.label[0]}</span>
-                  </div>
                   <div>
                     <p className="text-[12px] font-bold text-gray-900 leading-none">{p.label}</p>
                     <p className="text-[10px] text-gray-400 mt-0.5">{p.desc}</p>
                   </div>
                 </Link>
               ))}
+
+              {/* Logout — returns to the sign-in page */}
+              <Link
+                href="/"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 px-3 py-2.5 border-t border-gray-50 hover:bg-gray-50 transition-colors"
+              >
+                <LogOut size={12} className="text-gray-500 flex-shrink-0" />
+                <p className="text-[12px] font-bold text-gray-900 leading-none">Logout</p>
+              </Link>
             </div>
           )}
         </div>
-
-        {/* Logout — returns to the sign-in page */}
-        <Link
-          href="/"
-          title="Sign out"
-          className="flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
-          style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
-        >
-          <LogOut size={11} />
-          <span className="hidden sm:inline">Logout</span>
-        </Link>
 
         </div>
       </div>

@@ -22,10 +22,10 @@ const TEXT      = "#172B4D";
 const SECONDARY = "#5E6C84";
 
 const PORTALS = [
-  { id: "HENT",      label: "HENT — Health Entrepreneurship", href: "/hent" },
-  { id: "HEMP",      label: "HEMP — Health Employment",       href: "/hemp" },
-  { id: "HECO",      label: "HECO — Health Ecosystems",       href: "/heco" },
-  { id: "EXECUTIVE", label: "Executive — All pillars",        href: "/executive" },
+  { id: "HEMP",      label: "HEMP",      href: "/hemp" },
+  { id: "HENT",      label: "HENT",      href: "/hent" },
+  { id: "HECO",      label: "HECO",      href: "/heco" },
+  { id: "EXECUTIVE", label: "EXECUTIVE", href: "/executive" },
 ] as const;
 
 /** What the platform does — four capabilities, not a description of the org. */

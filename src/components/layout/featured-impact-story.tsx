@@ -13,7 +13,7 @@ export default function FeaturedImpactStory({
   footer = false,
   mission = "Africa's Oasis for Health & Education Transformation",
   dataSynced = "18 June 2026, 16:30 CAT",
-  dataSource = "CHII Programs M&E",
+  dataSource = "CHII MELA Consolidated Database",
   analystEmail = "insights@chii.org",
 }: {
   eyebrow?: string;

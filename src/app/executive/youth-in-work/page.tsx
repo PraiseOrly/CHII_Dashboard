@@ -1,5 +1,4 @@
 "use client";
-import PortalFooter from "@/components/layout/portal-footer";
 import { FilterSelect } from "@/components/ui/executive";
 
 import { useState, useMemo } from "react";
@@ -959,8 +958,6 @@ export default function YouthInWorkPage() {
         )}
 
         <FeaturedImpactStory footer />
-
-        <PortalFooter portal="executive" />
       </div>
 
       <style>{`

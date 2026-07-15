@@ -81,10 +81,10 @@ export default function PortalNav({ portal }: { portal: Portal }) {
           <Link
             href="/"
             title="Sign out"
-            className="flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
+            className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
             style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
           >
-            <LogOut size={11} />
+            <LogOut size={10} />
             <span className="hidden sm:inline">Logout</span>
           </Link>
         </div>
