@@ -634,7 +634,7 @@ export default function HackathonsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <PortalFooter portal="hent" source="HENT Hackathons M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" synced="28 May 2026, EAT" />
 
       </div>
     </div>

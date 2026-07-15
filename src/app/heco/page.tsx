@@ -314,7 +314,7 @@ export default function HecoOverviewPage() {
           </ChartCard>
         </section>
 
-        <PortalFooter portal="heco" source="HECO Consolidated Database" />
+        <PortalFooter portal="heco" />
       </div>
     </div>
     </PortalThemeProvider>

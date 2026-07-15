@@ -419,7 +419,7 @@ export default function HEMPOverview() {
             <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
             <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.82)" }}>Mission students, HealthX, internships and graduate impact</p>
             <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-              <span><span style={{ color: "rgba(181,212,244,0.85)", fontWeight: 600 }}>Data source:</span> HEMP Programmes M&amp;E</span>
+              <span><span style={{ color: "rgba(181,212,244,0.85)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.85)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
               <span aria-hidden="true">·</span>
@@ -745,7 +745,7 @@ export default function HEMPOverview() {
         </div>
 
         {/* ── FOOTER STRIP ── */}
-        <PortalFooter portal="hemp" source="HEMP Programmes M&amp;E" />
+        <PortalFooter portal="hemp" />
 
       </div>
     </div>

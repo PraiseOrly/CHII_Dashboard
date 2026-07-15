@@ -1,4 +1,5 @@
 "use client";
+import PortalFooter from "@/components/layout/portal-footer";
 import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/executive";
 
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -804,6 +805,7 @@ export default function ExecutiveDashboard() {
 
         {/* L8 · Footer */}
         <FeaturedImpactStory footer />
+        <PortalFooter portal="executive" />
 
       </div>
     </div>

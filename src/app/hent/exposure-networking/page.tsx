@@ -165,7 +165,7 @@ export default function ExposureNetworkingPage() {
                 Connecting founders with investors, partners, healthcare stakeholders, policy makers and peers
               </p>
               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(190,228,214,0.5)" }}>
-                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Data source:</span> HENT Ecosystem Engagement Log</span>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
                 <span aria-hidden="true">·</span>
                 <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
                 <span aria-hidden="true">·</span>
@@ -374,7 +374,7 @@ export default function ExposureNetworkingPage() {
           </div>
         </section>
 
-        <PortalFooter portal="hent" source="HENT Ecosystem Engagement Log" />
+        <PortalFooter portal="hent" />
 
       </div>
     </div>

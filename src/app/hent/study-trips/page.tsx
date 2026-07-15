@@ -836,7 +836,7 @@ export default function FieldVisitsPage() {
         </section>
 
         {/* FOOTER */}
-        <PortalFooter portal="hent" source="HENT Study Trips M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" synced="28 May 2026, EAT" />
 
       </div>
     </div>

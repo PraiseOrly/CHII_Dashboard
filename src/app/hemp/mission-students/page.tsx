@@ -280,7 +280,7 @@ export default function MissionStudentsPage() {
               Mentorship, guest faculty and mission curator — three pillars of student support
             </p>
             <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Mission Students M&amp;E</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
               <span aria-hidden="true">·</span>
@@ -707,7 +707,7 @@ export default function MissionStudentsPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}
-        <PortalFooter portal="hemp" source="HEMP Mission Students M&amp;E" synced="04 Jun 2026, EAT" />
+        <PortalFooter portal="hemp" synced="04 Jun 2026, EAT" />
 
       </div>
     </div>

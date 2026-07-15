@@ -155,7 +155,7 @@ export default function SiePage() {
                 A hybrid virtual + in-country immersion for non-clinical Health Missions students
               </p>
               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP SIE Programme M&amp;E</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
                 <span aria-hidden="true">·</span>
                 <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
                 <span aria-hidden="true">·</span>
@@ -361,7 +361,7 @@ export default function SiePage() {
           </div>
         </section>
 
-        <PortalFooter portal="hemp" source="HEMP SIE Programme M&amp;E" />
+        <PortalFooter portal="hemp" />
 
       </div>
     </div>

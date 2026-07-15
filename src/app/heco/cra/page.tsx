@@ -200,7 +200,7 @@ export default function CraPage() {
                 Three pillars — Public Sector Fellowship, Fellow-mentored student hackathons, and public health research partnerships
               </p>
               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HECO CRA Programme M&amp;E</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HECO Consolidated Database</span>
                 <span aria-hidden="true">·</span>
                 <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {COHORTS[0]}–{COHORTS[COHORTS.length - 1]}</span>
                 <span aria-hidden="true">·</span>
@@ -360,7 +360,7 @@ export default function CraPage() {
           </div>
         </section>
 
-        <PortalFooter portal="heco" source="HECO CRA Programme M&amp;E" />
+        <PortalFooter portal="heco" />
       </div>
     </div>
     </PortalThemeProvider>

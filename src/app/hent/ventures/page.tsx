@@ -651,7 +651,7 @@ export default function HENTPortfolio() {
         )}
 
         {/* â”€â”€ FOOTER (executive style, HENT green header design) â”€â”€â”€ */}
-        <PortalFooter portal="hent" source="HENT Ventures M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" synced="28 May 2026, EAT" />
 
       </div>
     </div>

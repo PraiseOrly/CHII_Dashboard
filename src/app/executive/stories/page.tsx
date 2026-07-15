@@ -1,4 +1,5 @@
 "use client";
+import PortalFooter from "@/components/layout/portal-footer";
 
 import { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -234,6 +235,7 @@ export default function ImpactStoriesPage() {
 
         <div style={{ marginTop: 16 }}>
           <FeaturedImpactStory footer />
+          <PortalFooter portal="executive" />
         </div>
       </div>
 

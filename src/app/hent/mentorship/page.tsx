@@ -952,7 +952,7 @@ export default function MentorshipPage() {
         </section>
 
         {/* FOOTER */}
-        <PortalFooter portal="hent" source="HENT Mentorship M&amp;E" synced="01 Jun 2026, EAT" />
+        <PortalFooter portal="hent" synced="01 Jun 2026, EAT" />
 
       </div>
     </div>

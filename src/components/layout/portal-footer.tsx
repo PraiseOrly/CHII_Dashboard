@@ -3,6 +3,7 @@
 // which were identical apart from a colour and a source label.
 
 import { getPortalTheme, type Portal } from "@/theme/portals";
+import { DATA_SOURCE } from "@/config/data-sources";
 
 export default function PortalFooter({
   portal,
@@ -10,10 +11,13 @@ export default function PortalFooter({
   synced = "04 Jun 2026, EAT",
 }: {
   portal: Portal;
-  source: string;
+  /** Defaults to the portal's consolidated database. Only pass this to name a
+   *  narrower source — every page should normally use the default. */
+  source?: string;
   synced?: string;
 }) {
   const theme = getPortalTheme(portal);
+  const sourceLabel = source ?? DATA_SOURCE[portal];
   const heroRgb = portal === "hent" ? "14,70,51" : "16,44,94";
 
   return (

@@ -262,7 +262,7 @@ export default function HealthXPage() {
               A multi-institutional career exposure platform — readiness sessions, a health careers exhibition, and the leads it generates
             </p>
             <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP HealthX M&amp;E</span>
+              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
               <span aria-hidden="true">·</span>
@@ -801,7 +801,7 @@ export default function HealthXPage() {
         </section>
 
         {/* â”€â”€ FOOTER STRIP â”€â”€â”€ */}
-        <PortalFooter portal="hemp" source="HEMP HealthX M&amp;E" synced="04 Jun 2026, EAT" />
+        <PortalFooter portal="hemp" synced="04 Jun 2026, EAT" />
 
       </div>
     </div>

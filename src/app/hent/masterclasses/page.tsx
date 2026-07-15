@@ -685,7 +685,7 @@ export default function MasterclassesPage() {
         )}
 
         {/* FOOTER */}
-        <PortalFooter portal="hent" source="HENT Masterclasses M&amp;E" synced="28 May 2026, EAT" />
+        <PortalFooter portal="hent" synced="28 May 2026, EAT" />
 
       </div>
     </div>

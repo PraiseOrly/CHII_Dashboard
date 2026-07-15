@@ -983,7 +983,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* â"€â"€ FOOTER STRIP â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
-        <PortalFooter portal="hent" source="HENT Programmes M&amp;E" synced="01 Jun 2026, EAT" />
+        <PortalFooter portal="hent" synced="01 Jun 2026, EAT" />
 
       </div>
     </div>
