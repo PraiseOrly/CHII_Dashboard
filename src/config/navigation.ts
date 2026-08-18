@@ -43,8 +43,7 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
       { label: "Overview",                       href: "/hemp" },
       { label: "Internship",                     href: "/hemp/internships" },
       { label: "Signature Immersive Experience", href: "/hemp/sie" },
-      { label: "HealthX: Explore What's Next",   href: "/hemp/healthx" },
-      { label: "Mission Students",               href: "/hemp/mission-students" },
+      { label: "HealthX",                        href: "/hemp/healthx" },
     ],
   },
 
@@ -53,8 +52,9 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     wordmarkLines: ["HEALTH", "ECOSYSTEMS", "PILLAR"],
     rootHref: "/heco",
     items: [
-      { label: "Overview", href: "/heco" },
-      { label: "CRA",      href: "/heco/cra" },
+      { label: "Overview",          href: "/heco" },
+      { label: "CRA",               href: "/heco/cra" },
+      { label: "Mission Students",  href: "/hemp/mission-students" },
     ],
   },
 
