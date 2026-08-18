@@ -2,9 +2,10 @@
 // One nav for every portal. Replaces HENTNav / HEMPNav / HECONav, which were
 // identical apart from their colour, wordmark and nav items.
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon, Download, LogOut } from "lucide-react";
+import { Sun, Moon, Download, LogOut, Menu, X } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { getPortalTheme, type Portal } from "@/theme/portals";
 import { PORTAL_NAVS } from "@/config/navigation";
@@ -12,11 +13,17 @@ import { PORTAL_NAVS } from "@/config/navigation";
 export default function PortalNav({ portal }: { portal: Portal }) {
   const pathname = usePathname();
   const [isDark, toggleTheme] = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const theme = getPortalTheme(portal);
   const config = PORTAL_NAVS[portal];
   const accent = portal === "hent" ? theme.deep : theme.brand;
   const activeHref = resolveActiveHref(pathname, config.items.map(i => i.href), config.rootHref);
+
+  // Route changes should close any open mobile menu.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
     <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
@@ -36,8 +43,8 @@ export default function PortalNav({ portal }: { portal: Portal }) {
 
         <div className="h-6 w-px bg-gray-200 flex-shrink-0" />
 
-        {/* Tabs */}
-        <nav className="flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        {/* Tabs — full row on laptop/desktop, collapses to a hamburger menu below */}
+        <nav className="hidden lg:flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {config.items.map(({ label, href }) => {
             const isActive = href === activeHref;
             return (
@@ -61,6 +68,16 @@ export default function PortalNav({ portal }: { portal: Portal }) {
 
         {/* Controls */}
         <div className="flex items-center gap-1.5 flex-shrink-0 ml-auto">
+          <button
+            onClick={() => setMenuOpen(open => !open)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+            className="lg:hidden flex items-center justify-center w-8 h-8 rounded-md border transition-colors flex-shrink-0"
+            style={{ borderColor: "#E5E7EB", color: accent, backgroundColor: "white" }}
+          >
+            {menuOpen ? <X size={16} /> : <Menu size={16} />}
+          </button>
+
           <button
             onClick={toggleTheme}
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -89,6 +106,28 @@ export default function PortalNav({ portal }: { portal: Portal }) {
           </Link>
         </div>
       </div>
+
+      {/* Mobile/tablet menu — mirrors the desktop tabs as a vertical list */}
+      {menuOpen && (
+        <nav className="lg:hidden border-t border-gray-200 bg-white px-3 py-2 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
+          {config.items.map(({ label, href }) => {
+            const isActive = href === activeHref;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center px-3 py-3 rounded-md text-[13px] font-bold transition-colors"
+                style={{
+                  color: isActive ? accent : "#374151",
+                  backgroundColor: isActive ? `${accent}14` : "transparent",
+                }}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </div>
   );
 }
