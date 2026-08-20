@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown, Sun, Moon, Download, LogOut } from "lucide-react";
+import { LayoutGrid, ChevronDown, Sun, Moon, Download, LogOut, Menu, X } from "lucide-react";
 
 const NAVY = "#042C53";
 
@@ -61,6 +61,7 @@ export default function ImpactNav() {
   const pathname    = usePathname();
   const activeLabel = getActiveTab(pathname);
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [dark, toggleTheme] = useTheme();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -71,6 +72,10 @@ export default function ImpactNav() {
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
   }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
     <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
@@ -85,8 +90,8 @@ export default function ImpactNav() {
         {/* Divider */}
         <div className="h-6 w-px bg-gray-200 flex-shrink-0" />
 
-        {/* Tab navigation — horizontally scrollable */}
-        <nav className="flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        {/* Tab navigation — full row once there's room for all tabs, collapses to a hamburger menu below */}
+        <nav className="hidden xl:flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {IMPACT_TABS.map((tab) => {
             const isActive = tab.label === activeLabel;
             return (
@@ -112,6 +117,17 @@ export default function ImpactNav() {
 
         {/* Right-aligned control group */}
         <div className="flex items-center gap-1.5 flex-shrink-0 ml-auto">
+
+        {/* Hamburger — mobile/tablet only */}
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+          className="xl:hidden flex items-center justify-center w-8 h-8 rounded-md border transition-colors flex-shrink-0"
+          style={{ borderColor: "#E5E7EB", color: NAVY, backgroundColor: "white" }}
+        >
+          {menuOpen ? <X size={16} /> : <Menu size={16} />}
+        </button>
 
         {/* Theme toggle */}
         <button
@@ -182,6 +198,58 @@ export default function ImpactNav() {
 
         </div>
       </div>
+
+      {/* Mobile/tablet menu — mirrors the desktop tabs plus the portal switcher and sign out */}
+      {menuOpen && (
+        <nav className="xl:hidden border-t border-gray-200 bg-white px-3 py-2 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
+          {IMPACT_TABS.map((tab) => {
+            const isActive = tab.label === activeLabel;
+            return (
+              <Link
+                key={tab.label}
+                href={tab.href}
+                className="flex items-center px-3 py-3 rounded-md text-[13px] font-bold transition-colors"
+                style={{
+                  color: isActive ? NAVY : "#374151",
+                  backgroundColor: isActive ? "#EFF6FF" : "transparent",
+                }}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
+
+          <div className="mt-2 pt-2 border-t border-gray-100">
+            <p className="px-3 pb-1 text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Switch Portal</p>
+            {PORTAL_LINKS.map((p) => (
+              <Link
+                key={p.label}
+                href={p.href}
+                className="flex items-center px-3 py-2.5 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                <div>
+                  <p className="text-[12px] font-bold text-gray-900 leading-none">{p.label}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{p.desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-1 pt-1 border-t border-gray-100 flex items-center justify-between px-3">
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 py-2.5 text-[12px] font-bold text-gray-700"
+            >
+              {dark ? <Sun size={14} /> : <Moon size={14} />}
+              {dark ? "Light mode" : "Dark mode"}
+            </button>
+            <Link href="/" className="flex items-center gap-1.5 py-2.5 text-[12px] font-bold text-gray-700">
+              <LogOut size={14} />
+              Logout
+            </Link>
+          </div>
+        </nav>
+      )}
     </div>
   );
 }

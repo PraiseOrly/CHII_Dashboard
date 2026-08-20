@@ -43,8 +43,8 @@ export default function PortalNav({ portal }: { portal: Portal }) {
 
         <div className="h-6 w-px bg-gray-200 flex-shrink-0" />
 
-        {/* Tabs — full row on laptop/desktop, collapses to a hamburger menu below */}
-        <nav className="hidden lg:flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        {/* Tabs — full row once there's room for the longest portal's items, collapses to a hamburger menu below */}
+        <nav className="hidden xl:flex items-stretch justify-center flex-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {config.items.map(({ label, href }) => {
             const isActive = href === activeHref;
             return (
@@ -72,7 +72,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
             onClick={() => setMenuOpen(open => !open)}
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
-            className="lg:hidden flex items-center justify-center w-8 h-8 rounded-md border transition-colors flex-shrink-0"
+            className="xl:hidden flex items-center justify-center w-8 h-8 rounded-md border transition-colors flex-shrink-0"
             style={{ borderColor: "#E5E7EB", color: accent, backgroundColor: "white" }}
           >
             {menuOpen ? <X size={16} /> : <Menu size={16} />}
@@ -109,7 +109,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
 
       {/* Mobile/tablet menu — mirrors the desktop tabs as a vertical list */}
       {menuOpen && (
-        <nav className="lg:hidden border-t border-gray-200 bg-white px-3 py-2 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <nav className="xl:hidden border-t border-gray-200 bg-white px-3 py-2 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
           {config.items.map(({ label, href }) => {
             const isActive = href === activeHref;
             return (
