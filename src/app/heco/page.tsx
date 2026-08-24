@@ -140,18 +140,18 @@ export default function HecoOverviewPage() {
           <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
           <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
             <div style={{ textAlign: "center" }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-              <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
+              <h1 className="text-2xl sm:text-3xl font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
+              <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "rgba(255,255,255,0.92)" }}>
                 The ecosystem mandate across its three core pillars — fellowship, hackathons and public health research
               </p>
-              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HECO Consolidated Database</span>
+              <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>
+                <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Data source:</span> HECO Consolidated Database</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
+                <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
                 <span aria-hidden="true">·</span>
                 <span>3 pillars tracked</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
+                <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
               </div>
             </div>
           </div>
