@@ -66,7 +66,7 @@ export default function StatsKpiCard({
     }}>
       {/* Label row: title + inline i tooltip */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: lbl }}>
+        <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: lbl }}>
           {label}
         </p>
         <div
