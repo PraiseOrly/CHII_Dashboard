@@ -141,7 +141,7 @@ export default function HecoOverviewPage() {
           <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
             <div style={{ textAlign: "center" }}>
               <h1 className="text-2xl sm:text-3xl font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-              <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "rgba(255,255,255,0.92)" }}>
+              <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>
                 The ecosystem mandate across its three core pillars — fellowship, hackathons and public health research
               </p>
               <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>

@@ -605,7 +605,7 @@ export default function ExecutiveDashboard() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <h1 className="text-2xl sm:text-3xl font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Overview</h1>
-            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "rgba(255,255,255,0.92)" }}>Programme delivery, participation, ventures and impact</p>
+            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#B9E5D7" }}>Programme delivery, participation, ventures and impact</p>
             <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>
               <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Data source:</span> HENT Consolidated Database</span>
               <span aria-hidden="true">·</span>

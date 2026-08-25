@@ -4,8 +4,8 @@ import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarLi
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   AlertCircle, Award, Briefcase, CheckCircle, Clock,
-  Download, FileText, Globe, GraduationCap, Handshake,
-  Heart, Moon, Star, Sun, Target, TrendingUp, Users, Zap,
+  Download, FileText, GraduationCap, Handshake,
+  Moon, Sun, Target, TrendingUp, Users, Zap,
 } from "lucide-react";
 
 import { healthXSessions } from "@/data/hemp/healthx";
@@ -651,11 +651,11 @@ export default function ExecutiveDashboard() {
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-2xl sm:text-3xl font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>
                 Overview
               </h1>
             </div>
-            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "rgba(255,255,255,0.92)" }}>
+            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>
               Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
             </p>
             <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>
@@ -766,38 +766,30 @@ export default function ExecutiveDashboard() {
 
         {/* L7 · Strategic Insights */}
         <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-[3px] h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "#042C53" }} />
-            <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ color: "#14306B" }}>Strategic Insights</p>
+          <div className="flex items-center gap-2.5 mb-4" style={{ backgroundColor: "#14306B", borderRadius: 10, padding: "12px 20px" }}>
+            <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
+            <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Strategic Insights</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
-            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#185FA514", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                <Heart size={16} color="#185FA5" />
-              </div>
-              <p style={{ fontSize: 12, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Women Lead Outcomes</p>
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Female graduates show 12% higher employment conversion, with 3x greater likelihood of launching health-adjacent enterprises.</p>
+            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px", border: "1px solid rgba(0,33,71,0.08)", borderTop: "3px solid #185FA5" }}>
+              <p style={{ fontSize: 28, fontWeight: 800, color: "#185FA5", lineHeight: 1, letterSpacing: "-0.01em", marginBottom: 10 }}>+12%</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Women Lead Outcomes</p>
+              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>Female graduates show 12% higher employment conversion, with 3x greater likelihood of launching health-adjacent enterprises.</p>
             </div>
-            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#1D9E7514", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                <TrendingUp size={16} color="#1D9E75" />
-              </div>
-              <p style={{ fontSize: 12, fontWeight: 700, color: "#111827", marginBottom: 6 }}>HENT Multiplies Impact</p>
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Each HENT participant creates an average of 1.4 downstream opportunities through peer mentorship and enterprise job creation.</p>
+            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px", border: "1px solid rgba(0,33,71,0.08)", borderTop: "3px solid #1D9E75" }}>
+              <p style={{ fontSize: 28, fontWeight: 800, color: "#1D9E75", lineHeight: 1, letterSpacing: "-0.01em", marginBottom: 10 }}>1.4x</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 6 }}>HENT Multiplies Impact</p>
+              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>Each HENT participant creates an average of 1.4 downstream opportunities through peer mentorship and enterprise job creation.</p>
             </div>
-            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#7F77DD14", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                <Star size={16} color="#7F77DD" />
-              </div>
-              <p style={{ fontSize: 12, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Quality Drives Retention</p>
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>Programs with satisfaction above 4.2 show 34% higher completion rates and significantly better 12-month employment outcomes.</p>
+            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px", border: "1px solid rgba(0,33,71,0.08)", borderTop: "3px solid #7F77DD" }}>
+              <p style={{ fontSize: 28, fontWeight: 800, color: "#7F77DD", lineHeight: 1, letterSpacing: "-0.01em", marginBottom: 10 }}>+34%</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Quality Drives Retention</p>
+              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>Programs with satisfaction above 4.2 show 34% higher completion rates and significantly better 12-month employment outcomes.</p>
             </div>
-            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "18px 20px", border: "1px solid rgba(0,33,71,0.08)" }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "#BA751714", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                <Globe size={16} color="#BA7517" />
-              </div>
-              <p style={{ fontSize: 12, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Pan-African Network Effect</p>
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>{D.allCountries.length} active countries create cross-border opportunity flows — graduates in one market creating jobs in two others.</p>
+            <div style={{ backgroundColor: "white", borderRadius: 10, padding: "20px", border: "1px solid rgba(0,33,71,0.08)", borderTop: "3px solid #BA7517" }}>
+              <p style={{ fontSize: 28, fontWeight: 800, color: "#BA7517", lineHeight: 1, letterSpacing: "-0.01em", marginBottom: 10 }}>{D.allCountries.length}</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Pan-African Network Effect</p>
+              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>{D.allCountries.length} active countries create cross-border opportunity flows — graduates in one market creating jobs in two others.</p>
             </div>
           </div>
         </div>
