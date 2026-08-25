@@ -42,8 +42,9 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     items: [
       { label: "Overview",                       href: "/hemp" },
       { label: "Internship",                     href: "/hemp/internships" },
-      { label: "Signature Immersive Experience", href: "/hemp/sie" },
+      { label: "SIE",                             href: "/hemp/sie" },
       { label: "HealthX",                        href: "/hemp/healthx" },
+      { label: "Course",                         href: "/hemp/course" },
     ],
   },
 

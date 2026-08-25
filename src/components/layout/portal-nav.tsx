@@ -18,6 +18,8 @@ export default function PortalNav({ portal }: { portal: Portal }) {
   const theme = getPortalTheme(portal);
   const config = PORTAL_NAVS[portal];
   const accent = portal === "hent" ? theme.deep : theme.brand;
+  // HEMP's tab labels match the executive dashboard's navy exactly.
+  const tabAccent = portal === "hemp" ? "#042C53" : accent;
   const activeHref = resolveActiveHref(pathname, config.items.map(i => i.href), config.rootHref);
 
   // Route changes should close any open mobile menu.
@@ -52,14 +54,14 @@ export default function PortalNav({ portal }: { portal: Portal }) {
                 key={href}
                 href={href}
                 className="relative flex flex-col items-center justify-center px-2.5 sm:px-3 h-16 transition-colors group flex-shrink-0"
-                style={{ color: isActive ? accent : `${accent}80` }}
+                style={{ color: isActive ? tabAccent : `${tabAccent}80` }}
               >
                 {!isActive && (
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: "#F1F5F9" }} />
                 )}
                 <span className="relative text-[12px] font-bold leading-tight whitespace-nowrap">{label}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full" style={{ backgroundColor: accent }} />
+                  <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full" style={{ backgroundColor: tabAccent }} />
                 )}
               </Link>
             );
@@ -118,8 +120,8 @@ export default function PortalNav({ portal }: { portal: Portal }) {
                 href={href}
                 className="flex items-center px-3 py-3 rounded-md text-[13px] font-bold transition-colors"
                 style={{
-                  color: isActive ? accent : "#374151",
-                  backgroundColor: isActive ? `${accent}14` : "transparent",
+                  color: isActive ? tabAccent : "#374151",
+                  backgroundColor: isActive ? `${tabAccent}14` : "transparent",
                 }}
               >
                 {label}
