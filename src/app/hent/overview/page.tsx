@@ -523,7 +523,7 @@ function KpiTile({ label, num, displayFmt, sub, clr, pct, bench, Icon, tip }: {
   return (
     <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
       <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#0E4633" }}>{label}</p>
+        <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "#0E4633" }}>{label}</p>
         {tip && <InfoDot tip={tip} />}
       </div>
       <div className="flex items-center justify-center gap-2">
