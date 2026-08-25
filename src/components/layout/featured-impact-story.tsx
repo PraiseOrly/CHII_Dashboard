@@ -66,20 +66,20 @@ export default function FeaturedImpactStory({
         <div style={{ position: "absolute", inset: 0, zIndex: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "0 24px" }}>
           {/* Strategic anchor — mission */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 9, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>{mission}</span>
+            <span className="text-[13px] sm:text-sm" style={{ fontWeight: 700, fontStyle: "italic", color: "white" }}>{mission}</span>
           </div>
 
           {/* Data authority & support */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 11, color: "#B5D4F4" }}>
+            <span className="text-[12px] sm:text-[13px]" style={{ color: "#B5D4F4" }}>
               <span style={{ color: "#85B7EB", fontWeight: 600 }}>Data Last Synced:</span> {dataSynced}
             </span>
-            <span style={{ fontSize: 11, color: "rgba(133,183,235,0.55)" }}>|</span>
-            <span style={{ fontSize: 11, color: "#B5D4F4" }}>
+            <span className="text-[12px] sm:text-[13px]" style={{ color: "rgba(133,183,235,0.55)" }}>|</span>
+            <span className="text-[12px] sm:text-[13px]" style={{ color: "#B5D4F4" }}>
               <span style={{ color: "#85B7EB", fontWeight: 600 }}>Source:</span> {dataSource}
             </span>
-            <span style={{ fontSize: 11, color: "rgba(133,183,235,0.55)" }}>|</span>
-            <a href={`mailto:${analystEmail}`} style={{ fontSize: 11, fontWeight: 600, color: "white", border: "1px solid rgba(133,183,235,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
+            <span className="text-[12px] sm:text-[13px]" style={{ color: "rgba(133,183,235,0.55)" }}>|</span>
+            <a href={`mailto:${analystEmail}`} className="text-[12px] sm:text-[13px]" style={{ fontWeight: 600, color: "white", border: "1px solid rgba(133,183,235,0.4)", borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
               Contact Analyst
             </a>
           </div>

@@ -393,7 +393,7 @@ export default function OutreachPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Outreach &amp; Access</h1>
             </div>
-            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Outreach interventions across CHII&apos;s HEMP · HENT · HECO programs</p>
+            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>Outreach interventions across CHII&apos;s HEMP · HENT · HECO programs</p>
             <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(181,212,244,0.5)" }}>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> CHII MELA Consolidated Database</span>
               <span aria-hidden="true">·</span>
@@ -449,7 +449,7 @@ export default function OutreachPage() {
         {/* ════ SECTION 2 — REACH & PARTICIPATION ════ */}
         {show(1) && (
         <section className="space-y-4">
-          <SectionHeader title="Reach & Participation" blurb="How many people did we reach, and where did participation come from?" />
+          <SectionHeader title="Reach & Participation" blurb="How many people we reached, who we're reaching, and the wider student population we draw from." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Participants by Program" subtitle="HEMP · HENT · HECO, split by gender"
               info="Participant counts per program, split by gender (Female / Male).">
@@ -499,14 +499,6 @@ export default function OutreachPage() {
               </LineChart>
             </ResponsiveContainer>
           </Panel>
-        </section>
-
-        )}
-
-        {/* ════ SECTION 3 — WHO ARE WE REACHING ════ */}
-        {show(2) && (
-        <section className="space-y-4">
-          <SectionHeader title="Who Are We Reaching?" blurb="The demographics and inclusion profile of participants." />
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.45fr) minmax(0, 0.55fr)", gap: 16, alignItems: "stretch" }} className="oa-grid">
             <Panel title="Gender Distribution" subtitle="Female · Male"
               info="Share of participants by gender.">
@@ -538,15 +530,6 @@ export default function OutreachPage() {
               </Panel>
             </div>
           </div>
-        </section>
-
-        )}
-
-        {/* ════ SECTION 4 — STUDENT POPULATION PROFILE ════ */}
-        {show(3) && (
-        <section className="space-y-4">
-          <SectionHeader title="Student Population Profile" blurb="The wider student body outreach draws from." />
-
           <Panel title="Population Summary" subtitle="Total enrolment by student population"
             info="Total enrolment and female count by student population.">
             <ResponsiveContainer width="100%" height={210}>
@@ -601,8 +584,8 @@ export default function OutreachPage() {
 
         )}
 
-        {/* ════ SECTION 5 — ENGAGEMENT OUTCOMES ════ */}
-        {show(4) && (
+        {/* ════ SECTION 3 — ENGAGEMENT OUTCOMES ════ */}
+        {show(2) && (
         <section className="space-y-4">
           <SectionHeader title="Engagement Outcomes" blurb="What happened after people participated." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>

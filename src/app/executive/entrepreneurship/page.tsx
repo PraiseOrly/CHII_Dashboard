@@ -363,7 +363,7 @@ export default function EntrepreneurshipPage() {
             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Entrepreneurship</h1>
             </div>
-            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>The journey from founder to enterprise growth, jobs created, and long-term economic impact</p>
+            <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>The journey from founder to enterprise growth, jobs created, and long-term economic impact</p>
             <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(181,212,244,0.5)" }}>
               <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> CHII MELA Consolidated Database</span>
               <span aria-hidden="true">·</span>
