@@ -656,7 +656,7 @@ export default function ExecutiveDashboard() {
               </h1>
             </div>
             <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>
-              Consolidated analytics across CHII&apos;s HEMP &amp; HENT programs
+              Consolidated analytics across CHII&apos;s HEMP, HENT &amp; HECO programs
             </p>
             <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>
               <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Data source:</span> CHII MELA Consolidated Database</span>

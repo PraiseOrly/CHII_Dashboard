@@ -201,9 +201,7 @@ function MiniKpi({ Icon, label, value }: { Icon: React.ComponentType<any>; label
 
 const OA_SECTIONS: { n: number; label: string }[] = [
   { n: 1, label: "Reach & Participation" },
-  { n: 2, label: "Who Are We Reaching?" },
-  { n: 3, label: "Student Population" },
-  { n: 4, label: "Engagement Outcomes" },
+  { n: 2, label: "Engagement Outcomes" },
 ];
 
 /* ════════════════════════════════════════════════════════
