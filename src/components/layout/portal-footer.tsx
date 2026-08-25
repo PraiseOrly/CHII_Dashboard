@@ -35,20 +35,20 @@ export default function PortalFooter({
       <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: `linear-gradient(90deg, rgba(${heroRgb},0) 0%, ${theme.hero} 34%, ${theme.hero} 66%, rgba(${heroRgb},0) 100%)` }} />
 
       <div style={{ position: "relative", zIndex: 10, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 8, padding: "18px 24px" }}>
-        <span style={{ fontSize: 14, fontWeight: 700, fontStyle: "italic", color: "white" }}>
+        <span className="text-[13px] sm:text-sm" style={{ fontWeight: 700, fontStyle: "italic", color: "white" }}>
           Africa&apos;s Oasis for Health &amp; Education Transformation
         </span>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 11, color: theme.heroText }}>
+          <span className="text-[12px] sm:text-[13px]" style={{ color: theme.heroText }}>
             <span style={{ color: theme.heroAccent, fontWeight: 600 }}>Data Last Synced:</span> {synced}
           </span>
-          <span style={{ fontSize: 11, color: theme.heroText, opacity: 0.6 }}>|</span>
-          <span style={{ fontSize: 11, color: theme.heroText }}>
-            <span style={{ color: theme.heroAccent, fontWeight: 600 }}>Source:</span> {source}
+          <span className="text-[12px] sm:text-[13px]" style={{ color: theme.heroText, opacity: 0.6 }}>|</span>
+          <span className="text-[12px] sm:text-[13px]" style={{ color: theme.heroText }}>
+            <span style={{ color: theme.heroAccent, fontWeight: 600 }}>Source:</span> {sourceLabel}
           </span>
-          <span style={{ fontSize: 11, color: theme.heroText, opacity: 0.6 }}>|</span>
-          <a href="mailto:insights@chii.org"
-            style={{ fontSize: 11, fontWeight: 600, color: "white", border: `1px solid ${theme.heroAccent}66`, borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
+          <span className="text-[12px] sm:text-[13px]" style={{ color: theme.heroText, opacity: 0.6 }}>|</span>
+          <a href="mailto:insights@chii.org" className="text-[12px] sm:text-[13px]"
+            style={{ fontWeight: 600, color: "white", border: `1px solid ${theme.heroAccent}66`, borderRadius: 6, padding: "4px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>
             Contact Analyst
           </a>
         </div>

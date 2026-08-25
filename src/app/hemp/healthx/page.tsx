@@ -259,7 +259,7 @@ export default function HealthXPage() {
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>HealthX: Explore What&apos;s Next</h1>
             </div>
             <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>
-              A multi-institutional career exposure platform — readiness sessions, a health careers exhibition, and the leads it generates
+              A multi-institutional platform connecting students to health careers through readiness sessions, career exhibitions, and opportunities
             </p>
             <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>
               <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Data source:</span> HEMP Consolidated Database</span>
