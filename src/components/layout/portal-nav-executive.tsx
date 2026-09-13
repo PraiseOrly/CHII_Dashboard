@@ -28,7 +28,6 @@ function useTheme(): [boolean, () => void] {
 
 export const IMPACT_TABS = [
   { label: "At a Glance",                 href: "/executive/at-a-glance",      color: "#0891B2", bg: "#ECFEFF" },
-  { label: "Overview",                    href: "/executive",                  color: "#002147", bg: "#EFF6FF" },
   { label: "Outreach",                    href: "/executive/outreach",         color: "#0D9488", bg: "#F0FDFA" },
   { label: "Youth in Work",               href: "/executive/youth-in-work",    color: "#0EA5E9", bg: "#F0F9FF" },
   { label: "Wage Employment",             href: "/executive/wage-employment",  color: "#F59E0B", bg: "#FFFBEB" },
@@ -48,7 +47,6 @@ export type ImpactTabLabel = typeof IMPACT_TABS[number]["label"];
 
 function getActiveTab(pathname: string): ImpactTabLabel {
   if (pathname.startsWith("/executive/at-a-glance"))      return "At a Glance";
-  if (pathname === "/executive")                          return "Overview";
   if (pathname.startsWith("/executive/outreach"))         return "Outreach";
   if (pathname.startsWith("/executive/youth-in-work"))    return "Youth in Work";
   if (pathname.startsWith("/executive/wage-employment"))  return "Wage Employment";
@@ -56,7 +54,7 @@ function getActiveTab(pathname: string): ImpactTabLabel {
   if (pathname.startsWith("/executive/further-education")) return "Further Education";
   if (pathname.startsWith("/executive/reports"))          return "Impact Reports";
   if (pathname.startsWith("/executive/stories"))          return "Impact Stories";
-  return "Overview";
+  return "At a Glance";
 }
 
 export default function ImpactNav() {
