@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import {
   Users, Info, Rocket, Star, Briefcase,
-  Scale, LifeBuoy, Activity, ShieldCheck, Globe, TrendingUp, Lightbulb, Banknote,
+  Scale, LifeBuoy, Activity, ShieldCheck, Globe, TrendingUp, Banknote,
   SlidersHorizontal, X,
 } from "lucide-react";
 import {
@@ -143,9 +143,7 @@ const SECTIONS: { n: number; label: string }[] = [
   { n: 2, label: "Business Growth" },
   { n: 3, label: "Employment Created" },
   { n: 4, label: "Founder Profile & Outcomes" },
-  { n: 5, label: "Sectors & Innovation" },
   { n: 6, label: "CHII Support" },
-  { n: 8, label: "Insights & Leaders" },
 ];
 
 export default function EntrepreneurshipPage() {
@@ -347,13 +345,6 @@ export default function EntrepreneurshipPage() {
     return { indicators, household, persistence };
   }, []);
 
-  const insights = [
-    "Agriculture employs the largest number of youth across the enterprise portfolio.",
-    `Female-led enterprises account for ${share(kpis.female, total)}% of all businesses.`,
-    "CHII-supported enterprises create roughly 1.8× more jobs than unsupported ones.",
-    "Formally registered businesses survive longer than informal businesses.",
-  ];
-
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
 
@@ -532,24 +523,24 @@ export default function EntrepreneurshipPage() {
             <SectionKpi label="Market Expansion" num={400} sub="entered new markets" Icon={Globe}
               tooltip="Enterprises that expanded into new markets or geographies." />
           </div>
-          <Panel title="Capital Raised Over Time" subtitle="Total raised by year (USD)"
-            info="Total capital raised by enterprises each year, in USD. Hover a point for the exact amount.">
-            <ResponsiveContainer width="100%" height={260}>
-              <LineChart data={growth.capital} margin={{ top: 10, right: 16, bottom: 14, left: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false}
-                  label={{ value: "Year", position: "insideBottom", offset: -8, fontSize: 10, fill: "#9CA3AF" }} />
-                <YAxis tickFormatter={usd} tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={56} />
-                <Tooltip content={<MoneyTip />} />
-                <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
-                <Line type="monotone" dataKey="value" name="Capital raised" stroke={C_ACCENT} strokeWidth={2.5} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </Panel>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+            <Panel title="Capital Raised Over Time" subtitle="Total raised by year (USD)"
+              info="Total capital raised by enterprises each year, in USD. Hover a point for the exact amount.">
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={growth.capital} margin={{ top: 10, right: 16, bottom: 14, left: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" />
+                  <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false}
+                    label={{ value: "Year", position: "insideBottom", offset: -8, fontSize: 10, fill: "#9CA3AF" }} />
+                  <YAxis tickFormatter={usd} tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={56} />
+                  <Tooltip content={<MoneyTip />} />
+                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 10 }} />
+                  <Line type="monotone" dataKey="value" name="Capital raised" stroke={C_ACCENT} strokeWidth={2.5} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </Panel>
             <Panel title="Monthly Income Distribution" subtitle="Founders per income band"
               info="Distribution of founders across monthly income bands, ascending from lowest to highest.">
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={growth.income} margin={{ top: 18, right: 12, bottom: 0, left: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} axisLine={false} tickLine={false} interval={0} />
@@ -562,6 +553,8 @@ export default function EntrepreneurshipPage() {
                 </BarChart>
               </ResponsiveContainer>
             </Panel>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Funding Sources" subtitle="How enterprises are funded"
               info="Primary funding source per enterprise, sorted by magnitude.">
               <ResponsiveContainer width="100%" height={250}>
@@ -725,7 +718,7 @@ export default function EntrepreneurshipPage() {
             <SectionKpi label="Countries Represented" num={founders.countries.length} sub="countries" Icon={Globe}
               tooltip="Number of countries where founders are based." />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }} className="ep-two">
             <Panel title="Founder Gender" subtitle="Founder gender split"
               info="Gender distribution of enterprise founders.">
               <Donut data={founders.genderData} colors={GENDER_COLOR} total={total} totalLabel="Founders" height={340} legendPercent />
@@ -738,7 +731,12 @@ export default function EntrepreneurshipPage() {
               info="Gender split among scholar-led enterprises.">
               <Donut data={founders.scholar.gender} colors={GENDER_COLOR} total={founders.scholar.count} totalLabel="Scholars" height={340} legendPercent />
             </Panel>
+            <Panel title="Technology vs Traditional" subtitle="Innovation profile of enterprises"
+              info="Share of enterprises that are technology-enabled versus traditional businesses.">
+              <Donut data={sectors.techVsTraditional} colors={["#102C5E", "#A81B2D"]} total={total} totalLabel="Enterprises" height={340} legendPercent />
+            </Panel>
           </div>
+          <style>{`@media (max-width: 720px){ .ep-two{ grid-template-columns: 1fr !important; } }`}</style>
           <Panel title="Enterprise Work Indicators" subtitle="Share of founders reporting each, %"
             info="Share of founders reporting each decent-work indicator, on a fixed 0–100% scale.">
             <ResponsiveContainer width="100%" height={250}>
@@ -784,14 +782,6 @@ export default function EntrepreneurshipPage() {
               </ResponsiveContainer>
             </Panel>
           </div>
-        </section>
-
-        )}
-
-        {/* ════ SECTION 5 — SECTORS & INNOVATION ════ */}
-        {show(5) && (
-        <section className="space-y-4">
-          <SectionHeader title="Sectors & Innovation" blurb="Where are enterprises creating value?" />
           <Panel title="Enterprises by Sector" subtitle="Sectors, ranked"
             info="Sectors where enterprises concentrate, sorted from most to least.">
             <ResponsiveContainer width="100%" height={Math.max(240, sectors.topSectors.length * 34)}>
@@ -806,26 +796,20 @@ export default function EntrepreneurshipPage() {
               </BarChart>
             </ResponsiveContainer>
           </Panel>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Enterprises by Industry" subtitle="Industries, ranked"
-              info="Finer-grained industry breakdown of enterprises, sorted from most to least.">
-              <ResponsiveContainer width="100%" height={Math.max(240, sectors.industries.length * 32)}>
-                <BarChart layout="vertical" data={sectors.industries} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
-                  <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={120} axisLine={false} tickLine={false} />
-                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={16}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </Panel>
-            <Panel title="Technology vs Traditional" subtitle="Innovation profile of enterprises"
-              info="Share of enterprises that are technology-enabled versus traditional businesses.">
-              <Donut data={sectors.techVsTraditional} colors={["#102C5E", "#A81B2D"]} total={total} totalLabel="Enterprises" height={340} legendPercent />
-            </Panel>
-          </div>
+          <Panel title="Enterprises by Industry" subtitle="Industries, ranked"
+            info="Finer-grained industry breakdown of enterprises, sorted from most to least.">
+            <ResponsiveContainer width="100%" height={Math.max(240, sectors.industries.length * 32)}>
+              <BarChart layout="vertical" data={sectors.industries} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
+                <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={120} axisLine={false} tickLine={false} />
+                <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
+                <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={16}>
+                  <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Panel>
         </section>
 
         )}
@@ -897,41 +881,6 @@ export default function EntrepreneurshipPage() {
           </div>
         </section>
 
-        )}
-
-        {/* ════ SECTION 8 — INSIGHTS & LEADERS ════ */}
-        {show(8) && (
-        <section className="space-y-4">
-          <SectionHeader title="Insights & Leaders" blurb="Standout performance and emerging trends." />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Top Performing Enterprises" subtitle="By jobs created"
-              info="The strongest job-creating enterprises in the portfolio.">
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {ji.topVentures.slice(0, 6).map((row, i) => (
-                  <div key={row.name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ width: 22, height: 22, borderRadius: 6, backgroundColor: `${C_ACCENT}1A`, color: C_ACCENT, fontSize: 11, fontWeight: 800, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
-                    <span style={{ fontSize: 12, color: NAVY, fontWeight: 600, flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.name}</span>
-                    <span style={{ fontSize: 10.5, color: "#9CA3AF" }}>{row.sector}</span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: NAVY, fontVariantNumeric: "tabular-nums", minWidth: 36, textAlign: "right" }}>{fmt(row.jobs)}</span>
-                  </div>
-                ))}
-              </div>
-            </Panel>
-            <Panel title="Emerging Insights" subtitle="Key trends from the portfolio"
-              info="Notable patterns observed across the enterprise portfolio.">
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {insights.map((text, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ width: 26, height: 26, borderRadius: 7, backgroundColor: "rgba(224,164,88,0.16)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Lightbulb size={14} color="#A81B2D" />
-                    </span>
-                    <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.5 }}>{text}</p>
-                  </div>
-                ))}
-              </div>
-            </Panel>
-          </div>
-        </section>
         )}
 
         <FeaturedImpactStory footer />

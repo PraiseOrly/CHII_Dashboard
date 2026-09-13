@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import {
   Users, Info, Download, GraduationCap, BookOpen, Wallet,
-  SlidersHorizontal, X, Globe, MapPin, TrendingUp, Lightbulb,
+  SlidersHorizontal, X, Globe, MapPin, TrendingUp,
 } from "lucide-react";
 import {
   FE_STUDENTS, GENDERS, QUALIFICATIONS, FIELDS, FUNDING_SOURCES, DESTINATIONS,
@@ -120,13 +120,14 @@ function Panel({ title, subtitle, info, children }: {
 }
 
 
-function RankBar({ data, color = BAND, width = 130 }: { data: { name: string; value: number }[]; color?: string; width?: number }) {
+function RankBar({ data, color = BAND, width = 130, legend = false }: { data: { name: string; value: number }[]; color?: string; width?: number; legend?: boolean }) {
   return (
-    <ResponsiveContainer width="100%" height={Math.max(220, data.length * 32)}>
+    <ResponsiveContainer width="100%" height={Math.max(220, data.length * 32) + (legend ? 24 : 0)}>
       <BarChart layout="vertical" data={data} margin={{ top: 4, right: 40, bottom: 0, left: 8 }}>
         <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
         <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={width} axisLine={false} tickLine={false} />
         <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+        {legend && <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />}
         <Bar dataKey="value" name="Graduates" fill={color} radius={[0, 4, 4, 0]} barSize={16}>
           <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
         </Bar>
@@ -134,16 +135,6 @@ function RankBar({ data, color = BAND, width = 130 }: { data: { name: string; va
     </ResponsiveContainer>
   );
 }
-
-const FE_SECTIONS: { n: number; label: string }[] = [
-  { n: 1, label: "Participation" },
-  { n: 2, label: "Student Profile" },
-  { n: 3, label: "Academic Pathways" },
-  { n: 4, label: "Study Destinations" },
-  { n: 5, label: "Funding & Access" },
-  { n: 6, label: "Outcomes & Alignment" },
-  { n: 7, label: "Insights" },
-];
 
 /* ════════════════════════════════════════════════════════
    PAGE
@@ -157,8 +148,6 @@ export default function FurtherEducationPage() {
   const [destination, setDestination] = useState<string>("all");
   const [year, setYear] = useState<"all" | number>("all");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<number | "all">("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
 
   const scope = useMemo(() =>
     FE_STUDENTS.filter(s => {
@@ -194,7 +183,7 @@ export default function FurtherEducationPage() {
     ];
     const origin = countBy(scope, "country", COUNTRIES).sort((a, b) => b.value - a.value);
     const programme = countBy(scope, "programme", PROGRAMMES).sort((a, b) => b.value - a.value);
-    const qualification = countBy(scope, "qualification", QUALIFICATIONS);
+    const qualification = countBy(scope, "qualification", QUALIFICATIONS.filter(q => q !== "Bachelor's top-up"));
     const fieldData = countBy(scope, "field", FIELDS).sort((a, b) => b.value - a.value);
     const relevance = countBy(scope, "relevance", RELEVANCE);
     const region = countBy(scope, "destination", DESTINATIONS);
@@ -277,14 +266,6 @@ export default function FurtherEducationPage() {
     </div>
   );
 
-  const insights = [
-    "Master's programmes account for the largest share of further education.",
-    `Nearly ${d.fundedPct}% of graduates receive scholarships or other funding.`,
-    `Most graduates (${share(d.within, TOTAL)}%) remain within Africa for further study.`,
-    "Scholars progress to postgraduate education at a higher rate than non-scholars.",
-    `Over half (${share(scope.filter(s => s.relevance === "Directly related").length, TOTAL)}%) pursue qualifications directly related to their ALU degree.`,
-  ];
-
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
 
@@ -331,35 +312,18 @@ export default function FurtherEducationPage() {
               tooltip="Distinct countries where graduates pursue further study." />
           </div>
 
-          {/* Section pills (left) + compact filters (right) */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {[{ n: 0, label: "All Sections" }, ...FE_SECTIONS].map(({ n, label }) => {
-                const on = n === 0 ? activeSection === "all" : activeSection === n;
-                return (
-                  <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                    style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                      border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
-                      backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280" }}>
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
+          {/* Filters */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 10 }}>
             {renderFilters()}
           </div>
         </section>
 
-        {/* ════ 1 — PARTICIPATION ════ */}
-        {show(1) && (
+        {/* ════ PARTICIPATION ════ */}
         <section className="space-y-4">
           <SectionHeader title="Participation" blurb="Who continues to further education?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
             <MiniKpi Icon={GraduationCap} label="In Further Study" value={fmt(TOTAL)} />
-            <MiniKpi Icon={BookOpen} label="Active Students" value={fmt(d.enrolled)} />
             <MiniKpi Icon={TrendingUp} label="Further Study Rate" value="5%" />
-            <MiniKpi Icon={Users} label="Scholars Progressing" value={fmt(d.scholars)} />
-            <MiniKpi Icon={Users} label="Talents Progressing" value={fmt(d.talents)} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Further Study Rate: Scholars vs Talents" subtitle="% advancing to further study"
@@ -400,10 +364,8 @@ export default function FurtherEducationPage() {
             </ResponsiveContainer>
           </Panel>
         </section>
-        )}
 
-        {/* ════ 2 — STUDENT PROFILE ════ */}
-        {show(2) && (
+        {/* ════ STUDENT PROFILE ════ */}
         <section className="space-y-4">
           <SectionHeader title="Student Profile" blurb="Who are the learners?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
@@ -426,10 +388,8 @@ export default function FurtherEducationPage() {
             <RankBar data={d.programme} color={C_ACCENT} width={190} />
           </Panel>
         </section>
-        )}
 
-        {/* ════ 3 — ACADEMIC PATHWAYS ════ */}
-        {show(3) && (
+        {/* ════ ACADEMIC PATHWAYS ════ */}
         <section className="space-y-4">
           <SectionHeader title="Academic Pathways" blurb="What qualifications are graduates pursuing?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -439,7 +399,7 @@ export default function FurtherEducationPage() {
             </Panel>
             <Panel title="Field of Study" subtitle="Disciplines, ranked"
               info="Fields of study graduates pursue, sorted from most to least.">
-              <RankBar data={d.fieldData} width={150} />
+              <RankBar data={d.fieldData} width={150} legend />
             </Panel>
           </div>
           <Panel title="Relevance to ALU Degree" subtitle="How further study relates to the degree"
@@ -447,10 +407,8 @@ export default function FurtherEducationPage() {
             <Donut data={d.relevance} colors={["#102C5E", "#479BD6", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
           </Panel>
         </section>
-        )}
 
-        {/* ════ 4 — STUDY DESTINATIONS ════ */}
-        {show(4) && (
+        {/* ════ STUDY DESTINATIONS ════ */}
         <section className="space-y-4">
           <SectionHeader title="Study Destinations" blurb="Where do graduates continue their education?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
@@ -469,10 +427,8 @@ export default function FurtherEducationPage() {
             </Panel>
           </div>
         </section>
-        )}
 
-        {/* ════ 5 — FUNDING & ACCESS ════ */}
-        {show(5) && (
+        {/* ════ FUNDING & ACCESS ════ */}
         <section className="space-y-4">
           <SectionHeader title="Funding & Access" blurb="How are graduates financing further education?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
@@ -503,10 +459,8 @@ export default function FurtherEducationPage() {
             </Panel>
           </div>
         </section>
-        )}
 
-        {/* ════ 6 — OUTCOMES & ALIGNMENT ════ */}
-        {show(6) && (
+        {/* ════ OUTCOMES & ALIGNMENT ════ */}
         <section className="space-y-4">
           <SectionHeader title="Outcomes & Alignment" blurb="How does further study build on graduates' ALU experience?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -532,27 +486,6 @@ export default function FurtherEducationPage() {
             </Panel>
           </div>
         </section>
-        )}
-
-        {/* ════ 7 — INSIGHTS ════ */}
-        {show(7) && (
-        <section className="space-y-4">
-          <SectionHeader title="Insights" blurb="Key trends in lifelong learning." />
-          <Panel title="Emerging Insights" subtitle="Notable patterns across further study"
-            info="Headline observations drawn from the current view.">
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {insights.map((text, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <span style={{ width: 26, height: 26, borderRadius: 7, backgroundColor: "rgba(224,164,88,0.16)", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Lightbulb size={14} color="#A81B2D" />
-                  </span>
-                  <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.5 }}>{text}</p>
-                </div>
-              ))}
-            </div>
-          </Panel>
-        </section>
-        )}
 
         <FeaturedImpactStory footer />
       </div>
