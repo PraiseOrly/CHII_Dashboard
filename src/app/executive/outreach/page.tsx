@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import {
   Users, Building2, GraduationCap, Info,
-  SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility,
+  SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility, UserRound,
 } from "lucide-react";
 import {
   OUTREACH_PARTICIPANTS, INSTITUTIONS, PILLARS, INTERVENTIONS,
@@ -19,7 +19,6 @@ import {
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import HeaderDesign from "@/components/layout/header-design";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
-import { DonutRing as Donut } from "@/components/charts/donut-chart";
 
 /* ── palette ─────────────────────────────────────────── */
 const NAVY = "#14306B";
@@ -184,20 +183,6 @@ function WomanIcon({ size = 20, color, style }: { size?: number; color?: string;
   );
 }
 
-/* small inline KPI used inside demographic sections — white card, blue border */
-function MiniKpi({ Icon, label, value }: { Icon: React.ComponentType<any>; label: string; value: string }) {
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${C_FEMALE}`, padding: "13px 15px", display: "flex", alignItems: "center", gap: 11 }}>
-      <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={20} color={C_FEMALE} />
-      </span>
-      <div style={{ minWidth: 0 }}>
-        <p style={{ fontSize: 21, fontWeight: 800, color: NAVY, lineHeight: 1.05 }}>{value}</p>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</p>
-      </div>
-    </div>
-  );
-}
 
 const OA_SECTIONS: { n: number; label: string }[] = [
   { n: 1, label: "Reach & Participation" },
@@ -273,15 +258,11 @@ export default function OutreachPage() {
   })), [scope]);
 
   /* ── Section 3: demographics ───────────────────────── */
-  const genderData = useMemo(() =>
-    REACH_GENDERS.map(g => ({ name: g, value: scope.filter(s => s.gender === g).length })).filter(d => d.value > 0),
-  [scope]);
-  const genderTotal = genderData.reduce((s, d) => s + d.value, 0);
-
   const inclusion = useMemo(() => {
     const t = scope.length;
     return {
       female: share(scope.filter(s => s.gender === "Female").length, t),
+      male: share(scope.filter(s => s.gender === "Male").length, t),
       refugee: share(scope.filter(s => s.refugee).length, t),
       pwd: share(scope.filter(s => s.pwd).length, t),
       mission: share(scope.filter(s => s.missionStudent).length, t),
@@ -421,8 +402,14 @@ export default function OutreachPage() {
               tooltip="Number of partner institutions (ALU, ALX, ALCHE, Other) represented in the current scope." />
             <StatsKpiCard label="Female Share" num={kpis.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={WomanIcon}
               tooltip="Share of female participants across outreach interventions in scope." />
+            <StatsKpiCard label="Male Share" num={inclusion.male} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={UserRound}
+              tooltip="Share of male participants across outreach interventions in scope." />
             <StatsKpiCard label="Mission Students" num={kpis.missionPct} displayFmt={(n) => `${Math.round(n)}%`} sub="Also degree / mission students" Icon={BookOpen}
               tooltip="Share of participants who are also mission (degree) students." />
+            <StatsKpiCard label="Refugee / IDP" num={inclusion.refugee} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={Shield}
+              tooltip="Share of participants who are refugees or internally displaced persons." />
+            <StatsKpiCard label="Persons w/ Disability" num={inclusion.pwd} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={Accessibility}
+              tooltip="Share of participants who are persons with disability." />
             <StatsKpiCard label="Completion Rate" num={kpis.completionPct} displayFmt={(n) => `${Math.round(n)}%`} sub="Completed engagement" Icon={GraduationCap}
               tooltip="Participants who completed their outreach engagement as a share of those in scope." />
           </div>
@@ -511,37 +498,21 @@ export default function OutreachPage() {
               </LineChart>
             </ResponsiveContainer>
           </Panel>
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.45fr) minmax(0, 0.55fr)", gap: 16, alignItems: "stretch" }} className="oa-grid">
-            <Panel title="Gender Distribution" subtitle="Female · Male"
-              info="Share of participants by gender.">
-              <Donut data={genderData} colors={GENDER_COLOR} total={genderTotal} totalLabel="Total" height={360} legendPercent />
-            </Panel>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
-                <MiniKpi Icon={WomanIcon} label="Female" value={`${inclusion.female}%`} />
-                <MiniKpi Icon={Shield} label="Refugee / IDP" value={`${inclusion.refugee}%`} />
-                <MiniKpi Icon={Accessibility} label="Persons w/ Disability" value={`${inclusion.pwd}%`} />
-                <MiniKpi Icon={BookOpen} label="Mission Students" value={`${inclusion.mission}%`} />
-              </div>
-
-              <Panel title="Inclusion by Program" subtitle="Share of each group within HEMP · HENT · HECO"
-                info="Share of each priority group within HEMP, HENT and HECO.">
-                <ResponsiveContainer width="100%" height={330}>
-                  <BarChart layout="vertical" data={inclusionByProgram} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barCategoryGap="26%">
-                    <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
-                    <XAxis type="number" domain={[0, 100]} tickCount={6} tick={{ fontSize: 9, fill: "#9CA3AF" }} tickFormatter={(v: number) => `${v}%`} axisLine={false} tickLine={false} />
-                    <YAxis type="category" dataKey="metric" tick={{ fontSize: 10, fill: "#374151" }} width={92} axisLine={false} tickLine={false} />
-                    <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    {PILLARS.map(p => (
-                      <Bar key={p} dataKey={p} fill={PILLAR_COLOR[p]} barSize={11} radius={[0, 3, 3, 0]} />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
-              </Panel>
-            </div>
-          </div>
+          <Panel title="Inclusion by Program" subtitle="Share of each group within HEMP · HENT · HECO"
+            info="Share of each priority group within HEMP, HENT and HECO.">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart layout="vertical" data={inclusionByProgram} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barCategoryGap="26%">
+                <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.08)" />
+                <XAxis type="number" domain={[0, 100]} tickCount={6} tick={{ fontSize: 9, fill: "#9CA3AF" }} tickFormatter={(v: number) => `${v}%`} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="metric" tick={{ fontSize: 10, fill: "#374151" }} width={92} axisLine={false} tickLine={false} />
+                <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Legend wrapperStyle={{ fontSize: 10 }} />
+                {PILLARS.map(p => (
+                  <Bar key={p} dataKey={p} fill={PILLAR_COLOR[p]} barSize={11} radius={[0, 3, 3, 0]} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </Panel>
           <Panel title="Population Summary" subtitle="Total enrolment by student population"
             info="Total enrolment and female count by student population.">
             <ResponsiveContainer width="100%" height={210}>
@@ -659,12 +630,6 @@ export default function OutreachPage() {
 
         <FeaturedImpactStory footer />
       </div>
-
-      <style>{`
-        @media (max-width: 860px) {
-          .oa-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </div>
   );
 }

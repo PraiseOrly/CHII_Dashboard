@@ -79,7 +79,7 @@ function Panel({ title, subtitle, info, children }: {
 }) {
   const [tip, setTip] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
       <div style={{ backgroundColor: BAND, padding: "10px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
           <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: TICK, flexShrink: 0 }} />
@@ -102,7 +102,7 @@ function Panel({ title, subtitle, info, children }: {
           </div>
         </div>
       </div>
-      <div style={{ padding: "16px 18px 18px" }}>{children}</div>
+      <div style={{ padding: "16px 18px 18px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>{children}</div>
     </div>
   );
 }
@@ -542,6 +542,7 @@ export default function WageEmploymentPage() {
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={110} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Employed" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
@@ -668,13 +669,13 @@ export default function WageEmploymentPage() {
             <Panel title="Support Helpfulness (1–5)" subtitle="Rating distribution"
               info="Distribution of participant ratings of CHII's support on a 1–5 scale.">
               <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={quality.helpfulness} margin={{ top: 16, right: 10, bottom: 14, left: -16 }}>
+                <BarChart data={quality.helpfulness} margin={{ top: 6, right: 10, bottom: 14, left: -16 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} interval={0}
                     label={{ value: "Rating", position: "insideBottom", offset: -8, fontSize: 10, fill: "#9CA3AF" }} />
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
+                  <Legend verticalAlign="top" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Respondents" fill={BAND} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>

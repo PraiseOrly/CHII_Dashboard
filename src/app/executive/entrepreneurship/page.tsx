@@ -29,6 +29,9 @@ const PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E", "#D17A86
 const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
 const C_ACCENT = "#102C5E";
 const C_FEMALE = "#479BD6";
+const C_ORANGE = "#D45F2C";
+const C_RED    = "#A81B2D";
+const C_INDIGO = "#7F77DD";
 
 /* ── helpers ─────────────────────────────────────────── */
 const share = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
@@ -71,7 +74,7 @@ function Panel({ title, subtitle, info, children }: {
 }) {
   const [tip, setTip] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
       <div style={{ backgroundColor: BAND, padding: "10px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
           <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: TICK, flexShrink: 0 }} />
@@ -94,7 +97,7 @@ function Panel({ title, subtitle, info, children }: {
           </div>
         </div>
       </div>
-      <div style={{ padding: "16px 18px 18px" }}>{children}</div>
+      <div style={{ padding: "16px 18px 18px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>{children}</div>
     </div>
   );
 }
@@ -653,7 +656,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Jobs" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={48}>
+                  <Bar dataKey="value" name="Jobs" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={48}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -668,7 +671,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Jobs" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={48}>
+                  <Bar dataKey="value" name="Jobs" fill={C_ORANGE} radius={[4, 4, 0, 0]} barSize={48}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -683,7 +686,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Jobs" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={48}>
+                  <Bar dataKey="value" name="Jobs" fill={C_RED} radius={[4, 4, 0, 0]} barSize={48}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
@@ -697,7 +700,7 @@ export default function EntrepreneurshipPage() {
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Jobs" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={20}>
+                  <Bar dataKey="value" name="Jobs" fill={C_INDIGO} radius={[0, 4, 4, 0]} barSize={20}>
                     <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
