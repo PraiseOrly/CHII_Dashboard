@@ -136,6 +136,14 @@ function RankBar({ data, color = BAND, width = 130, legend = false }: { data: { 
 /* ════════════════════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════════════════ */
+const FE_SECTIONS: { n: number | "all"; label: string }[] = [
+  { n: "all", label: "All Sections" },
+  { n: 1, label: "Participation" },
+  { n: 2, label: "Student Profile" },
+  { n: 3, label: "Academic Pathways" },
+  { n: 4, label: "Outcomes & Alignment" },
+];
+
 export default function FurtherEducationPage() {
   const [gender, setGender] = useState<"all" | Gender>("all");
   const [scholar, setScholar] = useState<"all" | "scholar" | "non">("all");
@@ -145,6 +153,8 @@ export default function FurtherEducationPage() {
   const [destination, setDestination] = useState<string>("all");
   const [year, setYear] = useState<"all" | number>("all");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<number | "all">("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
 
   const scope = useMemo(() =>
     FE_STUDENTS.filter(s => {
@@ -309,13 +319,27 @@ export default function FurtherEducationPage() {
               tooltip="Distinct countries where graduates pursue further study." />
           </div>
 
-          {/* Filters */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 10 }}>
+          {/* Section pills (left) + compact filters dropdown (right) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {FE_SECTIONS.map(({ n, label }) => {
+                const on = n === "all" ? activeSection === "all" : activeSection === n;
+                return (
+                  <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : n)}
+                    style={{ fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                      border: `1px solid ${on ? "#14306B" : "rgba(0,33,71,0.15)"}`,
+                      backgroundColor: on ? "#14306B" : "white", color: on ? "white" : "#6B7280" }}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
             {renderFilters()}
           </div>
         </section>
 
         {/* ════ PARTICIPATION ════ */}
+        {show(1) && (
         <section className="space-y-4">
           <SectionHeader title="Participation" blurb="Who continues to further education?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -343,8 +367,10 @@ export default function FurtherEducationPage() {
             </ResponsiveContainer>
           </Panel>
         </section>
+        )}
 
         {/* ════ STUDENT PROFILE ════ */}
+        {show(2) && (
         <section className="space-y-4">
           <SectionHeader title="Student Profile" blurb="Who are the learners?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -358,8 +384,10 @@ export default function FurtherEducationPage() {
             </Panel>
           </div>
         </section>
+        )}
 
         {/* ════ ACADEMIC PATHWAYS ════ */}
+        {show(3) && (
         <section className="space-y-4">
           <SectionHeader title="Academic Pathways" blurb="What qualifications are graduates pursuing?" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -377,33 +405,30 @@ export default function FurtherEducationPage() {
             <Donut data={d.relevance} colors={["#102C5E", "#479BD6", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
           </Panel>
         </section>
+        )}
 
         {/* ════ OUTCOMES & ALIGNMENT ════ */}
+        {show(4) && (
         <section className="space-y-4">
           <SectionHeader title="Outcomes & Alignment" blurb="How does further study build on graduates' ALU experience?" />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Relevance to ALU Degree" subtitle="Directly · Somewhat · Different field"
-              info="How closely further study aligns with the ALU degree.">
-              <Donut data={d.relevance} colors={["#102C5E", "#479BD6", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
-            </Panel>
-            <Panel title="Qualification by Degree Programme" subtitle="Qualification mix per programme"
-              info="What qualifications graduates from each ALU programme pursue.">
-              <ResponsiveContainer width="100%" height={Math.max(240, d.qualByProgramme.length * 44)}>
-                <BarChart layout="vertical" data={d.qualByProgramme} margin={{ top: 4, right: 16, bottom: 4, left: 8 }}>
-                  <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.06)" />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
-                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                  {QUALIFICATIONS.map((q, i) => (
-                    <Bar key={q} dataKey={q} stackId="q" fill={PALETTE[i % PALETTE.length]} barSize={18}
-                      radius={i === QUALIFICATIONS.length - 1 ? [0, 4, 4, 0] : undefined} />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            </Panel>
-          </div>
+          <Panel title="Qualification by Degree Programme" subtitle="Qualification mix per programme"
+            info="What qualifications graduates from each ALU programme pursue.">
+            <ResponsiveContainer width="100%" height={Math.max(240, d.qualByProgramme.length * 44)}>
+              <BarChart layout="vertical" data={d.qualByProgramme} margin={{ top: 4, right: 16, bottom: 4, left: 8 }}>
+                <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.06)" />
+                <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 9.5, fill: "#374151" }} width={150} axisLine={false} tickLine={false} />
+                <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
+                <Legend wrapperStyle={{ fontSize: 10 }} />
+                {QUALIFICATIONS.map((q, i) => (
+                  <Bar key={q} dataKey={q} stackId="q" fill={PALETTE[i % PALETTE.length]} barSize={18}
+                    radius={i === QUALIFICATIONS.length - 1 ? [0, 4, 4, 0] : undefined} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </Panel>
         </section>
+        )}
 
         <FeaturedImpactStory footer />
       </div>

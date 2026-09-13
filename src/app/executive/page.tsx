@@ -16,9 +16,9 @@ import { masterclasses } from "@/data/masterclasses";
 import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
+import { OUTREACH_PARTICIPANTS } from "@/data/executive/outreach";
 import Link from "next/link";
 import DignifiedWork from "@/components/executive/dignified-work";
-import OutreachAccess from "@/components/executive/outreach-access";
 import ProgramImpactMatrix from "@/components/executive/program-impact-matrix";
 import ProgramQuality from "@/components/executive/program-quality";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
@@ -499,9 +499,16 @@ export default function ExecutiveDashboard() {
 
     const jobsFromVC = vc.reduce((s, v) => s + (v.jobsTotal ?? v.jobs6m ?? 0), 0);
 
-    // Outreach summary for header
+    // Outreach summary for header — segments from OUTREACH_PARTICIPANTS
     const outreachTotal = hxPart + mcAtt + fvPart + hakPart + mfFel;
-    const missionStudentsCount = ms.filter((s) => s.missionStudent === true).length;
+    const missionStudentsCount = msTotal;
+
+    // Outreach segments (used for stat cards)
+    const mcfScholars = OUTREACH_PARTICIPANTS.filter(p => p.institution === "ALU").length;
+    const youthDisability = OUTREACH_PARTICIPANTS.filter(p => p.pwd).length;
+    const graduates = OUTREACH_PARTICIPANTS.filter(p => p.status === "Completed").length;
+    const refugeeIdp = OUTREACH_PARTICIPANTS.filter(p => p.refugee).length;
+    const currentlyEnrolled = OUTREACH_PARTICIPANTS.filter(p => p.status === "Active").length;
 
     return {
       // raw filtered slices for charts
@@ -511,7 +518,7 @@ export default function ExecutiveDashboard() {
       intStudents, intFem, intConv, intAvgSat, intPlace,
       msTotal, msFem, msCompleted, msEmployed, msVentures, msCompPct,
       // Outreach summary
-      outreachTotal, missionStudentsCount,
+      outreachTotal, missionStudentsCount, mcfScholars, youthDisability, graduates, refugeeIdp, currentlyEnrolled,
       // HENT
       hakPart, hakFem, hakProj, hakStart, hakPartners,
       mcAtt, mcFem, mcAvgCompl, mcAvgSat,
@@ -684,14 +691,14 @@ export default function ExecutiveDashboard() {
           <StatsKpiCard fill={KPI_NAVY} label="Entrepreneurs" num={D.msEntOnly} sub="Running own enterprise" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own enterprise." />
           <StatsKpiCard fill={KPI_NAVY} label="Jobs Created" num={D.jobsFromVC} sub="Across all enterprises" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led enterprises." />
           <StatsKpiCard fill={KPI_NAVY} label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
-          <StatsKpiCard fill={KPI_NAVY} label="Outreach" num={D.outreachTotal} sub="Total participants engaged" Icon={Users} tooltip="Total participants reached across all outreach interventions." />
-          <StatsKpiCard fill={KPI_NAVY} label="Mission Students" num={D.missionStudentsCount} sub="In outreach programs" Icon={BookOpen} tooltip="Mission (degree) students reached through outreach programs." />
+          <StatsKpiCard fill={KPI_NAVY} label="Youth w/ Disability" num={D.youthDisability} sub="Reached in outreach" Icon={Users} tooltip="Youth with disability reached through outreach interventions." />
+          <StatsKpiCard fill={KPI_NAVY} label="Graduates" num={D.graduates} sub="Reached in outreach" Icon={Users} tooltip="Graduates reached through outreach interventions." />
+          <StatsKpiCard fill={KPI_NAVY} label="Refugee / IDP" num={D.refugeeIdp} sub="Reached in outreach" Icon={Users} tooltip="Refugees and internally displaced persons reached through outreach." />
+          <StatsKpiCard fill={KPI_NAVY} label="Currently Enrolled" num={D.currentlyEnrolled} sub="In outreach programs" Icon={Users} tooltip="Participants currently enrolled in outreach programs." />
         </div>
 
         {/* L2 · Economic Multiplier */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16 }}>
-
-          <OutreachAccess />
         </div>
 
         {/* L3 · Employment & Enterprise + Pathway Growth */}
