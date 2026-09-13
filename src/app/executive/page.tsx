@@ -17,7 +17,6 @@ import { studyTrips } from "@/data/study-trips";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures } from "@/data/ventures";
 import Link from "next/link";
-import AfricaChoropleth from "@/components/executive/africa-choropleth";
 import DignifiedWork from "@/components/executive/dignified-work";
 import OutreachAccess from "@/components/executive/outreach-access";
 import ProgramImpactMatrix from "@/components/executive/program-impact-matrix";
@@ -663,8 +662,6 @@ export default function ExecutiveDashboard() {
               <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Period:</span> 2022–2026</span>
               <span aria-hidden="true">·</span>
-              <span>{hackathons.length + masterclasses.length + studyTrips.length + mentorshipPrograms.length} programmes tracked</span>
-              <span aria-hidden="true">·</span>
               <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
             </div>
           </div>
@@ -683,21 +680,10 @@ export default function ExecutiveDashboard() {
           <StatsKpiCard fill={KPI_NAVY} label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
         </div>
 
-        {/* L2 · Economic Multiplier + Jobs & Enterprise Trend */}
+        {/* L2 · Economic Multiplier */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16 }}>
 
           <OutreachAccess />
-
-          {/* Geographic Reach */}
-          <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-            <div style={{ backgroundColor: "#14306B", padding: "11px 20px", display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86", flexShrink: 0 }} />
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white" }}>Geographic Reach</p>
-            </div>
-            <div style={{ padding: "16px 24px 20px" }}>
-            <AfricaChoropleth />
-            </div>
-          </div>
         </div>
 
         {/* L3 · Employment & Enterprise + Pathway Growth */}

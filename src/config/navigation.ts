@@ -41,6 +41,7 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     rootHref: "/hemp",
     items: [
       { label: "Overview",                       href: "/hemp" },
+      { label: "At a Glance",                    href: "/hemp/at-a-glance" },
       { label: "Internship",                     href: "/hemp/internships" },
       { label: "SIE",                             href: "/hemp/sie" },
       { label: "HealthX",                        href: "/hemp/healthx" },
@@ -64,7 +65,8 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     wordmarkLines: ["EXECUTIVE", "IMPACT", "DASHBOARD"],
     rootHref: "/executive",
     items: [
-      { label: "Overview", href: "/executive" },
+      { label: "At a Glance", href: "/executive/at-a-glance" },
+      { label: "Overview",    href: "/executive" },
     ],
   },
 };

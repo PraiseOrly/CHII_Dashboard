@@ -478,10 +478,22 @@ export default function OutreachPage() {
                   <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={104} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="value" name="Participants" fill="#D45F2C" radius={[0, 4, 4, 0]}
-                    label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }} />
+                  <Bar dataKey="value" name="Participants" radius={[0, 4, 4, 0]}
+                    label={{ position: "right", fontSize: 10, fill: "#374151", fontWeight: 700 }}>
+                    {byIntervention.map((d) => (
+                      <Cell key={d.name} fill={PILLAR_COLOR[d.pillar]} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              <div style={{ display: "flex", gap: 14, marginTop: 4, justifyContent: "center" }}>
+                {PILLARS.map(p => (
+                  <span key={p} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
+                    <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, backgroundColor: PILLAR_COLOR[p], flexShrink: 0 }} />
+                    {p}
+                  </span>
+                ))}
+              </div>
             </Panel>
           </div>
 

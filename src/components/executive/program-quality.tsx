@@ -125,6 +125,21 @@ export default function ProgramQuality() {
           </div>
         );
       })}
+
+      {/* Legend — score-band colour key */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 18, paddingTop: 14, borderTop: "1px solid rgba(0,33,71,0.06)" }}>
+        {([
+          { label: "80–100 · Excellent", color: "#102C5E" },
+          { label: "70–79 · Good",       color: "#479BD6" },
+          { label: "60–69 · Fair",       color: "#D45F2C" },
+          { label: "Below 60 · Needs attention", color: "#A81B2D" },
+        ] as { label: string; color: string }[]).map(l => (
+          <span key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#6B7280" }}>
+            <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, backgroundColor: l.color, flexShrink: 0 }} />
+            {l.label}
+          </span>
+        ))}
+      </div>
       </div>
     </div>
   );

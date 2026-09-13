@@ -12,11 +12,12 @@ import {
 const serif = Fraunces({ subsets: ["latin"], weight: ["500", "600"], display: "swap" });
 
 // ─── Palette ─────────────────────────────────────────────────────────────────
-const NAVY      = "#0F2D63"; // left panel — gradient top
-const NAVY_DEEP = "#0A2148"; // left panel — gradient bottom
-const PRIMARY   = "#143D7A"; // buttons, focus
-const HOVER     = "#0F3163";
-const ICON      = "#5BC0EB"; // capability icons on navy
+// Blues matched to the Executive page header/KPI navy (#102C5E / #14306B / #85B7EB).
+const NAVY      = "#102C5E"; // left panel — gradient top (Executive header navy)
+const NAVY_DEEP = "#0B2145"; // left panel — gradient bottom (darker shade of the same navy)
+const PRIMARY   = "#14306B"; // buttons, focus (Executive KPI navy)
+const HOVER     = "#0B2145";
+const ICON      = "#85B7EB"; // capability icons on navy (Executive header accent blue)
 const BODY      = "#D8E4F3"; // supporting copy on navy
 const BORDER    = "#E3E0DA"; // warm neutral grey
 const TEXT      = "#172B4D";
@@ -110,7 +111,7 @@ export default function LoginPage() {
             aria-hidden
             style={{
               position: "absolute", inset: 0,
-              background: "radial-gradient(720px 380px at 0% 0%, rgba(91,192,235,0.10), transparent 70%)",
+              background: "radial-gradient(720px 380px at 0% 0%, rgba(133,183,235,0.12), transparent 70%)",
             }}
           />
 
@@ -135,7 +136,7 @@ export default function LoginPage() {
                   <li key={title} className="flex items-start gap-4">
                     <span
                       className="flex items-center justify-center flex-shrink-0"
-                      style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(91,192,235,0.10)", border: "1px solid rgba(91,192,235,0.22)" }}
+                      style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(133,183,235,0.12)", border: "1px solid rgba(133,183,235,0.28)" }}
                     >
                       <Icon size={18} color={ICON} strokeWidth={1.5} />
                     </span>
@@ -156,7 +157,7 @@ export default function LoginPage() {
         </div>
 
         {/* ══ RIGHT (54%) — the form ════════════════════════════════════════ */}
-        <div className="relative w-full lg:w-[54%] flex items-center justify-center px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-8">
+        <div className="relative w-full lg:w-[54%] flex items-start justify-center px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-8">
           <div className="w-full" style={{ maxWidth: 400 }}>
 
             <h1 className={serif.className} style={{ fontSize: 44, fontWeight: 600, color: TEXT, lineHeight: 1.1, letterSpacing: "-0.01em" }}>

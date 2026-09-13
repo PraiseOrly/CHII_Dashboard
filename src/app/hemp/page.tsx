@@ -2,6 +2,7 @@
 import { sieCohorts } from "@/data/hemp/sie";
 import { ghCohorts } from "@/data/hemp/global-health";
 import { healthXSymposia, LEAD_TYPES, EMPLOYER_SECTORS } from "@/data/hemp/healthx-careers";
+import { REACH_RECORDS, COUNTRY_REGION, GEO_REGIONS, GEO_COUNTRIES, GEO_YEARS } from "@/data/hemp/geo-reach";
 import { InlineFilterSelect as FilterSelect } from "@/components/ui/hemp";
 import { ChartCard, SectionHeader, Funnel, ChartTip } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
@@ -10,7 +11,6 @@ import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/fil
 import PortalFooter from "@/components/layout/portal-footer";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import { DonutRing } from "@/components/charts/donut-chart";
-import AfricaMap from "@/components/charts/africa-map";
 import { type RadarSeries } from "@/components/charts/satisfaction-radar";
 import SatisfactionBars from "@/components/charts/satisfaction-bars";
 import BulletChart from "@/components/charts/bullet-chart";
@@ -219,23 +219,6 @@ const satByEngagementRows = [
   { name: "Career Symposia",  value: symUsefulnessAvg, color: ENGAGEMENT["Career Symposia"] },
 ];
 
-// ─── Geographic reach ────────────────────────────────────────────────────────
-type ReachRec = { country: string; year: number; reach: number; female: number };
-const REACH_RECORDS: ReachRec[] = [
-  ...healthXSessions.map(h => ({ country: h.country, year: h.year, reach: h.participants,     female: h.femalePart })),
-  ...internships.map(i    => ({ country: i.country,  year: i.year, reach: i.students,         female: i.femaleStudents })),
-  ...sieCohorts.map(c     => ({ country: c.country,  year: c.year, reach: c.selected,          female: c.female })),
-  ...healthXSymposia.map(x => ({ country: x.country, year: x.year, reach: x.studentsAttending, female: x.femaleStudents })),
-];
-const COUNTRY_REGION: Record<string, string> = {
-  Rwanda: "East Africa", Kenya: "East Africa", Uganda: "East Africa", Tanzania: "East Africa", Ethiopia: "East Africa",
-  Ghana: "West Africa", Nigeria: "West Africa", Senegal: "West Africa",
-  "South Africa": "Southern Africa", Malawi: "Southern Africa", Mozambique: "Southern Africa", Zambia: "Southern Africa",
-  Cameroon: "Central Africa",
-};
-const GEO_REGIONS   = Array.from(new Set(Object.values(COUNTRY_REGION)));
-const GEO_COUNTRIES = Array.from(new Set(REACH_RECORDS.map(r => r.country))).sort();
-const GEO_YEARS     = Array.from(new Set(REACH_RECORDS.map(r => r.year))).sort();
 
 // ─── Programme performance ────────────────────────────────────────────────────
 const PERFORMANCE_ROWS: {
@@ -638,23 +621,7 @@ export default function HEMPOverview() {
             </ChartCard>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Geographic Reach" sub="Participants reached by country">
-              <div className="flex flex-wrap gap-2 mb-4">
-                <FilterSelect label="Country" value={geoCountry} onChange={setGeoCountry} options={["All Countries", ...GEO_COUNTRIES]} />
-                <FilterSelect label="Year" value={geoYear} onChange={setGeoYear} options={["All Years", ...GEO_YEARS.map(String)]} />
-              </div>
-              {geoCountryData.length ? (
-                <AfricaMap data={geoCountryData} region={geoRegion} onRegionChange={setGeoRegion} regions={["All Regions", ...GEO_REGIONS]}
-                  lightColor="#C7DFFE" deepColor="#185FA5" tooltipColor="#042C53" />
-              ) : (
-                <p className="text-[11px] text-gray-400 text-center py-6">No records match the selected filters.</p>
-              )}
-              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
-                {geoCountryData.reduce((s, d) => s + d.value, 0).toLocaleString()} people · {geoCountryData.length} countries
-              </p>
-            </ChartCard>
-
+          <div className="mt-4">
             <ChartCard title="Reach by Region" sub="Participants, countries and female share by African region">
               <div className="flex flex-wrap gap-2 mb-4">
                 <FilterSelect label="Year" value={regionYear} onChange={setRegionYear} options={["All Years", ...GEO_YEARS.map(String)]} />
