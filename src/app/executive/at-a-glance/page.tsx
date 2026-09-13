@@ -1,7 +1,9 @@
 "use client";
-import { useState, type ComponentType } from "react";
+import { useState, useEffect, useRef, type ComponentType } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import * as maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import HeaderDesign from "@/components/layout/header-design";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import { OUTREACH_PARTICIPANTS } from "@/data/executive/outreach";
@@ -40,9 +42,9 @@ function KPICard({
     <div
       style={{
         backgroundColor: "white",
-        borderRadius: 10,
+        borderRadius: 8,
         border: "1px solid #E5E7EB",
-        padding: "14px 16px",
+        padding: "10px 12px",
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -50,9 +52,9 @@ function KPICard({
       className="transition-transform hover:scale-[1.01]"
     >
       {/* Row 1: Label + Info icon + Chevron */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 8, minHeight: 18 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 5, flex: 1 }}>
-          <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: NAVY, lineHeight: 1.2 }}>{label}</p>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6, minHeight: 16 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 3, flex: 1 }}>
+          <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: NAVY, lineHeight: 1.1 }}>{label}</p>
           {info && (
             <div style={{ position: "relative", flexShrink: 0, marginTop: 1 }}>
               <button
@@ -96,38 +98,38 @@ function KPICard({
       </div>
 
       {/* Row 2: Icon + Large value (centered) */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6 }}>
-        {Icon && <Icon size={18} color="#B5D4F4" style={{ flexShrink: 0 }} />}
-        <p style={{ fontSize: 20, fontWeight: 700, color: BLUE_HERO, lineHeight: 1 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+        {Icon && <Icon size={16} color="#B5D4F4" style={{ flexShrink: 0 }} />}
+        <p style={{ fontSize: 18, fontWeight: 700, color: BLUE_HERO, lineHeight: 1 }}>
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
 
       {/* Row 3: YoY trend */}
       {yoy !== undefined && yoy !== null && (
-        <p style={{ fontSize: 10, fontWeight: 600, color: BLUE_HERO, marginBottom: 8 }}>
+        <p style={{ fontSize: 9, fontWeight: 600, color: BLUE_HERO, marginBottom: 4 }}>
           {yoy >= 0 ? "↑" : "↓"} {Math.abs(yoy)}% YoY
         </p>
       )}
 
       {/* Row 4: Gender split (footer zone) */}
       {femalePct !== undefined && malePct !== undefined && (
-        <div style={{ display: "flex", gap: 12, marginTop: "auto", paddingTop: 6, borderTop: "1px solid #F3F4F6" }}>
+        <div style={{ display: "flex", gap: 8, marginTop: "auto", paddingTop: 4, borderTop: "1px solid #F3F4F6" }}>
           {/* Female */}
-          <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="8" r="4" />
               <path d="M12 14v8M8 18h8" />
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 600, color: "#1F2937" }}>{femalePct}%</span>
+            <span style={{ fontSize: 9, fontWeight: 600, color: "#1F2937" }}>{femalePct}%</span>
           </div>
 
           {/* Male */}
-          <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM9 11l5 9M14 20h-10" />
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 600, color: "#1F2937" }}>{100 - femalePct}%</span>
+            <span style={{ fontSize: 9, fontWeight: 600, color: "#1F2937" }}>{100 - femalePct}%</span>
           </div>
         </div>
       )}
@@ -137,6 +139,8 @@ function KPICard({
 
 export default function AtAGlancePage() {
   const [responsive, setResponsive] = useState(false);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<maplibregl.Map | null>(null);
   const countries = new Set(missionStudents.map(s => s.country)).size;
 
   /* ─ Left rail metrics ─ */
@@ -150,6 +154,27 @@ export default function AtAGlancePage() {
   const femaleShare = Math.round(
     (OUTREACH_PARTICIPANTS.filter(p => p.gender === "Female").length / totalBeneficiaries) * 100
   );
+
+  useEffect(() => {
+    if (!mapContainer.current) return;
+
+    map.current = new maplibregl.Map({
+      container: mapContainer.current,
+      style: "https://demotiles.maplibre.org/style.json",
+      center: [20, 10],
+      zoom: 3,
+      pitch: 0,
+      bearing: 0,
+      attributionControl: false,
+    });
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
@@ -180,13 +205,15 @@ export default function AtAGlancePage() {
       </header>
       </div>
 
-      {/* ── KPI Grid Layout ─────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-6">
+      {/* ── Stats Cards Section ─────────────────────────── */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7">
+        {/* Three-Column Layout: Left (KPIs) | Center (Map) | Right (KPIs) */}
+        <div style={{ display: "flex", gap: 14 }}>
 
-        {/* Outreach & Access */}
-        <section>
-          <h2 style={{ fontSize: 12, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14 }}>Outreach & Access</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
+        {/* Left Column: Outreach & Access */}
+        <div style={{ flex: "0 0 18%", display: "flex", flexDirection: "column", paddingRight: 4, overflowX: "hidden" }}>
+          <h2 style={{ fontSize: 11, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 10, flexShrink: 0 }}>Outreach & Access</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <KPICard label="Total Beneficiaries" value={totalBeneficiaries} femalePct={femaleShare} malePct={100 - femaleShare} info="Total individuals reached across all CHII outreach programs." Icon={Users} href="/executive/outreach" />
             <KPICard label="Currently Enrolled" value={currentlyEnrolled} info="Participants currently active in outreach programs." Icon={BookOpen} href="/executive/outreach" />
             <KPICard label="Graduates" value={graduates} info="Participants who completed outreach programs." Icon={Award} href="/executive/outreach" />
@@ -196,12 +223,15 @@ export default function AtAGlancePage() {
             <KPICard label="CSAT Score" value="4.2/5" info="Customer satisfaction rating for programs." Icon={MessageCircle} href="/executive/outreach" />
             <KPICard label="Employer Rating" value="4.6/5" info="Employer satisfaction with graduate preparedness." Icon={Award} href="/executive/outreach" />
           </div>
-        </section>
+        </div>
 
-        {/* Program Outcomes */}
-        <section>
-          <h2 style={{ fontSize: 12, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14 }}>Program Outcomes</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
+        {/* Center Column: Map */}
+        <div ref={mapContainer} style={{ flex: "0 0 64%", borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", alignSelf: "stretch" }} />
+
+        {/* Right Column: Program Outcomes */}
+        <div style={{ flex: "0 0 18%", display: "flex", flexDirection: "column", paddingLeft: 4, overflowX: "hidden" }}>
+          <h2 style={{ fontSize: 11, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 10, flexShrink: 0 }}>Program Outcomes</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <KPICard label="Youth in Work" value={131} yoy={8} info="Participants employed or running enterprises." Icon={Briefcase} href="/executive/youth-in-work" />
             <KPICard label="Wage Employment" value={51} yoy={12} info="Participants in paid employment." Icon={Briefcase} href="/executive/wage-employment" />
             <KPICard label="Entrepreneurs" value={21} yoy={5} info="Participants running their own enterprise." Icon={TrendingUp} href="/executive/entrepreneurship" />
@@ -211,13 +241,15 @@ export default function AtAGlancePage() {
             <KPICard label="Job Seeking" value={47} yoy={-15} info="Participants actively seeking employment." Icon={Users} href="/executive/youth-in-work" />
             <KPICard label="Further Education" value={206} yoy={11} info="Participants pursuing further study." Icon={BookOpen} href="/executive/further-education" />
           </div>
-        </section>
-
+        </div>
+        </div>
       </div>
 
-      {/* ── Footer ─────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7">
-        <FeaturedImpactStory footer />
+      {/* ── Footer Section ─────────────────────────────── */}
+      <div style={{ backgroundColor: "white", borderTop: "1px solid #E5E7EB", marginTop: 20 }}>
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10">
+          <FeaturedImpactStory footer />
+        </div>
       </div>
     </div>
   );
