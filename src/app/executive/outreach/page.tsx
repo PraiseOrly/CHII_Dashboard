@@ -8,8 +8,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 import {
-  Users, Building2, GraduationCap, Info,
-  SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility, UserRound,
+  Users, Info,
+  SlidersHorizontal, X, Layers, BookOpen, Shield, Accessibility,
 } from "lucide-react";
 import {
   OUTREACH_PARTICIPANTS, INSTITUTIONS, PILLARS, INTERVENTIONS,
@@ -223,7 +223,7 @@ export default function OutreachPage() {
     const interventionCount = new Set(scope.map(s => s.intervention)).size;
     const institutionCount = new Set(scope.map(s => s.institution)).size;
     return {
-      total, femalePct: share(female, total), missionPct: share(mission, total),
+      total, femalePct: share(female, total), missionPct: share(mission, total), missionCount: mission,
       interventionCount, institutionCount, completionPct: share(completed, total),
     };
   }, [scope]);
@@ -398,20 +398,14 @@ export default function OutreachPage() {
               tooltip="Unique participants engaged across CHII outreach interventions within the current filters." />
             <StatsKpiCard label="Interventions" num={kpis.interventionCount} sub="Active outreach programs" Icon={Layers}
               tooltip="Distinct outreach interventions in scope (HealthX, Masterclasses, Mentorship, Hackathons, and more)." />
-            <StatsKpiCard label="Institutions" num={kpis.institutionCount} sub="Partner institutions reached" Icon={Building2}
-              tooltip="Number of partner institutions (ALU, ALX, ALCHE, Other) represented in the current scope." />
+            <StatsKpiCard label="Mission Students" num={kpis.missionCount} sub="Also degree / mission students" Icon={BookOpen}
+              tooltip="Number of participants who are also mission (degree) students." />
             <StatsKpiCard label="Female Share" num={kpis.femalePct} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={WomanIcon}
               tooltip="Share of female participants across outreach interventions in scope." />
-            <StatsKpiCard label="Male Share" num={inclusion.male} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={UserRound}
-              tooltip="Share of male participants across outreach interventions in scope." />
-            <StatsKpiCard label="Mission Students" num={kpis.missionPct} displayFmt={(n) => `${Math.round(n)}%`} sub="Also degree / mission students" Icon={BookOpen}
-              tooltip="Share of participants who are also mission (degree) students." />
             <StatsKpiCard label="Refugee / IDP" num={inclusion.refugee} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={Shield}
               tooltip="Share of participants who are refugees or internally displaced persons." />
             <StatsKpiCard label="Persons w/ Disability" num={inclusion.pwd} displayFmt={(n) => `${Math.round(n)}%`} sub="Of participants" Icon={Accessibility}
               tooltip="Share of participants who are persons with disability." />
-            <StatsKpiCard label="Completion Rate" num={kpis.completionPct} displayFmt={(n) => `${Math.round(n)}%`} sub="Completed engagement" Icon={GraduationCap}
-              tooltip="Participants who completed their outreach engagement as a share of those in scope." />
           </div>
 
           {/* Section pills (left) + compact filters dropdown (right) */}

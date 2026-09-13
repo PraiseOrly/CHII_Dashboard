@@ -8,7 +8,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
-  Users, Info, Download, GraduationCap, BookOpen, Wallet,
+  Users, Info, GraduationCap, BookOpen, Wallet,
   SlidersHorizontal, X, Globe, MapPin, TrendingUp,
 } from "lucide-react";
 import {
@@ -110,9 +110,6 @@ function Panel({ title, subtitle, info, children }: {
             <p style={{ fontSize: 9.5, color: "rgba(181,212,244,0.7)", marginTop: 1 }}>{subtitle}</p>
           </div>
         </div>
-        <button title="Export" style={{ flexShrink: 0, color: "rgba(181,212,244,0.75)", display: "flex", padding: 3 }}>
-          <Download size={13} />
-        </button>
       </div>
       <div style={{ padding: "16px 18px 18px" }}>{children}</div>
     </div>
@@ -321,25 +318,7 @@ export default function FurtherEducationPage() {
         {/* ════ PARTICIPATION ════ */}
         <section className="space-y-4">
           <SectionHeader title="Participation" blurb="Who continues to further education?" />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi Icon={GraduationCap} label="In Further Study" value={fmt(TOTAL)} />
-            <MiniKpi Icon={TrendingUp} label="Further Study Rate" value="5%" />
-          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Further Study Rate: Scholars vs Talents" subtitle="% advancing to further study"
-              info="Share of each cohort that advances to further education.">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={d.cohortRate} margin={{ top: 20, right: 12, bottom: 0, left: -18 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Bar dataKey="value" name="Further study rate" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={56}>
-                    <LabelList position="top" fontSize={11} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </Panel>
             <Panel title="Active vs Completed Programmes" subtitle="Current enrolment status"
               info="Graduates with an active enrolment versus those who have completed their programme.">
               <Donut data={d.activeCompleted} colors={["#102C5E", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
@@ -368,11 +347,6 @@ export default function FurtherEducationPage() {
         {/* ════ STUDENT PROFILE ════ */}
         <section className="space-y-4">
           <SectionHeader title="Student Profile" blurb="Who are the learners?" />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi center Icon={WomanIcon} label="Female Participation" value={`${d.femalePct}%`} />
-            <MiniKpi center Icon={Users} label="Male Participation" value={`${d.malePct}%`} />
-            <MiniKpi center Icon={Globe} label="Countries Represented" value={fmt(d.countriesRepresented)} />
-          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary"
               info="Gender distribution of graduates in further education.">
@@ -383,10 +357,6 @@ export default function FurtherEducationPage() {
               <RankBar data={d.origin} width={110} />
             </Panel>
           </div>
-          <Panel title="Programme" subtitle="ALU degree programme, ranked"
-            info="The ALU degree programme graduates came from.">
-            <RankBar data={d.programme} color={C_ACCENT} width={190} />
-          </Panel>
         </section>
 
         {/* ════ ACADEMIC PATHWAYS ════ */}
@@ -406,58 +376,6 @@ export default function FurtherEducationPage() {
             info="How closely graduates' further study relates to their ALU degree.">
             <Donut data={d.relevance} colors={["#102C5E", "#479BD6", "#C5D2E0"]} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
           </Panel>
-        </section>
-
-        {/* ════ STUDY DESTINATIONS ════ */}
-        <section className="space-y-4">
-          <SectionHeader title="Study Destinations" blurb="Where do graduates continue their education?" />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi center Icon={MapPin} label="Studying Within Africa" value={fmt(d.within)} />
-            <MiniKpi center Icon={Globe} label="Studying Abroad" value={fmt(d.abroad)} />
-            <MiniKpi center Icon={MapPin} label="Destination Countries" value={fmt(d.countriesOfStudy)} />
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Study Destination" subtitle="Africa · Europe · North America · Asia"
-              info="Region where graduates pursue further study.">
-              <Donut data={d.region} colors={PALETTE} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
-            </Panel>
-            <Panel title="Country of Study" subtitle="Destination countries, ranked"
-              info="Countries where graduates are studying, sorted from most to least.">
-              <RankBar data={d.countryStudy} width={130} />
-            </Panel>
-          </div>
-        </section>
-
-        {/* ════ FUNDING & ACCESS ════ */}
-        <section className="space-y-4">
-          <SectionHeader title="Funding & Access" blurb="How are graduates financing further education?" />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-            <MiniKpi center Icon={Wallet} label="Scholarship Recipients" value={fmt(d.fundedCount)} />
-            <MiniKpi center Icon={Wallet} label="Self-funded Students" value={fmt(d.selfFunded)} />
-            <MiniKpi center Icon={Wallet} label="Employer-sponsored" value={fmt(d.employer)} />
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-            <Panel title="Funding Source" subtitle="How further study is paid for"
-              info="How graduates fund their further education.">
-              <Donut data={d.fundingData} colors={FUNDING_COLOR} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
-            </Panel>
-            <Panel title="Funding by Qualification Level" subtitle="Funding mix per qualification"
-              info="How funding sources vary across qualification levels.">
-              <ResponsiveContainer width="100%" height={Math.max(240, d.fundingByQual.length * 44)}>
-                <BarChart layout="vertical" data={d.fundingByQual} margin={{ top: 4, right: 16, bottom: 4, left: 8 }}>
-                  <CartesianGrid horizontal={false} stroke="rgba(0,33,71,0.06)" />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={140} axisLine={false} tickLine={false} />
-                  <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                  {FUNDING_SOURCES.map((f, i) => (
-                    <Bar key={f} dataKey={f} stackId="f" fill={FUNDING_COLOR[f]} barSize={20}
-                      radius={i === FUNDING_SOURCES.length - 1 ? [0, 4, 4, 0] : undefined} />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            </Panel>
-          </div>
         </section>
 
         {/* ════ OUTCOMES & ALIGNMENT ════ */}

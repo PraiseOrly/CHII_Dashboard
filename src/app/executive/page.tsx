@@ -3,7 +3,7 @@ import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarLi
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
-  AlertCircle, Award, Briefcase, CheckCircle, Clock,
+  AlertCircle, Award, BookOpen, Briefcase, CheckCircle, Clock,
   Download, FileText, GraduationCap, Handshake,
   Moon, Sun, Target, TrendingUp, Users, Zap,
 } from "lucide-react";
@@ -499,6 +499,10 @@ export default function ExecutiveDashboard() {
 
     const jobsFromVC = vc.reduce((s, v) => s + (v.jobsTotal ?? v.jobs6m ?? 0), 0);
 
+    // Outreach summary for header
+    const outreachTotal = hxPart + mcAtt + fvPart + hakPart + mfFel;
+    const missionStudentsCount = ms.filter((s) => s.missionStudent === true).length;
+
     return {
       // raw filtered slices for charts
       hx, int: int, ms, hak, mc, fv, mf, vc,
@@ -506,6 +510,8 @@ export default function ExecutiveDashboard() {
       hxPart, hxFem, hxPartners, hxAvgCompl, hxAvgSat,
       intStudents, intFem, intConv, intAvgSat, intPlace,
       msTotal, msFem, msCompleted, msEmployed, msVentures, msCompPct,
+      // Outreach summary
+      outreachTotal, missionStudentsCount,
       // HENT
       hakPart, hakFem, hakProj, hakStart, hakPartners,
       mcAtt, mcFem, mcAvgCompl, mcAvgSat,
@@ -678,6 +684,8 @@ export default function ExecutiveDashboard() {
           <StatsKpiCard fill={KPI_NAVY} label="Entrepreneurs" num={D.msEntOnly} sub="Running own enterprise" Icon={TrendingUp} tooltip="All who have gone through a CHII program and are running their own enterprise." />
           <StatsKpiCard fill={KPI_NAVY} label="Jobs Created" num={D.jobsFromVC} sub="Across all enterprises" Icon={Zap} tooltip="All jobs created across the portfolio — not just those from alumni-led enterprises." />
           <StatsKpiCard fill={KPI_NAVY} label="Further Education" num={D.msFurther} sub="Advanced to study" Icon={GraduationCap} tooltip="Graduates who progressed to further study or advanced qualifications." />
+          <StatsKpiCard fill={KPI_NAVY} label="Outreach" num={D.outreachTotal} sub="Total participants engaged" Icon={Users} tooltip="Total participants reached across all outreach interventions." />
+          <StatsKpiCard fill={KPI_NAVY} label="Mission Students" num={D.missionStudentsCount} sub="In outreach programs" Icon={BookOpen} tooltip="Mission (degree) students reached through outreach programs." />
         </div>
 
         {/* L2 · Economic Multiplier */}

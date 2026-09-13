@@ -196,7 +196,12 @@ export default function EntrepreneurshipPage() {
     const formalCount = scope.filter(x => x.formal).length;
     const formal = [{ name: "Formally registered", value: formalCount }, { name: "Informal", value: total - formalCount }];
     const genderData = (["Female", "Male"] as Gender[]).map(g => ({ name: g, value: scope.filter(x => x.gender === g).length })).filter(d => d.value > 0);
-    const perYear = YEARS.map(y => ({ name: `${y}`, value: scope.filter(x => x.yearLaunched === y).length }));
+    const perYear = YEARS.map(y => {
+      const yrScope = scope.filter(x => x.yearLaunched === y);
+      const total = yrScope.length;
+      const female = yrScope.filter(x => x.gender === "Female").length;
+      return { name: `${y}`, value: total, female };
+    });
     const survival = [{ name: "Year 1", value: 100 }, { name: "Year 3", value: 71 }, { name: "Year 5", value: 48 }];
     return { stageDist, statusData, statusTotal, funding, formal, genderData, perYear, survival };
   }, [scope, total]);
@@ -478,8 +483,11 @@ export default function EntrepreneurshipPage() {
                   <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={40}>
+                  <Bar dataKey="value" name="All Enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={40}>
                     <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                  </Bar>
+                  <Bar dataKey="female" name="Female-Led" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={40}>
+                    <LabelList dataKey="female" position="top" fontSize={10} fill="#374151" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
