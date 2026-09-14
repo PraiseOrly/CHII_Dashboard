@@ -47,33 +47,35 @@ function KPICard({
   return (
     <div
       style={{
-        backgroundColor: "#14306B",
+        backgroundColor: "#F3F7FF",
         borderRadius: 10,
-        padding: "14px 16px",
+        border: "1px solid #E0ECFF",
         position: "relative",
         display: "flex",
         flexDirection: "column",
         minHeight: 130,
-        textAlign: "center",
+        padding: "14px 16px",
         transition: "all 200ms ease",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 2px 4px rgba(16, 44, 94, 0.08)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.15)";
+        e.currentTarget.style.backgroundColor = "#ECEFFF";
+        e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 44, 94, 0.12)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
+        e.currentTarget.style.backgroundColor = "#F3F7FF";
+        e.currentTarget.style.boxShadow = "0 2px 4px rgba(16, 44, 94, 0.08)";
       }}
     >
-      {/* Row 1: Label + Info icon + Chevron */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "#FFFFFF", lineHeight: 1.2 }}>{label}</p>
+      {/* Row 1: Label + Info icon */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 10 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#14306B", lineHeight: 1.2 }}>{label}</p>
         {info && (
           <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
             <button
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
-              style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: `${LIGHT_BLUE}2E`, border: `1px solid ${LIGHT_BLUE}`, alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: LIGHT_BLUE, lineHeight: 1 }}
+              style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: "#E0ECFF", border: "1px solid #B5D4F4", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: "#14306B", lineHeight: 1 }}
               aria-label={`${label} information`}
             >
               i
@@ -87,23 +89,23 @@ function KPICard({
         )}
       </div>
 
-      {/* Row 2: Icon + value (centered, white text) */}
+      {/* Row 2: Icon + value (centered, navy) */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8, flex: 1 }}>
-        {Icon && <Icon size={18} color={LIGHT_BLUE} style={{ flexShrink: 0, strokeWidth: 2 }} />}
-        <p style={{ fontSize: 28, fontWeight: 800, color: "#FFFFFF", lineHeight: 1 }}>
+        {Icon && <Icon size={18} color="#14306B" style={{ flexShrink: 0, strokeWidth: 2 }} />}
+        <p style={{ fontSize: 28, fontWeight: 800, color: "#14306B", lineHeight: 1 }}>
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
 
       {/* Row 3: YoY trend (color-coded: green up, red down) */}
       {yoy !== undefined && yoy !== null && (
-        <p style={{ fontSize: 10, fontWeight: 600, color: yoy >= 0 ? GREEN_UP : RED_DOWN, lineHeight: 1 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, color: yoy >= 0 ? GREEN_UP : RED_DOWN, lineHeight: 1, marginBottom: 8 }}>
           {yoy >= 0 ? "↑" : "↓"} {Math.abs(yoy)}% YoY
         </p>
       )}
 
       {/* Row 4: Gender split or secondary text */}
-      <div style={{ display: "flex", gap: 8, marginTop: 8, paddingTop: 8, borderTop: `1px solid rgba(255, 255, 255, 0.15)`, justifyContent: "center", alignItems: "center", minHeight: 16 }}>
+      <div style={{ display: "flex", gap: 8, paddingTop: 8, borderTop: "1px solid rgba(16, 44, 94, 0.1)", justifyContent: "center", alignItems: "center", minHeight: 16 }}>
         {femalePct !== undefined && malePct !== undefined ? (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -111,13 +113,13 @@ function KPICard({
                 <circle cx="12" cy="8" r="4" />
                 <path d="M12 14v8M8 18h8" />
               </svg>
-              <span style={{ fontSize: 11, fontWeight: 600, color: LIGHT_BLUE }}>{femalePct}%</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#4B5563" }}>{femalePct}%</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM9 11l5 9M14 20h-10" />
               </svg>
-              <span style={{ fontSize: 11, fontWeight: 600, color: LIGHT_BLUE }}>{malePct}%</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#4B5563" }}>{malePct}%</span>
             </div>
             {otherPct !== undefined && otherPct > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -125,12 +127,12 @@ function KPICard({
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 7v5M9 12h6" />
                 </svg>
-                <span style={{ fontSize: 11, fontWeight: 600, color: LIGHT_BLUE }}>{otherPct}%</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: "#4B5563" }}>{otherPct}%</span>
               </div>
             )}
           </>
         ) : (
-          <p style={{ fontSize: 11, fontWeight: 500, color: "rgba(181, 212, 244, 0.7)", lineHeight: 1 }}>
+          <p style={{ fontSize: 10, fontWeight: 500, color: "#9CA3AF", lineHeight: 1 }}>
             {secondaryText || "—"}
           </p>
         )}
