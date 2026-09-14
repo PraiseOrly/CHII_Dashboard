@@ -183,18 +183,100 @@ export default function AtAGlancePage() {
   const mcfFemale = OUTREACH_PARTICIPANTS.filter(p => p.institution === "ALU" && p.gender === "Female").length;
   const mcfFemalePct = Math.round((mcfFemale / mcfScholars) * 100) || 0;
 
-  useEffect(() => {
-    if (!mapContainer.current) return;
+  /* ─ Country data aggregation for choropleth ─ */
+  const countryData = new Map<string, number>();
+  const outcomePoints: Array<{ id: string; country: string; lat: number; lng: number; count: number }> = [];
 
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: "https://demotiles.maplibre.org/style.json",
-      center: [20, 10],
-      zoom: 3,
-      pitch: 0,
-      bearing: 0,
-      attributionControl: false,
-    });
+  missionStudents.forEach(student => {
+    countryData.set(
+      student.country,
+      (countryData.get(student.country) || 0) + 1
+    );
+  });
+
+  /* ─ Map initialization ─ */
+  useEffect(() => {
+    if (!mapContainer.current) {
+      console.error("❌ Map container ref not populated");
+      return;
+    }
+
+    const rect = mapContainer.current.getBoundingClientRect();
+    console.log("📍 Map container:", rect.width, "×", rect.height, "px");
+
+    try {
+      map.current = new maplibregl.Map({
+        container: mapContainer.current,
+        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+        center: [20, 3],
+        zoom: 2.6,
+        pitch: 0,
+        bearing: 0,
+        dragRotate: false,
+        touchPitch: false,
+        attributionControl: false
+      });
+
+      map.current.on("error", (e: any) => {
+        console.error("🚨 MapLibre error:", e.error?.message || e);
+      });
+
+      map.current.on("load", () => {
+        console.log("✅ Map style loaded");
+        if (map.current) {
+          map.current.resize();
+          console.log("✅ Map resized to container");
+        }
+      });
+    } catch (err) {
+      console.error("❌ Failed to create map:", err);
+    }
+
+      /* ─ Add simple data layer on load ─ */
+      if (map.current) {
+        map.current.on("load", () => {
+        const mapRef = map.current;
+        if (!mapRef) return;
+
+        console.log("📊 Adding data layers...");
+
+        try {
+          /* ─ Add simple outcome bubbles layer ─ */
+          mapRef.addSource("outcomes", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: Array.from(countryData.entries()).map(([country, count], i) => ({
+                type: "Feature" as const,
+                id: i,
+                geometry: {
+                  type: "Point" as const,
+                  coordinates: [20 + (Math.random() * 40 - 20), 3 + (Math.random() * 20 - 10)]
+                },
+                properties: { country, count }
+              }))
+            }
+          });
+
+          mapRef.addLayer({
+            id: "outcome-bubbles",
+            type: "circle",
+            source: "outcomes",
+            paint: {
+              "circle-radius": 8,
+              "circle-color": "#479BD6",
+              "circle-opacity": 0.7,
+              "circle-stroke-width": 2,
+              "circle-stroke-color": "#14306B"
+            }
+          });
+
+          console.log("✅ Data layers added successfully");
+        } catch (err) {
+          console.error("❌ Error adding layers:", err);
+        }
+        });
+      }
 
     return () => {
       if (map.current) {
@@ -254,7 +336,7 @@ export default function AtAGlancePage() {
         </div>
 
         {/* Center Column: Map */}
-        <div ref={mapContainer} style={{ borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", minHeight: 0 }} />
+        <div ref={mapContainer} style={{ borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", minHeight: 600, height: "100%" }} />
 
         {/* Right Column: Program Outcomes */}
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
