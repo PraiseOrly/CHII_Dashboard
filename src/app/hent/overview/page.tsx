@@ -9,7 +9,7 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Award, Briefcase, Handshake, Heart, Lightbulb, MapPin, Presentation, Rocket, Sparkles, TrendingUp, Users, Zap, Info, type LucideIcon, ChevronDown } from "lucide-react";
+import { Award, Briefcase, Handshake, Heart, Lightbulb, MapPin, Presentation, Rocket, Sparkles, TrendingUp, Users, Zap, Info, type LucideIcon, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, LabelList, PieChart, Pie, Cell,
@@ -88,7 +88,7 @@ function StatsPanel({
           }}>
             <div style={{
               backgroundColor: "white",
-              borderRadius: 6,
+              borderRadius: 10,
               padding: "14px 16px",
               textAlign: "center",
               border: `1px solid ${LIGHT_BORDER}`,
@@ -124,7 +124,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
   const [tip, setTip] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 6, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
       <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
           <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
@@ -156,7 +156,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 fontSize: 10,
                 fontWeight: 600,
                 padding: "5px 10px",
-                borderRadius: 6,
+                borderRadius: 10,
                 border: `1px solid ${LIGHT_BORDER}`,
                 backgroundColor: LIGHT_GREEN,
                 color: BRAND_DK,
@@ -176,7 +176,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 right: 0,
                 backgroundColor: "white",
                 border: `1px solid ${LIGHT_BORDER}`,
-                borderRadius: 6,
+                borderRadius: 10,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 zIndex: 10,
                 minWidth: 140,
@@ -235,6 +235,9 @@ export default function HENTOverview() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
 
   const show = (category: string) => activeCategory === category;
+
+  // Filter panel state
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Chart filter states (independent per chart)
   const [filterReachYear, setFilterReachYear] = useState("All Years");
@@ -335,7 +338,7 @@ export default function HENTOverview() {
 
       {/* HEADER */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 8, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
@@ -362,27 +365,87 @@ export default function HENTOverview() {
 
       <div className="max-w-[1440px] mx-auto px-6 py-7">
 
-        {/* ════ SECTION FILTER PILLS ════ */}
-        <div style={{ marginBottom: 32, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          {categories.map(cat => (
+        {/* ════ SECTION FILTER PILLS + FILTERS BUTTON ════ */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  fontSize: 11,
+                  fontWeight: activeCategory === cat ? 700 : 600,
+                  padding: "8px 14px",
+                  borderRadius: 20,
+                  border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
+                  backgroundColor: activeCategory === cat ? BRAND : "white",
+                  color: activeCategory === cat ? "white" : BRAND_DK,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <div style={{ position: "relative" }}>
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => setFiltersOpen(!filtersOpen)}
               style={{
                 fontSize: 11,
-                fontWeight: activeCategory === cat ? 700 : 600,
+                fontWeight: 600,
                 padding: "8px 14px",
                 borderRadius: 20,
-                border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
-                backgroundColor: activeCategory === cat ? BRAND : "white",
-                color: activeCategory === cat ? "white" : BRAND_DK,
+                border: `1px solid ${LIGHT_BORDER}`,
+                backgroundColor: "white",
+                color: BRAND_DK,
                 cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                whiteSpace: "nowrap",
                 transition: "all 0.2s ease",
               }}
             >
-              {cat}
+              <SlidersHorizontal size={14} />
+              Filters
             </button>
-          ))}
+            {filtersOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 8px)",
+                right: 0,
+                backgroundColor: "white",
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderRadius: 10,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 20,
+                minWidth: 280,
+                overflow: "hidden",
+                padding: "16px",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: BRAND_DK, margin: 0 }}>Filters</p>
+                  <button
+                    onClick={() => setFiltersOpen(false)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <X size={16} color={BRAND_DK} />
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>
+                  <p>Filter options coming soon</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ════ REACH & PARTICIPATION ════ */}

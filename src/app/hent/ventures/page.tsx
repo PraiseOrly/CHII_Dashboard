@@ -92,7 +92,7 @@ function StatsPanel({
           }}>
             <div style={{
               backgroundColor: "white",
-              borderRadius: 6,
+              borderRadius: 10,
               padding: "14px 16px",
               textAlign: "center",
               border: `1px solid ${LIGHT_BORDER}`,
@@ -136,7 +136,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
   const [tip, setTip] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 6, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
       <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
           <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
@@ -168,7 +168,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 fontSize: 10,
                 fontWeight: 600,
                 padding: "5px 10px",
-                borderRadius: 6,
+                borderRadius: 10,
                 border: `1px solid ${LIGHT_BORDER}`,
                 backgroundColor: LIGHT_GREEN,
                 color: BRAND_DK,
@@ -188,7 +188,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 right: 0,
                 backgroundColor: "white",
                 border: `1px solid ${LIGHT_BORDER}`,
-                borderRadius: 6,
+                borderRadius: 10,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 zIndex: 10,
                 minWidth: 140,
@@ -258,7 +258,7 @@ export default function HENTVentures() {
       <PortalNav portal="hent" />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 8, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
