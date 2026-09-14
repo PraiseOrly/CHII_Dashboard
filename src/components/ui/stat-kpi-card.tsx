@@ -90,7 +90,7 @@ export default function StatsKpiCard({
               left: "50%",
               transform: "translateX(-50%)",
               backgroundColor: "white",
-              color: "#14306B",
+              color: "#0B5441",
               fontSize: 10.5,
               lineHeight: 1.55,
               padding: "9px 12px",
@@ -109,7 +109,7 @@ export default function StatsKpiCard({
               }} />
               {tooltip}
               {sub && (
-                <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(4,44,83,0.12)", color: "#185FA5" }}>
+                <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(11,84,65,0.12)", color: "#2D9B7F" }}>
                   {sub}
                 </div>
               )}

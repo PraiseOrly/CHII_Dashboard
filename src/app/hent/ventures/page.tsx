@@ -1,657 +1,662 @@
-﻿"use client";
-import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
-import { useState, useMemo, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
-import {
-  BarChart, Bar,
-  AreaChart, Area, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts";
-import { Banknote, Briefcase, Info, Rocket, Target, Users, Zap, type LucideIcon } from "lucide-react";
+"use client";
+import { ChartTip } from "@/components/ui/hent";
 import PortalNav from "@/components/layout/portal-nav";
-import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
-import SectionPills from "@/components/filters/section-pills";
-import OutreachFilters, { FilterSelect } from "@/components/filters/filter-popover";
-import { DonutRing } from "@/components/charts/donut-chart";
-import { useFilterStore } from "@/lib/store";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { filterVentures } from "@/lib/filter";
-import { founders, PROGRAM_EVENTS_LIST } from "@/data/founders";
-import { labVentures } from "@/data/venture-labs";
+import { founders } from "@/data/founders";
+import { useState, useMemo } from "react";
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Legend, Tooltip, ResponsiveContainer, LabelList,
+} from "recharts";
+import { Briefcase, Rocket, Target, TrendingUp, Users, Zap, Info, type LucideIcon, ChevronDown } from "lucide-react";
 
-// â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const D1_NAVY    = "#1B4332"; // pine
-const D1_TEAL    = "#1F9E9E"; // teal
-const D1_PURPLE  = "#6B8E5B"; // moss
-const D1_GREEN   = "#40916C"; // sea green
-const D1_SKY     = "#A6C13C"; // lime
+// Color palette - HENT green (matching overview)
+const HERO = "#2D6A4F";
+const BRAND = "#2D6A4F";
+const BRAND_DK = "#0E4633";
+const GREEN = "#2D6A4F";
+const LIGHT_GREEN = "#E8F5F2";
+const LIGHT_BORDER = "rgba(14, 70, 51, 0.12)";
+const LIGHT_BG = "#f8fafc";
+const GREEN_RAMP = ["#1B4332","#2D6A4F","#40916C","#5BB4A0","#8ECCC4"];
 
-const NAVY    = "#0F4C3A";  // footer only (brand green)
-const RED     = "#C44536";  // negative / alert
-const PRIMARY = D1_NAVY;
-const TEAL    = D1_TEAL;
-const PURPLE  = D1_PURPLE;
-const GREEN   = D1_GREEN;
-const INDIGO  = "#2D6A4F";
-const ORANGE  = D1_TEAL;
-const SKY     = D1_SKY;
-const EMERALD = D1_GREEN;
-const AMBER   = D1_SKY;
-const VIOLET  = D1_PURPLE;
+// Helpers
+function fmt$(n: number) {
+  return n >= 1_000_000 ? `$${(n/1_000_000).toFixed(1)}M` : n >= 1_000 ? `$${Math.round(n/1_000)}K` : `$${n}`;
+}
 
-// Standardised green series order
-const BAR_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
-// Distinct colours for the Expose · Build · Scale lifecycle stages
-const STAGE3 = ["#2E7D5B", "#E9C46A", "#E76F51"] as const;
-const VENTURE_YEARS = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort((a, b) => a - b);
-
-// â”€â”€â”€ constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const PACE    = 5 / 12;
-const TARGETS = { ventures: 400, jobs: 2_000, funds: 5_000_000 } as const;
-const ACTUALS = { ventures: 31,  jobs: 291,   funds: 485_000   } as const;
-const MONTHS  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const ALL_SECTORS = [
-  "Digital Health","Medical Devices","Diagnostics","Health Logistics",
-  "Pharma & Biotech","Mental Health","Maternal & Child Health",
-  "Health Financing","Community Health","Health Data & AI",
-] as const;
-
-// â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function sg(stage: string): "Expose" | "Build" | "Scale" {
-  if (stage === "Ideation" || stage === "Validation") return "Expose";
-  if (stage === "Prototype/MVP" || stage === "Early Growth") return "Build";
+function sg(s: string) {
+  if (s === "Ideation" || s === "Validation") return "Expose";
+  if (s === "Prototype/MVP" || s === "Early Growth") return "Build";
   return "Scale";
 }
-// Red → amber → green based on progress against the expected pace (benchmark)
+
 function paceColor(a: number, t: number): string {
-  const r = t > 0 ? (a / t) / PACE : 1;
-  if (r >= 1)    return "#16A34A"; // green  - on or ahead of pace
-  if (r >= 0.95) return "#84CC16"; // lime
-  if (r >= 0.8)  return "#F59E0B"; // amber
-  return "#DC2626";                // red    - behind pace
-}
-function fmt$(n: number): string {
-  return n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `$${Math.round(n / 1e3)}K` : `$${n}`;
+  const pace = 5 / 12;
+  const r = t > 0 ? (a / t) / pace : 1;
+  if (r >= 1) return "#16A34A";
+  if (r >= 0.95) return "#84CC16";
+  if (r >= 0.8) return "#F59E0B";
+  return "#DC2626";
 }
 
-// â”€â”€â”€ static module-level derivations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const MCF_IDS = new Set(
-  founders.filter(f => f.isMCFScholar).map(f => parseInt(f.ventureId.slice(1)))
-);
-const STALLED_IDS = new Set(
-  ALL_VENTURES.filter(v => v.status === "Stalled").map(v => v.id)
-);
+// Constants
+const PACE = 5 / 12;
+const TARGETS = { ventures: 400, jobs: 2_000, funds: 910_904 } as const;
+const ACTUALS = {
+  ventures: ALL_VENTURES.filter(v => v.status === "Active").length,
+  jobs: ALL_VENTURES.reduce((s, v) => s + v.jobsTotal, 0),
+  funds: ALL_VENTURES.reduce((s, v) => s + v.funding, 0)
+};
 
-const femCount    = founders.filter(f => f.gender === "Female").length;
-const mcfFounders = founders.filter(f => f.isMCFScholar).length;
-const mcfFemCount = founders.filter(f => f.isMCFScholar && f.gender === "Female").length;
-const pwdCount    = founders.filter(f => f.isPWD).length;
-const refCount    = founders.filter(f => f.isRefugee).length;
-const mcfVentures = ALL_VENTURES.filter(v => MCF_IDS.has(v.id));
-const mcfFunding  = mcfVentures.reduce((s, v) => s + v.funding, 0);
-const avgLabScore = Math.round(labVentures.reduce((s, v) => s + v.score, 0) / labVentures.length);
-const totalFunding = ALL_VENTURES.reduce((s, v) => s + v.funding, 0);
+const VENTURE_YEARS = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort((a, b) => a - b);
 
-const engData = MONTHS.map((month, i) => ({
-  month,
-  Founders: founders.filter(f => f.interventionMonth === i + 1).length,
-}));
-const qJobs = [
-  { Q: "Q1", Jobs: ALL_VENTURES.slice(0,  24).reduce((s, v) => s + v.jobs6m, 0) },
-  { Q: "Q2", Jobs: ALL_VENTURES.slice(24, 48).reduce((s, v) => s + v.jobs6m, 0) },
-  { Q: "Q3", Jobs: ALL_VENTURES.slice(48, 72).reduce((s, v) => s + v.jobs6m, 0) },
-  { Q: "Q4", Jobs: ALL_VENTURES.slice(72).reduce((s, v)     => s + v.jobs6m, 0) },
-];
-const evData = PROGRAM_EVENTS_LIST
-  .map(ev => ({ name: ev, value: founders.filter(f => f.events.includes(ev)).length }))
-  .sort((a, b) => b.value - a.value);
-
-// â”€â”€â”€ sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-// Interactive donut — hover dims other slices and shows a colour tooltip
-const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
-function CustomDonut({ data, className = "" }: {
-  data: { name: string; value: number }[];
-  colors?: string[];
-  label?: string;
-  valueFormatter?: (v: number) => string;
-  className?: string;
-}) {
-  const total = data.reduce((s, d) => s + d.value, 0);
-  if (!total) return null;
-  const height = className.includes("h-52") ? 300 : 260;
-  return <DonutRing data={data} colors={DISTINCT} total={total} totalLabel="Total" height={height} legendPercent />;
-}
-
-// Custom multi-colour bar list  -  one colour per row
-function ColorBarList({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
-  const max = data[0]?.value ?? 1;
-  return (
-    <div className="space-y-2">
-      {data.map((row, i) => {
-        const col = colors[i % colors.length];
-        return (
-          <div key={row.name} className="flex items-center gap-2.5">
-            <div className="w-[88px] text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight truncate">{row.name}</div>
-            <div className="flex-1 h-[18px] rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-              <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
-            </div>
-            <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// Pace bar designed for light tinted backgrounds
-function LightPaceBar({ a, t, clr: _clr }: { a: number; t: number; clr: string }) {
-  return (
-    <div className="h-1 rounded-sm relative mt-2.5 mb-0.5" style={{ backgroundColor: "rgba(14,70,51,0.12)" }}>
-      <div className="h-full"
-        style={{ width: `${Math.min((a / t) * 100, 100)}%`, backgroundColor: paceColor(a, t) }} />
-      <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${PACE * 100}%`, backgroundColor: "#0E4633", borderRadius: 1 }} />
-    </div>
-  );
-}
-
-function KpiTile({ label, num, displayFmt, denom, sub, clr, pace, paceA, paceT, Icon }: {
-  label: string;
-  num: number;
-  displayFmt: (n: number) => string;
-  denom?: string | number;
-  sub: string;
-  clr: string;
-  pace: boolean;
-  paceA?: number;
-  paceT?: number;
-  Icon?: LucideIcon;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div className="rounded-[10px] px-4 py-3 text-center"
-      style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1 mb-1.5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.06em] leading-tight"
-          style={{ color: "rgba(14,70,51,0.55)" }}>{label}</p>
-        {sub && <InfoDot tip={sub} />}
-      </div>
-      <div className="flex items-center gap-2 justify-center">
-        {Icon && <Icon size={18} style={{ color: "#0E4633", opacity: 0.85, flexShrink: 0 }} />}
-        <div className="flex items-baseline gap-1">
-          <span className="text-xl font-black tabular-nums leading-none" style={{ color: "#0E4633" }}>{displayFmt(animated)}</span>
-          {denom !== undefined && (
-            <span className="text-[10px] font-normal" style={{ color: "rgba(14,70,51,0.45)" }}>/ {denom}</span>
-          )}
-        </div>
-      </div>
-      {pace && <LightPaceBar a={paceA!} t={paceT!} clr={clr} />}
-      {!pace && <div className="mt-1.5" />}
-      <p className="text-[8px] font-medium" style={{ color: "rgba(14,70,51,0.55)" }}>{sub}</p>
-    </div>
-  );
-}
-
-// Pace bar for white sidebar backgrounds
-function RBar({ v, total }: { v: number; total: number }) {
-  return (
-    <div className="h-1 bg-gray-100 rounded-sm mt-2 mb-0.5">
-      <div className="h-full bg-sky-500"
-        style={{ width: `${total > 0 ? (v / total) * 100 : 0}%` }} />
-    </div>
-  );
-}
-
-function SectionLabel({ label, color = PRIMARY }: { label: string; color?: string }) {
-  return (
-    <div className="px-4 py-2.5 flex items-center gap-2 border-b"
-      style={{
-        backgroundColor: color,
-        borderBottomColor: color,
-      }}>
-      <div className="w-[3px] h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
-      <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white">{label}</p>
-    </div>
-  );
-}
-
-function MCard({
-  label, big, denom, barType, bA, bT, bTotal,
-  chips, sub, gap, color = "#111827",
+// Stats Panel Component
+function StatsPanel({
+  title,
+  description,
+  cards
 }: {
-  label: string;
-  big: string | number;
-  denom?: string | number;
-  barType: "T" | "R" | "none";
-  bA?: number; bT?: number; bTotal?: number;
-  chips?: { label: string; color: string }[];
-  sub?: string;
-  gap?: string;
-  color?: string;
+  title: string
+  description?: string
+  cards: Array<{ label: string; num: number; sub?: string; icon: LucideIcon; displayFmt?: (n: number) => string; tip?: string; pace?: boolean; paceA?: number; paceT?: number }>
 }) {
   return (
-    <div className="px-5 py-3.5 border-b border-gray-100 last:border-0">
-      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.12em] leading-none">{label}</p>
-      <div className="flex items-baseline gap-1 mt-2">
-        <span className="text-2xl font-black tabular-nums leading-none" style={{ color }}>{big}</span>
-        {denom !== undefined && (
-          <span className="text-sm font-normal text-gray-400">/ {denom}</span>
-        )}
-      </div>
-      {barType === "T" && bA !== undefined && bT !== undefined && (
-        <div className="h-1 bg-gray-200 rounded-sm relative mt-2 mb-0.5">
-          <div className="h-full"
-            style={{ width: `${Math.min((bA / bT) * 100, 100)}%`, backgroundColor: paceColor(bA, bT) }} />
-          <div className="absolute top-0 bottom-0 w-px bg-gray-400/40"
-            style={{ left: `${PACE * 100}%` }} />
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+          <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+              {title}
+            </p>
+            {description && <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>{description}</p>}
+          </div>
         </div>
-      )}
-      {barType === "R" && bA !== undefined && bTotal !== undefined && (
-        <RBar v={bA} total={bTotal} />
-      )}
-      {barType === "none" && <div className="h-2" />}
-      {sub  && !gap && <p className="text-[10px] text-gray-400">{sub}</p>}
-      {gap  && <p className="text-[10px] text-amber-500 italic">{gap}</p>}
-      {chips && chips.length > 0 && (
-        <div className="flex gap-1 flex-wrap mt-1.5">
-          {chips.map(c => (
-            <span key={c.label} className="text-[10px] px-1.5 py-0.5 rounded font-medium"
-              style={{ backgroundColor: c.color + "22", color: c.color }}>
-              {c.label}
-            </span>
-          ))}
-        </div>
-      )}
+      </div>
+
+      <div style={{
+        display: "flex",
+        gap: 12,
+        overflowX: cards.length > 6 ? "auto" : "visible",
+        overflowY: "hidden",
+        paddingBottom: cards.length > 6 ? 8 : 0,
+        marginBottom: 24,
+      }}>
+        {cards.map((card, idx) => (
+          <div key={idx} style={{
+            flex: cards.length <= 6 ? "1 1 0" : "0 0 auto",
+            minWidth: cards.length > 6 ? 180 : 0,
+            minHeight: 0,
+          }}>
+            <div style={{
+              backgroundColor: "white",
+              borderRadius: 10,
+              padding: "14px 16px",
+              textAlign: "center",
+              border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
+              position: "relative",
+              overflow: "visible",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 8 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK }}>
+                  {card.label}
+                </p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <card.icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
+                <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>
+                  {card.displayFmt ? card.displayFmt(card.num) : Math.round(card.num).toLocaleString()}
+                </p>
+              </div>
+              {card.pace && card.paceA !== undefined && card.paceT !== undefined && (
+                <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
+                  <div style={{
+                    height: "100%",
+                    borderRadius: 2,
+                    width: `${Math.min((card.paceA / card.paceT) * 100, 100)}%`,
+                    backgroundColor: paceColor(card.paceA, card.paceT)
+                  }} />
+                  <div style={{ position: "absolute", top: -2, bottom: -2, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
+                </div>
+              )}
+              {card.sub && <p style={{ fontSize: 9.5, color: `rgba(14, 70, 51, 0.55)`, marginTop: 4 }}>{card.sub}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-function StackedHBar({ name, expose, build, scale, max }: {
-  name: string; expose: number; build: number; scale: number; max: number;
-}) {
-  const w = (v: number) => `${max > 0 ? (v / max) * 100 : 0}%`;
-  return (
-    <div className="flex items-center gap-2 mb-1.5">
-      <div className="w-32 text-[11px] text-gray-600 truncate text-right flex-shrink-0" title={name}>{name}</div>
-      <div className="flex-1 h-3 bg-gray-100 rounded-sm overflow-hidden flex">
-        {expose > 0 && <div style={{ width: w(expose), backgroundColor: STAGE3[0] }} title={`Expose: ${expose}`} />}
-        {build  > 0 && <div style={{ width: w(build),  backgroundColor: STAGE3[1] }} title={`Build: ${build}`} />}
-        {scale  > 0 && <div style={{ width: w(scale),  backgroundColor: STAGE3[2] }} title={`Scale: ${scale}`} />}
-      </div>
-      <div className="w-6 text-[11px] text-gray-400 text-right flex-shrink-0">{expose + build + scale}</div>
-    </div>
-  );
-}
-
-function DivBar({ name, mcf, nm, max }: { name: string; mcf: number; nm: number; max: number }) {
-  return (
-    <div className="flex items-center gap-1 mb-1.5">
-      <div className="w-20 text-[11px] text-gray-600 truncate text-right flex-shrink-0">{name}</div>
-      <div className="w-24 flex justify-end flex-shrink-0">
-        {mcf > 0 && (
-          <div className="h-3 rounded-l-sm"
-            style={{ width: `${(mcf / max) * 100}%`, backgroundColor: PRIMARY }}
-            title={`MCF: ${mcf}`} />
-        )}
-      </div>
-      <div className="w-px h-3 bg-gray-300 flex-shrink-0 mx-0.5" />
-      <div className="w-24 flex-shrink-0">
-        {nm > 0 && (
-          <div className="h-3 rounded-r-sm"
-            style={{ width: `${(nm / max) * 100}%`, backgroundColor: RED }}
-            title={`Non-MCF: ${nm}`} />
-        )}
-      </div>
-      <div className="w-6 text-[11px] text-gray-400 text-right flex-shrink-0">{mcf + nm}</div>
-    </div>
-  );
-}
-
-// â”€â”€â”€ Youth-in-Work-style structural components (green theme) â”€â”€â”€
-const G_BAND = "#0E4633";
-const G_HEAD = "#0E4633";
-const G_TICK = "#A6C13C";
-
-function Panel({ title, subtitle, info, children }: {
-  title: string; subtitle: string; info?: string; children: React.ReactNode;
-}) {
+// Panel Component for Charts
+function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
   const [tip, setTip] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
-      <div style={{ backgroundColor: G_BAND, padding: "10px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: G_TICK, flexShrink: 0 }} />
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+      <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
+          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
           <div style={{ minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
               {info && (
                 <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
                   onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
-                  <Info size={11} color="rgba(190,228,214,0.85)" />
+                  <Info size={12} color="white" opacity={0.6} />
                   {tip && (
-                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#04241A", color: "white", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: BRAND_DK, fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: `1px solid ${LIGHT_BORDER}`, zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
                       {info}
                     </span>
                   )}
                 </span>
               )}
             </div>
-            <p style={{ fontSize: 9.5, color: "rgba(190,228,214,0.7)", marginTop: 1 }}>{subtitle}</p>
+            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 1 }}>{subtitle}</p>
           </div>
         </div>
       </div>
-      <div style={{ padding: "16px 18px 18px" }}>{children}</div>
+      {filterOptions && filterValue && onFilterChange && (
+        <div style={{ padding: "8px 18px", display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                padding: "5px 10px",
+                borderRadius: 6,
+                border: `1px solid ${LIGHT_BORDER}`,
+                backgroundColor: LIGHT_GREEN,
+                color: BRAND_DK,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {filterValue} <ChevronDown size={12} />
+            </button>
+            {filterOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: 0,
+                backgroundColor: "white",
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderRadius: 6,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                minWidth: 140,
+                overflow: "hidden",
+              }}>
+                {filterOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => {
+                      onFilterChange(opt);
+                      setFilterOpen(false);
+                    }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 12px",
+                      fontSize: 11,
+                      fontWeight: opt === filterValue ? 700 : 500,
+                      backgroundColor: opt === filterValue ? BRAND : "white",
+                      color: opt === filterValue ? "white" : BRAND_DK,
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div style={{ padding: "12px 18px 18px" }}>
+        {children}
+      </div>
     </div>
   );
 }
 
-// Cohort filter: internal value <-> human label, for the executive dropdown.
-type NationFilter = "ALL" | "MCF" | "NON-MCF" | "FLAGGED";
-const NATION_LABEL: Record<NationFilter, string> = {
-  ALL: "All Cohorts", MCF: "MCF Scholars", "NON-MCF": "Non-MCF", FLAGGED: "Flagged",
-};
-const VEN_SECTIONS = [
-  { n: 1, label: "Growth & Jobs" },
-  { n: 2, label: "Portfolio Composition" },
-  { n: 3, label: "Geography & Engagement" },
-] as const;
+export default function HENTVentures() {
+  const categories = ["Growth & Jobs", "Portfolio Composition", "Geography & Engagement", "Portfolio Health"];
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
 
-// â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-export default function HENTPortfolio() {
-  const pathname = usePathname();
-  const { filters } = useFilterStore();
-  const [stageFilter, setStageFilter] = useState<"All" | "Expose" | "Build" | "Scale">("All");
-  const [nationFilter, setNationFilter] = useState<"ALL" | "MCF" | "NON-MCF" | "FLAGGED">("ALL");
-  const [yearFilter, setYearFilter] = useState<"All" | number>("All");
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
-  const filtersActive = (stageFilter !== "All" ? 1 : 0) + (nationFilter !== "ALL" ? 1 : 0) + (yearFilter !== "All" ? 1 : 0);
+  const show = (category: string) => activeCategory === "all" || activeCategory === category;
 
-  const fv = useMemo(() => {
-    const base = filterVentures(ALL_VENTURES, filters);
-    return base.filter(v => {
-      if (stageFilter !== "All" && sg(v.stage) !== stageFilter) return false;
-      if (nationFilter === "MCF"     && !MCF_IDS.has(v.id))     return false;
-      if (nationFilter === "NON-MCF" &&  MCF_IDS.has(v.id))     return false;
-      if (nationFilter === "FLAGGED" && !STALLED_IDS.has(v.id)) return false;
-      if (yearFilter !== "All" && v.cohort !== yearFilter)      return false;
-      return true;
-    });
-  }, [filters, stageFilter, nationFilter, yearFilter]);
+  // Year filters for each chart
+  const [filterGrowthYear, setFilterGrowthYear] = useState("All Years");
+  const [filterCompYear, setFilterCompYear] = useState("All Years");
+  const [filterGeoYear, setFilterGeoYear] = useState("All Years");
+  const [filterHealthYear, setFilterHealthYear] = useState("All Years");
 
-  const expN   = useMemo(() => fv.filter(v => sg(v.stage) === "Expose").length, [fv]);
-  const buildN = useMemo(() => fv.filter(v => sg(v.stage) === "Build").length,  [fv]);
-  const scaleN = useMemo(() => fv.filter(v => sg(v.stage) === "Scale").length,  [fv]);
+  // Aggregations
+  const years = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort();
+  const femaleVentures = ALL_VENTURES.filter(v => v.teamGender === "Female").length;
+  const activeVentures = ALL_VENTURES.filter(v => v.status === "Active").length;
+  const retentionRate = ALL_VENTURES.length ? Math.round((ALL_VENTURES.filter(v => v.status !== "Stalled").length / ALL_VENTURES.length) * 100) : 0;
+  const acceleratorVentures = ALL_VENTURES.filter(v => v.accelerator).length;
+  const acceleratorPct = ALL_VENTURES.length ? Math.round((acceleratorVentures / ALL_VENTURES.length) * 100) : 0;
+  const venturesFunded = ALL_VENTURES.filter(v => v.funding > 0).length;
+  const totalPartnerships = ALL_VENTURES.reduce((s, v) => s + v.partnerships, 0);
+  const avgJobsPerVenture = ALL_VENTURES.length ? Math.round(ACTUALS.jobs / ALL_VENTURES.length) : 0;
+  const totalRevenue = ALL_VENTURES.reduce((s, v) => s + v.revenue, 0);
 
-  const secData = useMemo(() => {
-    const m: Record<string, number> = {};
-    fv.forEach(v => { m[v.sector] = (m[v.sector] || 0) + 1; });
-    return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-  }, [fv]);
-
-  const { ctryData, ctryMax } = useMemo(() => {
-    const m: Record<string, { mcf: number; nm: number }> = {};
-    fv.forEach(v => {
-      if (!m[v.country]) m[v.country] = { mcf: 0, nm: 0 };
-      if (MCF_IDS.has(v.id)) m[v.country].mcf++; else m[v.country].nm++;
-    });
-    const data = Object.entries(m)
-      .map(([name, { mcf, nm }]) => ({ name, mcf, nm, t: mcf + nm }))
-      .sort((a, b) => b.t - a.t).slice(0, 10);
-    return { ctryData: data, ctryMax: Math.max(...data.map(c => Math.max(c.mcf, c.nm)), 1) };
-  }, [fv]);
-
-  const jobsCtryData = useMemo(() => {
-    const m: Record<string, number> = {};
-    fv.forEach(v => { m[v.country] = (m[v.country] || 0) + v.jobsTotal; });
-    return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10);
-  }, [fv]);
-
-  const { ssData, ssMax, ssByStage } = useMemo(() => {
-    const byStage: Record<string, { Expose: number; Build: number; Scale: number }> = {};
-    ALL_SECTORS.forEach(s => { byStage[s] = { Expose: 0, Build: 0, Scale: 0 }; });
-    fv.forEach(v => { if (byStage[v.sector]) byStage[v.sector][sg(v.stage)]++; });
-    const data = ALL_SECTORS
-      .filter(s => byStage[s].Expose + byStage[s].Build + byStage[s].Scale > 0)
-      .sort((a, b) => (byStage[b].Expose + byStage[b].Build + byStage[b].Scale) - (byStage[a].Expose + byStage[a].Build + byStage[a].Scale));
-    const max = Math.max(...data.map(s => byStage[s].Expose + byStage[s].Build + byStage[s].Scale), 1);
-    return { ssData: data, ssMax: max, ssByStage: byStage };
-  }, [fv]);
-
-  const genderData = [
-    { name: "Male",   value: founders.length - femCount },
-    { name: "Female", value: femCount },
-  ];
-
-  // â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
+    <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
       <PortalNav portal="hent" />
 
-      {/* â”€â”€ TITLE + KPI strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
-
-        {/* Faint triangle pattern across the whole header */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-
-        {/* Full design elements anchored to the left & right edges */}
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-
-        {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
-
-        {/* Content */}
-        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
-          <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Ventures</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Portfolio ventures, founders and the jobs, funding and impact they generate</p>
-            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
-              <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
-              <span aria-hidden="true">·</span>
-              <span>{ALL_VENTURES.length} ventures tracked</span>
-              <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+          <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
+            <div style={{ textAlign: "center" }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Ventures Portfolio</h1>
+              <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(190,228,214,0.78)" }}>
+                Portfolio ventures, founders and the jobs, funding and impact they generate
+              </p>
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(190,228,214,0.5)" }}>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
       </div>
 
-      {/* â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="max-w-[1400px] mx-auto px-6 py-5 space-y-5">
+      <div className="max-w-[1440px] mx-auto px-6 py-7">
 
-        {/* KPI strip */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-              <KpiTile
-                label="Health Ventures"
-                num={ACTUALS.ventures}
-                displayFmt={n => String(Math.round(n))}
-                denom={TARGETS.ventures}
-                sub="Scout 9 ventures/qtr to close gap"
-                Icon={Rocket}
-                clr="#0C4A6E" pace paceA={ACTUALS.ventures} paceT={TARGETS.ventures} />
-              <KpiTile
-                label="Jobs Created"
-                num={ACTUALS.jobs}
-                displayFmt={n => String(Math.round(n))}
-                denom={TARGETS.jobs.toLocaleString()}
-                sub="Prioritise scale-stage ventures"
-                Icon={Briefcase}
-                clr="#14532D" pace paceA={ACTUALS.jobs} paceT={TARGETS.jobs} />
-              <KpiTile
-                label="Funds Deployed"
-                num={ACTUALS.funds}
-                displayFmt={n => fmt$(Math.round(n))}
-                denom={fmt$(TARGETS.funds)}
-                sub="Review grant disbursement pipeline"
-                Icon={Banknote}
-                clr="#164E63" pace paceA={ACTUALS.funds} paceT={TARGETS.funds} />
-              <KpiTile
-                label="Active Founders"
-                num={48}
-                displayFmt={n => String(Math.round(n))}
-                sub={`${Math.round((femCount / founders.length) * 100)}% female · ${founders.length} total`}
-                Icon={Users}
-                clr="#155E75" pace={false} />
-              <KpiTile
-                label="Pace of Target"
-                num={5.5}
-                displayFmt={n => `${n.toFixed(1)}%`}
-                sub={`Against ${Math.round(PACE * 100)}% expected`}
-                Icon={Target}
-                clr="#134E4A" pace={false} />
+        {/* ════ TOP STATS HEADER ════ */}
+        <div style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Active Ventures</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{ACTUALS.ventures}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>/ {TARGETS.ventures}</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
+              <div style={{
+                height: "100%",
+                borderRadius: 2,
+                width: `${Math.min((ACTUALS.ventures / TARGETS.ventures) * 100, 100)}%`,
+                backgroundColor: paceColor(ACTUALS.ventures, TARGETS.ventures)
+              }} />
+              <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
+            </div>
+          </div>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Jobs Created</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{ACTUALS.jobs.toLocaleString()}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>/ {TARGETS.jobs.toLocaleString()}</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
+              <div style={{
+                height: "100%",
+                borderRadius: 2,
+                width: `${Math.min((ACTUALS.jobs / TARGETS.jobs) * 100, 100)}%`,
+                backgroundColor: paceColor(ACTUALS.jobs, TARGETS.jobs)
+              }} />
+              <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
+            </div>
+          </div>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Funds Deployed</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{fmt$(Math.round(ACTUALS.funds))}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>/ {fmt$(TARGETS.funds)}</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
+              <div style={{
+                height: "100%",
+                borderRadius: 2,
+                width: `${Math.min((ACTUALS.funds / TARGETS.funds) * 100, 100)}%`,
+                backgroundColor: paceColor(ACTUALS.funds, TARGETS.funds)
+              }} />
+              <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
+            </div>
+          </div>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Active Founders</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{Math.round(founders.length * 0.65)}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Of {founders.length} total</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8 }} />
+          </div>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Pace of Target</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>5.5%</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Against 42% expected</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8 }} />
+          </div>
         </div>
 
-        {/* Section pills (left) + outreach-style filters popover (right) */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <SectionPills
-            accent={G_HEAD}
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-            options={[{ label: "All Sections", value: "all" }, ...VEN_SECTIONS.map(s => ({ label: s.label, value: String(s.n) }))]}
-          />
-
-          <OutreachFilters
-            accent={G_HEAD}
-            activeCount={filtersActive}
-            onReset={() => { setStageFilter("All"); setNationFilter("ALL"); setYearFilter("All"); }}
-          >
-            <FilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent={G_HEAD}
-              options={[{ value: "All" as const, label: "All Years" }, ...VENTURE_YEARS.map(y => ({ value: y, label: String(y) }))]} />
-            <FilterSelect label="Stage" value={stageFilter} onChange={setStageFilter} accent={G_HEAD}
-              options={[
-                { value: "All", label: "All Stages" },
-                { value: "Expose", label: "Expose" },
-                { value: "Build", label: "Build" },
-                { value: "Scale", label: "Scale" },
-              ]} />
-            <FilterSelect label="Cohort" value={nationFilter} onChange={setNationFilter} accent={G_HEAD}
-              options={(Object.keys(NATION_LABEL) as NationFilter[]).map(v => ({ value: v, label: NATION_LABEL[v] }))} />
-          </OutreachFilters>
+        {/* ════ SECTION FILTER DROPDOWN ════ */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: BRAND_DK }}>View Section:</span>
+          <div style={{ position: "relative" }}>
+            <button
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                padding: "8px 16px",
+                borderRadius: 6,
+                border: `1px solid ${LIGHT_BORDER}`,
+                backgroundColor: BRAND,
+                color: "white",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                whiteSpace: "nowrap",
+              }}
+              onClick={() => setSectionMenuOpen(!sectionMenuOpen)}
+            >
+              {activeCategory === "all" ? "All Sections" : activeCategory} <ChevronDown size={16} />
+            </button>
+            {sectionMenuOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                left: 0,
+                backgroundColor: "white",
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderRadius: 6,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                minWidth: 220,
+                overflow: "hidden",
+              }}>
+                <button
+                  onClick={() => {
+                    setActiveCategory("all");
+                    setSectionMenuOpen(false);
+                  }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 16px",
+                    fontSize: 12,
+                    fontWeight: activeCategory === "all" ? 700 : 600,
+                    backgroundColor: activeCategory === "all" ? BRAND : "white",
+                    color: activeCategory === "all" ? "white" : BRAND_DK,
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  All Sections
+                </button>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setActiveCategory(cat);
+                      setSectionMenuOpen(false);
+                    }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "10px 16px",
+                      fontSize: 12,
+                      fontWeight: activeCategory === cat ? 700 : 600,
+                      backgroundColor: activeCategory === cat ? BRAND : "white",
+                      color: activeCategory === cat ? "white" : BRAND_DK,
+                      border: "none",
+                      cursor: "pointer",
+                      borderTop: "1px solid rgba(0,0,0,0.05)",
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {show(1) && (
-        <section className="space-y-3">
-          <SectionHeader title="Growth & Jobs" sub="Founder onboarding momentum and jobs created through 2026" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            {/* Engagement Trend */}
-            <ChartCard title="Engagement Trend" sub="Monthly founder onboarding · 2026" accent={SKY}>
-              <ResponsiveContainer width="100%" height={240}>
-                <LineChart data={engData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Line type="monotone" dataKey="Founders" stroke={SKY} strokeWidth={2.5} dot={{ r: 4, fill: SKY, strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Founders onboarded", SKY]]} />
-            </ChartCard>
-
-            {/* Jobs Created */}
-            <ChartCard title="Jobs Created" sub="Quarterly breakdown · 2026" accent={EMERALD}>
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={qJobs} barCategoryGap="35%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Q" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={18} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Bar dataKey="Jobs" fill={EMERALD} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Jobs created", EMERALD]]} />
-            </ChartCard>
-
-          </div>
-        </section>
+        {/* ════ GROWTH & JOBS ════ */}
+        {show("Growth & Jobs") && (
+          <section style={{ marginBottom: 48 }}>
+            <StatsPanel
+              title="Growth & Jobs"
+              description="Venture pipeline and employment outcomes"
+              cards={[
+                { label: "Ventures Funded", num: venturesFunded, sub: "Have received capital", icon: Briefcase },
+                { label: "Avg Jobs per Venture", num: avgJobsPerVenture, sub: "Employment intensity", icon: Users },
+                { label: "Partnerships Built", num: totalPartnerships, sub: "Cross-sector", icon: TrendingUp },
+                { label: "Revenue Generated", num: totalRevenue, displayFmt: (n) => fmt$(Math.round(n)), sub: "Venture revenue", icon: Zap },
+              ]}
+            />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+              <Panel title="Ventures by Stage" subtitle="Expose · Build · Scale distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Expose", value: ALL_VENTURES.filter(v => sg(v.stage) === "Expose").length },
+                    { name: "Build", value: ALL_VENTURES.filter(v => sg(v.stage) === "Build").length },
+                    { name: "Scale", value: ALL_VENTURES.filter(v => sg(v.stage) === "Scale").length },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Jobs Trend" subtitle="Employment growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={years.map(y => ({ year: String(y), jobs: ALL_VENTURES.filter(v => v.cohort === y).reduce((s, v) => s + v.jobsTotal, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="jobs" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Jobs Created" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
         )}
 
-        {show(2) && (
-        <section className="space-y-3">
-          <SectionHeader title="Portfolio Composition" sub="Sector mix and founder gender across the portfolio" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Ventures by Sector */}
-            <ChartCard title="Ventures by Sector" sub={`${fv.length} ventures · current filter`} accent={PRIMARY}>
-              <ColorBarList data={secData} colors={[TEAL]} />
-            </ChartCard>
-
-            {/* Gender Distribution */}
-            <ChartCard title="Gender Distribution" sub={`${founders.length} founders`} accent={PURPLE}>
-              <CustomDonut
-                data={genderData}
-                className="h-52"
-                valueFormatter={(v: number) => `${v} founders`}
-              />
-            </ChartCard>
-
-          </div>
-        </section>
+        {/* ════ PORTFOLIO COMPOSITION ════ */}
+        {show("Portfolio Composition") && (
+          <section style={{ marginBottom: 48 }}>
+            <StatsPanel
+              title="Portfolio Composition"
+              description="Sector mix and founder characteristics"
+              cards={[
+                { label: "Total Ventures", num: ALL_VENTURES.length, sub: "Portfolio size", icon: Rocket },
+                { label: "Sectors Represented", num: Array.from(new Set(ALL_VENTURES.map(v => v.sector))).length, sub: "Different sectors", icon: Briefcase },
+                { label: "Female Founders", num: Math.round((founders.filter(f => f.gender === "Female").length / founders.length) * 100), displayFmt: (n) => `${n}%`, sub: "Of total founders", icon: TrendingUp },
+                { label: "MCF Scholars", num: founders.filter(f => f.isMCFScholar).length, sub: "Mission scholars", icon: Users },
+              ]}
+            />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+              <Panel title="Ventures by Sector" subtitle="Distribution across sectors" filterOptions={["All Years", ...years.map(String)]} filterValue={filterCompYear} onFilterChange={setFilterCompYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map(s => ({
+                    name: s,
+                    value: ALL_VENTURES.filter(v => v.sector === s).length
+                  })).sort((a, b) => b.value - a.value).slice(0, 5)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Gender Distribution" subtitle="Founder diversity metrics">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart layout="vertical" data={[{
+                    name: "Founders",
+                    Male: founders.filter(f => f.gender !== "Female").length,
+                    Female: founders.filter(f => f.gender === "Female").length
+                  }]} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={104} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="Male" fill={GREEN_RAMP[0]} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="Female" fill={GREEN_RAMP[1]} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
         )}
 
-        {show(3) && (
-        <section className="space-y-3">
-          <SectionHeader title="Geography & Engagement" sub="Geographic spread, jobs by country, stage mix, and event participation" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Ventures by Country  -  MCF vs Non-MCF diverging */}
-            <ChartCard title="Ventures by Country" sub="MCF vs Non-MCF" accent={PRIMARY}>
-              {ctryData.map(c => (
-                <DivBar key={c.name} name={c.name} mcf={c.mcf} nm={c.nm} max={ctryMax} />
-              ))}
-              <div className="flex justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: PRIMARY }} /> MCF
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RED }} /> Non-MCF
-                </span>
-              </div>
-            </ChartCard>
-
-            {/* Jobs by Country */}
-            <ChartCard title="Jobs by Country" sub="Total jobs created per country" accent="#F43F5E">
-              <ColorBarList data={jobsCtryData} colors={[TEAL]} />
-            </ChartCard>
-
-            {/* Sector × Stage */}
-            <ChartCard title="Sector by Stage" sub="Expose · Build · Scale breakdown" accent={INDIGO}>
-              <div className="space-y-0.5">
-                {ssData.map(s => (
-                  <StackedHBar key={s} name={s}
-                    expose={ssByStage[s].Expose}
-                    build={ssByStage[s].Build}
-                    scale={ssByStage[s].Scale}
-                    max={ssMax} />
-                ))}
-              </div>
-              <div className="flex justify-center gap-4 text-[10px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                {(["Expose","Build","Scale"] as const).map((l, i) => (
-                  <span key={l} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: STAGE3[i] }} />
-                    {l}
-                  </span>
-                ))}
-              </div>
-            </ChartCard>
-
-            {/* Programme Events Attendance */}
-            <ChartCard title="Programme Events Attendance" sub="Founders per event" accent={VIOLET}>
-              <ColorBarList data={evData} colors={[TEAL]} />
-            </ChartCard>
-
-          </div>
-        </section>
+        {/* ════ GEOGRAPHY & ENGAGEMENT ════ */}
+        {show("Geography & Engagement") && (
+          <section style={{ marginBottom: 48 }}>
+            <StatsPanel
+              title="Geography & Engagement"
+              description="Geographic distribution and regional performance"
+              cards={[
+                { label: "Countries Represented", num: Array.from(new Set(ALL_VENTURES.map(v => v.country))).length, sub: "Portfolio reach", icon: TrendingUp },
+                { label: "Jobs by Region", num: ACTUALS.jobs, displayFmt: (n) => n.toLocaleString(), sub: "Cross-border", icon: Briefcase },
+                { label: "Funding Distributed", num: ACTUALS.funds, displayFmt: (n) => fmt$(Math.round(n)), sub: "Regional capital", icon: Zap },
+                { label: "Top Region Ventures", num: Array.from(new Set(ALL_VENTURES.map(v => v.country))).length > 0 ? Math.max(...Array.from(new Set(ALL_VENTURES.map(v => v.country))).map(c => ALL_VENTURES.filter(v => v.country === c).length)) : 0, sub: "Highest concentration", icon: Rocket },
+              ]}
+            />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+              <Panel title="Funding by Country" subtitle="Capital distribution across regions" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.country))).map(c => ({
+                    name: c,
+                    value: ALL_VENTURES.filter(v => v.country === c).reduce((s, v) => s + v.funding, 0)
+                  })).sort((a, b) => b.value - a.value).slice(0, 8)} layout="vertical" margin={{ top: 4, right: 36, bottom: 0, left: 60 }} barSize={16} barCategoryGap="20%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} tickFormatter={(v) => fmt$(v)} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={50} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip money />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={GREEN} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Ventures by Country" subtitle="Portfolio distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.country))).map(c => ({
+                    name: c,
+                    value: ALL_VENTURES.filter(v => v.country === c).length
+                  })).sort((a, b) => b.value - a.value).slice(0, 8)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
         )}
 
-        {/* â”€â”€ FOOTER (executive style, HENT green header design) â”€â”€â”€ */}
-        <PortalFooter portal="hent" synced="28 May 2026, EAT" />
+        {/* ════ PORTFOLIO HEALTH ════ */}
+        {show("Portfolio Health") && (
+          <section style={{ marginBottom: 48 }}>
+            <StatsPanel
+              title="Portfolio Health"
+              description="Venture retention and expansion outcomes"
+              cards={[
+                { label: "Ventures Supported", num: activeVentures, sub: "Active ventures", icon: Rocket },
+                { label: "Retention Rate", num: retentionRate, displayFmt: (n) => `${n}%`, sub: "Not stalled", icon: TrendingUp },
+                { label: "In Accelerators", num: acceleratorVentures, sub: `${acceleratorPct}% of portfolio`, icon: Target },
+                { label: "Revenue Generated", num: totalRevenue, displayFmt: (n) => fmt$(Math.round(n)), sub: "Venture revenue", icon: Zap },
+              ]}
+            />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+              <Panel title="Funding Trend" subtitle="Capital deployment over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={years.map(y => ({ year: String(y), funding: ALL_VENTURES.filter(v => v.cohort === y && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip money />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="funding" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Funding Deployed" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Revenue Trend" subtitle="Growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={years.map(y => ({ year: String(y), revenue: ALL_VENTURES.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip money />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="revenue" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Revenue Generated" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        <PortalFooter portal="hent" synced="18 Jun 2026, EAT" />
 
       </div>
     </div>

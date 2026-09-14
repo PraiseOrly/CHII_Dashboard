@@ -10,6 +10,7 @@ import {
   exposureEvents, EXPOSURE_TYPES, STAKEHOLDER_GROUPS,
   type ExposureType, type StakeholderGroup,
 } from "@/data/exposure";
+import { pilotEngagements } from "@/data/pilot-engagements";
 import { CalendarDays, Handshake, Link2, Mic, Star, Users, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
@@ -370,6 +371,40 @@ export default function ExposureNetworkingPage() {
                   );
                 })}
                 {!D.byCountry.length && <p className="text-[11px] text-gray-400 text-center py-6">No events match the selected filters.</p>}
+              </div>
+            </ChartCard>
+          </div>
+        </section>
+
+        {/* ── PITCHING COMPETITIONS & PILOT ENGAGEMENTS ─── */}
+        <section>
+          <SectionHeader title="Competitive Engagements & Pilot Support" sub="Pitching competitions, pilot programs, and structured venture support by stage" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Pitching Competitions" sub="High-stakes visibility opportunities for founders" accent={BRAND}>
+              <div className="space-y-3">
+                {exposureEvents.filter(e => e.type === "Pitching Competition").map(e => (
+                  <div key={e.id} style={{ paddingBottom: 12, borderBottom: "1px solid rgba(0,33,71,0.06)" }} className="last:border-0 last:pb-0">
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#0E4633" }}>{e.name}</p>
+                    <p style={{ fontSize: 10, color: "#6B7280", marginTop: 2 }}>{e.year} · {e.founders} founders</p>
+                    {e.winner && <p style={{ fontSize: 10, color: "#059669", marginTop: 2, fontWeight: 600 }}>🏆 Winner: {e.winner}</p>}
+                    {e.prizeAmount && <p style={{ fontSize: 10, color: "#0891B2", marginTop: 1 }}>Prize: ${(e.prizeAmount || 0).toLocaleString()}</p>}
+                  </div>
+                ))}
+              </div>
+            </ChartCard>
+            <ChartCard title="Pilot Engagements" sub="Structured support by venture stage and year" accent="#40916C">
+              <div className="space-y-3">
+                {pilotEngagements.slice(0, 8).map(p => (
+                  <div key={p.id} style={{ paddingBottom: 12, borderBottom: "1px solid rgba(0,33,71,0.06)" }} className="last:border-0 last:pb-0">
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#0E4633" }}>{p.ventureName}</p>
+                    <div style={{ fontSize: 10, color: "#6B7280", marginTop: 2 }}>
+                      <span>{p.year} · {p.stage} stage</span>
+                      <span style={{ marginLeft: 8, color: p.outcome === "Success" ? "#059669" : "#EA580C" }}>
+                        {p.outcome}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </ChartCard>
           </div>
