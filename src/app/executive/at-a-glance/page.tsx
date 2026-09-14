@@ -17,86 +17,80 @@ const BLUE_MALE = "#479BD6"; // Male blue
 const GREEN_UP = "#16A34A"; // Green for positive YoY
 const RED_DOWN = "#DC2626"; // Red for negative YoY
 
-/* ─ KPI Card Component (Compact, clean white with strong brand icons) ─ */
+/* ─ KPI Card Component (Navy fill, like Outreach StatsKpiCard) ─ */
 function KPICard({
   label,
   value,
   yoy,
   femalePct,
   malePct,
+  otherPct,
   info,
   Icon,
   href,
+  secondaryText,
 }: {
   label: string;
   value: number | string;
   yoy?: number | null;
   femalePct?: number;
   malePct?: number;
+  otherPct?: number;
   info?: string;
   Icon?: ComponentType<any>;
   href?: string;
+  secondaryText?: string;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
+  const LIGHT_BLUE = "#B5D4F4";
 
   return (
     <div
       style={{
-        backgroundColor: `rgba(16, 44, 94, 0.06)`,
-        borderRadius: 8,
-        border: `1px solid rgba(16, 44, 94, 0.16)`,
-        padding: 14,
+        backgroundColor: "#14306B",
+        borderRadius: 10,
+        padding: "14px 16px",
         position: "relative",
         display: "flex",
         flexDirection: "column",
         minHeight: 130,
-        boxShadow: "0 1px 3px rgba(16, 44, 94, 0.1)",
+        textAlign: "center",
         transition: "all 200ms ease",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = `rgba(16, 44, 94, 0.10)`;
-        e.currentTarget.style.boxShadow = "0 4px 6px rgba(16, 44, 94, 0.15)";
+        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.15)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = `rgba(16, 44, 94, 0.06)`;
-        e.currentTarget.style.boxShadow = "0 1px 3px rgba(16, 44, 94, 0.1)";
+        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
       }}
     >
       {/* Row 1: Label + Info icon + Chevron */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 8, gap: 4 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 2, flex: 1 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: HEADER_NAVY, lineHeight: 1.2 }}>{label}</p>
-          {info && (
-            <div style={{ position: "relative", flexShrink: 0, marginTop: 1 }}>
-              <button
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-                style={{ display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}
-                aria-label={`${label} information`}
-              >
-                <Info size={11} color="#9CA3AF" />
-              </button>
-              {showTooltip && (
-                <div style={{position: "absolute", top: "calc(100% + 4px)", left: 0, backgroundColor: "#1F2937", color: "white", fontSize: 11, padding: "6px 8px", borderRadius: 6, width: 160, zIndex: 50, pointerEvents: "none", lineHeight: 1.3}}>
-                  {info}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        {href ? (
-          <Link href={href} style={{ display: "flex", cursor: "pointer", flexShrink: 0 }}>
-            <ChevronRight size={14} color="#B0BAD0" />
-          </Link>
-        ) : (
-          <ChevronRight size={14} color="#B0BAD0" style={{ flexShrink: 0 }} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "#FFFFFF", lineHeight: 1.2 }}>{label}</p>
+        {info && (
+          <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
+            <button
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+              style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: `${LIGHT_BLUE}2E`, border: `1px solid ${LIGHT_BLUE}`, alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: LIGHT_BLUE, lineHeight: 1 }}
+              aria-label={`${label} information`}
+            >
+              i
+            </button>
+            {showTooltip && (
+              <div style={{position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#021D38", color: "white", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 50, pointerEvents: "none", textAlign: "center"}}>
+                {info}
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Row 2: Icon + value (inline, left-aligned, in header navy) */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flex: 1 }}>
-        {Icon && <Icon size={20} color={HEADER_NAVY} style={{ flexShrink: 0, strokeWidth: 2.5 }} />}
-        <p style={{ fontSize: 30, fontWeight: 800, color: HEADER_NAVY, lineHeight: 1 }}>
+      {/* Row 2: Icon + value (centered, white text) */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8, flex: 1 }}>
+        {Icon && <Icon size={18} color={LIGHT_BLUE} style={{ flexShrink: 0, strokeWidth: 2 }} />}
+        <p style={{ fontSize: 28, fontWeight: 800, color: "#FFFFFF", lineHeight: 1 }}>
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
@@ -108,24 +102,39 @@ function KPICard({
         </p>
       )}
 
-      {/* Row 4: Gender split (if present) */}
-      {femalePct !== undefined && malePct !== undefined && (
-        <div style={{ display: "flex", gap: 8, marginTop: 8, paddingTop: 8, borderTop: `1px solid rgba(16, 44, 94, 0.12)` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M12 14v8M8 18h8" />
-            </svg>
-            <span style={{ fontSize: 9, fontWeight: 600, color: "#4B5563" }}>{femalePct}%</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM9 11l5 9M14 20h-10" />
-            </svg>
-            <span style={{ fontSize: 9, fontWeight: 600, color: "#4B5563" }}>{100 - femalePct}%</span>
-          </div>
-        </div>
-      )}
+      {/* Row 4: Gender split or secondary text */}
+      <div style={{ display: "flex", gap: 8, marginTop: 8, paddingTop: 8, borderTop: `1px solid rgba(255, 255, 255, 0.15)`, justifyContent: "center", alignItems: "center", minHeight: 16 }}>
+        {femalePct !== undefined && malePct !== undefined ? (
+          <>
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M12 14v8M8 18h8" />
+              </svg>
+              <span style={{ fontSize: 11, fontWeight: 600, color: LIGHT_BLUE }}>{femalePct}%</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM9 11l5 9M14 20h-10" />
+              </svg>
+              <span style={{ fontSize: 11, fontWeight: 600, color: LIGHT_BLUE }}>{malePct}%</span>
+            </div>
+            {otherPct !== undefined && otherPct > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5M9 12h6" />
+                </svg>
+                <span style={{ fontSize: 11, fontWeight: 600, color: LIGHT_BLUE }}>{otherPct}%</span>
+              </div>
+            )}
+          </>
+        ) : (
+          <p style={{ fontSize: 11, fontWeight: 500, color: "rgba(181, 212, 244, 0.7)", lineHeight: 1 }}>
+            {secondaryText || "—"}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -136,17 +145,31 @@ export default function AtAGlancePage() {
   const map = useRef<maplibregl.Map | null>(null);
   const countries = new Set(missionStudents.map(s => s.country)).size;
 
-  /* ─ Left rail metrics ─ */
-  const mcfScholars = OUTREACH_PARTICIPANTS.filter(p => p.institution === "ALU").length;
-  const youthDisability = OUTREACH_PARTICIPANTS.filter(p => p.pwd).length;
-  const graduates = OUTREACH_PARTICIPANTS.filter(p => p.status === "Completed").length;
-  const refugeeIdp = OUTREACH_PARTICIPANTS.filter(p => p.refugee).length;
-  const currentlyEnrolled = OUTREACH_PARTICIPANTS.filter(p => p.status === "Active").length;
-
+  /* ─ Left rail metrics with gender splits ─ */
   const totalBeneficiaries = OUTREACH_PARTICIPANTS.length;
-  const femaleShare = Math.round(
-    (OUTREACH_PARTICIPANTS.filter(p => p.gender === "Female").length / totalBeneficiaries) * 100
-  );
+  const totalFemale = OUTREACH_PARTICIPANTS.filter(p => p.gender === "Female").length;
+  const femaleShare = Math.round((totalFemale / totalBeneficiaries) * 100);
+  const maleShare = 100 - femaleShare;
+
+  const currentlyEnrolled = OUTREACH_PARTICIPANTS.filter(p => p.status === "Active").length;
+  const enrolledFemale = OUTREACH_PARTICIPANTS.filter(p => p.status === "Active" && p.gender === "Female").length;
+  const enrolledFemalePct = Math.round((enrolledFemale / currentlyEnrolled) * 100) || 0;
+
+  const graduates = OUTREACH_PARTICIPANTS.filter(p => p.status === "Completed").length;
+  const graduatesFemale = OUTREACH_PARTICIPANTS.filter(p => p.status === "Completed" && p.gender === "Female").length;
+  const graduatesFemalePct = Math.round((graduatesFemale / graduates) * 100) || 0;
+
+  const youthDisability = OUTREACH_PARTICIPANTS.filter(p => p.pwd).length;
+  const disabilityFemale = OUTREACH_PARTICIPANTS.filter(p => p.pwd && p.gender === "Female").length;
+  const disabilityFemalePct = Math.round((disabilityFemale / youthDisability) * 100) || 0;
+
+  const refugeeIdp = OUTREACH_PARTICIPANTS.filter(p => p.refugee).length;
+  const refugeeFemale = OUTREACH_PARTICIPANTS.filter(p => p.refugee && p.gender === "Female").length;
+  const refugeeFemalePct = Math.round((refugeeFemale / refugeeIdp) * 100) || 0;
+
+  const mcfScholars = OUTREACH_PARTICIPANTS.filter(p => p.institution === "ALU").length;
+  const mcfFemale = OUTREACH_PARTICIPANTS.filter(p => p.institution === "ALU" && p.gender === "Female").length;
+  const mcfFemalePct = Math.round((mcfFemale / mcfScholars) * 100) || 0;
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -207,14 +230,14 @@ export default function AtAGlancePage() {
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0 }}>Outreach & Access</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
-            <KPICard label="Total Beneficiaries" value={totalBeneficiaries} femalePct={femaleShare} malePct={100 - femaleShare} info="Total individuals reached across all CHII outreach programs." Icon={Users} href="/executive/outreach" />
-            <KPICard label="Currently Enrolled" value={currentlyEnrolled} info="Participants currently active in outreach programs." Icon={BookOpen} href="/executive/outreach" />
-            <KPICard label="Graduates" value={graduates} info="Participants who completed outreach programs." Icon={Award} href="/executive/outreach" />
-            <KPICard label="Youth w/ Disability" value={youthDisability} info="Youth with disability reached through outreach." Icon={Users} href="/executive/outreach" />
-            <KPICard label="Refugee / IDP" value={refugeeIdp} info="Refugees and internally displaced persons reached." Icon={Users} href="/executive/outreach" />
-            <KPICard label="MCF Scholars" value={mcfScholars} info="Mastercard Foundation scholars reached." Icon={Award} href="/executive/outreach" />
-            <KPICard label="CSAT Score" value="4.2/5" info="Customer satisfaction rating for programs." Icon={MessageCircle} href="/executive/outreach" />
-            <KPICard label="Employer Rating" value="4.6/5" info="Employer satisfaction with graduate preparedness." Icon={Award} href="/executive/outreach" />
+            <KPICard label="Total Beneficiaries" value={totalBeneficiaries} femalePct={femaleShare} malePct={maleShare} info="Total individuals reached across all CHII outreach programs." Icon={Users} href="/executive/outreach" />
+            <KPICard label="Currently Enrolled" value={currentlyEnrolled} femalePct={enrolledFemalePct} malePct={100 - enrolledFemalePct} info="Participants currently active in outreach programs." Icon={BookOpen} href="/executive/outreach" />
+            <KPICard label="Graduates" value={graduates} femalePct={graduatesFemalePct} malePct={100 - graduatesFemalePct} info="Participants who completed outreach programs." Icon={Award} href="/executive/outreach" />
+            <KPICard label="Youth w/ Disability" value={youthDisability} femalePct={disabilityFemalePct} malePct={100 - disabilityFemalePct} info="Youth with disability reached through outreach." Icon={Users} href="/executive/outreach" />
+            <KPICard label="Refugee / IDP" value={refugeeIdp} femalePct={refugeeFemalePct} malePct={100 - refugeeFemalePct} info="Refugees and internally displaced persons reached." Icon={Users} href="/executive/outreach" />
+            <KPICard label="MCF Scholars" value={mcfScholars} femalePct={mcfFemalePct} malePct={100 - mcfFemalePct} info="Mastercard Foundation scholars reached." Icon={Award} href="/executive/outreach" />
+            <KPICard label="CSAT Score" value="4.2/5" info="Customer satisfaction rating for programs." Icon={MessageCircle} href="/executive/outreach" secondaryText="n = 240 respondents" />
+            <KPICard label="Employer Rating" value="4.6/5" info="Employer satisfaction with graduate preparedness." Icon={Award} href="/executive/outreach" secondaryText="n = 156 respondents" />
           </div>
         </div>
 
@@ -225,14 +248,14 @@ export default function AtAGlancePage() {
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0 }}>Program Outcomes</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
-            <KPICard label="Youth in Work" value={131} yoy={8} info="Participants employed or running enterprises." Icon={Briefcase} href="/executive/youth-in-work" />
-            <KPICard label="Wage Employment" value={51} yoy={12} info="Participants in paid employment." Icon={Briefcase} href="/executive/wage-employment" />
-            <KPICard label="Entrepreneurs" value={21} yoy={5} info="Participants running their own enterprise." Icon={TrendingUp} href="/executive/entrepreneurship" />
-            <KPICard label="Jobs Created" value="2,151" yoy={18} info="Total jobs created across all enterprises." Icon={Zap} href="/executive/entrepreneurship" />
-            <KPICard label="Enterprises" value={18} yoy={22} info="New enterprises started by participants." Icon={Target} href="/executive/entrepreneurship" />
-            <KPICard label="Freelancers" value={12} yoy={-3} info="Participants in freelance or gig work." Icon={Briefcase} href="/executive/youth-in-work" />
-            <KPICard label="Job Seeking" value={47} yoy={-15} info="Participants actively seeking employment." Icon={Users} href="/executive/youth-in-work" />
-            <KPICard label="Further Education" value={206} yoy={11} info="Participants pursuing further study." Icon={BookOpen} href="/executive/further-education" />
+            <KPICard label="Youth in Work" value={131} yoy={8} info="Participants employed or running enterprises." Icon={Briefcase} href="/executive/youth-in-work" secondaryText="Active workforce" />
+            <KPICard label="Wage Employment" value={51} yoy={12} info="Participants in paid employment." Icon={Briefcase} href="/executive/wage-employment" secondaryText="Employed" />
+            <KPICard label="Entrepreneurs" value={21} yoy={5} info="Participants running their own enterprise." Icon={TrendingUp} href="/executive/entrepreneurship" secondaryText="Business owners" />
+            <KPICard label="Jobs Created" value="2,151" yoy={18} info="Total jobs created across all enterprises." Icon={Zap} href="/executive/entrepreneurship" secondaryText="Direct employment" />
+            <KPICard label="Enterprises" value={18} yoy={22} info="New enterprises started by participants." Icon={Target} href="/executive/entrepreneurship" secondaryText="Active ventures" />
+            <KPICard label="Freelancers" value={12} yoy={-3} info="Participants in freelance or gig work." Icon={Briefcase} href="/executive/youth-in-work" secondaryText="Self-employed" />
+            <KPICard label="Job Seeking" value={47} yoy={-15} info="Participants actively seeking employment." Icon={Users} href="/executive/youth-in-work" secondaryText="In transition" />
+            <KPICard label="Further Education" value={206} yoy={11} info="Participants pursuing further study." Icon={BookOpen} href="/executive/further-education" secondaryText="Continuing studies" />
           </div>
         </div>
         </div>
