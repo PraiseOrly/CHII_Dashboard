@@ -2,8 +2,7 @@
 import { useState, useEffect, useRef, type ComponentType } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import * as maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import dynamic from "next/dynamic";
 import HeaderDesign from "@/components/layout/header-design";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import { OUTREACH_PARTICIPANTS } from "@/data/executive/outreach";
@@ -16,6 +15,122 @@ const RED_FEMALE = "#DC2626"; // Female red
 const BLUE_MALE = "#479BD6"; // Male blue
 const GREEN_UP = "#16A34A"; // Green for positive YoY
 const RED_DOWN = "#DC2626"; // Red for negative YoY
+
+/* ─ Map Container Component ─ */
+function MapContainer({
+  mapContainer,
+  map,
+  countryData
+}: {
+  mapContainer: React.RefObject<HTMLDivElement>;
+  map: React.MutableRefObject<any>;
+  countryData: Map<string, number>;
+}) {
+  const handleReset = () => {
+    map.current?.setView([3, 20], 2.6);
+  };
+
+  useEffect(() => {
+    if (!mapContainer.current) return;
+
+    const initMap = async () => {
+      const leaflet = await import("leaflet");
+      const L = (leaflet as any).default || leaflet;
+      await import("leaflet/dist/leaflet.css");
+
+      if (!mapContainer.current) return;
+
+      map.current = L.map(mapContainer.current, {
+        center: [3, 20],
+        zoom: 2.6,
+        dragging: true,
+        touchZoom: true,
+        attributionControl: false,
+        zoomControl: true,
+        scrollWheelZoom: true
+      });
+
+      setTimeout(() => {
+        map.current?.invalidateSize();
+      }, 100);
+
+      const resizeObserver = new ResizeObserver(() => {
+        map.current?.invalidateSize();
+      });
+      resizeObserver.observe(mapContainer.current);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: ""
+      }).addTo(map.current);
+
+      countryData.forEach((count, country) => {
+        const lat = 3 + (Math.random() * 30 - 15);
+        const lng = 20 + (Math.random() * 50 - 25);
+
+        L.circleMarker([lat, lng], {
+          radius: Math.min(8 + Math.log(count) * 2, 16),
+          fillColor: "#479BD6",
+          color: "#14306B",
+          weight: 2,
+          opacity: 0.7,
+          fillOpacity: 0.6
+        })
+          .bindPopup(`<strong>${country}</strong><br/>Students: ${count}`)
+          .addTo(map.current!);
+      });
+
+      return () => resizeObserver.disconnect();
+    };
+
+    let resizeCleanup: (() => void) | void;
+    initMap().then(cleanup => {
+      resizeCleanup = cleanup;
+    });
+
+    return () => {
+      resizeCleanup?.();
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div ref={mapContainer} style={{ width: "100%", height: "100%", borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", backgroundColor: "#F5F5F5" }} />
+      <button
+        onClick={handleReset}
+        title="Reset map view"
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          zIndex: 500,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 5,
+          fontSize: 11.5,
+          fontWeight: 700,
+          color: "#14306B",
+          backgroundColor: "white",
+          border: "1px solid rgba(0,33,71,0.15)",
+          borderRadius: 8,
+          padding: "6px 11px",
+          cursor: "pointer",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.18)"
+        }}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#042C53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+        Reset
+      </button>
+    </div>
+  );
+}
 
 /* ─ KPI Card Component (Navy fill, like Outreach StatsKpiCard) ─ */
 function KPICard({
@@ -154,7 +269,7 @@ function KPICard({
 export default function AtAGlancePage() {
   const [responsive, setResponsive] = useState(false);
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<maplibregl.Map | null>(null);
+  const map = useRef<any>(null);
   const countries = new Set(missionStudents.map(s => s.country)).size;
 
   /* ─ Left rail metrics with gender splits ─ */
@@ -194,103 +309,12 @@ export default function AtAGlancePage() {
     );
   });
 
-  /* ─ Map initialization ─ */
-  useEffect(() => {
-    if (!mapContainer.current) {
-      console.error("❌ Map container ref not populated");
-      return;
-    }
-
-    const rect = mapContainer.current.getBoundingClientRect();
-    console.log("📍 Map container:", rect.width, "×", rect.height, "px");
-
-    try {
-      map.current = new maplibregl.Map({
-        container: mapContainer.current,
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-        center: [20, 3],
-        zoom: 2.6,
-        pitch: 0,
-        bearing: 0,
-        dragRotate: false,
-        touchPitch: false,
-        attributionControl: false
-      });
-
-      map.current.on("error", (e: any) => {
-        console.error("🚨 MapLibre error:", e.error?.message || e);
-      });
-
-      map.current.on("load", () => {
-        console.log("✅ Map style loaded");
-        if (map.current) {
-          map.current.resize();
-          console.log("✅ Map resized to container");
-        }
-      });
-    } catch (err) {
-      console.error("❌ Failed to create map:", err);
-    }
-
-      /* ─ Add simple data layer on load ─ */
-      if (map.current) {
-        map.current.on("load", () => {
-        const mapRef = map.current;
-        if (!mapRef) return;
-
-        console.log("📊 Adding data layers...");
-
-        try {
-          /* ─ Add simple outcome bubbles layer ─ */
-          mapRef.addSource("outcomes", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: Array.from(countryData.entries()).map(([country, count], i) => ({
-                type: "Feature" as const,
-                id: i,
-                geometry: {
-                  type: "Point" as const,
-                  coordinates: [20 + (Math.random() * 40 - 20), 3 + (Math.random() * 20 - 10)]
-                },
-                properties: { country, count }
-              }))
-            }
-          });
-
-          mapRef.addLayer({
-            id: "outcome-bubbles",
-            type: "circle",
-            source: "outcomes",
-            paint: {
-              "circle-radius": 8,
-              "circle-color": "#479BD6",
-              "circle-opacity": 0.7,
-              "circle-stroke-width": 2,
-              "circle-stroke-color": "#14306B"
-            }
-          });
-
-          console.log("✅ Data layers added successfully");
-        } catch (err) {
-          console.error("❌ Error adding layers:", err);
-        }
-        });
-      }
-
-    return () => {
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
-    };
-  }, []);
 
   return (
     <div style={{ backgroundColor: `rgba(16, 44, 94, 0.02)`, minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
+      <div className="max-w-[1600px] mx-auto px-10 pt-2">
       <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -318,7 +342,7 @@ export default function AtAGlancePage() {
       {/* ── Stats Cards Section ─────────────────────────── */}
       <div className="max-w-[1600px] mx-auto px-10 py-7">
         {/* Three-Column Grid: Left (210px) | Center (1fr) | Right (210px) */}
-        <div style={{ display: "grid", gridTemplateColumns: "210px minmax(0, 1fr) 210px", gap: 24, alignItems: "stretch", overflowX: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "210px minmax(0, 1fr) 210px", gap: 24, alignItems: "end", overflowX: "hidden" }}>
 
         {/* Left Column: Outreach & Access */}
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -336,7 +360,9 @@ export default function AtAGlancePage() {
         </div>
 
         {/* Center Column: Map */}
-        <div ref={mapContainer} style={{ borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", minHeight: 600, height: "100%" }} />
+        <div style={{ display: "flex", flexDirection: "column", height: "100%", flex: 1 }}>
+          <MapContainer mapContainer={mapContainer} map={map} countryData={countryData} />
+        </div>
 
         {/* Right Column: Program Outcomes */}
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>

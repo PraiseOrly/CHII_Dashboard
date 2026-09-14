@@ -133,11 +133,20 @@ function RankBar({ data, color = BAND, width = 130, legend = false, center = fal
   );
 }
 
+/* ── Sections for filter pills ─────────────────────── */
+const FE_SECTIONS: { n: number; label: string }[] = [
+  { n: 1, label: "Overview" },
+  { n: 2, label: "Analytics" },
+];
+
 /* ════════════════════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════════════════ */
 
 export default function FurtherEducationPage() {
+  const [activeSection, setActiveSection] = useState<number | "all">("all");
+  const show = (n: number) => activeSection === "all" || activeSection === n;
+
   const [gender, setGender] = useState<"all" | Gender>("all");
   const [scholar, setScholar] = useState<"all" | "scholar" | "non">("all");
   const [qualification, setQualification] = useState<string>("all");
@@ -221,17 +230,38 @@ export default function FurtherEducationPage() {
   }, [scope, TOTAL]);
 
   const renderFilters = () => (
-    <div style={{ position: "relative", flexShrink: 0 }}>
-      <button onClick={() => setFiltersOpen(o => !o)}
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-          border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
-          backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
-        <SlidersHorizontal size={13} />
-        Filters
-        {activeCount > 0 && (
-          <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_ACCENT, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
-        )}
-      </button>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+      {/* Section pills (left) */}
+      {show(1) && show(2) && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {[{ n: 0, label: "All Sections" }, ...FE_SECTIONS].map(({ n, label }) => {
+            const on = n === 0 ? activeSection === "all" : activeSection === n;
+            return (
+              <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+                style={{
+                  fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                  border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                  backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280"
+                }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Filters dropdown (right) */}
+      <div style={{ position: "relative", flexShrink: 0 }}>
+        <button onClick={() => setFiltersOpen(o => !o)}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+            border: `1px solid ${activeCount || filtersOpen ? NAVY : "rgba(0,33,71,0.15)"}`,
+            backgroundColor: filtersOpen ? NAVY : "white", color: filtersOpen ? "white" : "#374151" }}>
+          <SlidersHorizontal size={13} />
+          Filters
+          {activeCount > 0 && (
+            <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : C_ACCENT, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
+          )}
+        </button>
       {filtersOpen && (
         <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
           <div style={{ backgroundColor: BAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -261,6 +291,7 @@ export default function FurtherEducationPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 
@@ -294,6 +325,7 @@ export default function FurtherEducationPage() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
 
         {/* ════ OVERVIEW ════ */}
+        {show(1) && (
         <section className="space-y-4">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <StatsKpiCard label="In Further Study" num={TOTAL} sub="graduates" Icon={GraduationCap}
@@ -315,7 +347,10 @@ export default function FurtherEducationPage() {
             {renderFilters()}
           </div>
         </section>
+        )}
 
+        {/* ════ ANALYTICS ════ */}
+        {show(2) && (
         <section className="space-y-4">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary"
@@ -344,6 +379,7 @@ export default function FurtherEducationPage() {
             </Panel>
           </div>
         </section>
+        )}
 
         <FeaturedImpactStory footer />
       </div>
