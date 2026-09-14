@@ -50,6 +50,7 @@ function KPICard({
         backgroundColor: "#F3F7FF",
         borderRadius: 10,
         border: "1px solid #E0ECFF",
+        borderLeft: "5px solid #14306B",
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -67,25 +68,34 @@ function KPICard({
         e.currentTarget.style.boxShadow = "0 2px 4px rgba(16, 44, 94, 0.08)";
       }}
     >
-      {/* Row 1: Label + Info icon */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 10 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#14306B", lineHeight: 1.2 }}>{label}</p>
-        {info && (
-          <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
-            <button
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-              style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: "#E0ECFF", border: "1px solid #B5D4F4", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: "#14306B", lineHeight: 1 }}
-              aria-label={`${label} information`}
-            >
-              i
-            </button>
-            {showTooltip && (
-              <div style={{position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "#021D38", color: "white", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 6px 20px rgba(0,0,0,0.3)", zIndex: 50, pointerEvents: "none", textAlign: "center"}}>
-                {info}
-              </div>
-            )}
-          </div>
+      {/* Row 1: Label + Info icon + Chevron */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 3, marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 3, flex: 1 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#14306B", lineHeight: 1.2 }}>{label}</p>
+          {info && (
+            <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
+              <button
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: "#E0ECFF", border: "1px solid #B5D4F4", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: "#14306B", lineHeight: 1 }}
+                aria-label={`${label} information`}
+              >
+                i
+              </button>
+              {showTooltip && (
+                <div style={{position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#14306B", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid #E0ECFF", zIndex: 50, pointerEvents: "none", textAlign: "center"}}>
+                  {info}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        {href ? (
+          <Link href={href} style={{ display: "flex", cursor: "pointer", flexShrink: 0, transition: "all 200ms ease" }}>
+            <ChevronRight size={16} color="#14306B" style={{ flexShrink: 0 }} />
+          </Link>
+        ) : (
+          <ChevronRight size={16} color="#D1D5DB" style={{ flexShrink: 0 }} />
         )}
       </div>
 
