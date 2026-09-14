@@ -23,8 +23,12 @@ const BRAND_DK = "#0E4633";
 const GREEN = "#2D6A4F";
 const LIGHT_GREEN = "#E8F5F2";
 const LIGHT_BORDER = "rgba(14, 70, 51, 0.12)";
-const LIGHT_BG = "#f8fafc";
+const LIGHT_BG = "#F8F9FA";
 const GREEN_RAMP = ["#1B4332","#2D6A4F","#40916C","#5BB4A0","#8ECCC4"];
+const CHART_COLOR_1 = "#2D6A4F";
+const CHART_COLOR_2 = "#00BCD4";
+const CHART_COLOR_3 = "#FF5722";
+const CHART_COLOR_4 = "#26A69A";
 
 // Helpers
 function fmt$(n: number) {
@@ -87,27 +91,28 @@ function StatsPanel({
             minHeight: 0,
           }}>
             <div style={{
-              backgroundColor: "white",
+              backgroundColor: BRAND,
               borderRadius: 10,
               padding: "14px 16px",
               textAlign: "center",
               border: `1px solid ${LIGHT_BORDER}`,
               borderLeft: `5px solid ${BRAND}`,
+
               position: "relative",
               overflow: "visible",
             }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 8 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK }}>
+                <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>
                   {card.label}
                 </p>
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                <card.icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
-                <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>
+                <card.icon size={22} style={{ color: "white", opacity: 0.9, flexShrink: 0 }} />
+                <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>
                   {card.displayFmt ? card.displayFmt(card.num) : Math.round(card.num).toLocaleString()}
                 </p>
               </div>
-              {card.sub && <p style={{ fontSize: 9.5, color: `rgba(14, 70, 51, 0.55)`, marginTop: 4 }}>{card.sub}</p>}
+              {card.sub && <p style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.8)', marginTop: 4 }}>{card.sub}</p>}
             </div>
           </div>
         ))}
@@ -127,7 +132,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
     <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
       <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
-          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
+          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#FF8C42", flexShrink: 0 }} />
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
@@ -158,7 +163,8 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 padding: "5px 10px",
                 borderRadius: 10,
                 border: `1px solid ${LIGHT_BORDER}`,
-                backgroundColor: LIGHT_GREEN,
+              borderLeft: `5px solid ${BRAND}`,
+                backgroundColor: "white",
                 color: BRAND_DK,
                 cursor: "pointer",
                 display: "flex",
@@ -176,6 +182,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 right: 0,
                 backgroundColor: "white",
                 border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
                 borderRadius: 10,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 zIndex: 10,
@@ -198,7 +205,8 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                       fontWeight: opt === filterValue ? 700 : 500,
                       backgroundColor: opt === filterValue ? BRAND : "white",
                       color: opt === filterValue ? "white" : BRAND_DK,
-                      border: "none",
+                      border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
                       cursor: "pointer",
                     }}
                   >
@@ -210,7 +218,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
           </div>
         </div>
       )}
-      <div style={{ padding: "12px 18px 18px" }}>
+      <div style={{ padding: "12px 18px 18px", backgroundColor: "white" }}>
         {children}
       </div>
     </div>
@@ -333,9 +341,9 @@ export default function HENTOverview() {
   ];
 
   const npsData = [
-    { range: "Promoters (9-10)", count: promoters, fill: GREEN_RAMP[0] },
-    { range: "Passives (7-8)", count: npsScores.filter(s => s >= 7 && s <= 8).length, fill: GREEN_RAMP[2] },
-    { range: "Detractors (0-6)", count: detractors, fill: "#EF4444" },
+    { range: "Promoters (9-10)", count: promoters, fill: CHART_COLOR_1 },
+    { range: "Passives (7-8)", count: npsScores.filter(s => s >= 7 && s <= 8).length, fill: CHART_COLOR_2 },
+    { range: "Detractors (0-6)", count: detractors, fill: CHART_COLOR_3 },
   ];
 
   return (
@@ -403,6 +411,7 @@ export default function HENTOverview() {
                 padding: "8px 14px",
                 borderRadius: 20,
                 border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
                 backgroundColor: activeFilters > 0 ? BRAND : "white",
                 color: activeFilters > 0 ? "white" : BRAND_DK,
                 cursor: "pointer",
@@ -437,8 +446,9 @@ export default function HENTOverview() {
                 position: "absolute",
                 top: "calc(100% + 8px)",
                 right: 0,
-                backgroundColor: "white",
+                backgroundColor: "#E8F5F2",
                 border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
                 borderRadius: 10,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 zIndex: 20,
@@ -451,7 +461,8 @@ export default function HENTOverview() {
                     onClick={() => setFiltersOpen(false)}
                     style={{
                       background: "none",
-                      border: "none",
+                      border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
                       cursor: "pointer",
                       padding: 0,
                       display: "flex",
@@ -474,7 +485,7 @@ export default function HENTOverview() {
                             fontSize: 10,
                             fontWeight: filterYear === y ? 700 : 500,
                             padding: "4px 10px",
-                            borderRadius: 6,
+                            borderRadius: 10,
                             border: `1px solid ${filterYear === y ? BRAND : LIGHT_BORDER}`,
                             backgroundColor: filterYear === y ? BRAND : "white",
                             color: filterYear === y ? "white" : BRAND_DK,
@@ -499,7 +510,7 @@ export default function HENTOverview() {
                             fontSize: 10,
                             fontWeight: filterStage === s ? 700 : 500,
                             padding: "4px 10px",
-                            borderRadius: 6,
+                            borderRadius: 10,
                             border: `1px solid ${filterStage === s ? BRAND : LIGHT_BORDER}`,
                             backgroundColor: filterStage === s ? BRAND : "white",
                             color: filterStage === s ? "white" : BRAND_DK,
@@ -524,7 +535,7 @@ export default function HENTOverview() {
                             fontSize: 10,
                             fontWeight: filterGender === g ? 700 : 500,
                             padding: "4px 10px",
-                            borderRadius: 6,
+                            borderRadius: 10,
                             border: `1px solid ${filterGender === g ? BRAND : LIGHT_BORDER}`,
                             backgroundColor: filterGender === g ? BRAND : "white",
                             color: filterGender === g ? "white" : BRAND_DK,
@@ -549,7 +560,7 @@ export default function HENTOverview() {
                             fontSize: 10,
                             fontWeight: filterStatus === st ? 700 : 500,
                             padding: "4px 10px",
-                            borderRadius: 6,
+                            borderRadius: 10,
                             border: `1px solid ${filterStatus === st ? BRAND : LIGHT_BORDER}`,
                             backgroundColor: filterStatus === st ? BRAND : "white",
                             color: filterStatus === st ? "white" : BRAND_DK,
@@ -575,8 +586,9 @@ export default function HENTOverview() {
                         fontSize: 10,
                         fontWeight: 600,
                         padding: "6px 12px",
-                        borderRadius: 6,
+                        borderRadius: 10,
                         border: `1px solid ${LIGHT_BORDER}`,
+              borderLeft: `5px solid ${BRAND}`,
                         backgroundColor: "transparent",
                         color: BRAND_DK,
                         cursor: "pointer",
@@ -595,17 +607,18 @@ export default function HENTOverview() {
         {/* ════ REACH & PARTICIPATION ════ */}
         {show("Reach & Participation") && (
           <section style={{ marginBottom: 48 }}>
-            <StatsPanel
-              title="Reach & Participation"
-              description="Programme attendance and participant diversity"
-              cards={[
-                { label: "Total Participants", num: TOTAL_PART, sub: "Across 4 programmes", icon: Users, tip: "Total participants reached across hackathons, masterclasses, study trips, and mentorship programs." },
-                { label: "Female Participants", num: FEMALE_PCT, displayFmt: (n) => `${Math.round(n)}%`, sub: "Of total reach", icon: Sparkles, tip: `${TOTAL_FEM.toLocaleString()} female participants.` },
-                { label: "MCF Scholars", num: mcfCount, sub: "Mission students", icon: Award, tip: "Mission (degree) student participants in HENT programmes." },
-                { label: "PWD Participants", num: pwdCount, sub: "Persons with disability", icon: Heart, tip: "Programme participants with disabilities." },
-                { label: "Refugee Participants", num: refugeeCount, sub: "Refugees & IDPs", icon: Handshake, tip: "Refugee and internally displaced person participants." },
-              ]}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Reach & Participation
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Programme attendance and participant diversity</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
               <Panel title="Participants by Programme" subtitle="Distribution across programme types" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
                 <ResponsiveContainer width="100%" height={250}>
@@ -615,7 +628,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" fill={CHART_COLOR_1} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -629,7 +642,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" fill={CHART_COLOR_2} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -642,16 +655,18 @@ export default function HENTOverview() {
         {/* ════ INNOVATION PIPELINE ════ */}
         {show("Innovation Pipeline") && (
           <section style={{ marginBottom: 48 }}>
-            <StatsPanel
-              title="Innovation Pipeline"
-              description="Hackathon funnel and venture progression"
-              cards={[
-                { label: "Projects Developed", num: hackProjects, sub: "From hackathons", icon: Lightbulb, tip: "Projects created through hackathon initiatives." },
-                { label: "Startups Created", num: hackStart, sub: "From projects", icon: Rocket, tip: "Startups spun out of hackathon projects." },
-                { label: "Recommended Ventures", num: recommendedVentures, sub: "High-performing", icon: Award, tip: "Ventures meeting performance and stage criteria for investment readiness." },
-                { label: "In Accelerators", num: acceleratorPct, displayFmt: (n) => `${Math.round(n)}%`, sub: `${acceleratorVentures} ventures`, icon: Rocket, tip: "Share of portfolio ventures in external accelerator programs." },
-              ]}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Innovation Pipeline
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Hackathon funnel and venture progression</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
               <Panel title="Innovation Funnel" subtitle="Hackathon participants through to ventures" filterOptions={["All Years", ...years.map(String)]} filterValue={filterInnovationFunnelYear} onFilterChange={setFilterInnovationFunnelYear}>
                 <ResponsiveContainer width="100%" height={250}>
@@ -666,7 +681,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" fill={CHART_COLOR_1} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -680,7 +695,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" fill={CHART_COLOR_4} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -693,17 +708,18 @@ export default function HENTOverview() {
         {/* ════ VENTURES & ENTERPRISE ════ */}
         {show("Ventures & Enterprise") && (
           <section style={{ marginBottom: 48 }}>
-            <StatsPanel
-              title="Ventures & Enterprise"
-              description="Portfolio size and venture characteristics"
-              cards={[
-                { label: "Active Ventures", num: activeVentures, sub: "In portfolio", icon: Rocket, tip: "Number of ventures currently active in the HENT portfolio." },
-                { label: "Ventures Funded", num: venturesFunded, sub: `of ${ALL_VENTURES.length} total`, icon: Briefcase, tip: "Ventures that have received HENT funding." },
-                { label: "Female-Led Ventures", num: femaleVentures, sub: "Female-founded", icon: Sparkles, tip: "Ventures with female-identified founders or co-founders." },
-                { label: "Partnerships Built", num: TOTAL_PSHIP, sub: "Cross-sector", icon: Handshake, tip: "Partnership agreements formed by HENT ventures." },
-                { label: "Avg Jobs per Venture", num: Math.round(TOTAL_JOBS / ALL_VENTURES.length), sub: "Employment intensity", icon: Briefcase },
-              ]}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Ventures & Enterprise
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Portfolio size and venture characteristics</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
               <Panel title="Venture Stage Pipeline" subtitle="Distribution across Expose · Build · Scale" filterOptions={["All Years", ...years.map(String)]} filterValue={filterVenturesYear} onFilterChange={setFilterVenturesYear}>
                 <ResponsiveContainer width="100%" height={250}>
@@ -713,7 +729,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" fill={CHART_COLOR_1} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -727,7 +743,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} />
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="count" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Female-Led" />
+                    <Line type="monotone" dataKey="count" stroke={CHART_COLOR_2} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Female-Led" />
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
@@ -738,17 +754,18 @@ export default function HENTOverview() {
         {/* ════ FUNDING ════ */}
         {show("Funding") && (
           <section style={{ marginBottom: 48 }}>
-            <StatsPanel
-              title="Funding"
-              description="Capital deployment across fund types"
-              cards={[
-                { label: "Funding Deployed", num: TOTAL_FUNDING, displayFmt: (n) => fmt$K(Math.round(n)), sub: "Total capital", icon: Zap, tip: "Total funding deployed across ventures." },
-                { label: "Revenue Generated", num: ALL_VENTURES.reduce((s, v) => s + v.revenue, 0), displayFmt: (n) => fmt$K(Math.round(n)), sub: "Venture revenue", icon: Zap },
-                { label: "Charitable Fund", num: fundsCharitable, displayFmt: (n) => fmt$K(Math.round(n)), sub: "Charitable capital", icon: Heart },
-                { label: "Venture Fund", num: fundsVentureF, displayFmt: (n) => fmt$K(Math.round(n)), sub: "VC-style capital", icon: Rocket },
-                { label: "Catalytic Fund", num: fundsCatalytic, displayFmt: (n) => fmt$K(Math.round(n)), sub: "Catalytic capital", icon: TrendingUp },
-              ]}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Funding
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Capital deployment across fund types</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
               <Panel title="Capital by Fund Type" subtitle="Charitable, Venture, and Catalytic" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingYear} onFilterChange={setFilterFundingYear}>
                 <ResponsiveContainer width="100%" height={280}>
@@ -758,7 +775,7 @@ export default function HENTOverview() {
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={104} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip money />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} radius={[0, 4, 4, 0]}>
+                    <Bar dataKey="value" fill={CHART_COLOR_2} radius={[0, 4, 4, 0]}>
                       <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} formatter={(v: number) => fmt$(v)} />
                     </Bar>
                   </BarChart>
@@ -772,7 +789,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip money />} />
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="funding" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Funding Deployed" />
+                    <Line type="monotone" dataKey="funding" stroke={CHART_COLOR_4} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Funding Deployed" />
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
@@ -783,15 +800,18 @@ export default function HENTOverview() {
         {/* ════ EMPLOYMENT OUTCOMES ════ */}
         {show("Employment Outcomes") && (
           <section style={{ marginBottom: 48 }}>
-            <StatsPanel
-              title="Employment Outcomes"
-              description="Jobs created and youth employment focus"
-              cards={[
-                { label: "Jobs Created", num: TOTAL_JOBS, sub: "By all ventures", icon: Briefcase, tip: "Total employment generated by HENT-supported ventures." },
-                { label: "Youth Jobs Created", num: TOTAL_JOBS_YOUTH, sub: "For youth participants", icon: Users, tip: "Jobs specifically created for youth (≤35 years)." },
-                { label: "Youth Jobs %", num: TOTAL_JOBS > 0 ? Math.round((TOTAL_JOBS_YOUTH / TOTAL_JOBS) * 100) : 0, displayFmt: (n) => `${Math.round(n)}%`, sub: "Of total jobs", icon: TrendingUp, tip: `${TOTAL_JOBS_YOUTH} of ${TOTAL_JOBS} total jobs.` },
-              ]}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Employment Outcomes
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Jobs created and youth employment focus</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
               <Panel title="Female-Led & Youth Jobs" subtitle="Employment by female-led ventures and youth" filterOptions={["All Years", ...years.map(String)]} filterValue={filterEmploymentYear} onFilterChange={setFilterEmploymentYear}>
                 <ResponsiveContainer width="100%" height={250}>
@@ -814,7 +834,7 @@ export default function HENTOverview() {
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} />
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="jobs" stroke={GREEN} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Jobs Created" />
+                    <Line type="monotone" dataKey="jobs" stroke={CHART_COLOR_3} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Jobs Created" />
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
@@ -825,16 +845,18 @@ export default function HENTOverview() {
         {/* ════ QUALITY & SATISFACTION ════ */}
         {show("Quality & Satisfaction") && (
           <section style={{ marginBottom: 48 }}>
-            <StatsPanel
-              title="Quality & Satisfaction"
-              description="Founder engagement and programme quality"
-              cards={[
-                { label: "NPS Score", num: NPS_SCORE, displayFmt: (n) => String(Math.round(n)), sub: "Founder satisfaction", icon: TrendingUp, tip: "Net Promoter Score from founder satisfaction surveys (2022-2026)." },
-                { label: "Promoters", num: promoters, sub: "Score 9-10", icon: Award, tip: `${promoters} founders are promoters (NPS 9-10).` },
-                { label: "Passives", num: npsScores.filter(s => s >= 7 && s <= 8).length, sub: "Score 7-8", icon: Heart },
-                { label: "Detractors", num: detractors, sub: "Score 0-6", icon: Handshake, tip: `${detractors} founders are detractors (NPS 0-6).` },
-              ]}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Quality & Satisfaction
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Founder engagement and programme quality</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
               <Panel title="NPS Distribution" subtitle="Founder satisfaction breakdown" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
                 <ResponsiveContainer width="100%" height={250}>
