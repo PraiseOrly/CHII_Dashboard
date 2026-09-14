@@ -238,6 +238,12 @@ export default function HENTOverview() {
 
   // Filter panel state
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterYear, setFilterYear] = useState("All");
+  const [filterStage, setFilterStage] = useState("All");
+  const [filterGender, setFilterGender] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+
+  const activeFilters = (filterYear !== "All" ? 1 : 0) + (filterStage !== "All" ? 1 : 0) + (filterGender !== "All" ? 1 : 0) + (filterStatus !== "All" ? 1 : 0);
 
   // Chart filter states (independent per chart)
   const [filterReachYear, setFilterReachYear] = useState("All Years");
@@ -397,8 +403,8 @@ export default function HENTOverview() {
                 padding: "8px 14px",
                 borderRadius: 20,
                 border: `1px solid ${LIGHT_BORDER}`,
-                backgroundColor: "white",
-                color: BRAND_DK,
+                backgroundColor: activeFilters > 0 ? BRAND : "white",
+                color: activeFilters > 0 ? "white" : BRAND_DK,
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -409,6 +415,22 @@ export default function HENTOverview() {
             >
               <SlidersHorizontal size={14} />
               Filters
+              {activeFilters > 0 && (
+                <span style={{
+                  fontSize: 9,
+                  fontWeight: 800,
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  color: activeFilters > 0 ? "white" : BRAND_DK,
+                  borderRadius: 999,
+                  minWidth: 18,
+                  height: 18,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  {activeFilters}
+                </span>
+              )}
             </button>
             {filtersOpen && (
               <div style={{
@@ -420,11 +442,10 @@ export default function HENTOverview() {
                 borderRadius: 10,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 zIndex: 20,
-                minWidth: 280,
+                minWidth: 300,
                 overflow: "hidden",
-                padding: "16px",
               }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", borderBottom: `1px solid ${LIGHT_BORDER}` }}>
                   <p style={{ fontSize: 12, fontWeight: 700, color: BRAND_DK, margin: 0 }}>Filters</p>
                   <button
                     onClick={() => setFiltersOpen(false)}
@@ -440,8 +461,131 @@ export default function HENTOverview() {
                     <X size={16} color={BRAND_DK} />
                   </button>
                 </div>
-                <div style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.6 }}>
-                  <p>Filter options coming soon</p>
+                <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  {/* Year Filter */}
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 6px 0" }}>Year</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {["All", ...years.map(String)].map(y => (
+                        <button
+                          key={y}
+                          onClick={() => setFilterYear(y)}
+                          style={{
+                            fontSize: 10,
+                            fontWeight: filterYear === y ? 700 : 500,
+                            padding: "4px 10px",
+                            borderRadius: 6,
+                            border: `1px solid ${filterYear === y ? BRAND : LIGHT_BORDER}`,
+                            backgroundColor: filterYear === y ? BRAND : "white",
+                            color: filterYear === y ? "white" : BRAND_DK,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {y}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Stage Filter */}
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 6px 0" }}>Stage</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {["All", "Expose", "Build", "Scale"].map(s => (
+                        <button
+                          key={s}
+                          onClick={() => setFilterStage(s)}
+                          style={{
+                            fontSize: 10,
+                            fontWeight: filterStage === s ? 700 : 500,
+                            padding: "4px 10px",
+                            borderRadius: 6,
+                            border: `1px solid ${filterStage === s ? BRAND : LIGHT_BORDER}`,
+                            backgroundColor: filterStage === s ? BRAND : "white",
+                            color: filterStage === s ? "white" : BRAND_DK,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 6px 0" }}>Gender</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {["All", "Male", "Female"].map(g => (
+                        <button
+                          key={g}
+                          onClick={() => setFilterGender(g)}
+                          style={{
+                            fontSize: 10,
+                            fontWeight: filterGender === g ? 700 : 500,
+                            padding: "4px 10px",
+                            borderRadius: 6,
+                            border: `1px solid ${filterGender === g ? BRAND : LIGHT_BORDER}`,
+                            backgroundColor: filterGender === g ? BRAND : "white",
+                            color: filterGender === g ? "white" : BRAND_DK,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Status Filter */}
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 6px 0" }}>Status</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {["All", "Active", "Stalled"].map(st => (
+                        <button
+                          key={st}
+                          onClick={() => setFilterStatus(st)}
+                          style={{
+                            fontSize: 10,
+                            fontWeight: filterStatus === st ? 700 : 500,
+                            padding: "4px 10px",
+                            borderRadius: 6,
+                            border: `1px solid ${filterStatus === st ? BRAND : LIGHT_BORDER}`,
+                            backgroundColor: filterStatus === st ? BRAND : "white",
+                            color: filterStatus === st ? "white" : BRAND_DK,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {st}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Reset Button */}
+                  {activeFilters > 0 && (
+                    <button
+                      onClick={() => {
+                        setFilterYear("All");
+                        setFilterStage("All");
+                        setFilterGender("All");
+                        setFilterStatus("All");
+                      }}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        padding: "6px 12px",
+                        borderRadius: 6,
+                        border: `1px solid ${LIGHT_BORDER}`,
+                        backgroundColor: "transparent",
+                        color: BRAND_DK,
+                        cursor: "pointer",
+                        marginTop: 4,
+                      }}
+                    >
+                      Reset Filters
+                    </button>
+                  )}
                 </div>
               </div>
             )}
