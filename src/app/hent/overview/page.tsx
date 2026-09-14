@@ -88,7 +88,7 @@ function StatsPanel({
           }}>
             <div style={{
               backgroundColor: "white",
-              borderRadius: 10,
+              borderRadius: 6,
               padding: "14px 16px",
               textAlign: "center",
               border: `1px solid ${LIGHT_BORDER}`,
@@ -124,7 +124,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
   const [tip, setTip] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 6, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
       <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
           <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
@@ -232,10 +232,9 @@ export default function HENTOverview() {
   ];
 
   // Section filter state (local state instead of URL params for immediate reactivity)
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
 
-  const show = (category: string) => activeCategory === "all" || activeCategory === category;
+  const show = (category: string) => activeCategory === category;
 
   // Chart filter states (independent per chart)
   const [filterReachYear, setFilterReachYear] = useState("All Years");
@@ -336,7 +335,7 @@ export default function HENTOverview() {
 
       {/* HEADER */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 8, minHeight: 120, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
@@ -365,22 +364,6 @@ export default function HENTOverview() {
 
         {/* ════ SECTION FILTER PILLS ════ */}
         <div style={{ marginBottom: 32, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <button
-            onClick={() => setActiveCategory("all")}
-            style={{
-              fontSize: 11,
-              fontWeight: activeCategory === "all" ? 700 : 600,
-              padding: "8px 14px",
-              borderRadius: 20,
-              border: `1px solid ${activeCategory === "all" ? BRAND : LIGHT_BORDER}`,
-              backgroundColor: activeCategory === "all" ? BRAND : "white",
-              color: activeCategory === "all" ? "white" : BRAND_DK,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-          >
-            All Sections
-          </button>
           {categories.map(cat => (
             <button
               key={cat}
@@ -411,10 +394,9 @@ export default function HENTOverview() {
               cards={[
                 { label: "Total Participants", num: TOTAL_PART, sub: "Across 4 programmes", icon: Users, tip: "Total participants reached across hackathons, masterclasses, study trips, and mentorship programs." },
                 { label: "Female Participants", num: FEMALE_PCT, displayFmt: (n) => `${Math.round(n)}%`, sub: "Of total reach", icon: Sparkles, tip: `${TOTAL_FEM.toLocaleString()} female participants.` },
-                { label: "Study Trip Participants", num: studyTrips.reduce((s, v) => s + v.participants, 0), sub: "Field experiences", icon: MapPin },
-                { label: "Hackathon Participants", num: hackPart, sub: "Innovation workshops", icon: Users },
-                { label: "Masterclass Attendees", num: masterclasses.reduce((s, m) => s + m.attendees, 0), sub: "Training delivery", icon: Presentation },
-                { label: "Mentorship Fellows", num: mentorshipPrograms.reduce((s, m) => s + m.fellows, 0), sub: "Mentee participants", icon: Heart },
+                { label: "MCF Scholars", num: mcfCount, sub: "Mission students", icon: Award, tip: "Mission (degree) student participants in HENT programmes." },
+                { label: "PWD Participants", num: pwdCount, sub: "Persons with disability", icon: Heart, tip: "Programme participants with disabilities." },
+                { label: "Refugee Participants", num: refugeeCount, sub: "Refugees & IDPs", icon: Handshake, tip: "Refugee and internally displaced person participants." },
               ]}
             />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -432,16 +414,17 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Gender Distribution" subtitle="Participant diversity metrics" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachGenderYear} onFilterChange={setFilterReachGenderYear}>
+              <Panel title="Participants by Programme" subtitle="Distribution across programme types" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart layout="vertical" data={[{ name: "Participants", Male: TOTAL_PART - TOTAL_FEM, Female: TOTAL_FEM }]} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
-                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
-                    <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={104} axisLine={false} tickLine={false} />
+                  <BarChart data={programData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="Male" fill={GREEN_RAMP[0]} radius={[0, 4, 4, 0]} />
-                    <Bar dataKey="Female" fill={GREEN_RAMP[1]} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="value" fill={GREEN} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
@@ -640,9 +623,9 @@ export default function HENTOverview() {
               description="Founder engagement and programme quality"
               cards={[
                 { label: "NPS Score", num: NPS_SCORE, displayFmt: (n) => String(Math.round(n)), sub: "Founder satisfaction", icon: TrendingUp, tip: "Net Promoter Score from founder satisfaction surveys (2022-2026)." },
-                { label: "MCF Scholars", num: mcfCount, sub: "Mission students", icon: Award, tip: "Mission (degree) student participants in HENT programmes." },
-                { label: "PWD Participants", num: pwdCount, sub: "Persons with disability", icon: Heart, tip: "Programme participants with disabilities." },
-                { label: "Refugee Participants", num: refugeeCount, sub: "Refugees & IDPs", icon: Handshake, tip: "Refugee and internally displaced person participants." },
+                { label: "Promoters", num: promoters, sub: "Score 9-10", icon: Award, tip: `${promoters} founders are promoters (NPS 9-10).` },
+                { label: "Passives", num: npsScores.filter(s => s >= 7 && s <= 8).length, sub: "Score 7-8", icon: Heart },
+                { label: "Detractors", num: detractors, sub: "Score 0-6", icon: Handshake, tip: `${detractors} founders are detractors (NPS 0-6).` },
               ]}
             />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
@@ -661,20 +644,17 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Inclusion Metrics" subtitle="Participation diversity" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityInclusionYear} onFilterChange={setFilterQualityInclusionYear}>
+              <Panel title="Founder Satisfaction Breakdown" subtitle="NPS distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart layout="vertical" data={[
-                    { name: "MCF Scholars", value: mcfCount },
-                    { name: "PWD", value: pwdCount },
-                    { name: "Refugees", value: refugeeCount },
-                  ]} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
-                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
-                    <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151" }} width={104} axisLine={false} tickLine={false} />
+                  <BarChart data={npsData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="range" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={GREEN} radius={[0, 4, 4, 0]}>
-                      <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <Bar dataKey="count" barSize={46} radius={[4, 4, 0, 0]}>
+                      {npsData.map((entry, idx) => <Cell key={`cell-${idx}`} fill={entry.fill} />)}
+                      <LabelList dataKey="count" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>

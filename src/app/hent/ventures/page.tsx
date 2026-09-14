@@ -92,7 +92,7 @@ function StatsPanel({
           }}>
             <div style={{
               backgroundColor: "white",
-              borderRadius: 10,
+              borderRadius: 6,
               padding: "14px 16px",
               textAlign: "center",
               border: `1px solid ${LIGHT_BORDER}`,
@@ -136,7 +136,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
   const [tip, setTip] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+    <div style={{ backgroundColor: "white", borderRadius: 6, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
       <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
           <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
@@ -231,10 +231,9 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
 
 export default function HENTVentures() {
   const categories = ["Growth & Jobs", "Portfolio Composition", "Geography & Engagement", "Portfolio Health"];
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
 
-  const show = (category: string) => activeCategory === "all" || activeCategory === category;
+  const show = (category: string) => activeCategory === category;
 
   // Year filters for each chart
   const [filterGrowthYear, setFilterGrowthYear] = useState("All Years");
@@ -259,7 +258,7 @@ export default function HENTVentures() {
       <PortalNav portal="hent" />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 8, minHeight: 120, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
@@ -379,89 +378,27 @@ export default function HENTVentures() {
           </div>
         </div>
 
-        {/* ════ SECTION FILTER DROPDOWN ════ */}
-        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center" }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: BRAND_DK }}>View Section:</span>
-          <div style={{ position: "relative" }}>
+        {/* ════ SECTION FILTER PILLS ════ */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          {categories.map(cat => (
             <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
               style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: "8px 16px",
-                borderRadius: 6,
-                border: `1px solid ${LIGHT_BORDER}`,
-                backgroundColor: BRAND,
-                color: "white",
+                fontSize: 11,
+                fontWeight: activeCategory === cat ? 700 : 600,
+                padding: "8px 14px",
+                borderRadius: 20,
+                border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
+                backgroundColor: activeCategory === cat ? BRAND : "white",
+                color: activeCategory === cat ? "white" : BRAND_DK,
                 cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                whiteSpace: "nowrap",
+                transition: "all 0.2s ease",
               }}
-              onClick={() => setSectionMenuOpen(!sectionMenuOpen)}
             >
-              {activeCategory === "all" ? "All Sections" : activeCategory} <ChevronDown size={16} />
+              {cat}
             </button>
-            {sectionMenuOpen && (
-              <div style={{
-                position: "absolute",
-                top: "calc(100% + 4px)",
-                left: 0,
-                backgroundColor: "white",
-                border: `1px solid ${LIGHT_BORDER}`,
-                borderRadius: 6,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                zIndex: 10,
-                minWidth: 220,
-                overflow: "hidden",
-              }}>
-                <button
-                  onClick={() => {
-                    setActiveCategory("all");
-                    setSectionMenuOpen(false);
-                  }}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "10px 16px",
-                    fontSize: 12,
-                    fontWeight: activeCategory === "all" ? 700 : 600,
-                    backgroundColor: activeCategory === "all" ? BRAND : "white",
-                    color: activeCategory === "all" ? "white" : BRAND_DK,
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  All Sections
-                </button>
-                {categories.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      setActiveCategory(cat);
-                      setSectionMenuOpen(false);
-                    }}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      textAlign: "left",
-                      padding: "10px 16px",
-                      fontSize: 12,
-                      fontWeight: activeCategory === cat ? 700 : 600,
-                      backgroundColor: activeCategory === cat ? BRAND : "white",
-                      color: activeCategory === cat ? "white" : BRAND_DK,
-                      border: "none",
-                      cursor: "pointer",
-                      borderTop: "1px solid rgba(0,0,0,0.05)",
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
         </div>
 
         {/* ════ GROWTH & JOBS ════ */}
