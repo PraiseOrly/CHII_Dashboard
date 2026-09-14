@@ -2,6 +2,7 @@
 import { ChartTip } from "@/components/ui/hent";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
+import { DonutRing } from "@/components/charts/donut-chart";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
 import { founders } from "@/data/founders";
 import { useState, useMemo } from "react";
@@ -233,7 +234,16 @@ export default function HENTVentures() {
   const categories = ["Growth & Jobs", "Portfolio Composition", "Geography & Engagement", "Portfolio Health"];
   const [activeCategory, setActiveCategory] = useState(categories[0]);
 
+  // Global filters
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterYear, setFilterYear] = useState("All Years");
+  const [filterStage, setFilterStage] = useState("All");
+  const [filterGender, setFilterGender] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+
   const show = (category: string) => activeCategory === category;
+
+  const activeFilterCount = [filterYear !== "All Years", filterStage !== "All", filterGender !== "All", filterStatus !== "All"].filter(Boolean).length;
 
   // Year filters for each chart
   const [filterGrowthYear, setFilterGrowthYear] = useState("All Years");
@@ -391,27 +401,146 @@ export default function HENTVentures() {
           </div>
         </div>
 
-        {/* ════ SECTION FILTER PILLS ════ */}
-        <div style={{ marginBottom: 32, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          {categories.map(cat => (
+        {/* ════ SECTION FILTER PILLS + FILTER BUTTON ════ */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  fontSize: 11,
+                  fontWeight: activeCategory === cat ? 700 : 600,
+                  padding: "8px 14px",
+                  borderRadius: 20,
+                  border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
+                  backgroundColor: activeCategory === cat ? BRAND : "white",
+                  color: activeCategory === cat ? "white" : BRAND_DK,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <div style={{ position: "relative" }}>
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => setFiltersOpen(!filtersOpen)}
               style={{
                 fontSize: 11,
-                fontWeight: activeCategory === cat ? 700 : 600,
+                fontWeight: 600,
                 padding: "8px 14px",
                 borderRadius: 20,
-                border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
-                backgroundColor: activeCategory === cat ? BRAND : "white",
-                color: activeCategory === cat ? "white" : BRAND_DK,
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                backgroundColor: activeFilterCount > 0 ? BRAND : "white",
+                color: activeFilterCount > 0 ? "white" : BRAND_DK,
                 cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                whiteSpace: "nowrap",
                 transition: "all 0.2s ease",
               }}
             >
-              {cat}
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+              Filters
+              {activeFilterCount > 0 && (
+                <span style={{
+                  fontSize: 9,
+                  fontWeight: 800,
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  color: "white",
+                  borderRadius: 999,
+                  minWidth: 18,
+                  height: 18,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
-          ))}
+            {filtersOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: 0,
+                zIndex: 50,
+                width: 280,
+                backgroundColor: "white",
+                borderRadius: 10,
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.14)",
+                overflow: "hidden",
+              }}>
+                <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", margin: 0, textTransform: "uppercase" }}>Filters</p>
+                  <button
+                    onClick={() => {
+                      setFilterYear("All Years");
+                      setFilterStage("All");
+                      setFilterGender("All");
+                      setFilterStatus("All");
+                    }}
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: "white",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      borderRadius: 6,
+                      padding: "3px 8px",
+                      backgroundColor: "rgba(255,255,255,0.08)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Reset
+                  </button>
+                </div>
+
+                <div style={{ padding: "12px 14px" }}>
+                  {[
+                    { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
+                    { label: "Stage", value: filterStage, setValue: setFilterStage, options: ["All", "Expose", "Build", "Scale"] },
+                    { label: "Gender", value: filterGender, setValue: setFilterGender, options: ["All", "Male", "Female"] },
+                    { label: "Status", value: filterStatus, setValue: setFilterStatus, options: ["All", "Active", "Stalled"] },
+                  ].map(filter => (
+                    <div key={filter.label} style={{ marginBottom: 12 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                        {filter.label}
+                      </p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {filter.options.map(opt => (
+                          <button
+                            key={opt}
+                            onClick={() => filter.setValue(opt)}
+                            style={{
+                              fontSize: 10,
+                              fontWeight: filter.value === opt ? 700 : 500,
+                              padding: "5px 10px",
+                              borderRadius: 6,
+                              border: `1px solid ${filter.value === opt ? BRAND : LIGHT_BORDER}`,
+                              backgroundColor: filter.value === opt ? BRAND : "white",
+                              color: filter.value === opt ? "white" : BRAND_DK,
+                              cursor: "pointer",
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ════ GROWTH & JOBS ════ */}
@@ -429,7 +558,7 @@ export default function HENTVentures() {
               </div>
             </div>
             <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Ventures Funded" subtitle="Ventures that have received capital">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
@@ -536,6 +665,24 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
+              <Panel title="Female-Led & Accelerator Status" subtitle="Ventures breakdown by characteristics">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Female-Led", value: ALL_VENTURES.filter(v => v.teamGender === "Female").length },
+                    { name: "In Accelerators", value: ALL_VENTURES.filter(v => v.accelerator).length },
+                    { name: "Active & Female-Led", value: ALL_VENTURES.filter(v => v.status === "Active" && v.teamGender === "Female").length },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#FF5722" barSize={40} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
             </div>
           </section>
         )}
@@ -555,7 +702,7 @@ export default function HENTVentures() {
               </div>
             </div>
             <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Ventures by Sector" subtitle="Distribution across sectors" filterOptions={["All Years", ...years.map(String)]} filterValue={filterCompYear} onFilterChange={setFilterCompYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map(s => ({
@@ -591,28 +738,30 @@ export default function HENTVentures() {
                 </ResponsiveContainer>
               </Panel>
               <Panel title="Sector Distribution" subtitle="Portfolio composition by sector">
+                <DonutRing
+                  data={Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map(s => ({
+                    name: s,
+                    value: ALL_VENTURES.filter(v => v.sector === s).length
+                  }))}
+                  colors={GREEN_RAMP}
+                  total={ALL_VENTURES.length}
+                  totalLabel="Sectors"
+                  height={250}
+                  legendPercent
+                />
+              </Panel>
+              <Panel title="Ventures by Cohort" subtitle="Portfolio distribution by entry year">
                 <ResponsiveContainer width="100%" height={250}>
-                  <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                    <Pie
-                      data={Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map(s => ({
-                        name: s,
-                        value: ALL_VENTURES.filter(v => v.sector === s).length
-                      }))}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value }) => `${name}: ${value}`}
-                      outerRadius={70}
-                      fill="#2D6A4F"
-                      dataKey="value"
-                    >
-                      {Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map((s, idx) => (
-                        <Cell key={`cell-${idx}`} fill={GREEN_RAMP[idx % GREEN_RAMP.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
+                  <BarChart data={VENTURE_YEARS.map(y => ({ year: String(y), count: ALL_VENTURES.filter(v => v.cohort === y).length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                  </PieChart>
+                    <Bar dataKey="count" fill="#26A69A" barSize={40} radius={[4, 4, 0, 0]} name="Ventures">
+                      <LabelList dataKey="count" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </Panel>
             </div>
@@ -634,7 +783,7 @@ export default function HENTVentures() {
               </div>
             </div>
             <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Funding by Country" subtitle="Capital distribution across regions" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.country))).map(c => ({
@@ -686,7 +835,7 @@ export default function HENTVentures() {
               </div>
             </div>
             <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Funding Trend" subtitle="Capital deployment over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), funding: ALL_VENTURES.filter(v => v.cohort === y && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
