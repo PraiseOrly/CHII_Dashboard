@@ -240,7 +240,7 @@ export default function AtAGlancePage() {
 
         {/* Left Column: Outreach & Access */}
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0 }}>Outreach & Access</h2>
+          <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0, textAlign: "center" }}>Outreach & Access</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
             <KPICard label="Total Beneficiaries" value={totalBeneficiaries} femalePct={femaleShare} malePct={maleShare} info="Total individuals reached across all CHII outreach programs." Icon={Users} href="/executive/outreach" />
             <KPICard label="Currently Enrolled" value={currentlyEnrolled} femalePct={enrolledFemalePct} malePct={100 - enrolledFemalePct} info="Participants currently active in outreach programs." Icon={BookOpen} href="/executive/outreach" />
@@ -258,7 +258,7 @@ export default function AtAGlancePage() {
 
         {/* Right Column: Program Outcomes */}
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0 }}>Program Outcomes</h2>
+          <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0, textAlign: "center" }}>Program Outcomes</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
             <KPICard label="Youth in Work" value={131} yoy={8} info="Participants employed or running enterprises." Icon={Briefcase} href="/executive/youth-in-work" secondaryText="Active workforce" />
             <KPICard label="Wage Employment" value={51} yoy={12} info="Participants in paid employment." Icon={Briefcase} href="/executive/wage-employment" secondaryText="Employed" />
@@ -273,94 +273,97 @@ export default function AtAGlancePage() {
         </div>
       </div>
 
-      {/* ── Insights Section (Navy Band) ──────────────────────────── */}
-      <div className="max-w-[1600px] mx-auto px-10 py-0" style={{ marginTop: 48, marginBottom: 48 }}>
-        <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16, flexShrink: 0 }}>Strategic Insights</h2>
-
+      {/* ── Insights Section (Merged Card Style) ──────────────────────────── */}
+      <div className="max-w-[1600px] mx-auto px-10 py-0" style={{ marginTop: 5, marginBottom: 5 }}>
         <div style={{
-          position: "relative",
-          borderRadius: 12,
+          display: "grid",
+          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+          gap: 0,
+          backgroundColor: "#F3F7FF",
+          borderRadius: 10,
+          border: "1px solid #E0ECFF",
+          padding: "20px 0",
+          boxShadow: "0 2px 4px rgba(16, 44, 94, 0.08)",
+          transition: "all 200ms ease",
           overflow: "hidden",
-          backgroundColor: "#102C5E",
-          padding: "28px 0"
+          backgroundImage: "linear-gradient(to right, #14306B 0%, #14306B 25%, #16A34A 25%, #16A34A 50%, #9333EA 50%, #9333EA 75%, #EAB308 75%, #EAB308 100%)",
+          backgroundSize: "100% 5px",
+          backgroundPosition: "0 0",
+          backgroundRepeat: "no-repeat"
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#ECEFFF";
+          e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 44, 94, 0.12)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "#F3F7FF";
+          e.currentTarget.style.boxShadow = "0 2px 4px rgba(16, 44, 94, 0.08)";
         }}>
-          {/* Faint pattern overlay */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.04 }} />
+          {[
+            {
+              title: "Gender Balance",
+              figure: "52%",
+              detail: "Female participants (Target: 50%)",
+              copy: "Strong gender parity across HEMP, HENT, and HECO programs. Consistent above target baseline.",
+              accentColor: "#14306B"
+            },
+            {
+              title: "Regional Growth",
+              figure: "+28%",
+              detail: "YoY expansion across 12 countries",
+              copy: "Sub-Saharan Africa reach increased. East Africa leading with +38% growth. New West Africa hubs activated.",
+              accentColor: "#16A34A"
+            },
+            {
+              title: "Employment Success",
+              figure: "76%",
+              detail: "Graduate employment rate",
+              copy: "Wage employment (39%), Self-employment (23%), Further education (14%). Exceeds regional benchmarks.",
+              accentColor: "#9333EA"
+            },
+            {
+              title: "Venture Momentum",
+              figure: "18",
+              detail: "New enterprises (↑22% YoY)",
+              copy: "2,151 jobs created. Avg. revenue $52K. 8 ventures scaled to multi-year sustainability.",
+              accentColor: "#EAB308"
+            }
+          ].map((insight, i) => (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 8,
+                padding: "0 16px",
+                position: "relative",
+                textAlign: "center",
+                borderRight: i < 3 ? "1px solid rgba(20,48,107,0.1)" : "none"
+              }}
+            >
 
-          {/* Diagonal red accent slash (top-right, bleeding off edges) */}
-          <div style={{
-            position: "absolute",
-            top: "-40%",
-            right: "-5%",
-            width: "60%",
-            height: "180%",
-            backgroundColor: "#DC2626",
-            transform: "rotate(-15deg)",
-            zIndex: 1,
-            pointerEvents: "none"
-          }} />
+              {/* Hero figure */}
+              <p style={{ fontSize: 32, fontWeight: 800, color: "#14306B", lineHeight: 1, margin: 0, marginTop: 8 }}>
+                {insight.figure}
+              </p>
 
-          {/* Content grid with dividers */}
-          <div style={{
-            position: "relative",
-            zIndex: 3,
-            display: "grid",
-            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-            height: "100%"
-          }}>
-            {[
-              { title: "Gender Balance", figure: "52%", accentColor: "#85B7EB" },
-              { title: "Regional Growth", figure: "+28%", accentColor: "#16A34A" },
-              { title: "Employment Success", figure: "76%", accentColor: "#9333EA" },
-              { title: "Venture Momentum", figure: "18", accentColor: "#EAB308" }
-            ].map((insight, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  padding: "0 28px",
-                  position: "relative",
-                  textAlign: "center"
-                }}
-              >
-                {/* Vertical divider (except after last column) */}
-                {i < 3 && (
-                  <div style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "16px",
-                    bottom: "16px",
-                    width: "1px",
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    pointerEvents: "none"
-                  }} />
-                )}
+              {/* Label */}
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#14306B", lineHeight: 1.2, margin: 0 }}>
+                {insight.title}
+              </p>
 
-                {/* Hero figure */}
-                <p style={{ fontSize: 34, fontWeight: 800, color: "white", lineHeight: 1, margin: 0 }}>
-                  {insight.figure}
-                </p>
+              {/* Detail line */}
+              <p style={{ fontSize: 11, fontWeight: 500, color: "#6B7280", lineHeight: 1.3, margin: 0 }}>
+                {insight.detail}
+              </p>
 
-                {/* Label */}
-                <p style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.8)", lineHeight: 1.2, margin: 0 }}>
-                  {insight.title}
-                </p>
-
-                {/* Colored accent rule */}
-                <div style={{
-                  width: 40,
-                  height: 3,
-                  backgroundColor: insight.accentColor,
-                  borderRadius: "2px",
-                  marginTop: 2
-                }} />
-              </div>
-            ))}
-          </div>
+              {/* Supporting copy */}
+              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4, margin: 0, marginBottom: 8 }}>
+                {insight.copy}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 
