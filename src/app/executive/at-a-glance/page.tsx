@@ -273,57 +273,94 @@ export default function AtAGlancePage() {
         </div>
       </div>
 
-      {/* ── Insights Section ──────────────────────────── */}
-      <div className="max-w-[1600px] mx-auto px-10 py-0" style={{ marginTop: 48 }}>
-        <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 20, flexShrink: 0 }}>Strategic Insights</h2>
+      {/* ── Insights Section (Navy Band) ──────────────────────────── */}
+      <div className="max-w-[1600px] mx-auto px-10 py-0" style={{ marginTop: 48, marginBottom: 48 }}>
+        <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16, flexShrink: 0 }}>Strategic Insights</h2>
 
         <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 20,
-          marginBottom: 48
+          position: "relative",
+          borderRadius: 12,
+          overflow: "hidden",
+          backgroundColor: "#102C5E",
+          padding: "28px 0"
         }}>
-          {[
-            { title: "Gender Balance", figure: "52%", copy: "Female participation across all programs remains above 50%, indicating strong gender inclusivity in CHII initiatives.", accentColor: "#14306B" },
-            { title: "Regional Growth", figure: "+28%", copy: "Year-over-year increase in program reach across Sub-Saharan Africa demonstrates expanding impact and partnerships.", accentColor: "#16A34A" },
-            { title: "Employment Success", figure: "76%", copy: "Graduate employment rate exceeds global benchmarks, validating program quality and employer demand.", accentColor: "#9333EA" },
-            { title: "Venture Momentum", figure: "18", copy: "New enterprises launched by participants create sustainable livelihoods and job opportunities in local economies.", accentColor: "#EAB308" }
-          ].map((insight, i) => (
-            <div
-              key={i}
-              style={{
-                backgroundColor: "#F3F7FF",
-                borderRadius: 10,
-                border: "1px solid #E0ECFF",
-                borderTop: `4px solid ${insight.accentColor}`,
-                padding: "24px",
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                position: "relative",
-                boxShadow: "0 2px 4px rgba(16, 44, 94, 0.08)",
-                transition: "all 200ms ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#ECEFFF";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 44, 94, 0.12)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#F3F7FF";
-                e.currentTarget.style.boxShadow = "0 2px 4px rgba(16, 44, 94, 0.08)";
-              }}
-            >
-              <p style={{ fontSize: 36, fontWeight: 800, color: "#14306B", lineHeight: 1, margin: 0 }}>
-                {insight.figure}
-              </p>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: "#14306B", lineHeight: 1.3, margin: 0 }}>
-                {insight.title}
-              </h3>
-              <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.5, margin: 0 }}>
-                {insight.copy}
-              </p>
-            </div>
-          ))}
+          {/* Faint pattern overlay */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.04 }} />
+
+          {/* Diagonal red accent slash (top-right, bleeding off edges) */}
+          <div style={{
+            position: "absolute",
+            top: "-40%",
+            right: "-5%",
+            width: "60%",
+            height: "180%",
+            backgroundColor: "#DC2626",
+            transform: "rotate(-15deg)",
+            zIndex: 1,
+            pointerEvents: "none"
+          }} />
+
+          {/* Content grid with dividers */}
+          <div style={{
+            position: "relative",
+            zIndex: 3,
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            height: "100%"
+          }}>
+            {[
+              { title: "Gender Balance", figure: "52%", accentColor: "#85B7EB" },
+              { title: "Regional Growth", figure: "+28%", accentColor: "#16A34A" },
+              { title: "Employment Success", figure: "76%", accentColor: "#9333EA" },
+              { title: "Venture Momentum", figure: "18", accentColor: "#EAB308" }
+            ].map((insight, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  padding: "0 28px",
+                  position: "relative",
+                  textAlign: "center"
+                }}
+              >
+                {/* Vertical divider (except after last column) */}
+                {i < 3 && (
+                  <div style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "16px",
+                    bottom: "16px",
+                    width: "1px",
+                    backgroundColor: "rgba(255,255,255,0.15)",
+                    pointerEvents: "none"
+                  }} />
+                )}
+
+                {/* Hero figure */}
+                <p style={{ fontSize: 34, fontWeight: 800, color: "white", lineHeight: 1, margin: 0 }}>
+                  {insight.figure}
+                </p>
+
+                {/* Label */}
+                <p style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.8)", lineHeight: 1.2, margin: 0 }}>
+                  {insight.title}
+                </p>
+
+                {/* Colored accent rule */}
+                <div style={{
+                  width: 40,
+                  height: 3,
+                  backgroundColor: insight.accentColor,
+                  borderRadius: "2px",
+                  marginTop: 2
+                }} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
