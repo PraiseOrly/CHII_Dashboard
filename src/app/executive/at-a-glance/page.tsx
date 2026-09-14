@@ -44,7 +44,7 @@ function KPICard({
         backgroundColor: "white",
         borderRadius: 8,
         border: "1px solid #E5E7EB",
-        padding: "10px 12px",
+        padding: "8px 16px",
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -114,22 +114,22 @@ function KPICard({
 
       {/* Row 4: Gender split (footer zone) */}
       {femalePct !== undefined && malePct !== undefined && (
-        <div style={{ display: "flex", gap: 8, marginTop: "auto", paddingTop: 4, borderTop: "1px solid #F3F4F6" }}>
+        <div style={{ display: "flex", gap: 6, marginTop: "auto", paddingTop: 3, borderTop: "1px solid #F3F4F6" }}>
           {/* Female */}
-          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="8" r="4" />
               <path d="M12 14v8M8 18h8" />
             </svg>
-            <span style={{ fontSize: 9, fontWeight: 600, color: "#1F2937" }}>{femalePct}%</span>
+            <span style={{ fontSize: 8, fontWeight: 600, color: "#1F2937" }}>{femalePct}%</span>
           </div>
 
           {/* Male */}
-          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM9 11l5 9M14 20h-10" />
             </svg>
-            <span style={{ fontSize: 9, fontWeight: 600, color: "#1F2937" }}>{100 - femalePct}%</span>
+            <span style={{ fontSize: 8, fontWeight: 600, color: "#1F2937" }}>{100 - femalePct}%</span>
           </div>
         </div>
       )}
@@ -206,14 +206,14 @@ export default function AtAGlancePage() {
       </div>
 
       {/* ── Stats Cards Section ─────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7">
-        {/* Three-Column Layout: Left (KPIs) | Center (Map) | Right (KPIs) */}
-        <div style={{ display: "flex", gap: 14 }}>
+      <div className="max-w-[1600px] mx-auto px-10 py-7">
+        {/* Three-Column Grid: Left (280px) | Center (1fr) | Right (280px) */}
+        <div style={{ display: "grid", gridTemplateColumns: "280px minmax(0, 1fr) 280px", gap: 32, alignItems: "stretch", overflowX: "hidden" }}>
 
         {/* Left Column: Outreach & Access */}
-        <div style={{ flex: "0 0 18%", display: "flex", flexDirection: "column", paddingRight: 4, overflowX: "hidden" }}>
-          <h2 style={{ fontSize: 11, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 10, flexShrink: 0 }}>Outreach & Access</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <h2 style={{ fontSize: 11, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0 }}>Outreach & Access</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
             <KPICard label="Total Beneficiaries" value={totalBeneficiaries} femalePct={femaleShare} malePct={100 - femaleShare} info="Total individuals reached across all CHII outreach programs." Icon={Users} href="/executive/outreach" />
             <KPICard label="Currently Enrolled" value={currentlyEnrolled} info="Participants currently active in outreach programs." Icon={BookOpen} href="/executive/outreach" />
             <KPICard label="Graduates" value={graduates} info="Participants who completed outreach programs." Icon={Award} href="/executive/outreach" />
@@ -226,12 +226,12 @@ export default function AtAGlancePage() {
         </div>
 
         {/* Center Column: Map */}
-        <div ref={mapContainer} style={{ flex: "0 0 64%", borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", alignSelf: "stretch" }} />
+        <div ref={mapContainer} style={{ borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", minHeight: 0 }} />
 
         {/* Right Column: Program Outcomes */}
-        <div style={{ flex: "0 0 18%", display: "flex", flexDirection: "column", paddingLeft: 4, overflowX: "hidden" }}>
-          <h2 style={{ fontSize: 11, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 10, flexShrink: 0 }}>Program Outcomes</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <h2 style={{ fontSize: 11, fontWeight: 800, color: NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0 }}>Program Outcomes</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
             <KPICard label="Youth in Work" value={131} yoy={8} info="Participants employed or running enterprises." Icon={Briefcase} href="/executive/youth-in-work" />
             <KPICard label="Wage Employment" value={51} yoy={12} info="Participants in paid employment." Icon={Briefcase} href="/executive/wage-employment" />
             <KPICard label="Entrepreneurs" value={21} yoy={5} info="Participants running their own enterprise." Icon={TrendingUp} href="/executive/entrepreneurship" />
@@ -247,7 +247,7 @@ export default function AtAGlancePage() {
 
       {/* ── Footer Section ─────────────────────────────── */}
       <div style={{ backgroundColor: "white", borderTop: "1px solid #E5E7EB", marginTop: 20 }}>
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10">
+        <div className="max-w-[1600px] mx-auto px-10 py-10">
           <FeaturedImpactStory footer />
         </div>
       </div>
