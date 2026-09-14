@@ -28,6 +28,14 @@ import {
   Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
+import { SlidersHorizontal, X } from "lucide-react";
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
+const HEMP_SECTIONS = [
+  { n: 1, label: "Reach" },
+  { n: 2, label: "Learning Experience" },
+  { n: 3, label: "Participation" },
+];
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
 // Blue/navy theme mirrored from the CHII Executive (Impact) Dashboard.
@@ -471,11 +479,15 @@ function InsightList({ items, dotColor }: { items: string[]; dotColor?: string }
 export default function HEMPOverview() {
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Geographic reach filters
   const [geoCountry, setGeoCountry] = useState("All Countries");
   const [geoYear, setGeoYear]       = useState("All Years");
   const [geoRegion, setGeoRegion]   = useState("All Regions");
+
+  const geoActiveCount = (geoCountry !== "All Countries" ? 1 : 0) + (geoYear !== "All Years" ? 1 : 0) + (geoRegion !== "All Regions" ? 1 : 0);
+  const geoReset = () => { setGeoCountry("All Countries"); setGeoYear("All Years"); setGeoRegion("All Regions"); };
   const geoCountryData = useMemo(() => {
     const counts = REACH_RECORDS
       .filter(r => geoRegion === "All Regions" || COUNTRY_REGION[r.country] === geoRegion)
@@ -549,34 +561,57 @@ export default function HEMPOverview() {
           <KpiTile label="PWD Participation"      num={PWD_PCT}     displayFmt={n => `${Math.round(n)}%`} Icon={Accessibility} sub="Illustrative estimate — not yet tracked" tip="Disability status is not currently captured in the HEMP dataset; shown as an illustrative estimate." />
         </div>
 
-        {/* Section pills (left) + outreach-style filters popover (right) */}
+        {/* Section pills (left) + filters dropdown (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <SectionPills
-            accent={BRAND}
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-            options={[
-              { label: "All Sections", value: "all" },
-              { label: "Reach", value: "1" },
-              { label: "Learning Experience", value: "2" },
-              { label: "Participation", value: "3" },
-              { label: "Performance", value: "4" },
-              { label: "Outcomes", value: "5" },
-              { label: "Ecosystem", value: "6" },
-            ]}
-          />
-          <OutreachFilters
-            accent={BRAND}
-            activeCount={(geoCountry !== "All Countries" ? 1 : 0) + (geoYear !== "All Years" ? 1 : 0) + (geoRegion !== "All Regions" ? 1 : 0)}
-            onReset={() => { setGeoCountry("All Countries"); setGeoYear("All Years"); setGeoRegion("All Regions"); }}
-          >
-            <OFilterSelect label="Country" value={geoCountry} onChange={setGeoCountry} accent={BRAND}
-              options={["All Countries", ...GEO_COUNTRIES].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Year" value={geoYear} onChange={setGeoYear} accent={BRAND}
-              options={["All Years", ...GEO_YEARS.map(String)].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Region" value={geoRegion} onChange={setGeoRegion} accent={BRAND}
-              options={["All Regions", ...GEO_REGIONS].map(o => ({ value: o, label: o }))} />
-          </OutreachFilters>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[{ n: "all", label: "All Sections" }, ...HEMP_SECTIONS].map(({ n, label }) => {
+              const on = n === "all" ? activeSection === "all" : activeSection === n;
+              return (
+                <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : n)}
+                  style={{
+                    fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                    border: `1px solid ${on ? BRAND : "rgba(0,33,71,0.15)"}`,
+                    backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280"
+                  }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <button onClick={() => setFiltersOpen(o => !o)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                border: `1px solid ${geoActiveCount || filtersOpen ? BRAND : "rgba(0,33,71,0.15)"}`,
+                backgroundColor: filtersOpen ? BRAND : "white", color: filtersOpen ? "white" : "#374151" }}>
+              <SlidersHorizontal size={13} />
+              Filters
+              {geoActiveCount > 0 && (
+                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : BRAND, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{geoActiveCount}</span>
+              )}
+            </button>
+            {filtersOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {geoActiveCount > 0 && (
+                      <button onClick={geoReset} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                    )}
+                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <FilterSelect label="Country" value={geoCountry} onChange={setGeoCountry}
+                    options={["All Countries", ...GEO_COUNTRIES].map(o => ({ value: o, label: o }))} />
+                  <FilterSelect label="Year" value={geoYear} onChange={setGeoYear}
+                    options={["All Years", ...GEO_YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+                  <FilterSelect label="Region" value={geoRegion} onChange={setGeoRegion}
+                    options={["All Regions", ...GEO_REGIONS].map(o => ({ value: o, label: o }))} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── SECTION 01: REACH ── */}

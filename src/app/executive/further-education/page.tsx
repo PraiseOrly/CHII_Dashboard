@@ -135,8 +135,8 @@ function RankBar({ data, color = BAND, width = 130, legend = false, center = fal
 
 /* ── Sections for filter pills ─────────────────────── */
 const FE_SECTIONS: { n: number; label: string }[] = [
-  { n: 1, label: "Overview" },
-  { n: 2, label: "Analytics" },
+  { n: 1, label: "Participant Profile" },
+  { n: 2, label: "Study Pathways" },
 ];
 
 /* ════════════════════════════════════════════════════════
@@ -232,23 +232,21 @@ export default function FurtherEducationPage() {
   const renderFilters = () => (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
       {/* Section pills (left) */}
-      {show(1) && show(2) && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {[{ n: 0, label: "All Sections" }, ...FE_SECTIONS].map(({ n, label }) => {
-            const on = n === 0 ? activeSection === "all" : activeSection === n;
-            return (
-              <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
-                style={{
-                  fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                  border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
-                  backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280"
-                }}>
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {[{ n: 0, label: "All Sections" }, ...FE_SECTIONS].map(({ n, label }) => {
+          const on = n === 0 ? activeSection === "all" : activeSection === n;
+          return (
+            <button key={n} onClick={() => setActiveSection(n === 0 ? "all" : n)}
+              style={{
+                fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                border: `1px solid ${on ? NAVY : "rgba(0,33,71,0.15)"}`,
+                backgroundColor: on ? NAVY : "white", color: on ? "white" : "#6B7280"
+              }}>
+              {label}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Filters dropdown (right) */}
       <div style={{ position: "relative", flexShrink: 0 }}>
@@ -325,7 +323,6 @@ export default function FurtherEducationPage() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-7 space-y-10">
 
         {/* ════ OVERVIEW ════ */}
-        {show(1) && (
         <section className="space-y-4">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
             <StatsKpiCard label="In Further Study" num={TOTAL} sub="graduates" Icon={GraduationCap}
@@ -342,16 +339,14 @@ export default function FurtherEducationPage() {
               tooltip="Distinct countries where graduates pursue further study." />
           </div>
 
-          {/* Filters dropdown */}
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            {renderFilters()}
-          </div>
+          {/* Filters and Section Pills */}
+          {renderFilters()}
         </section>
-        )}
 
-        {/* ════ ANALYTICS ════ */}
-        {show(2) && (
+        {/* ════ PARTICIPANT PROFILE ════ */}
+        {show(1) && (
         <section className="space-y-4">
+          <SectionHeader title="Participant Profile" blurb="Who is pursuing further education - gender, origins, and distribution of graduates." />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             <Panel title="Gender Distribution" subtitle="Female · Male · Non-binary"
               info="Gender distribution of graduates in further education.">
@@ -359,15 +354,28 @@ export default function FurtherEducationPage() {
             </Panel>
             <Panel title="Country of Origin" subtitle="Where graduates are from, ranked"
               info="Graduates' countries of origin, sorted from most to least.">
-              <RankBar data={d.origin} width={110} legend center />
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <RankBar data={d.origin} width={110} legend center />
+              </div>
             </Panel>
+          </div>
+        </section>
+        )}
+
+        {/* ════ STUDY PATHWAYS ════ */}
+        {show(2) && (
+        <section className="space-y-4">
+          <SectionHeader title="Study Pathways" blurb="What further education are graduates pursuing - qualifications, fields, destinations, and relevance to their ALU degree." />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             <Panel title="Qualification Level" subtitle="Type of qualification pursued"
               info="Qualification level graduates are pursuing.">
               <Donut data={d.qualification} colors={PALETTE} total={TOTAL} totalLabel="Graduates" height={340} legendPercent />
             </Panel>
             <Panel title="Field of Study" subtitle="Disciplines, ranked"
               info="Fields of study graduates pursue, sorted from most to least.">
-              <RankBar data={d.fieldData} width={150} legend center />
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <RankBar data={d.fieldData} width={150} legend center />
+              </div>
             </Panel>
             <Panel title="Relevance to ALU Degree" subtitle="How further study relates to the degree"
               info="How closely graduates' further study relates to their ALU degree.">

@@ -3,8 +3,8 @@ import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import StatsKpiCard from "@/components/ui/stat-kpi-card";
-import SectionPills from "@/components/filters/section-pills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
+import { InlineFilterSelect as FilterSelect } from "@/components/ui/hemp";
+import { SlidersHorizontal, X } from "lucide-react";
 import { CHART } from "@/theme/tokens";
 import { DonutRing } from "@/components/charts/donut-chart";
 import { fellows, craHackathons, researchPartnerships, CRA_PILLARS } from "@/data/heco/cra";
@@ -14,6 +14,13 @@ import {
   Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
+const HECO_SECTIONS = [
+  { n: 1, label: "The Three Pillars" },
+  { n: 2, label: "Activity Over Time" },
+  { n: 3, label: "Geographic Reach" },
+];
 
 // ─── Theme (executive navy) ──────────────────────────────────────────────────
 const HERO     = "#102C5E";
@@ -123,6 +130,7 @@ export default function HecoOverviewPage() {
 
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
     <PortalThemeProvider portal="heco">
@@ -173,27 +181,53 @@ export default function HecoOverviewPage() {
 
         {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <SectionPills
-            accent={BRAND}
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-            options={[
-              { label: "All Sections", value: "all" },
-              { label: "The Three Pillars", value: "1" },
-              { label: "Activity Over Time", value: "2" },
-              { label: "Geographic Reach", value: "3" },
-            ]}
-          />
-          <OutreachFilters
-            accent={BRAND}
-            activeCount={activeCount}
-            onReset={() => { setFYear("All Years"); setFCountry("All Countries"); }}
-          >
-            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent={BRAND}
-              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent={BRAND}
-              options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
-          </OutreachFilters>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[{ n: "all", label: "All Sections" }, ...HECO_SECTIONS].map(({ n, label }) => {
+              const on = n === "all" ? activeSection === "all" : activeSection === n;
+              return (
+                <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : n)}
+                  style={{
+                    fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                    border: `1px solid ${on ? BRAND : "rgba(0,33,71,0.15)"}`,
+                    backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280"
+                  }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <button onClick={() => setFiltersOpen(o => !o)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                border: `1px solid ${activeCount || filtersOpen ? BRAND : "rgba(0,33,71,0.15)"}`,
+                backgroundColor: filtersOpen ? BRAND : "white", color: filtersOpen ? "white" : "#374151" }}>
+              <SlidersHorizontal size={13} />
+              Filters
+              {activeCount > 0 && (
+                <span style={{ fontSize: 9.5, fontWeight: 800, color: "white", backgroundColor: filtersOpen ? "rgba(255,255,255,0.25)" : BRAND, borderRadius: 999, minWidth: 16, height: 16, padding: "0 4px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{activeCount}</span>
+              )}
+            </button>
+            {filtersOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+                <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {activeCount > 0 && (
+                      <button onClick={() => { setFYear("All Years"); setFCountry("All Countries"); }} style={{ fontSize: 10, fontWeight: 600, color: "white", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "3px 8px", backgroundColor: "rgba(255,255,255,0.08)", cursor: "pointer" }}>Reset</button>
+                    )}
+                    <button onClick={() => setFiltersOpen(false)} title="Close" style={{ color: "white", display: "flex", cursor: "pointer", background: "none", border: "none", padding: 0 }}><X size={13} /></button>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <FilterSelect label="Year" value={fYear} onChange={setFYear}
+                    options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+                  <FilterSelect label="Country" value={fCountry} onChange={setFCountry}
+                    options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── SECTION 1: The three pillars ─── */}
