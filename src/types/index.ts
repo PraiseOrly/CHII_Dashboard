@@ -123,6 +123,8 @@ export interface StageHistoryEntry {
   durationDays: number;
 }
 
+export type FundType = "Charitable" | "Venture Fund" | "Catalytic";
+
 export interface Venture {
   id: number;
   name: string;
@@ -141,14 +143,17 @@ export interface Venture {
   milestoneRate: number;
   funding: number;
   fundingStatus: FundingStatus;
+  fundType?: FundType;
   jobs6m: number;
   jobsTotal: number;
   jobsWomen: number;
+  jobsYouth: number;
   mentorshipHrs: number;
   founderEngagement: number;
   partnerships: number;
   accelerator: boolean;
   revenue: number;
+  recommended: boolean;
   healthScore: number;
   pSuccess: number;
   interventions: InterventionType[];

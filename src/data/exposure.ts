@@ -8,6 +8,7 @@ export const EXPOSURE_TYPES = [
   "Investor Roundtable",
   "Ecosystem Engagement",
   "Demo Day",
+  "Pitching Competition",
 ] as const;
 export type ExposureType = typeof EXPOSURE_TYPES[number];
 
@@ -41,6 +42,10 @@ export interface ExposureEvent {
   mousSigned: number;       // formal agreements resulting
   /** Founder-rated value of the exposure, out of 5 */
   visibilityScore: number;
+  /** For Pitching Competitions: winning venture name */
+  winner?: string;
+  /** For Pitching Competitions: prize amount in USD */
+  prizeAmount?: number;
 }
 
 export const exposureEvents: ExposureEvent[] = [
@@ -169,5 +174,29 @@ export const exposureEvents: ExposureEvent[] = [
     founders: 25, femaleFounders: 12, ventures: 18,
     stakeholders: { Investors: 18, "Industry Partners": 11, "Healthcare Stakeholders": 6, "Policy Makers": 4, "Peer Founders": 17 },
     connections: 85, followUps: 37, dealsInitiated: 14, mousSigned: 5, visibilityScore: 4.6,
+  },
+  {
+    id: "PC01", name: "Health Innovation Pitch Battle 2024", year: 2024, type: "Pitching Competition",
+    country: "Rwanda", city: "Kigali",
+    founders: 32, femaleFounders: 14, ventures: 16,
+    stakeholders: { Investors: 22, "Industry Partners": 14, "Healthcare Stakeholders": 8, "Policy Makers": 5, "Peer Founders": 28 },
+    connections: 96, followUps: 42, dealsInitiated: 18, mousSigned: 4, visibilityScore: 4.7,
+    winner: "HealthData AI", prizeAmount: 25000,
+  },
+  {
+    id: "PC02", name: "HENT Annual Pitch Competition 2025", year: 2025, type: "Pitching Competition",
+    country: "Kenya", city: "Nairobi",
+    founders: 28, femaleFounders: 13, ventures: 14,
+    stakeholders: { Investors: 19, "Industry Partners": 12, "Healthcare Stakeholders": 9, "Policy Makers": 6, "Peer Founders": 24 },
+    connections: 84, followUps: 38, dealsInitiated: 16, mousSigned: 5, visibilityScore: 4.6,
+    winner: "MentalSpace", prizeAmount: 30000,
+  },
+  {
+    id: "PC03", name: "East Africa HealthTech Pitch Challenge 2026", year: 2026, type: "Pitching Competition",
+    country: "Uganda", city: "Kampala",
+    founders: 35, femaleFounders: 16, ventures: 18,
+    stakeholders: { Investors: 25, "Industry Partners": 15, "Healthcare Stakeholders": 10, "Policy Makers": 7, "Peer Founders": 31 },
+    connections: 112, followUps: 49, dealsInitiated: 22, mousSigned: 6, visibilityScore: 4.8,
+    winner: "SafeDeliv Kenya", prizeAmount: 35000,
   },
 ];

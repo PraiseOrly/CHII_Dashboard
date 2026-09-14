@@ -30,6 +30,7 @@ const TYPE_HEX: Record<ExposureType, string> = {
   "Investor Roundtable":  "#A6C13C",
   "Ecosystem Engagement": "#40916C",
   "Demo Day":             "#BBD59B",
+  "Pitching Competition": "#6B8E5B",
 };
 
 function avg(a: number[]) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0; }

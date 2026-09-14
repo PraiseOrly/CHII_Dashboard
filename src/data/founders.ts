@@ -31,6 +31,7 @@ export interface Founder {
   isMCFScholar: boolean;
   events: string[];
   interventionMonth: number;
+  npsScore: number;
 }
 
 export const founders: Founder[] = Array.from({ length: 96 }, (_, i) => {
@@ -41,6 +42,8 @@ export const founders: Founder[] = Array.from({ length: 96 }, (_, i) => {
     const idx = d(s + j * 17 + 100, 0, PROGRAM_EVENTS_LIST.length - 1);
     if (!evIndices.includes(idx)) evIndices.push(idx);
   }
+  const npsRoll = d(s + 11, 0, 99);
+  const npsScore = npsRoll < 60 ? d(s + 12, 9, 10) : npsRoll < 85 ? d(s + 12, 7, 8) : d(s + 12, 0, 6);
   return {
     id: `F${String(i + 1).padStart(3, "0")}`,
     ventureId: `V${String(i + 1).padStart(3, "0")}`,
@@ -53,5 +56,6 @@ export const founders: Founder[] = Array.from({ length: 96 }, (_, i) => {
     isMCFScholar: d(s + 8, 0, 99) < 35,
     events: evIndices.map((idx) => PROGRAM_EVENTS_LIST[idx]),
     interventionMonth: d(s + 10, 1, 12),
+    npsScore,
   };
 });

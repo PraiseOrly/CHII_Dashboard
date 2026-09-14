@@ -7,6 +7,7 @@ import type {
   TeamGender,
   InterventionType,
   StageHistoryEntry,
+  FundType,
 } from "@/types";
 
 const VENTURE_NAMES = [
@@ -178,6 +179,7 @@ function buildVenture(i: number): Venture {
   const jobs6m = d(i * 31, 0, 12);
   const jobsTotal = jobs6m + d(i * 37, 0, 30);
   const jobsWomen = Math.min(jobsTotal, d(i * 41, 0, jobsTotal));
+  const jobsYouth = Math.round(jobsTotal * 0.4 + d(i * 42, -3, 3));
   const mentorshipHrs = d(i * 43, 20, 350);
   const founderEngagement = d(i * 47, 35, 98);
   const partnerships = d(i * 53, 0, 12);
@@ -188,6 +190,18 @@ function buildVenture(i: number): Venture {
 
   const statusRoll = d(i * 67, 0, 9);
   const status = statusRoll <= 6 ? "Active" : statusRoll <= 8 ? "Dormant" : "Stalled";
+
+  // Fund type: weighted distribution when funded
+  let fundType: FundType | undefined;
+  if (funding > 0) {
+    const fundRoll = d(i * 71, 0, 99);
+    if (fundRoll < 55) fundType = "Catalytic";
+    else if (fundRoll < 80) fundType = "Charitable";
+    else fundType = "Venture Fund";
+  }
+
+  // Recommended ventures: higher healthScore and later stage
+  const recommended = healthScore >= 70 && stageIndex >= 2;
 
   return {
     id: i + 1,
@@ -207,14 +221,17 @@ function buildVenture(i: number): Venture {
     milestoneRate,
     funding,
     fundingStatus,
+    fundType,
     jobs6m,
     jobsTotal,
     jobsWomen,
+    jobsYouth,
     mentorshipHrs,
     founderEngagement,
     partnerships,
     accelerator,
     revenue,
+    recommended,
     healthScore,
     pSuccess,
     interventions: pickInterventions(i, cohort),
