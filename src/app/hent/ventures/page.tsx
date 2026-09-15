@@ -108,7 +108,8 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 padding: "5px 10px",
                 borderRadius: 10,
                 border: `1px solid ${LIGHT_BORDER}`,
-                backgroundColor: LIGHT_GREEN,
+                borderLeft: `5px solid ${BRAND}`,
+                backgroundColor: "white",
                 color: BRAND_DK,
                 cursor: "pointer",
                 display: "flex",
@@ -126,6 +127,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 right: 0,
                 backgroundColor: "white",
                 border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
                 borderRadius: 10,
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 zIndex: 10,
@@ -148,7 +150,8 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                       fontWeight: opt === filterValue ? 700 : 500,
                       backgroundColor: opt === filterValue ? BRAND : "white",
                       color: opt === filterValue ? "white" : BRAND_DK,
-                      border: "none",
+                      border: `1px solid ${LIGHT_BORDER}`,
+                      borderLeft: `5px solid ${BRAND}`,
                       cursor: "pointer",
                     }}
                   >

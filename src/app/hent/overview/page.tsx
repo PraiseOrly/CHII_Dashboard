@@ -425,7 +425,7 @@ export default function HENTOverview() {
                 transition: "all 0.2s ease",
               }}
             >
-              <SlidersHorizontal size={14} />
+              <SlidersHorizontal size={14} color={BRAND_DK} />
               Filters
               {activeFilters > 0 && (
                 <span style={{

@@ -55,7 +55,7 @@ export function FilterButton({
         letterSpacing: "0.02em",
       }}
     >
-      <SlidersHorizontal size={14} style={{ flexShrink: 0 }} />
+      <SlidersHorizontal size={14} color={BRAND_DK} style={{ flexShrink: 0 }} />
       Filters
       {activeFilterCount > 0 && (
         <span style={{
