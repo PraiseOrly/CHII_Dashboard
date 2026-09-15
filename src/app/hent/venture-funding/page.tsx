@@ -7,10 +7,10 @@ import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import { DonutRing } from "@/components/charts/donut-chart";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Banknote, CheckCircle2, Rocket, Target, TrendingUp, Users } from "lucide-react";
+import { Banknote, CheckCircle2, ChevronDown, Rocket, Target, TrendingUp, Users } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
-  Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
+  Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import type { Stage } from "@/types";
@@ -128,6 +128,9 @@ export default function VentureFundingPage() {
   const [fCohort, setFCohort] = useState("All Cohorts");
   const [fSector, setFSector] = useState("All Sectors");
   const [fStatus, setFStatus] = useState("All Instruments");
+  const [chartYear, setChartYear] = useState("All years");
+  const [selectedSector, setSelectedSector] = useState<string | null>(null);
+  const [capChartFilterOpen, setCapChartFilterOpen] = useState(false);
 
   const ALL_STATUSES = useMemo(
     () => Array.from(new Set(ALL_VENTURES.filter(v => v.funding > 0).map(v => v.fundingStatus))).sort(),
@@ -142,6 +145,46 @@ export default function VentureFundingPage() {
 
   const D = useMemo(() => derive(filtered), [filtered]);
   const activeCount = (fCohort !== "All Cohorts" ? 1 : 0) + (fSector !== "All Sectors" ? 1 : 0) + (fStatus !== "All Instruments" ? 1 : 0);
+
+  // Chart year + sector filtering
+  const chartYears = useMemo(() =>
+    Array.from(new Set(D.funded.map(v => v.cohort))).sort((a, b) => b - a).map(String),
+    [D.funded]
+  );
+
+  const venturesByYear = useMemo(() => {
+    if (chartYear === "All years") return D.funded;
+    return D.funded.filter(v => String(v.cohort) === chartYear);
+  }, [D.funded, chartYear]);
+
+  const bySectorByYear = useMemo(() => {
+    const byS = ALL_SECTORS.map(s => {
+      const rs = venturesByYear.filter(v => v.sector === s);
+      return {
+        name: s,
+        value: rs.reduce((sum, v) => sum + v.funding, 0),
+        count: rs.length,
+      };
+    }).sort((a, b) => b.value - a.value);
+    return byS;
+  }, [venturesByYear]);
+
+  const venturesInSelectedSector = useMemo(() => {
+    if (!selectedSector) return venturesByYear;
+    return venturesByYear.filter(v => v.sector === selectedSector)
+      .sort((a, b) => b.funding - a.funding);
+  }, [venturesByYear, selectedSector]);
+
+  const totalDeployedByYear = useMemo(() =>
+    venturesByYear.reduce((sum, v) => sum + v.funding, 0),
+    [venturesByYear]
+  );
+
+  const selectedSectorData = useMemo(() => {
+    if (!selectedSector) return null;
+    const total = bySectorByYear.find(s => s.name === selectedSector)?.value || 0;
+    return { name: selectedSector, total, count: venturesInSelectedSector.length };
+  }, [selectedSector, bySectorByYear, venturesInSelectedSector]);
 
   const [activeSection, setActiveSection] = useState<number>(1);
   const show = (n: number) => activeSection === n;
@@ -321,7 +364,7 @@ export default function VentureFundingPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="mt-4 flex flex-wrap gap-3">
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
                 {D.byMilestone.map(d => (
                   <div key={d.name} className="flex items-center gap-1.5 text-[10px]">
                     <span className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: MILESTONE_HEX[d.name as Milestone] }} />
@@ -400,21 +443,220 @@ export default function VentureFundingPage() {
 
             <ChartCard title="Capital by Sector" sub="Catalytic funding deployed per health sector"
               info="Where catalytic capital lands across health sectors. Highlights concentration and any under-funded sectors.">
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {D.bySector.map((row, i) => {
-                  const col = GREEN_RAMP[i % GREEN_RAMP.length];
-                  const max = D.bySector[0]?.value || 1;
-                  return (
-                    <div key={row.name} className="flex items-center gap-2.5">
-                      <div className="w-[112px] text-[11px] text-gray-600 text-right flex-shrink-0 truncate">{row.name}</div>
-                      <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
-                        <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
-                      </div>
-                      <div className="text-[11px] font-bold w-12 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{fmt$(row.value)}</div>
+              <div style={{ paddingBottom: 12, display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={() => setCapChartFilterOpen(!capChartFilterOpen)}
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      padding: "5px 10px",
+                      borderRadius: 10,
+                      border: `1px solid rgba(14,70,51,0.12)`,
+                      borderLeft: `5px solid ${BRAND}`,
+                      backgroundColor: "white",
+                      color: BRAND_DK,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {selectedSector ? selectedSector : chartYear} <ChevronDown size={12} />
+                  </button>
+                  {capChartFilterOpen && (
+                  <div style={{
+                    position: "absolute",
+                    top: "calc(100% + 4px)",
+                    right: 0,
+                    backgroundColor: "white",
+                    border: `1px solid rgba(14,70,51,0.12)`,
+                    borderLeft: `5px solid ${BRAND}`,
+                    borderRadius: 10,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    zIndex: 10,
+                    minWidth: 300,
+                    overflow: "hidden",
+                    padding: "12px 0",
+                  }}>
+                    {/* Reset button */}
+                    {(chartYear !== "All years" || selectedSector) && (
+                    <div style={{ padding: "0 12px 8px", borderBottom: "1px solid rgba(14,70,51,0.08)" }}>
+                      <button
+                        onClick={() => { setChartYear("All years"); setSelectedSector(null); setCapChartFilterOpen(false); }}
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          textAlign: "center",
+                          padding: "6px 8px",
+                          fontSize: 10,
+                          fontWeight: 600,
+                          color: BRAND,
+                          backgroundColor: "rgba(45,106,79,0.08)",
+                          border: "none",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Reset filters
+                      </button>
                     </div>
-                  );
-                })}
-                {!D.bySector.length && <p className="text-[11px] text-gray-400 text-center py-6">No funded ventures match the selected filters.</p>}
+                    )}
+
+                    {/* Year section */}
+                    <div style={{ padding: "0 12px 12px", borderBottom: "1px solid rgba(14,70,51,0.08)" }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: BRAND_DK, margin: "0 0 8px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>Year</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        {["All years", ...chartYears].map(yr => (
+                          <button
+                            key={yr}
+                            onClick={() => { setChartYear(yr); }}
+                            style={{
+                              fontSize: 9,
+                              fontWeight: chartYear === yr ? 700 : 500,
+                              padding: "4px 8px",
+                              borderRadius: 4,
+                              border: `1px solid ${chartYear === yr ? BRAND : "rgba(14,70,51,0.12)"}`,
+                              backgroundColor: chartYear === yr ? BRAND : "white",
+                              color: chartYear === yr ? "white" : BRAND_DK,
+                              cursor: "pointer",
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            {yr}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sector section */}
+                    <div style={{ padding: "12px" }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: BRAND_DK, margin: "0 0 8px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>Sector</p>
+                      <button
+                        onClick={() => setSelectedSector(null)}
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "6px 8px",
+                          fontSize: 10,
+                          fontWeight: !selectedSector ? 700 : 500,
+                          backgroundColor: !selectedSector ? "rgba(45,106,79,0.1)" : "transparent",
+                          color: BRAND_DK,
+                          border: "none",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                          marginBottom: 4,
+                        }}
+                      >
+                        All sectors
+                      </button>
+                      <div style={{ maxHeight: 200, overflowY: "auto" }}>
+                        {bySectorByYear.map(sector => (
+                          <button
+                            key={sector.name}
+                            onClick={() => setSelectedSector(sector.name)}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              textAlign: "left",
+                              padding: "6px 8px",
+                              fontSize: 10,
+                              fontWeight: selectedSector === sector.name ? 700 : 500,
+                              backgroundColor: selectedSector === sector.name ? "rgba(45,106,79,0.1)" : "transparent",
+                              color: BRAND_DK,
+                              border: "none",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              marginBottom: 2,
+                            }}
+                            title={sector.name}
+                          >
+                            <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span>{sector.name}</span>
+                              <span style={{ fontSize: 9, color: BRAND, fontWeight: 600 }}>{sector.count}v</span>
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Ventures section */}
+                    <div style={{ padding: "12px 12px 0", borderTop: "1px solid rgba(14,70,51,0.08)" }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: BRAND_DK, margin: "12px 0 8px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                        {selectedSector ? `${selectedSector} Ventures` : "All Ventures"}
+                      </p>
+                      <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+                        {venturesInSelectedSector.length > 0 ? (
+                          venturesInSelectedSector.map(v => {
+                            const pct = selectedSectorData ? Math.round((v.funding / selectedSectorData.total) * 100) : 0;
+                            return (
+                              <div key={v.id} style={{ fontSize: 9, padding: "4px 8px", backgroundColor: "rgba(14,70,51,0.04)", borderRadius: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: BRAND_DK, fontWeight: 500, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={v.name}>{v.name}</span>
+                                <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
+                                  <span style={{ color: BRAND, fontWeight: 700 }}>{fmt$(v.funding)}</span>
+                                  {selectedSector && <span style={{ color: "#6B7280", fontWeight: 600, minWidth: 25, textAlign: "right" }}>{pct}%</span>}
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p style={{ fontSize: 9, color: "#9CA3AF", textAlign: "center", padding: "8px 0" }}>No ventures</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Sector bars */}
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: BRAND_DK, margin: "0 0 12px 0" }}>
+                  Total: {fmt$(totalDeployedByYear)} across {bySectorByYear.filter(s => s.value > 0).length} sectors
+                </p>
+                <ResponsiveContainer width="100%" height={bySectorByYear.length * 32 + 40}>
+                  <BarChart
+                    data={bySectorByYear.map((s, i) => ({
+                      name: s.name,
+                      value: s.value,
+                      selected: selectedSector === s.name,
+                      idx: i,
+                    }))}
+                    layout="vertical"
+                    margin={{ top: 8, right: 16, bottom: 0, left: 140 }}
+                    barCategoryGap="24%"
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} tickFormatter={fmt$} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      tick={{ fontSize: 10, fill: "#6B7280" }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={135}
+                      interval={0}
+                    />
+                    <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip money />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22} onClick={(data: any) => {
+                      setSelectedSector(data.selected ? null : data.name);
+                      setCapChartFilterOpen(false);
+                    }} style={{ cursor: "pointer" }}>
+                      {bySectorByYear.map((entry, idx) => (
+                        <Cell
+                          key={`cell-${idx}`}
+                          fill={GREEN_RAMP[idx % GREEN_RAMP.length]}
+                          opacity={selectedSector && selectedSector !== entry.name ? 0.35 : 1}
+                          stroke={selectedSector === entry.name ? GREEN_RAMP[idx % GREEN_RAMP.length] : "none"}
+                          strokeWidth={selectedSector === entry.name ? 3 : 0}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </ChartCard>
           </div>
