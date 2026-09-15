@@ -10,7 +10,21 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Legend, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
-import { Briefcase, Rocket, Target, TrendingUp, Users, Zap, Info, type LucideIcon, ChevronDown } from "lucide-react";
+import { Briefcase, Target, TrendingUp, Users, Info, type LucideIcon, ChevronDown, DollarSign } from "lucide-react";
+
+// Female icon - matches Executive dashboard
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 // Color palette - HENT green (matching overview)
 const HERO = "#2D6A4F";
@@ -268,7 +282,7 @@ export default function HENTVentures() {
             {
               label: "Capital Deployed",
               num: filteredActuals.funds,
-              icon: Zap,
+              icon: DollarSign,
               displayFmt: fmt$,
               sub: `${Math.round((filteredActuals.funds / TARGETS.funds) * 100)}% of target · ${venturesFunded} funded`,
               pace: true,
@@ -287,14 +301,14 @@ export default function HENTVentures() {
             {
               label: "Founder Diversity",
               num: femaleVentures,
-              icon: Users,
+              icon: WomanIcon,
               sub: `Female-led · ${Math.round((femaleVentures / filteredVentures.length) * 100)}% of portfolio`,
               tip: "Percentage of ventures with female founder",
             },
             {
               label: "Revenue Generated",
               num: totalRevenue,
-              icon: Rocket,
+              icon: DollarSign,
               displayFmt: fmt$,
               sub: `${filteredVentures.length > 0 ? fmt$(Math.round(totalRevenue / filteredVentures.length)) : "$0"}/venture avg`,
               tip: "Average revenue per venture",

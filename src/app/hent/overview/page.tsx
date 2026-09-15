@@ -368,7 +368,7 @@ export default function HENTOverview() {
             {
               label: "Female-Led",
               num: femaleVentures,
-              icon: Sparkles,
+              icon: WomanIcon,
               sub: "Ventures",
               tip: "Number of ventures with female founder or co-founder",
             },

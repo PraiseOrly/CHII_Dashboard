@@ -11,7 +11,7 @@ export interface HeaderStatCard {
   label: string;
   num: number;
   sub?: string;
-  icon: LucideIcon;
+  icon: LucideIcon | React.ComponentType<{ size?: number; color?: string; style?: React.CSSProperties }>;
   displayFmt?: (n: number) => string;
   tip?: string;
   pace?: boolean;
