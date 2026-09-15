@@ -1,5 +1,6 @@
 ﻿"use client";
-import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
+import { HeaderStatsPanel } from "@/components/ui/hent";
+import { ChartCard, SectionHeader, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -7,7 +8,7 @@ import {
   AreaChart, Area, LineChart, Line, ComposedChart,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Briefcase, Zap } from "lucide-react";
+import { Briefcase, Zap, Users, Trophy, Lightbulb, Handshake } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
@@ -110,34 +111,6 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
   );
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
-  label: string; num: number; displayFmt: (n: number) => string;
-  sub: string; clr: string; pct?: number; bench?: number;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
-        {sub && <InfoDot tip={sub} />}
-      </div>
-      <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
-      {pct !== undefined ? (
-        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(14,70,51,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#0E4633", borderRadius: 4 }} />
-          {bench !== undefined && (
-            <div className="absolute" style={{ top: -2, bottom: -2, width: 1.5, left: `${Math.min(100, bench)}%`, backgroundColor: "rgba(14,70,51,0.6)" }} />
-          )}
-        </div>
-      ) : (
-        <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
-        </div>
-      )}
-    </div>
-  );
-}
 
 function GenderMiniBar({ year, female, male, fPct }: { year: string; female: number; male: number; fPct: number }) {
   const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
@@ -310,12 +283,17 @@ export default function HackathonsPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {KPI_TILES.map(({ label, clr }, i) => (
-            <KpiTile key={label} label={label} num={kpiValues[i].num}
-              displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr} />
-          ))}
-        </div>
+        <HeaderStatsPanel
+          title="Hackathons Metrics"
+          cards={[
+            { label: "Total Hackathons", num: total.events, displayFmt: (n) => String(Math.round(n)), icon: Briefcase, tip: "Innovation events conducted across all years." },
+            { label: "Participants", num: total.participants, displayFmt: (n) => Math.round(n) >= 1000 ? `${(Math.round(n) / 1000).toFixed(1)}k` : String(Math.round(n)), icon: Users, tip: "Total founder and team member participation across all events." },
+            { label: "Winning Teams", num: total.winningTeams, displayFmt: (n) => String(Math.round(n)), icon: Trophy, tip: "Teams selected as winners across all hackathons." },
+            { label: "Projects Developed", num: total.projects, displayFmt: (n) => String(Math.round(n)), icon: Lightbulb, tip: "Project submissions across all events." },
+            { label: "Startups Created", num: total.startups, displayFmt: (n) => String(Math.round(n)), icon: Zap, tip: "Ventures founded from hackathon projects." },
+            { label: "Partnerships", num: total.partnerships, displayFmt: (n) => String(Math.round(n)), icon: Handshake, tip: "Sponsor and partner organizations engaged." },
+          ]}
+        />
 
         {/* â”€â”€ SECTION 1: PARTICIPANT PROFILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {/* Section pills (HENT Overview design) */}

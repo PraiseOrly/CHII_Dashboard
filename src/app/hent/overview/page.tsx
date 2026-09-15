@@ -1,5 +1,5 @@
 "use client";
-import { ChartTip } from "@/components/ui/hent";
+import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import HeaderDesign from "@/components/layout/header-design";
@@ -9,12 +9,26 @@ import { hackathons } from "@/data/hackathons";
 import { masterclasses } from "@/data/masterclasses";
 import { mentorshipPrograms } from "@/data/mentorships";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Award, Briefcase, Handshake, Heart, Lightbulb, MapPin, Presentation, Rocket, Sparkles, TrendingUp, Users, Zap, Info, type LucideIcon, ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { Award, Briefcase, Handshake, Lightbulb, MapPin, Presentation, Rocket, TrendingUp, Users, Zap, Info, type LucideIcon, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, LabelList, PieChart, Pie, Cell,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
+
+// Female icon - matches Executive dashboard
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 // Color palette - HENT green (matching venture-funding page)
 const HERO = "#2D6A4F";
@@ -47,79 +61,7 @@ function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
 
-// ──────────────────────────────────────────────────────────
-// Stats Panel Component
-// ──────────────────────────────────────────────────────────
-
-function StatsPanel({
-  title,
-  description,
-  cards
-}: {
-  title: string
-  description?: string
-  cards: Array<{ label: string; num: number; sub?: string; icon: LucideIcon; displayFmt?: (n: number) => string; tip?: string }>
-}) {
-  return (
-    <div>
-      {/* Section Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-          <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
-          <div>
-            <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-              {title}
-            </p>
-            {description && <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>{description}</p>}
-          </div>
-        </div>
-      </div>
-
-      {/* Horizontal Card Row - single row, flex, no wrap */}
-      <div style={{
-        display: "flex",
-        gap: 12,
-        overflowX: cards.length > 6 ? "auto" : "visible",
-        overflowY: "hidden",
-        paddingBottom: cards.length > 6 ? 8 : 0,
-        marginBottom: 24,
-      }}>
-        {cards.map((card, idx) => (
-          <div key={idx} style={{
-            flex: cards.length <= 6 ? "1 1 0" : "0 0 auto",
-            minWidth: cards.length > 6 ? 180 : 0,
-            minHeight: 0,
-          }}>
-            <div style={{
-              backgroundColor: BRAND,
-              borderRadius: 10,
-              padding: "14px 16px",
-              textAlign: "center",
-              border: `1px solid ${LIGHT_BORDER}`,
-              borderLeft: `5px solid ${BRAND}`,
-
-              position: "relative",
-              overflow: "visible",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 8 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>
-                  {card.label}
-                </p>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                <card.icon size={22} style={{ color: "white", opacity: 0.9, flexShrink: 0 }} />
-                <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>
-                  {card.displayFmt ? card.displayFmt(card.num) : Math.round(card.num).toLocaleString()}
-                </p>
-              </div>
-              {card.sub && <p style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.8)', marginTop: 4 }}>{card.sub}</p>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// Note: StatsPanel moved to HeaderStatsPanel in @/components/ui/hent
 
 // ──────────────────────────────────────────────────────────
 // Panel Component for Charts
@@ -380,147 +322,65 @@ export default function HENTOverview() {
       <div className="max-w-[1440px] mx-auto px-6 py-7">
 
         {/* ════ TOP STATS HEADER ════ */}
-        <div style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Total Participants</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <Users size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{TOTAL_PART.toLocaleString()}</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>All programmes</p>
-          </div>
-
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Female Share</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <Heart size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{FEMALE_PCT}%</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Female participants</p>
-          </div>
-
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Active Ventures</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <Briefcase size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{ALL_VENTURES.length}</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Active ventures</p>
-          </div>
-
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Jobs Created</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <TrendingUp size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{TOTAL_JOBS.toLocaleString()}</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Total employment</p>
-          </div>
-
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Total Funding</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <Zap size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{fmt$(Math.round(TOTAL_FUNDING))}</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Capital deployed</p>
-          </div>
-
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Female-Led</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <Sparkles size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{femaleVentures}</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Ventures</p>
-          </div>
-
-          <div style={{
-            backgroundColor: BRAND,
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-            position: "relative",
-            overflow: "visible",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>NPS Score</p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <Award size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
-              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{NPS_SCORE}</p>
-            </div>
-            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Satisfaction</p>
-          </div>
-        </div>
+        <HeaderStatsPanel
+          title="HENT Programme Overview"
+          description="Key performance indicators across all HENT programs"
+          cards={[
+            {
+              label: "Total Participants",
+              num: TOTAL_PART,
+              icon: Users,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: "All programmes",
+              tip: "Cumulative participants across all HENT programmes (masterclasses, hackathons, mentorship, study trips)",
+            },
+            {
+              label: "Female Share",
+              num: FEMALE_PCT,
+              icon: WomanIcon,
+              displayFmt: (n) => n + "%",
+              sub: "Female participants",
+              tip: "Percentage of female participants across all programmes",
+            },
+            {
+              label: "Active Ventures",
+              num: ALL_VENTURES.length,
+              icon: Briefcase,
+              sub: "Active ventures",
+              tip: "Portfolio ventures currently active in the HENT portfolio",
+            },
+            {
+              label: "Jobs Created",
+              num: TOTAL_JOBS,
+              icon: TrendingUp,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: "Total employment",
+              tip: "Total employment opportunities created by HENT ventures",
+            },
+            {
+              label: "Total Funding",
+              num: TOTAL_FUNDING,
+              icon: Zap,
+              displayFmt: fmt$,
+              sub: "Capital deployed",
+              tip: "Cumulative capital deployed to HENT ventures",
+            },
+            {
+              label: "Female-Led",
+              num: femaleVentures,
+              icon: Sparkles,
+              sub: "Ventures",
+              tip: "Number of ventures with female founder or co-founder",
+            },
+            {
+              label: "NPS Score",
+              num: NPS_SCORE,
+              icon: Award,
+              sub: "Satisfaction",
+              tip: "Net Promoter Score - measure of participant satisfaction (average 0-10 scale)",
+            },
+          ]}
+        />
 
         {/* ════ SECTION FILTER PILLS + FILTERS BUTTON ════ */}
         <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
@@ -589,7 +449,7 @@ export default function HENTOverview() {
                 position: "absolute",
                 top: "calc(100% + 8px)",
                 right: 0,
-                backgroundColor: "#E8F5F2",
+                backgroundColor: "white",
                 border: `1px solid ${LIGHT_BORDER}`,
               borderLeft: `5px solid ${BRAND}`,
                 borderRadius: 10,
@@ -763,7 +623,7 @@ export default function HENTOverview() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Participants by Programme" subtitle="Distribution across programme types" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
+              <Panel title="Participants by Programme" subtitle="Distribution across programme types" info="Distribution of participants across masterclasses, hackathons, mentorship, and study trips" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={programData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -777,7 +637,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Participants by Programme" subtitle="Distribution across programme types" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
+              <Panel title="Participants by Programme" subtitle="Distribution across programme types" info="Distribution of participants across masterclasses, hackathons, mentorship, and study trips" filterOptions={["All Years", ...years.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={programData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -811,7 +671,7 @@ export default function HENTOverview() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Innovation Funnel" subtitle="Hackathon participants through to ventures" filterOptions={["All Years", ...years.map(String)]} filterValue={filterInnovationFunnelYear} onFilterChange={setFilterInnovationFunnelYear}>
+              <Panel title="Innovation Funnel" subtitle="Hackathon participants through to ventures" info="Conversion of participants through hackathons to startups to portfolio ventures" filterOptions={["All Years", ...years.map(String)]} filterValue={filterInnovationFunnelYear} onFilterChange={setFilterInnovationFunnelYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Participants", value: hackPart },
@@ -830,7 +690,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Ventures by Stage" subtitle="Development stage distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterInnovationYear} onFilterChange={setFilterInnovationYear}>
+              <Panel title="Ventures by Stage" subtitle="Development stage distribution" info="Distribution of ventures across development stages (Expose, Build, Scale)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterInnovationYear} onFilterChange={setFilterInnovationYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={stageData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -864,7 +724,7 @@ export default function HENTOverview() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Venture Stage Pipeline" subtitle="Distribution across Expose · Build · Scale" filterOptions={["All Years", ...years.map(String)]} filterValue={filterVenturesYear} onFilterChange={setFilterVenturesYear}>
+              <Panel title="Venture Stage Pipeline" subtitle="Distribution across Expose · Build · Scale" info="Distribution of ventures across development stages (Expose, Build, Scale)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterVenturesYear} onFilterChange={setFilterVenturesYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={stageData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -878,7 +738,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Female-Led Ventures Trend" subtitle="Year-over-year progress" filterOptions={["All Years", ...years.map(String)]} filterValue={filterVenturesFemaleYear} onFilterChange={setFilterVenturesFemaleYear}>
+              <Panel title="Female-Led Ventures Trend" subtitle="Year-over-year progress" info="Annual trend of ventures with female founders or co-founders" filterOptions={["All Years", ...years.map(String)]} filterValue={filterVenturesFemaleYear} onFilterChange={setFilterVenturesFemaleYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={cohorts.map(c => ({ year: String(c), count: ALL_VENTURES.filter(v => v.cohort === c && v.teamGender === "Female").length }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -910,7 +770,7 @@ export default function HENTOverview() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Capital by Fund Type" subtitle="Charitable, Venture, and Catalytic" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingYear} onFilterChange={setFilterFundingYear}>
+              <Panel title="Capital by Fund Type" subtitle="Charitable, Venture, and Catalytic" info="Funding distribution across Charitable, Venture Fund, and Catalytic sources" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingYear} onFilterChange={setFilterFundingYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart layout="vertical" data={fundTypeData} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
                     <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
@@ -924,7 +784,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Funding Trend" subtitle="Capital deployed over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingTrendYear} onFilterChange={setFilterFundingTrendYear}>
+              <Panel title="Funding Trend" subtitle="Capital deployed over time" info="Annual funding disbursement to ventures" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingTrendYear} onFilterChange={setFilterFundingTrendYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={cohorts.map(c => ({ year: String(c), funding: ALL_VENTURES.filter(v => v.cohort === c && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -956,7 +816,7 @@ export default function HENTOverview() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Female-Led & Youth Jobs" subtitle="Employment by female-led ventures and youth" filterOptions={["All Years", ...years.map(String)]} filterValue={filterEmploymentYear} onFilterChange={setFilterEmploymentYear}>
+              <Panel title="Female-Led & Youth Jobs" subtitle="Employment by female-led ventures and youth" info="Annual employment opportunities created by female-led ventures and jobs for youth" filterOptions={["All Years", ...years.map(String)]} filterValue={filterEmploymentYear} onFilterChange={setFilterEmploymentYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={femaleAndYouthJobsByYear} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -969,7 +829,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Job Creation Trend" subtitle="Growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterEmploymentTrendYear} onFilterChange={setFilterEmploymentTrendYear}>
+              <Panel title="Job Creation Trend" subtitle="Growth over time" info="Annual trend of employment opportunities created" filterOptions={["All Years", ...years.map(String)]} filterValue={filterEmploymentTrendYear} onFilterChange={setFilterEmploymentTrendYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={cohorts.map(c => ({ year: String(c), jobs: ALL_VENTURES.filter(v => v.cohort === c).reduce((s, v) => s + v.jobsTotal, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -1001,7 +861,7 @@ export default function HENTOverview() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="NPS Distribution" subtitle="Founder satisfaction breakdown" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
+              <Panel title="NPS Distribution" subtitle="Founder satisfaction breakdown" info="Breakdown of founder satisfaction scores (Promoters, Passives, Detractors)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={npsData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -1016,7 +876,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Founder Satisfaction Breakdown" subtitle="NPS distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
+              <Panel title="Founder Satisfaction Breakdown" subtitle="NPS distribution" info="Breakdown of founder satisfaction scores (Promoters, Passives, Detractors)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={npsData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />

@@ -1,13 +1,13 @@
 ﻿"use client";
-import { FilterSelect } from "@/components/ui/hent";
-import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
+import { HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
+import { ChartCard, SectionHeader, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
   BarChart, Bar, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Star, MapPin, Users, Handshake, Zap, Briefcase } from "lucide-react";
+import { Star, MapPin, Users, Handshake, Zap, Briefcase, Building2, TrendingUp, CheckCircle2 } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
@@ -175,34 +175,6 @@ function Stars({ score }: { score: number }) {
   );
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
-  label: string; num: number; displayFmt: (n: number) => string;
-  sub: string; clr: string; pct?: number; bench?: number;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
-        {sub && <InfoDot tip={sub} />}
-      </div>
-      <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
-      {pct !== undefined ? (
-        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(14,70,51,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#0E4633", borderRadius: 4 }} />
-          {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#0E4633", borderRadius: 1 }} />
-          )}
-        </div>
-      ) : (
-        <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
-        </div>
-      )}
-    </div>
-  );
-}
 
 // â”€â”€â”€ KPI tile map (7 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TILES = [
@@ -223,6 +195,7 @@ export default function FieldVisitsPage() {
   const [genderView,   setGenderView]   = useState<"All"|"Female"|"Male">("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (typeFilter !== "All" ? 1 : 0) + (regionFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
   const filtered = useMemo(() => studyTrips.filter(v => {
@@ -394,14 +367,17 @@ export default function FieldVisitsPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {KPI_TILES.map(({ label, clr }, i) => (
-            <KpiTile key={label} label={label} num={kpiValues[i].num}
-              displayFmt={kpiValues[i].fmt} sub={kpiValues[i].sub} clr={clr}
-              pct={label === "Avg Completion Rate" ? tot.completion : undefined}
-              bench={label === "Avg Completion Rate" ? 85 : undefined} />
-          ))}
-        </div>
+        <HeaderStatsPanel
+          title="Study Trips Metrics"
+          cards={[
+            { label: "Total Study Trips", num: tot.visits, displayFmt: (n) => String(Math.round(n)), icon: MapPin, tip: "Industry excursions conducted." },
+            { label: "Total Participants", num: tot.participants, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Cumulative participant attendance across all visits." },
+            { label: "Ventures Participating", num: tot.ventures, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Briefcase, tip: "Unique ventures represented across visits." },
+            { label: "Organisations Visited", num: tot.orgs, displayFmt: (n) => String(Math.round(n)), icon: Building2, tip: "Distinct host organizations across all visits." },
+            { label: "Avg Attendance / Visit", num: avgAtt, displayFmt: (n) => String(Math.round(n)), icon: TrendingUp, tip: "Average participants per excursion." },
+            { label: "Avg Completion Rate", num: tot.completion, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: "Average completion rate across all visits." },
+          ]}
+        />
 
 
         {/* RATINGS */}
@@ -420,20 +396,122 @@ export default function FieldVisitsPage() {
             ]}
           />
 
-          <OutreachFilters
-            accent="#0E4633"
-            activeCount={filtersActive}
-            onReset={() => { setYearFilter("All"); setTypeFilter("All"); setRegionFilter("All"); setGenderView("All"); }}
-          >
-            <OFilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
-            <OFilterSelect label="Type" value={typeFilter} onChange={setTypeFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Types" }, ...TRIP_TYPES.map(t => ({ value: t, label: t }))]} />
-            <OFilterSelect label="Region" value={regionFilter} onChange={setRegionFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Regions" }, ...TRIP_REGIONS.map(r => ({ value: r, label: r }))]} />
-            <OFilterSelect label="Gender" value={genderView} onChange={setGenderView} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Genders" }, { value: "Female" as const, label: "Female-majority" }, { value: "Male" as const, label: "Male-majority" }]} />
-          </OutreachFilters>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={filtersActive}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => { setYearFilter("All"); setTypeFilter("All"); setRegionFilter("All"); setGenderView("All"); }}
+            >
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Year
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", "2022", "2023", "2024", "2025", "2026"] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setYearFilter(opt as "All"|"2022"|"2023"|"2024"|"2025"|"2026")}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: yearFilter === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${yearFilter === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: yearFilter === opt ? "#2D6A4F" : "white",
+                        color: yearFilter === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Type
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", ...TRIP_TYPES] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setTypeFilter(opt as "All"|TripType)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: typeFilter === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${typeFilter === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: typeFilter === opt ? "#2D6A4F" : "white",
+                        color: typeFilter === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Region
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", ...TRIP_REGIONS] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setRegionFilter(opt as "All"|TripRegion)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: regionFilter === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${regionFilter === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: regionFilter === opt ? "#2D6A4F" : "white",
+                        color: regionFilter === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Gender
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", "Female", "Male"] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setGenderView(opt as "All"|"Female"|"Male")}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: genderView === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${genderView === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: genderView === opt ? "#2D6A4F" : "white",
+                        color: genderView === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </FilterDropdown>
+          </div>
         </div>
 
         <section style={{ display: show(1) ? undefined : "none" }}>

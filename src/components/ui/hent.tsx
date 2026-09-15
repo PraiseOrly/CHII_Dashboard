@@ -9,3 +9,8 @@ export const { theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatC
 
 // Primitives that need no theming are re-exported so pages have one import site.
 export { ChartLegend, BarList, useCountUp } from ".";
+
+// HENT-specific standardized components
+export { HeaderStatsPanel, type HeaderStatCard, type HeaderStatsPanelProps } from "@/components/hent";
+export { FilterButton, type FilterButtonProps } from "@/components/hent";
+export { FilterDropdown, type FilterDropdownProps, type FilterOption } from "@/components/hent";

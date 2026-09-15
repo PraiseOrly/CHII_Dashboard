@@ -1,5 +1,5 @@
 "use client";
-import { ChartTip } from "@/components/ui/hent";
+import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import { DonutRing } from "@/components/charts/donut-chart";
@@ -53,84 +53,7 @@ const ACTUALS = {
 
 const VENTURE_YEARS = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort((a, b) => a - b);
 
-// Stats Panel Component
-function StatsPanel({
-  title,
-  description,
-  cards
-}: {
-  title: string
-  description?: string
-  cards: Array<{ label: string; num: number; sub?: string; icon: LucideIcon; displayFmt?: (n: number) => string; tip?: string; pace?: boolean; paceA?: number; paceT?: number }>
-}) {
-  return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-          <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
-          <div>
-            <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-              {title}
-            </p>
-            {description && <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>{description}</p>}
-          </div>
-        </div>
-      </div>
-
-      <div style={{
-        display: "flex",
-        gap: 12,
-        overflowX: cards.length > 6 ? "auto" : "visible",
-        overflowY: "hidden",
-        paddingBottom: cards.length > 6 ? 8 : 0,
-        marginBottom: 24,
-      }}>
-        {cards.map((card, idx) => (
-          <div key={idx} style={{
-            flex: cards.length <= 6 ? "1 1 0" : "0 0 auto",
-            minWidth: cards.length > 6 ? 180 : 0,
-            minHeight: 0,
-          }}>
-            <div style={{
-              backgroundColor: "white",
-              borderRadius: 10,
-              padding: "14px 16px",
-              textAlign: "center",
-              border: `1px solid ${LIGHT_BORDER}`,
-              borderLeft: `5px solid ${BRAND}`,
-              position: "relative",
-              overflow: "visible",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 8 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK }}>
-                  {card.label}
-                </p>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                <card.icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
-                <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>
-                  {card.displayFmt ? card.displayFmt(card.num) : Math.round(card.num).toLocaleString()}
-                </p>
-              </div>
-              {card.pace && card.paceA !== undefined && card.paceT !== undefined && (
-                <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
-                  <div style={{
-                    height: "100%",
-                    borderRadius: 2,
-                    width: `${Math.min((card.paceA / card.paceT) * 100, 100)}%`,
-                    backgroundColor: paceColor(card.paceA, card.paceT)
-                  }} />
-                  <div style={{ position: "absolute", top: -2, bottom: -2, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
-                </div>
-              )}
-              {card.sub && <p style={{ fontSize: 9.5, color: `rgba(14, 70, 51, 0.55)`, marginTop: 4 }}>{card.sub}</p>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// Note: StatsPanel moved to HeaderStatsPanel in @/components/ui/hent
 
 // Panel Component for Charts
 function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
@@ -318,129 +241,66 @@ export default function HENTVentures() {
       <div className="max-w-[1440px] mx-auto px-6 py-7">
 
         {/* ════ TOP STATS HEADER ════ */}
-        <div style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Portfolio Size</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{filteredActuals.ventures}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{Math.round((filteredActuals.ventures / TARGETS.ventures) * 100)}% of {TARGETS.ventures}</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
-              <div style={{
-                height: "100%",
-                borderRadius: 2,
-                width: `${Math.min((filteredActuals.ventures / TARGETS.ventures) * 100, 100)}%`,
-                backgroundColor: paceColor(filteredActuals.ventures, TARGETS.ventures)
-              }} />
-              <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
-            </div>
-          </div>
-
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Employment Impact</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{filteredActuals.jobs.toLocaleString()}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{Math.round((filteredActuals.jobs / TARGETS.jobs) * 100)}% of target · Avg {avgJobsPerVenture}/venture</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
-              <div style={{
-                height: "100%",
-                borderRadius: 2,
-                width: `${Math.min((filteredActuals.jobs / TARGETS.jobs) * 100, 100)}%`,
-                backgroundColor: paceColor(filteredActuals.jobs, TARGETS.jobs)
-              }} />
-              <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
-            </div>
-          </div>
-
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Capital Deployed</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{fmt$(Math.round(filteredActuals.funds))}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{Math.round((filteredActuals.funds / TARGETS.funds) * 100)}% of target · {venturesFunded} funded</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
-              <div style={{
-                height: "100%",
-                borderRadius: 2,
-                width: `${Math.min((filteredActuals.funds / TARGETS.funds) * 100, 100)}%`,
-                backgroundColor: paceColor(filteredActuals.funds, TARGETS.funds)
-              }} />
-              <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
-            </div>
-          </div>
-
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Portfolio Health</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{retentionRate}%</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Retention · {activeVentures} active</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
-              <div style={{
-                height: "100%",
-                borderRadius: 2,
-                width: `${retentionRate}%`,
-                backgroundColor: retentionRate >= 80 ? "#16A34A" : retentionRate >= 70 ? "#84CC16" : retentionRate >= 60 ? "#F59E0B" : "#DC2626"
-              }} />
-            </div>
-          </div>
-
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Founder Diversity</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{femaleVentures}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Female-led · {Math.round((femaleVentures / filteredVentures.length) * 100)}% of portfolio</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
-              <div style={{
-                height: "100%",
-                borderRadius: 2,
-                width: `${Math.round((femaleVentures / filteredVentures.length) * 100)}%`,
-                backgroundColor: "#26A69A"
-              }} />
-            </div>
-          </div>
-
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Revenue Generated</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{fmt$(Math.round(totalRevenue))}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{filteredVentures.length > 0 ? fmt$(Math.round(totalRevenue / filteredVentures.length)) : "$0"}/venture avg</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8 }} />
-          </div>
-        </div>
+        <HeaderStatsPanel
+          title="Portfolio Overview"
+          cards={[
+            {
+              label: "Portfolio Size",
+              num: filteredActuals.ventures,
+              icon: Briefcase,
+              sub: `${Math.round((filteredActuals.ventures / TARGETS.ventures) * 100)}% of ${TARGETS.ventures}`,
+              pace: true,
+              paceA: filteredActuals.ventures,
+              paceT: TARGETS.ventures,
+              tip: "Number of active ventures in the HENT portfolio",
+            },
+            {
+              label: "Employment Impact",
+              num: filteredActuals.jobs,
+              icon: Users,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: `${Math.round((filteredActuals.jobs / TARGETS.jobs) * 100)}% of target · Avg ${avgJobsPerVenture}/venture`,
+              pace: true,
+              paceA: filteredActuals.jobs,
+              paceT: TARGETS.jobs,
+              tip: "Average jobs created per venture from the filtered portfolio",
+            },
+            {
+              label: "Capital Deployed",
+              num: filteredActuals.funds,
+              icon: Zap,
+              displayFmt: fmt$,
+              sub: `${Math.round((filteredActuals.funds / TARGETS.funds) * 100)}% of target · ${venturesFunded} funded`,
+              pace: true,
+              paceA: filteredActuals.funds,
+              paceT: TARGETS.funds,
+              tip: "Average funding amount per venture",
+            },
+            {
+              label: "Portfolio Health",
+              num: retentionRate,
+              icon: TrendingUp,
+              displayFmt: (n) => n + "%",
+              sub: `Retention · ${activeVentures} active`,
+              tip: "Percentage of ventures still active (not stalled)",
+            },
+            {
+              label: "Founder Diversity",
+              num: femaleVentures,
+              icon: Users,
+              sub: `Female-led · ${Math.round((femaleVentures / filteredVentures.length) * 100)}% of portfolio`,
+              tip: "Percentage of ventures with female founder",
+            },
+            {
+              label: "Revenue Generated",
+              num: totalRevenue,
+              icon: Rocket,
+              displayFmt: fmt$,
+              sub: `${filteredVentures.length > 0 ? fmt$(Math.round(totalRevenue / filteredVentures.length)) : "$0"}/venture avg`,
+              tip: "Average revenue per venture",
+            },
+          ]}
+        />
 
         {/* ════ SECTION FILTER PILLS + FILTER BUTTON ════ */}
         <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
@@ -466,121 +326,54 @@ export default function HENTVentures() {
             ))}
           </div>
           <div style={{ position: "relative" }}>
-            <button
+            <FilterButton
+              activeFilterCount={activeFilterCount}
+              isOpen={filtersOpen}
               onClick={() => setFiltersOpen(!filtersOpen)}
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                padding: "8px 14px",
-                borderRadius: 20,
-                border: `1px solid ${LIGHT_BORDER}`,
-                borderLeft: `5px solid ${BRAND}`,
-                backgroundColor: activeFilterCount > 0 ? BRAND : "white",
-                color: activeFilterCount > 0 ? "white" : BRAND_DK,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                whiteSpace: "nowrap",
-                transition: "all 0.2s ease",
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => {
+                setFilterYear("All Years");
+                setFilterStage("All");
+                setFilterGender("All");
+                setFilterStatus("All");
               }}
             >
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-              </svg>
-              Filters
-              {activeFilterCount > 0 && (
-                <span style={{
-                  fontSize: 9,
-                  fontWeight: 800,
-                  backgroundColor: "rgba(255,255,255,0.25)",
-                  color: "white",
-                  borderRadius: 999,
-                  minWidth: 18,
-                  height: 18,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
-            {filtersOpen && (
-              <div style={{
-                position: "absolute",
-                top: "calc(100% + 4px)",
-                right: 0,
-                zIndex: 50,
-                width: 280,
-                backgroundColor: "white",
-                borderRadius: 10,
-                border: `1px solid ${LIGHT_BORDER}`,
-                borderLeft: `5px solid ${BRAND}`,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.14)",
-                overflow: "hidden",
-              }}>
-                <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", margin: 0, textTransform: "uppercase" }}>Filters</p>
-                  <button
-                    onClick={() => {
-                      setFilterYear("All Years");
-                      setFilterStage("All");
-                      setFilterGender("All");
-                      setFilterStatus("All");
-                    }}
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 600,
-                      color: "white",
-                      border: "1px solid rgba(255,255,255,0.35)",
-                      borderRadius: 6,
-                      padding: "3px 8px",
-                      backgroundColor: "rgba(255,255,255,0.08)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Reset
-                  </button>
+              {[
+                { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
+                { label: "Stage", value: filterStage, setValue: setFilterStage, options: ["All", "Expose", "Build", "Scale"] },
+                { label: "Gender", value: filterGender, setValue: setFilterGender, options: ["All", "Male", "Female"] },
+                { label: "Status", value: filterStatus, setValue: setFilterStatus, options: ["All", "Active", "Stalled"] },
+              ].map(filter => (
+                <div key={filter.label} style={{ marginBottom: 12 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    {filter.label}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {filter.options.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => filter.setValue(opt)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: filter.value === opt ? 700 : 500,
+                          padding: "5px 10px",
+                          borderRadius: 6,
+                          border: `1px solid ${filter.value === opt ? BRAND : LIGHT_BORDER}`,
+                          backgroundColor: filter.value === opt ? BRAND : "white",
+                          color: filter.value === opt ? "white" : BRAND_DK,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-
-                <div style={{ padding: "12px 14px" }}>
-                  {[
-                    { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
-                    { label: "Stage", value: filterStage, setValue: setFilterStage, options: ["All", "Expose", "Build", "Scale"] },
-                    { label: "Gender", value: filterGender, setValue: setFilterGender, options: ["All", "Male", "Female"] },
-                    { label: "Status", value: filterStatus, setValue: setFilterStatus, options: ["All", "Active", "Stalled"] },
-                  ].map(filter => (
-                    <div key={filter.label} style={{ marginBottom: 12 }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
-                        {filter.label}
-                      </p>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                        {filter.options.map(opt => (
-                          <button
-                            key={opt}
-                            onClick={() => filter.setValue(opt)}
-                            style={{
-                              fontSize: 10,
-                              fontWeight: filter.value === opt ? 700 : 500,
-                              padding: "5px 10px",
-                              borderRadius: 6,
-                              border: `1px solid ${filter.value === opt ? BRAND : LIGHT_BORDER}`,
-                              backgroundColor: filter.value === opt ? BRAND : "white",
-                              color: filter.value === opt ? "white" : BRAND_DK,
-                              cursor: "pointer",
-                              transition: "all 0.15s ease",
-                            }}
-                          >
-                            {opt}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              ))}
+            </FilterDropdown>
           </div>
         </div>
 
@@ -600,7 +393,7 @@ export default function HENTVentures() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Ventures Funded" subtitle="Ventures that have received capital">
+              <Panel title="Ventures Funded" subtitle="Ventures that have received capital" info="Number of ventures that have received capital vs unfunded">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Funded", value: venturesFunded },
@@ -617,7 +410,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Avg Jobs per Venture" subtitle="Employment intensity by stage">
+              <Panel title="Avg Jobs per Venture" subtitle="Employment intensity by stage" info="Average employment impact across different venture stages">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Expose", value: Math.round(filteredVentures.filter(v => sg(v.stage) === "Expose").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(filteredVentures.filter(v => sg(v.stage) === "Expose").length, 1)) },
@@ -635,7 +428,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Partnerships Built" subtitle="Cross-sector partnerships trend">
+              <Panel title="Partnerships Built" subtitle="Cross-sector partnerships trend" info="Cross-sector partnerships built by ventures over time">
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), partnerships: filteredVentures.filter(v => v.cohort === y && v.partnerships > 0).reduce((s, v) => s + v.partnerships, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -647,7 +440,7 @@ export default function HENTVentures() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Revenue Generated" subtitle="Venture revenue trend over time">
+              <Panel title="Revenue Generated" subtitle="Venture revenue trend over time" info="Total venture revenue generated over time">
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), revenue: filteredVentures.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -659,7 +452,7 @@ export default function HENTVentures() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Ventures by Stage" subtitle="Expose · Build · Scale distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
+              <Panel title="Ventures by Stage" subtitle="Expose · Build · Scale distribution" info="Distribution of ventures across development stages" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Expose", value: filteredVentures.filter(v => sg(v.stage) === "Expose").length },
@@ -677,7 +470,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Jobs Trend" subtitle="Employment growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
+              <Panel title="Jobs Trend" subtitle="Employment growth over time" info="Annual trend of employment opportunities created" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), jobs: filteredVentures.filter(v => v.cohort === y).reduce((s, v) => s + v.jobsTotal, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -689,7 +482,7 @@ export default function HENTVentures() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Performance Against Targets" subtitle="Current progress vs annual targets">
+              <Panel title="Performance Against Targets" subtitle="Current progress vs annual targets" info="Current progress vs annual targets for ventures, jobs, and funds">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Ventures", actual: filteredActuals.ventures, target: TARGETS.ventures },
@@ -706,7 +499,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Female-Led & Accelerator Status" subtitle="Ventures breakdown by characteristics">
+              <Panel title="Female-Led & Accelerator Status" subtitle="Ventures breakdown by characteristics" info="Breakdown of ventures by female leadership and accelerator participation">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Female-Led", value: filteredVentures.filter(v => v.teamGender === "Female").length },
@@ -744,7 +537,7 @@ export default function HENTVentures() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Ventures by Sector" subtitle="Distribution across sectors" filterOptions={["All Years", ...years.map(String)]} filterValue={filterCompYear} onFilterChange={setFilterCompYear}>
+              <Panel title="Ventures by Sector" subtitle="Distribution across sectors" info="Distribution of portfolio ventures by business sector" filterOptions={["All Years", ...years.map(String)]} filterValue={filterCompYear} onFilterChange={setFilterCompYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={Array.from(new Set(filteredVentures.map(v => v.sector))).map(s => ({
                     name: s,
@@ -761,7 +554,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Gender Distribution" subtitle="Founder diversity metrics">
+              <Panel title="Gender Distribution" subtitle="Founder diversity metrics" info="Founder diversity metrics across gender">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart layout="vertical" data={[{
                     name: "Founders",
@@ -778,7 +571,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Sector Distribution" subtitle="Portfolio composition by sector">
+              <Panel title="Sector Distribution" subtitle="Portfolio composition by sector" info="Portfolio composition by business sector">
                 <DonutRing
                   data={Array.from(new Set(filteredVentures.map(v => v.sector))).map(s => ({
                     name: s,
@@ -791,7 +584,7 @@ export default function HENTVentures() {
                   legendPercent
                 />
               </Panel>
-              <Panel title="Ventures by Cohort" subtitle="Portfolio distribution by entry year">
+              <Panel title="Ventures by Cohort" subtitle="Portfolio distribution by entry year" info="Portfolio distribution across entry years">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={VENTURE_YEARS.map(y => ({ year: String(y), count: filteredVentures.filter(v => v.cohort === y).length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -825,7 +618,7 @@ export default function HENTVentures() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Funding by Country" subtitle="Capital distribution across regions" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
+              <Panel title="Funding by Country" subtitle="Capital distribution across regions" info="Capital distribution across regions and countries" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={Array.from(new Set(filteredVentures.map(v => v.country))).map(c => ({
                     name: c,
@@ -840,7 +633,7 @@ export default function HENTVentures() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Ventures by Country" subtitle="Portfolio distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
+              <Panel title="Ventures by Country" subtitle="Portfolio distribution" info="Portfolio distribution across regions and countries" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={Array.from(new Set(filteredVentures.map(v => v.country))).map(c => ({
                     name: c,
@@ -877,7 +670,7 @@ export default function HENTVentures() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Funding Trend" subtitle="Capital deployment over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
+              <Panel title="Funding Trend" subtitle="Capital deployment over time" info="Annual capital deployment to ventures over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), funding: filteredVentures.filter(v => v.cohort === y && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -889,7 +682,7 @@ export default function HENTVentures() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Revenue Trend" subtitle="Growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
+              <Panel title="Revenue Trend" subtitle="Growth over time" info="Annual venture revenue growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), revenue: filteredVentures.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />

@@ -1,13 +1,13 @@
 "use client";
-import { InlineFilterSelect as FilterSelect } from "@/components/ui/hent";
-import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend, useCountUp } from "@/components/ui";
+import { HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
+import { PortalThemeProvider, ChartCard, SectionHeader, Funnel, ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";
 import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import { DonutRing } from "@/components/charts/donut-chart";
 import { ventures as ALL_VENTURES } from "@/data/ventures";
-import { Banknote, CheckCircle2, Rocket, Target, TrendingUp, Users, type LucideIcon } from "lucide-react";
+import { Banknote, CheckCircle2, Rocket, Target, TrendingUp, Users } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
@@ -122,24 +122,6 @@ function derive(rows: typeof ALL_VENTURES) {
   return { funded, totalFunding, avgTicket, jobs, milestoneRate, milestonesDone, progressed, byMilestone, byCohort, byStatus, bySector, topFunded, funnel };
 }
 
-function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon; tip?: string;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
-        {tip && <InfoDot tip={tip} />}
-      </div>
-      <div className="flex items-center justify-center gap-2">
-        <Icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
-        <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
-      </div>
-      {sub && <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>}
-    </div>
-  );
-}
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function VentureFundingPage() {
@@ -163,6 +145,7 @@ export default function VentureFundingPage() {
 
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
     <PortalThemeProvider portal="hent">
@@ -200,18 +183,16 @@ export default function VentureFundingPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <KpiTile label="Capital Deployed"  num={D.totalFunding}   displayFmt={fmt$}                                Icon={Banknote}    sub="Across all tranches"
-            tip="Total catalytic funding disbursed to ventures across every milestone tranche." />
-          <KpiTile label="Ventures Funded"   num={D.funded.length}  displayFmt={n => String(Math.round(n))}          Icon={Rocket}      sub={`of ${filtered.length} in portfolio`}
-            tip="Ventures that have received at least one tranche of catalytic funding." />
-          <KpiTile label="Milestone Rate"    num={D.milestoneRate}  displayFmt={n => `${Math.round(n)}%`}            Icon={CheckCircle2} sub={`${D.milestonesDone} milestones met`}
-            tip="Average share of agreed milestones delivered by funded ventures — funding is released against these." />
-          <KpiTile label="Progressed to Scale" num={D.progressed}   displayFmt={n => String(Math.round(n))}          Icon={TrendingUp}  sub="Scaling or investment-ready"
-            tip="Funded ventures that have advanced to the Scaling or Investment/Funding stage." />
-          <KpiTile label="Jobs Created"      num={D.jobs}           displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}       sub="By funded ventures"
-            tip="Total jobs created to date by ventures that received catalytic funding." />
-        </div>
+        <HeaderStatsPanel
+          title="Venture Funding Metrics"
+          cards={[
+            { label: "Capital Deployed", num: D.totalFunding, displayFmt: fmt$, icon: Banknote, tip: "Total catalytic funding disbursed to ventures across every milestone tranche." },
+            { label: "Ventures Funded", num: D.funded.length, displayFmt: (n) => String(Math.round(n)), icon: Rocket, tip: "Ventures that have received at least one tranche of catalytic funding." },
+            { label: "Milestone Rate", num: D.milestoneRate, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: "Average share of agreed milestones delivered by funded ventures — funding is released against these." },
+            { label: "Progressed to Scale", num: D.progressed, displayFmt: (n) => String(Math.round(n)), icon: TrendingUp, tip: "Funded ventures that have advanced to the Scaling or Investment/Funding stage." },
+            { label: "Jobs Created", num: D.jobs, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Total jobs created to date by ventures that received catalytic funding." },
+          ]}
+        />
 
         {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
@@ -226,18 +207,50 @@ export default function VentureFundingPage() {
               { label: "Instruments & Delivery", value: "3" },
             ]}
           />
-          <OutreachFilters
-            accent={BRAND}
-            activeCount={activeCount}
-            onReset={() => { setFCohort("All Cohorts"); setFSector("All Sectors"); setFStatus("All Instruments"); }}
-          >
-            <OFilterSelect label="Cohort" value={fCohort} onChange={setFCohort} accent={BRAND}
-              options={["All Cohorts", ...COHORTS.map(String)].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Sector" value={fSector} onChange={setFSector} accent={BRAND}
-              options={["All Sectors", ...ALL_SECTORS].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Instrument" value={fStatus} onChange={setFStatus} accent={BRAND}
-              options={["All Instruments", ...ALL_STATUSES].map(o => ({ value: o, label: o }))} />
-          </OutreachFilters>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={activeCount}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => { setFCohort("All Cohorts"); setFSector("All Sectors"); setFStatus("All Instruments"); }}
+            >
+              {[
+                { label: "Cohort", value: fCohort, setValue: setFCohort, options: ["All Cohorts", ...COHORTS.map(String)] },
+                { label: "Sector", value: fSector, setValue: setFSector, options: ["All Sectors", ...ALL_SECTORS] },
+                { label: "Instrument", value: fStatus, setValue: setFStatus, options: ["All Instruments", ...ALL_STATUSES] },
+              ].map(filter => (
+                <div key={filter.label} style={{ marginBottom: 12 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    {filter.label}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {filter.options.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => filter.setValue(opt)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: filter.value === opt ? 700 : 500,
+                          padding: "5px 10px",
+                          borderRadius: 6,
+                          border: `1px solid ${filter.value === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                          backgroundColor: filter.value === opt ? "#2D6A4F" : "white",
+                          color: filter.value === opt ? "white" : "#0E4633",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </FilterDropdown>
+          </div>
         </div>
 
         {/* ── SECTION 1: Milestone-based deployment ─── */}

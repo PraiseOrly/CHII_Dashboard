@@ -1,6 +1,6 @@
 "use client";
-import { InlineFilterSelect as FilterSelect } from "@/components/ui/hent";
-import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend, useCountUp } from "@/components/ui";
+import { HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
+import { PortalThemeProvider, ChartCard, SectionHeader, Funnel, BarList, ChartTip, ChartLegend, useCountUp } from "@/components/ui";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import SectionPills from "@/components/filters/section-pills";
@@ -11,7 +11,7 @@ import {
   type ExposureType, type StakeholderGroup,
 } from "@/data/exposure";
 import { pilotEngagements } from "@/data/pilot-engagements";
-import { CalendarDays, Handshake, Link2, Mic, Star, Users, type LucideIcon } from "lucide-react";
+import { CalendarDays, Handshake, Link2, Mic, Star, Users } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
@@ -109,24 +109,6 @@ function derive(rows: typeof exposureEvents) {
   };
 }
 
-function KpiTile({ label, num, displayFmt, sub, Icon, tip }: {
-  label: string; num: number; displayFmt: (n: number) => string; sub?: string; Icon: LucideIcon; tip?: string;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: `5px solid ${BRAND}`, position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
-        {tip && <InfoDot tip={tip} />}
-      </div>
-      <div className="flex items-center justify-center gap-2">
-        <Icon size={18} style={{ color: BRAND_DK, opacity: 0.85, flexShrink: 0 }} />
-        <p style={{ fontSize: 24, fontWeight: 700, color: BRAND_DK, lineHeight: 1 }}>{displayFmt(animated)}</p>
-      </div>
-      {sub && <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>}
-    </div>
-  );
-}
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function ExposureNetworkingPage() {
@@ -145,6 +127,7 @@ export default function ExposureNetworkingPage() {
 
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
     <PortalThemeProvider portal="hent">
@@ -182,20 +165,17 @@ export default function ExposureNetworkingPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
 
         {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <KpiTile label="Events Held"        num={D.events}      displayFmt={n => String(Math.round(n))}          Icon={CalendarDays} sub="Pitch, conference & ecosystem"
-            tip="Exposure platforms delivered — pitch events, conferences, investor roundtables, ecosystem engagements and demo days." />
-          <KpiTile label="Founder Placements" num={D.founders}    displayFmt={n => Math.round(n).toLocaleString()} Icon={Users}        sub={`${D.femalePct}% female founders`}
-            tip="Total founder seats across all events. A founder attending two events counts twice." />
-          <KpiTile label="Investors Engaged"  num={D.investors}   displayFmt={n => Math.round(n).toLocaleString()} Icon={Mic}          sub="Across all events"
-            tip="Investors present across all platforms — the capital side of the room founders are being put in front of." />
-          <KpiTile label="Connections Made"   num={D.connections} displayFmt={n => Math.round(n).toLocaleString()} Icon={Link2}        sub="Introductions brokered"
-            tip="Introductions brokered between founders and ecosystem stakeholders. This is the top of the relationship funnel." />
-          <KpiTile label="Agreements Signed"  num={D.mous}        displayFmt={n => String(Math.round(n))}          Icon={Handshake}    sub={`from ${D.deals} deals opened`}
-            tip="Formal agreements (MOUs, partnerships, investments) that resulted from these introductions — the end of the funnel." />
-          <KpiTile label="Visibility Score"   num={D.visibility}  displayFmt={n => `${n.toFixed(1)}/5`}            Icon={Star}         sub="Founder-rated value"
-            tip="How founders themselves rate the visibility and strategic value they gained, out of 5." />
-        </div>
+        <HeaderStatsPanel
+          title="Exposure & Networking Metrics"
+          cards={[
+            { label: "Events Held", num: D.events, displayFmt: (n) => String(Math.round(n)), icon: CalendarDays, tip: "Exposure platforms delivered — pitch events, conferences, investor roundtables, ecosystem engagements and demo days." },
+            { label: "Founder Placements", num: D.founders, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Total founder seats across all events. A founder attending two events counts twice." },
+            { label: "Investors Engaged", num: D.investors, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Mic, tip: "Investors present across all platforms — the capital side of the room founders are being put in front of." },
+            { label: "Connections Made", num: D.connections, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Link2, tip: "Introductions brokered between founders and ecosystem stakeholders. This is the top of the relationship funnel." },
+            { label: "Agreements Signed", num: D.mous, displayFmt: (n) => String(Math.round(n)), icon: Handshake, tip: "Formal agreements (MOUs, partnerships, investments) that resulted from these introductions — the end of the funnel." },
+            { label: "Visibility Score", num: D.visibility, displayFmt: (n) => `${n.toFixed(1)}/5`, icon: Star, tip: "How founders themselves rate the visibility and strategic value they gained, out of 5." },
+          ]}
+        />
 
         {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
@@ -210,18 +190,50 @@ export default function ExposureNetworkingPage() {
               { label: "Which Platforms Work", value: "3" },
             ]}
           />
-          <OutreachFilters
-            accent={BRAND}
-            activeCount={activeCount}
-            onReset={() => { setFYear("All Years"); setFType("All Types"); setFCountry("All Countries"); }}
-          >
-            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent={BRAND}
-              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Type" value={fType} onChange={setFType} accent={BRAND}
-              options={["All Types", ...EXPOSURE_TYPES].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent={BRAND}
-              options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
-          </OutreachFilters>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={activeCount}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => { setFYear("All Years"); setFType("All Types"); setFCountry("All Countries"); }}
+            >
+              {[
+                { label: "Year", value: fYear, setValue: setFYear, options: ["All Years", ...YEARS.map(String)] },
+                { label: "Type", value: fType, setValue: setFType, options: ["All Types", ...EXPOSURE_TYPES] },
+                { label: "Country", value: fCountry, setValue: setFCountry, options: ["All Countries", ...COUNTRIES] },
+              ].map(filter => (
+                <div key={filter.label} style={{ marginBottom: 12 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    {filter.label}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {filter.options.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => filter.setValue(opt)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: filter.value === opt ? 700 : 500,
+                          padding: "5px 10px",
+                          borderRadius: 6,
+                          border: `1px solid ${filter.value === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                          backgroundColor: filter.value === opt ? "#2D6A4F" : "white",
+                          color: filter.value === opt ? "white" : "#0E4633",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </FilterDropdown>
+          </div>
         </div>
 
         {/* ── SECTION 1: Relationship funnel ─── */}

@@ -1,6 +1,6 @@
 ﻿"use client";
-import { FilterSelect } from "@/components/ui/hent";
-import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
+import { HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
+import { ChartCard, SectionHeader, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
@@ -8,7 +8,7 @@ import {
   AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Star, Zap, Briefcase } from "lucide-react";
+import { Star, Zap, Briefcase, Users, TrendingUp, CheckCircle2 } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
@@ -191,34 +191,6 @@ function Stars({ score }: { score: number }) {
   );
 }
 
-function KpiTile({ label, num, displayFmt, sub, clr, pct, bench }: {
-  label: string; num: number; displayFmt: (n: number) => string;
-  sub: string; clr: string; pct?: number; bench?: number;
-}) {
-  const animated = useCountUp(num);
-  return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, padding: "14px 16px", textAlign: "center", border: "1px solid rgba(14,70,51,0.12)", borderLeft: "5px solid #2D6A4F", position: "relative", overflow: "visible" }}>
-      <div className="flex items-center justify-center gap-1" style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "rgba(14,70,51,0.55)" }}>{label}</p>
-        {sub && <InfoDot tip={sub} />}
-      </div>
-      <p style={{ fontSize: 22, fontWeight: 700, color: "#0E4633", lineHeight: 1 }}>{displayFmt(animated)}</p>
-      <p style={{ fontSize: 9.5, color: "rgba(14,70,51,0.55)", marginTop: 4 }}>{sub}</p>
-      {pct !== undefined ? (
-        <div className="relative" style={{ marginTop: 10, height: 4, borderRadius: 4, backgroundColor: "rgba(14,70,51,0.12)" }} title={bench !== undefined ? `Benchmark: ${Math.round(bench)}%` : undefined}>
-          <div style={{ height: "100%", width: `${Math.max(4, Math.min(100, pct))}%`, backgroundColor: bench !== undefined ? benchColor(pct, bench) : "#0E4633", borderRadius: 4 }} />
-          {bench !== undefined && (
-            <div className="absolute" style={{ top: -3, bottom: -3, width: 2, left: `${Math.min(100, bench)}%`, backgroundColor: "#0E4633", borderRadius: 1 }} />
-          )}
-        </div>
-      ) : (
-        <div style={{ marginTop: 10, height: 3, borderRadius: 999, backgroundColor: "rgba(14,70,51,0.12)", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "100%", backgroundColor: "#0E4633", borderRadius: 999 }} />
-        </div>
-      )}
-    </div>
-  );
-}
 
 // â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MasterclassesPage() {
@@ -227,6 +199,7 @@ export default function MasterclassesPage() {
   const [genderView,  setGenderView]  = useState<"All"|"Female"|"Male">("All");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (topicFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
   const filtered = useMemo(() => masterclasses.filter(m => {
@@ -356,20 +329,16 @@ export default function MasterclassesPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
 
         {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {[
-            { label: "Total Masterclasses",     num: tot.sessions,    fmt: (n: number) => String(Math.round(n)),                   sub: "Sessions delivered",     clr: "#1E3A8A" },
-            { label: "Total Attendees",          num: tot.attendees,   fmt: (n: number) => Math.round(n).toLocaleString(),          sub: "Across all sessions",    clr: "#14532D" },
-            { label: "Ventures Represented",     num: tot.ventures,    fmt: (n: number) => Math.round(n).toLocaleString(),          sub: "Unique ventures",        clr: "#7C2D12" },
-            { label: "Female-Led Ventures",      num: tot.femaleVent,  fmt: (n: number) => String(Math.round(n)),                   sub: `${tot.ventures > 0 ? Math.round((tot.femaleVent / tot.ventures) * 100) : 0}% of attending`, clr: "#6B21A8" },
-            { label: "Avg Completion Rate",      num: tot.completion,  fmt: (n: number) => `${Math.round(n)}%`,                    sub: "Participants completing", clr: "#9D174D" },
-          ].map(tile => (
-            <KpiTile key={tile.label} label={tile.label} num={tile.num}
-              displayFmt={tile.fmt} sub={tile.sub} clr={tile.clr}
-              pct={tile.label === "Avg Completion Rate" ? tot.completion : undefined}
-              bench={tile.label === "Avg Completion Rate" ? 85 : undefined} />
-          ))}
-        </div>
+        <HeaderStatsPanel
+          title="Masterclasses Metrics"
+          cards={[
+            { label: "Total Masterclasses", num: tot.sessions, displayFmt: (n) => String(Math.round(n)), icon: Briefcase, tip: "Capacity-building sessions delivered across all periods." },
+            { label: "Total Attendees", num: tot.attendees, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Cumulative participant attendance across all sessions." },
+            { label: "Ventures Represented", num: tot.ventures, displayFmt: (n) => Math.round(n).toLocaleString(), icon: TrendingUp, tip: "Unique ventures with founder/team attendance." },
+            { label: "Female-Led Ventures", num: tot.femaleVent, displayFmt: (n) => String(Math.round(n)), icon: Star, tip: `${tot.ventures > 0 ? Math.round((tot.femaleVent / tot.ventures) * 100) : 0}% of ventures represented are female-led.` },
+            { label: "Avg Completion Rate", num: tot.completion, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: "Average percentage of registered attendees who completed sessions." },
+          ]}
+        />
 
         {/* Section pills (left) + outreach-style filters popover (right) */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
@@ -385,18 +354,96 @@ export default function MasterclassesPage() {
             ]}
           />
 
-          <OutreachFilters
-            accent="#0E4633"
-            activeCount={filtersActive}
-            onReset={() => { setYearFilter("All"); setTopicFilter("All"); setGenderView("All"); }}
-          >
-            <OFilterSelect label="Year" value={yearFilter} onChange={setYearFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Years" }, ...(["2022","2023","2024","2025","2026"] as const).map(y => ({ value: y, label: y }))]} />
-            <OFilterSelect label="Topic" value={topicFilter} onChange={setTopicFilter} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Topics" }, ...MC_TOPICS.map(t => ({ value: t, label: t }))]} />
-            <OFilterSelect label="Gender" value={genderView} onChange={setGenderView} accent="#0E4633"
-              options={[{ value: "All" as const, label: "All Genders" }, { value: "Female" as const, label: "Female" }, { value: "Male" as const, label: "Male" }]} />
-          </OutreachFilters>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={filtersActive}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => { setYearFilter("All"); setTopicFilter("All"); setGenderView("All"); }}
+            >
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Year
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", "2022", "2023", "2024", "2025", "2026"] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setYearFilter(opt as typeof yearFilter)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: yearFilter === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${yearFilter === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: yearFilter === opt ? "#2D6A4F" : "white",
+                        color: yearFilter === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Topic
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", ...MC_TOPICS] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setTopicFilter(opt as typeof topicFilter)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: topicFilter === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${topicFilter === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: topicFilter === opt ? "#2D6A4F" : "white",
+                        color: topicFilter === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Gender
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {(["All", "Female", "Male"] as const).map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setGenderView(opt as typeof genderView)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: genderView === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${genderView === opt ? "#2D6A4F" : "rgba(14,70,51,0.12)"}`,
+                        backgroundColor: genderView === opt ? "#2D6A4F" : "white",
+                        color: genderView === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </FilterDropdown>
+          </div>
         </div>
 
         {/* SECTION 1: RATINGS */}
