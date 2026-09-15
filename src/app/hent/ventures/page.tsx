@@ -251,17 +251,38 @@ export default function HENTVentures() {
   const [filterGeoYear, setFilterGeoYear] = useState("All Years");
   const [filterHealthYear, setFilterHealthYear] = useState("All Years");
 
+  // Filtered ventures based on global filters
+  const filteredVentures = useMemo(() => {
+    return ALL_VENTURES.filter(v => {
+      if (filterYear !== "All Years" && v.cohort !== parseInt(filterYear)) return false;
+      if (filterStage !== "All" && sg(v.stage) !== filterStage) return false;
+      if (filterGender !== "All") {
+        const founder = founders.find(f => f.ventureId === v.id);
+        const gender = founder?.gender || "Unknown";
+        if (filterGender === "Female" && gender !== "Female") return false;
+        if (filterGender === "Male" && gender !== "Male") return false;
+      }
+      if (filterStatus !== "All" && v.status !== filterStatus) return false;
+      return true;
+    });
+  }, [filterYear, filterStage, filterGender, filterStatus]);
+
   // Aggregations
   const years = Array.from(new Set(ALL_VENTURES.map(v => v.cohort))).sort();
-  const femaleVentures = ALL_VENTURES.filter(v => v.teamGender === "Female").length;
-  const activeVentures = ALL_VENTURES.filter(v => v.status === "Active").length;
-  const retentionRate = ALL_VENTURES.length ? Math.round((ALL_VENTURES.filter(v => v.status !== "Stalled").length / ALL_VENTURES.length) * 100) : 0;
-  const acceleratorVentures = ALL_VENTURES.filter(v => v.accelerator).length;
-  const acceleratorPct = ALL_VENTURES.length ? Math.round((acceleratorVentures / ALL_VENTURES.length) * 100) : 0;
-  const venturesFunded = ALL_VENTURES.filter(v => v.funding > 0).length;
-  const totalPartnerships = ALL_VENTURES.reduce((s, v) => s + v.partnerships, 0);
-  const avgJobsPerVenture = ALL_VENTURES.length ? Math.round(ACTUALS.jobs / ALL_VENTURES.length) : 0;
-  const totalRevenue = ALL_VENTURES.reduce((s, v) => s + v.revenue, 0);
+  const femaleVentures = filteredVentures.filter(v => v.teamGender === "Female").length;
+  const activeVentures = filteredVentures.filter(v => v.status === "Active").length;
+  const retentionRate = filteredVentures.length ? Math.round((filteredVentures.filter(v => v.status !== "Stalled").length / filteredVentures.length) * 100) : 0;
+  const acceleratorVentures = filteredVentures.filter(v => v.accelerator).length;
+  const acceleratorPct = filteredVentures.length ? Math.round((acceleratorVentures / filteredVentures.length) * 100) : 0;
+  const venturesFunded = filteredVentures.filter(v => v.funding > 0).length;
+  const totalPartnerships = filteredVentures.reduce((s, v) => s + v.partnerships, 0);
+  const filteredActuals = {
+    ventures: filteredVentures.filter(v => v.status === "Active").length,
+    jobs: filteredVentures.reduce((s, v) => s + v.jobsTotal, 0),
+    funds: filteredVentures.reduce((s, v) => s + v.funding, 0)
+  };
+  const avgJobsPerVenture = filteredVentures.length ? Math.round(filteredActuals.jobs / filteredVentures.length) : 0;
+  const totalRevenue = filteredVentures.reduce((s, v) => s + v.revenue, 0);
 
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
@@ -296,7 +317,7 @@ export default function HENTVentures() {
       <div className="max-w-[1440px] mx-auto px-6 py-7">
 
         {/* ════ TOP STATS HEADER ════ */}
-        <div style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+        <div style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
           <div style={{
             backgroundColor: "white",
             borderRadius: 10,
@@ -305,19 +326,20 @@ export default function HENTVentures() {
             border: `1px solid ${LIGHT_BORDER}`,
             borderLeft: `5px solid ${BRAND}`,
           }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Active Ventures</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{ACTUALS.ventures}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>/ {TARGETS.ventures}</p>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Portfolio Size</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{filteredActuals.ventures}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{Math.round((filteredActuals.ventures / TARGETS.ventures) * 100)}% of {TARGETS.ventures}</p>
             <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
               <div style={{
                 height: "100%",
                 borderRadius: 2,
-                width: `${Math.min((ACTUALS.ventures / TARGETS.ventures) * 100, 100)}%`,
-                backgroundColor: paceColor(ACTUALS.ventures, TARGETS.ventures)
+                width: `${Math.min((filteredActuals.ventures / TARGETS.ventures) * 100, 100)}%`,
+                backgroundColor: paceColor(filteredActuals.ventures, TARGETS.ventures)
               }} />
               <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
             </div>
           </div>
+
           <div style={{
             backgroundColor: "white",
             borderRadius: 10,
@@ -326,19 +348,20 @@ export default function HENTVentures() {
             border: `1px solid ${LIGHT_BORDER}`,
             borderLeft: `5px solid ${BRAND}`,
           }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Jobs Created</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{ACTUALS.jobs.toLocaleString()}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>/ {TARGETS.jobs.toLocaleString()}</p>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Employment Impact</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{filteredActuals.jobs.toLocaleString()}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{Math.round((filteredActuals.jobs / TARGETS.jobs) * 100)}% of target · Avg {avgJobsPerVenture}/venture</p>
             <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
               <div style={{
                 height: "100%",
                 borderRadius: 2,
-                width: `${Math.min((ACTUALS.jobs / TARGETS.jobs) * 100, 100)}%`,
-                backgroundColor: paceColor(ACTUALS.jobs, TARGETS.jobs)
+                width: `${Math.min((filteredActuals.jobs / TARGETS.jobs) * 100, 100)}%`,
+                backgroundColor: paceColor(filteredActuals.jobs, TARGETS.jobs)
               }} />
               <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
             </div>
           </div>
+
           <div style={{
             backgroundColor: "white",
             borderRadius: 10,
@@ -347,19 +370,20 @@ export default function HENTVentures() {
             border: `1px solid ${LIGHT_BORDER}`,
             borderLeft: `5px solid ${BRAND}`,
           }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Funds Deployed</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{fmt$(Math.round(ACTUALS.funds))}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>/ {fmt$(TARGETS.funds)}</p>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Capital Deployed</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{fmt$(Math.round(filteredActuals.funds))}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{Math.round((filteredActuals.funds / TARGETS.funds) * 100)}% of target · {venturesFunded} funded</p>
             <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
               <div style={{
                 height: "100%",
                 borderRadius: 2,
-                width: `${Math.min((ACTUALS.funds / TARGETS.funds) * 100, 100)}%`,
-                backgroundColor: paceColor(ACTUALS.funds, TARGETS.funds)
+                width: `${Math.min((filteredActuals.funds / TARGETS.funds) * 100, 100)}%`,
+                backgroundColor: paceColor(filteredActuals.funds, TARGETS.funds)
               }} />
               <div style={{ position: "absolute", top: -1, bottom: -1, width: 2, left: `${PACE * 100}%`, backgroundColor: BRAND_DK, borderRadius: 1 }} />
             </div>
           </div>
+
           <div style={{
             backgroundColor: "white",
             borderRadius: 10,
@@ -368,24 +392,40 @@ export default function HENTVentures() {
             border: `1px solid ${LIGHT_BORDER}`,
             borderLeft: `5px solid ${BRAND}`,
           }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Active Founders</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{Math.round(founders.length * 0.65)}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Of {founders.length} total</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8 }} />
-          </div>
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: "14px 16px",
-            textAlign: "center",
-            border: `1px solid ${LIGHT_BORDER}`,
-            borderLeft: `5px solid ${BRAND}`,
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Retention Rate</p>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Portfolio Health</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{retentionRate}%</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Not stalled</p>
-            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8 }} />
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Retention · {activeVentures} active</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
+              <div style={{
+                height: "100%",
+                borderRadius: 2,
+                width: `${retentionRate}%`,
+                backgroundColor: retentionRate >= 80 ? "#16A34A" : retentionRate >= 70 ? "#84CC16" : retentionRate >= 60 ? "#F59E0B" : "#DC2626"
+              }} />
+            </div>
           </div>
+
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Founder Diversity</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{femaleVentures}</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Female-led · {Math.round((femaleVentures / filteredVentures.length) * 100)}% of portfolio</p>
+            <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8, position: "relative" }}>
+              <div style={{
+                height: "100%",
+                borderRadius: 2,
+                width: `${Math.round((femaleVentures / filteredVentures.length) * 100)}%`,
+                backgroundColor: "#26A69A"
+              }} />
+            </div>
+          </div>
+
           <div style={{
             backgroundColor: "white",
             borderRadius: 10,
@@ -396,7 +436,7 @@ export default function HENTVentures() {
           }}>
             <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: BRAND_DK, marginBottom: 8 }}>Revenue Generated</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: BRAND_DK, margin: 0 }}>{fmt$(Math.round(totalRevenue))}</p>
-            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>Venture revenue</p>
+            <p style={{ fontSize: 9, color: BRAND_DK, marginTop: 4 }}>{filteredVentures.length > 0 ? fmt$(Math.round(totalRevenue / filteredVentures.length)) : "$0"}/venture avg</p>
             <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 8 }} />
           </div>
         </div>
@@ -563,7 +603,7 @@ export default function HENTVentures() {
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Funded", value: venturesFunded },
-                    { name: "Unfunded", value: ALL_VENTURES.length - venturesFunded },
+                    { name: "Unfunded", value: filteredVentures.length - venturesFunded },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -579,9 +619,9 @@ export default function HENTVentures() {
               <Panel title="Avg Jobs per Venture" subtitle="Employment intensity by stage">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Expose", value: Math.round(ALL_VENTURES.filter(v => sg(v.stage) === "Expose").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(ALL_VENTURES.filter(v => sg(v.stage) === "Expose").length, 1)) },
-                    { name: "Build", value: Math.round(ALL_VENTURES.filter(v => sg(v.stage) === "Build").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(ALL_VENTURES.filter(v => sg(v.stage) === "Build").length, 1)) },
-                    { name: "Scale", value: Math.round(ALL_VENTURES.filter(v => sg(v.stage) === "Scale").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(ALL_VENTURES.filter(v => sg(v.stage) === "Scale").length, 1)) },
+                    { name: "Expose", value: Math.round(filteredVentures.filter(v => sg(v.stage) === "Expose").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(filteredVentures.filter(v => sg(v.stage) === "Expose").length, 1)) },
+                    { name: "Build", value: Math.round(filteredVentures.filter(v => sg(v.stage) === "Build").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(filteredVentures.filter(v => sg(v.stage) === "Build").length, 1)) },
+                    { name: "Scale", value: Math.round(filteredVentures.filter(v => sg(v.stage) === "Scale").reduce((s, v) => s + v.jobsTotal, 0) / Math.max(filteredVentures.filter(v => sg(v.stage) === "Scale").length, 1)) },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -596,7 +636,7 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Partnerships Built" subtitle="Cross-sector partnerships trend">
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={years.map(y => ({ year: String(y), partnerships: ALL_VENTURES.filter(v => v.cohort === y && v.partnerships > 0).reduce((s, v) => s + v.partnerships, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                  <LineChart data={years.map(y => ({ year: String(y), partnerships: filteredVentures.filter(v => v.cohort === y && v.partnerships > 0).reduce((s, v) => s + v.partnerships, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
@@ -608,7 +648,7 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Revenue Generated" subtitle="Venture revenue trend over time">
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={years.map(y => ({ year: String(y), revenue: ALL_VENTURES.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                  <LineChart data={years.map(y => ({ year: String(y), revenue: filteredVentures.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />
@@ -621,9 +661,9 @@ export default function HENTVentures() {
               <Panel title="Ventures by Stage" subtitle="Expose · Build · Scale distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Expose", value: ALL_VENTURES.filter(v => sg(v.stage) === "Expose").length },
-                    { name: "Build", value: ALL_VENTURES.filter(v => sg(v.stage) === "Build").length },
-                    { name: "Scale", value: ALL_VENTURES.filter(v => sg(v.stage) === "Scale").length },
+                    { name: "Expose", value: filteredVentures.filter(v => sg(v.stage) === "Expose").length },
+                    { name: "Build", value: filteredVentures.filter(v => sg(v.stage) === "Build").length },
+                    { name: "Scale", value: filteredVentures.filter(v => sg(v.stage) === "Scale").length },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -638,7 +678,7 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Jobs Trend" subtitle="Employment growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGrowthYear} onFilterChange={setFilterGrowthYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={years.map(y => ({ year: String(y), jobs: ALL_VENTURES.filter(v => v.cohort === y).reduce((s, v) => s + v.jobsTotal, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                  <LineChart data={years.map(y => ({ year: String(y), jobs: filteredVentures.filter(v => v.cohort === y).reduce((s, v) => s + v.jobsTotal, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
@@ -651,9 +691,9 @@ export default function HENTVentures() {
               <Panel title="Performance Against Targets" subtitle="Current progress vs annual targets">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Ventures", actual: ACTUALS.ventures, target: TARGETS.ventures },
-                    { name: "Jobs", actual: Math.round(ACTUALS.jobs / 100), target: Math.round(TARGETS.jobs / 100) },
-                    { name: "Funds", actual: Math.round(ACTUALS.funds / 10000), target: Math.round(TARGETS.funds / 10000) },
+                    { name: "Ventures", actual: filteredActuals.ventures, target: TARGETS.ventures },
+                    { name: "Jobs", actual: Math.round(filteredActuals.jobs / 100), target: Math.round(TARGETS.jobs / 100) },
+                    { name: "Funds", actual: Math.round(filteredActuals.funds / 10000), target: Math.round(TARGETS.funds / 10000) },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -668,9 +708,9 @@ export default function HENTVentures() {
               <Panel title="Female-Led & Accelerator Status" subtitle="Ventures breakdown by characteristics">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Female-Led", value: ALL_VENTURES.filter(v => v.teamGender === "Female").length },
-                    { name: "In Accelerators", value: ALL_VENTURES.filter(v => v.accelerator).length },
-                    { name: "Active & Female-Led", value: ALL_VENTURES.filter(v => v.status === "Active" && v.teamGender === "Female").length },
+                    { name: "Female-Led", value: filteredVentures.filter(v => v.teamGender === "Female").length },
+                    { name: "In Accelerators", value: filteredVentures.filter(v => v.accelerator).length },
+                    { name: "Active & Female-Led", value: filteredVentures.filter(v => v.status === "Active" && v.teamGender === "Female").length },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -705,9 +745,9 @@ export default function HENTVentures() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Ventures by Sector" subtitle="Distribution across sectors" filterOptions={["All Years", ...years.map(String)]} filterValue={filterCompYear} onFilterChange={setFilterCompYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map(s => ({
+                  <BarChart data={Array.from(new Set(filteredVentures.map(v => v.sector))).map(s => ({
                     name: s,
-                    value: ALL_VENTURES.filter(v => v.sector === s).length
+                    value: filteredVentures.filter(v => v.sector === s).length
                   })).sort((a, b) => b.value - a.value).slice(0, 5)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -739,12 +779,12 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Sector Distribution" subtitle="Portfolio composition by sector">
                 <DonutRing
-                  data={Array.from(new Set(ALL_VENTURES.map(v => v.sector))).map(s => ({
+                  data={Array.from(new Set(filteredVentures.map(v => v.sector))).map(s => ({
                     name: s,
-                    value: ALL_VENTURES.filter(v => v.sector === s).length
+                    value: filteredVentures.filter(v => v.sector === s).length
                   }))}
                   colors={GREEN_RAMP}
-                  total={ALL_VENTURES.length}
+                  total={filteredVentures.length}
                   totalLabel="Sectors"
                   height={250}
                   legendPercent
@@ -752,7 +792,7 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Ventures by Cohort" subtitle="Portfolio distribution by entry year">
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={VENTURE_YEARS.map(y => ({ year: String(y), count: ALL_VENTURES.filter(v => v.cohort === y).length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  <BarChart data={VENTURE_YEARS.map(y => ({ year: String(y), count: filteredVentures.filter(v => v.cohort === y).length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
@@ -786,9 +826,9 @@ export default function HENTVentures() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Funding by Country" subtitle="Capital distribution across regions" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.country))).map(c => ({
+                  <BarChart data={Array.from(new Set(filteredVentures.map(v => v.country))).map(c => ({
                     name: c,
-                    value: ALL_VENTURES.filter(v => v.country === c).reduce((s, v) => s + v.funding, 0)
+                    value: filteredVentures.filter(v => v.country === c).reduce((s, v) => s + v.funding, 0)
                   })).sort((a, b) => b.value - a.value).slice(0, 8)} layout="vertical" margin={{ top: 4, right: 36, bottom: 0, left: 60 }} barSize={16} barCategoryGap="20%">
                     <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
                     <XAxis type="number" allowDecimals={false} tick={{ fontSize: 9, fill: "#9CA3AF" }} tickFormatter={(v) => fmt$(v)} axisLine={false} tickLine={false} />
@@ -801,9 +841,9 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Ventures by Country" subtitle="Portfolio distribution" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(ALL_VENTURES.map(v => v.country))).map(c => ({
+                  <BarChart data={Array.from(new Set(filteredVentures.map(v => v.country))).map(c => ({
                     name: c,
-                    value: ALL_VENTURES.filter(v => v.country === c).length
+                    value: filteredVentures.filter(v => v.country === c).length
                   })).sort((a, b) => b.value - a.value).slice(0, 8)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -838,7 +878,7 @@ export default function HENTVentures() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Funding Trend" subtitle="Capital deployment over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={years.map(y => ({ year: String(y), funding: ALL_VENTURES.filter(v => v.cohort === y && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                  <LineChart data={years.map(y => ({ year: String(y), funding: filteredVentures.filter(v => v.cohort === y && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />
@@ -850,7 +890,7 @@ export default function HENTVentures() {
               </Panel>
               <Panel title="Revenue Trend" subtitle="Growth over time" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthYear} onFilterChange={setFilterHealthYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={years.map(y => ({ year: String(y), revenue: ALL_VENTURES.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                  <LineChart data={years.map(y => ({ year: String(y), revenue: filteredVentures.filter(v => v.cohort === y).reduce((s, v) => s + v.revenue, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />

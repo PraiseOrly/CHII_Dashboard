@@ -379,6 +379,149 @@ export default function HENTOverview() {
 
       <div className="max-w-[1440px] mx-auto px-6 py-7">
 
+        {/* ════ TOP STATS HEADER ════ */}
+        <div style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12 }}>
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Total Participants</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <Users size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{TOTAL_PART.toLocaleString()}</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>All programmes</p>
+          </div>
+
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Female Share</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <Heart size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{FEMALE_PCT}%</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Female participants</p>
+          </div>
+
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Active Ventures</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <Briefcase size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{ALL_VENTURES.length}</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Active ventures</p>
+          </div>
+
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Jobs Created</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <TrendingUp size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{TOTAL_JOBS.toLocaleString()}</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Total employment</p>
+          </div>
+
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Total Funding</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <Zap size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{fmt$(Math.round(TOTAL_FUNDING))}</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Capital deployed</p>
+          </div>
+
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>Female-Led</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <Sparkles size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{femaleVentures}</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Ventures</p>
+          </div>
+
+          <div style={{
+            backgroundColor: BRAND,
+            borderRadius: 10,
+            padding: "14px 16px",
+            textAlign: "center",
+            border: `1px solid ${LIGHT_BORDER}`,
+            borderLeft: `5px solid ${BRAND}`,
+            position: "relative",
+            overflow: "visible",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginBottom: 8 }}>
+              <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "white" }}>NPS Score</p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              <Award size={22} style={{ color: "rgba(255,255,255,0.9)", opacity: 0.9, flexShrink: 0 }} />
+              <p style={{ fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1 }}>{NPS_SCORE}</p>
+            </div>
+            <p style={{ fontSize: 9.5, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>Satisfaction</p>
+          </div>
+        </div>
+
         {/* ════ SECTION FILTER PILLS + FILTERS BUTTON ════ */}
         <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
