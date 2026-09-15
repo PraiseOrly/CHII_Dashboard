@@ -21,8 +21,8 @@ export default function SectionPills<T extends string>({
             style={{
               fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
               border: `1px solid ${on ? accent : "rgba(14,70,51,0.18)"}`,
-              backgroundColor: on ? accent : "white",
-              color: on ? "white" : "#6B7280",
+              backgroundColor: on ? accent : "var(--bg-surface-raised)",
+              color: on ? "white" : "var(--text-muted)",
             }}>
             {o.label}
           </button>

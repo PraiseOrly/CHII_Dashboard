@@ -301,7 +301,7 @@ function PlainCard({ title, sub, chip, fill, children }: {
 }) {
   return (
     <div className="overflow-hidden" style={{
-      backgroundColor: "#fff", border: `1px solid ${PALETTE.border}`, borderRadius: 12,
+      backgroundColor: "var(--bg-surface)", border: `1px solid ${PALETTE.border}`, borderRadius: 12,
       height: fill ? "100%" : undefined, display: fill ? "flex" : undefined, flexDirection: fill ? "column" : undefined,
     }}>
       <div className="flex items-center justify-between gap-3" style={{ backgroundColor: BRAND, padding: "12px 20px" }}>
@@ -372,14 +372,14 @@ function BigScoreCard({ label, value, target, sub }: {
       display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16,
     }}>
       <div>
-        <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B5D4F4" }}>{label}</p>
+        <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-secondary)" }}>{label}</p>
         <p style={{ fontSize: 36, fontWeight: 800, color: "#fff", marginTop: 6, lineHeight: 1 }}>
-          {value.toFixed(1)}<span style={{ fontSize: 16, color: "#B5D4F4", fontWeight: 600 }}> / 5</span>
+          {value.toFixed(1)}<span style={{ fontSize: 16, color: "var(--text-secondary)", fontWeight: 600 }}> / 5</span>
         </p>
-        <p style={{ fontSize: 12, color: "#B5D4F4", marginTop: 6 }}>{sub}</p>
+        <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 6 }}>{sub}</p>
       </div>
       <div style={{ textAlign: "right" }}>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "#B5D4F4", textTransform: "uppercase", letterSpacing: "0.05em" }}>Target</p>
+        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Target</p>
         <p style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginTop: 2 }}>{target.toFixed(1)}</p>
         <p style={{ fontSize: 11, fontWeight: 700, marginTop: 4, color: good ? "#7BE0B8" : "#F3B39A" }}>
           {good ? "On target" : "Below target"}
@@ -397,7 +397,7 @@ function DimensionCallout({ label, dim, value, tone }: {
     <div style={{ flex: 1, backgroundColor: color + "0D", border: `1px solid ${color}33`, borderRadius: 10, padding: "16px 18px" }}>
       <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color }}>{label}</p>
       <p style={{ fontSize: 18, fontWeight: 700, color: BRAND_DK, marginTop: 6 }}>{dim}</p>
-      <p style={{ fontSize: 12.5, color: "#6B7280", marginTop: 2 }}>{value.toFixed(1)} / 5 average score across HealthX sessions</p>
+      <p style={{ fontSize: 12.5, color: "var(--text-muted)", marginTop: 2 }}>{value.toFixed(1)} / 5 average score across HealthX sessions</p>
     </div>
   );
 }
@@ -516,7 +516,7 @@ export default function HEMPOverview() {
   }, [regionYear]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
       <PortalNav portal="hemp" />
 
       {/* ── EXECUTIVE HEADER ── */}
@@ -571,7 +571,7 @@ export default function HEMPOverview() {
                   style={{
                     fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
                     border: `1px solid ${on ? BRAND : "rgba(0,33,71,0.15)"}`,
-                    backgroundColor: on ? BRAND : "white", color: on ? "white" : "#6B7280"
+                    backgroundColor: on ? BRAND : "var(--bg-surface)", color: on ? "white" : "var(--chart-text)"
                   }}>
                   {label}
                 </button>
@@ -583,7 +583,7 @@ export default function HEMPOverview() {
             <button onClick={() => setFiltersOpen(o => !o)}
               style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
                 border: `1px solid ${geoActiveCount || filtersOpen ? BRAND : "rgba(0,33,71,0.15)"}`,
-                backgroundColor: filtersOpen ? BRAND : "white", color: filtersOpen ? "white" : "#374151" }}>
+                backgroundColor: filtersOpen ? BRAND : "var(--bg-surface)", color: filtersOpen ? "white" : "var(--chart-text)" }}>
               <SlidersHorizontal size={13} />
               Filters
               {geoActiveCount > 0 && (
@@ -591,7 +591,7 @@ export default function HEMPOverview() {
               )}
             </button>
             {filtersOpen && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "var(--bg-surface)", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
                 <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -621,10 +621,10 @@ export default function HEMPOverview() {
             <ChartCard title="Reach by Engagement" sub="Participants reached across HealthX, internships, SIE, courses and career symposia">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={participantsByProgData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "var(--chart-hover)" }} content={<ChartTip />} />
                   <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
                     {participantsByProgData.map((d) => (<Cell key={d.name} fill={ENGAGEMENT[d.name] ?? PALETTE_NEUTRAL} />))}
                   </Bar>
@@ -642,9 +642,9 @@ export default function HEMPOverview() {
             <ChartCard title="Reach Over Time" sub="Total participant reach across 2021–2026">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={reachByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip content={<ChartTip hideLabel />} />
                   <Line type="monotone" dataKey="Total" name="Total Reach" stroke={BRAND} strokeWidth={2.5}
                     dot={{ r: 4, fill: BRAND, strokeWidth: 0 }} activeDot={{ r: 6 }} />
@@ -665,10 +665,10 @@ export default function HEMPOverview() {
                 <>
                   <ResponsiveContainer width="100%" height={190}>
                     <BarChart data={regionChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                      <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                      <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} interval={0} />
+                      <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
+                      <Tooltip cursor={{ fill: "var(--chart-hover)" }} content={<ChartTip />} />
                       <Bar dataKey="value" name="Participants" radius={[4, 4, 0, 0]} maxBarSize={46}>
                         {regionChartData.map((d, i) => (<Cell key={d.name} fill={WARM_RAMP[i % WARM_RAMP.length]} />))}
                       </Bar>
@@ -733,10 +733,10 @@ export default function HEMPOverview() {
             <ChartCard title="Gender Participation" sub="Female vs. male headcount by engagement">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={genderByEngagement} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={{ fill: "var(--chart-hover)" }} content={<ChartTip />} />
                   <Bar dataKey="Female" stackId="g" fill="#185FA5" maxBarSize={46} />
                   <Bar dataKey="Male"   stackId="g" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={46} />
                 </BarChart>
@@ -750,9 +750,9 @@ export default function HEMPOverview() {
             <ChartCard title="Participation Trends" sub="Participation by year and engagement">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={reachByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip content={<ChartTip hideLabel />} />
                   {(["HealthX", "Internships", "SIE", "Courses", "Career Symposia"] as const).map((cat) => (
                     <Line key={cat} type="monotone" dataKey={cat} stroke={ENGAGEMENT[cat]} strokeWidth={2}
@@ -862,10 +862,10 @@ export default function HEMPOverview() {
             <ChartCard title="Graduate & Venture Trends" sub="Graduates and ventures created by year, 2021–2026">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={outcomesByYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip hideLabel />} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "var(--chart-hover)" }} content={<ChartTip hideLabel />} />
                   <Bar dataKey="Graduates" fill={OUT_COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                   <Bar dataKey="Ventures"  fill={OUT_COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={16} />
                 </BarChart>

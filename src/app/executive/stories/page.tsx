@@ -104,11 +104,11 @@ export default function ImpactStoriesPage() {
   }, [filtered, selected]);
 
   return (
-    <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
 
       {/* ── Banner + KPI strip ─────────────────────────── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
@@ -156,7 +156,7 @@ export default function ImpactStoriesPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6 }}>
                     {visibleSelected.type === "Video story"
                       ? <Film size={14} color="#7C3AED" />
-                      : <FileText size={14} color="#102C5E" />}
+                      : <FileText size={14} color="var(--brand-primary)" />}
                     <span style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#6B7280" }}>{visibleSelected.type}</span>
                   </div>
                   <p style={{ fontSize: 16, fontWeight: 800, color: NAVY, lineHeight: 1.25 }}>{visibleSelected.name}</p>
@@ -165,7 +165,7 @@ export default function ImpactStoriesPage() {
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9 }}>
                     {[visibleSelected.program, visibleSelected.missionArea, visibleSelected.gender].map(t => (
-                      <span key={t} style={{ fontSize: 9.5, fontWeight: 600, color: "#102C5E", backgroundColor: "rgba(24,95,165,0.1)", border: "1px solid rgba(24,95,165,0.2)", borderRadius: 5, padding: "2px 7px" }}>{t}</span>
+                      <span key={t} style={{ fontSize: 9.5, fontWeight: 600, color: "var(--brand-primary)", backgroundColor: "rgba(24,95,165,0.1)", border: "1px solid rgba(24,95,165,0.2)", borderRadius: 5, padding: "2px 7px" }}>{t}</span>
                     ))}
                   </div>
 
@@ -213,7 +213,7 @@ export default function ImpactStoriesPage() {
               {/* legend */}
               <div style={{ display: "flex", gap: 16, marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(0,33,71,0.07)" }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#374151" }}>
-                  <span style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: "#102C5E", display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={11} color="white" /></span>
+                  <span style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: "var(--brand-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={11} color="white" /></span>
                   Text story
                 </span>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#374151" }}>

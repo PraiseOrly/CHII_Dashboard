@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { RotateCw, ArrowLeft } from "lucide-react";
 
-const NAVY = "#102C5E";
+const NAVY = "var(--brand-primary)";
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   }, [error]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6" style={{ backgroundColor: "#F8F9FA" }}>
+    <main className="min-h-screen flex items-center justify-center px-6" style={{ backgroundColor: "var(--bg-page)" }}>
       <div className="w-full max-w-md text-center">
         <p className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: NAVY }}>
           Something went wrong
@@ -43,7 +43,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           <Link
             href="/"
             className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide px-4 py-2.5 rounded-lg border bg-white"
-            style={{ borderColor: "#E5E7EB", color: "#6B7280" }}
+            style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
           >
             <ArrowLeft size={13} />
             Sign in

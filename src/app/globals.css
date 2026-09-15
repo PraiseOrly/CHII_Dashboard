@@ -3,50 +3,110 @@
 @tailwind utilities;
 
 :root {
+  /* Semantic tokens — light mode (default) */
   --hent-primary: #0d6b72;
+  --bg-page: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-raised: #f9fafb;
+  --border-subtle: #e5e7eb;
+  --border-default: #e3e0da;
+  --text-primary: #172b4d;
+  --text-secondary: #5e6c84;
+  --text-muted: #6b7280;
+  --brand-primary: #102c5e;
+  --brand-secondary: #14306b;
+  --brand-accent: #0d6b72;
+  --text-on-brand: #ffffff;
+  --accent-positive: #16a34a;
+  --accent-negative: #dc2626;
+  --chart-grid: rgba(0, 33, 71, 0.06);
+  --chart-hover: rgba(0, 33, 71, 0.04);
+  --chart-text: #6b7280;
+  --chart-label: #374151;
+  --chart-axis: #9ca3af;
+  --shadow-sm: 0 1px 2px rgba(0, 33, 71, 0.06);
+  --shadow-md: 0 2px 4px rgba(0, 33, 71, 0.08);
+  --shadow-lg: 0 4px 12px rgba(0, 33, 71, 0.12);
+  --bg-tint: rgba(0, 33, 71, 0.02);
+
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --bg-page: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-surface-raised: #334155;
+    --border-subtle: #475569;
+    --border-default: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --brand-primary: #60a5fa;
+    --brand-secondary: #93c5fd;
+    --brand-accent: #26a69a;
+    --text-on-brand: #ffffff;
+    --accent-positive: #4ade80;
+    --accent-negative: #f87171;
+    --chart-grid: rgba(148, 163, 184, 0.12);
+    --chart-hover: rgba(148, 163, 184, 0.08);
+    --chart-text: #cbd5e1;
+    --chart-label: #e2e8f0;
+    --chart-axis: #94a3b8;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.18);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.22);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.28);
+    --bg-tint: rgba(30, 41, 59, 0.2);
+
     color-scheme: dark;
   }
 }
 
 [data-theme="dark"] {
+  --bg-page: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-surface-raised: #334155;
+  --border-subtle: #475569;
+  --border-default: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --brand-primary: #60a5fa;
+  --brand-secondary: #93c5fd;
+  --brand-accent: #26a69a;
+  --text-on-brand: #ffffff;
+  --accent-positive: #4ade80;
+  --accent-negative: #f87171;
+  --chart-grid: rgba(148, 163, 184, 0.12);
+  --chart-hover: rgba(148, 163, 184, 0.08);
+  --chart-text: #cbd5e1;
+  --chart-label: #e2e8f0;
+  --chart-axis: #94a3b8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.22);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.28);
+  --bg-tint: rgba(30, 41, 59, 0.2);
+
   color-scheme: dark;
-  background: #0f172a;
-  color: #f1f5f9;
-}
-
-[data-theme="dark"] * {
-  border-color: #334155 !important;
-}
-
-[data-theme="dark"] input,
-[data-theme="dark"] select,
-[data-theme="dark"] textarea {
-  background: #1e293b !important;
-  color: #f1f5f9 !important;
-  border-color: #475569 !important;
-}
-
-[data-theme="dark"] input::placeholder {
-  color: #94a3b8 !important;
-}
-
-[data-theme="dark"] .bg-white {
-  background-color: #1e293b !important;
-}
-
-[data-theme="dark"] .border-gray-200,
-[data-theme="dark"] .border-b {
-  border-color: #334155 !important;
 }
 
 [data-theme="light"] {
   color-scheme: light;
 }
+
+/* Dark mode Tailwind overrides */
+[data-theme="dark"] .bg-white { background-color: var(--bg-surface); }
+[data-theme="dark"] .bg-gray-50 { background-color: var(--bg-surface-raised); }
+[data-theme="dark"] .bg-gray-100 { background-color: var(--bg-surface); }
+[data-theme="dark"] .text-gray-400 { color: var(--text-muted); }
+[data-theme="dark"] .text-gray-500 { color: var(--text-muted); }
+[data-theme="dark"] .text-gray-600 { color: var(--text-secondary); }
+[data-theme="dark"] .text-gray-700 { color: var(--text-primary); }
+[data-theme="dark"] .text-gray-900 { color: var(--text-primary); }
+[data-theme="dark"] .border-gray-100 { border-color: var(--border-subtle); }
+[data-theme="dark"] .border-gray-200 { border-color: var(--border-default); }
+[data-theme="dark"] .border-gray-300 { border-color: var(--border-default); }
+[data-theme="dark"] .text-slate-900 { color: var(--text-primary); }
 
 /* Smooth scrolling within the main panel */
 html {
@@ -61,7 +121,7 @@ html {
 
 /* Tremor table row hover */
 .tremor-TableRow-root:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-surface-raised);
 }
 
 /* Sign-in page — partner logo row: greyscale by default, full colour on hover */

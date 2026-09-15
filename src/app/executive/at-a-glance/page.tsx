@@ -59,10 +59,41 @@ function MapContainer({
       });
       resizeObserver.observe(mapContainer.current);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      // Detect dark mode and use appropriate basemap
+      const isDark = () => {
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'dark') return true;
+        if (theme === 'light') return false;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      };
+
+      const tileUrl = isDark()
+        ? "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+      L.tileLayer(tileUrl, {
         maxZoom: 19,
         attribution: ""
       }).addTo(map.current);
+
+      // Listen for theme changes and update tile layer
+      const handleThemeChange = () => {
+        if (map.current) {
+          const newUrl = isDark()
+            ? "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+            : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+          // Remove old layers and add new one
+          map.current.eachLayer((layer: any) => {
+            if (layer instanceof L.TileLayer) {
+              map.current.removeLayer(layer);
+            }
+          });
+          L.tileLayer(newUrl, { maxZoom: 19, attribution: "" }).addTo(map.current);
+        }
+      };
+
+      const observer = new MutationObserver(handleThemeChange);
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
       countryData.forEach((count, country) => {
         const lat = 3 + (Math.random() * 30 - 15);
@@ -70,8 +101,8 @@ function MapContainer({
 
         L.circleMarker([lat, lng], {
           radius: Math.min(8 + Math.log(count) * 2, 16),
-          fillColor: "#479BD6",
-          color: "#14306B",
+          fillColor: isDark() ? "#60a5fa" : "#479BD6",
+          color: isDark() ? "var(--brand-secondary)" : "var(--brand-secondary)",
           weight: 2,
           opacity: 0.7,
           fillOpacity: 0.6
@@ -80,7 +111,10 @@ function MapContainer({
           .addTo(map.current!);
       });
 
-      return () => resizeObserver.disconnect();
+      return () => {
+        resizeObserver.disconnect();
+        observer.disconnect();
+      };
     };
 
     let resizeCleanup: (() => void) | void;
@@ -99,7 +133,7 @@ function MapContainer({
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <div ref={mapContainer} style={{ width: "100%", height: "100%", borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", backgroundColor: "#F5F5F5" }} />
+      <div ref={mapContainer} style={{ width: "100%", height: "100%", borderRadius: 10, border: "1px solid var(--border-subtle)", overflow: "hidden", backgroundColor: "var(--bg-surface-raised)" }} />
       <button
         onClick={handleReset}
         title="Reset map view"
@@ -113,16 +147,16 @@ function MapContainer({
           gap: 5,
           fontSize: 11.5,
           fontWeight: 700,
-          color: "#14306B",
-          backgroundColor: "white",
-          border: "1px solid rgba(0,33,71,0.15)",
+          color: "var(--brand-primary)",
+          backgroundColor: "var(--bg-surface)",
+          border: "1px solid var(--border-subtle)",
           borderRadius: 8,
           padding: "6px 11px",
           cursor: "pointer",
           boxShadow: "0 1px 4px rgba(0,0,0,0.18)"
         }}
       >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#042C53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
           <path d="M3 3v5h5" />
         </svg>
@@ -162,43 +196,43 @@ function KPICard({
   return (
     <div
       style={{
-        backgroundColor: "#F3F7FF",
+        backgroundColor: "var(--bg-surface-raised)",
         borderRadius: 10,
-        border: "1px solid #E0ECFF",
-        borderLeft: "5px solid #14306B",
+        border: "1px solid var(--border-subtle)",
+        borderLeft: "5px solid var(--brand-secondary)",
         position: "relative",
         display: "flex",
         flexDirection: "column",
         minHeight: 130,
         padding: "14px 16px",
         transition: "all 200ms ease",
-        boxShadow: "0 2px 4px rgba(16, 44, 94, 0.08)",
+        boxShadow: "var(--shadow-md)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#ECEFFF";
-        e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 44, 94, 0.12)";
+        e.currentTarget.style.backgroundColor = "var(--bg-surface)";
+        e.currentTarget.style.boxShadow = "var(--shadow-lg)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "#F3F7FF";
-        e.currentTarget.style.boxShadow = "0 2px 4px rgba(16, 44, 94, 0.08)";
+        e.currentTarget.style.backgroundColor = "var(--bg-surface-raised)";
+        e.currentTarget.style.boxShadow = "var(--shadow-md)";
       }}
     >
       {/* Row 1: Label + Info icon + Chevron */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 3, marginBottom: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 3, flex: 1 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#14306B", lineHeight: 1.2 }}>{label}</p>
+          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--brand-secondary)", lineHeight: 1.2 }}>{label}</p>
           {info && (
             <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
               <button
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
-                style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: "#E0ECFF", border: "1px solid #B5D4F4", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: "#14306B", lineHeight: 1 }}
+                style={{ display: "flex", cursor: "pointer", background: "none", padding: 0, width: 11, height: 11, borderRadius: "50%", backgroundColor: "var(--border-subtle)", border: `1px solid var(--border-default)`, alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, color: "var(--brand-secondary)", lineHeight: 1 }}
                 aria-label={`${label} information`}
               >
                 i
               </button>
               {showTooltip && (
-                <div style={{position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#14306B", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid #E0ECFF", zIndex: 50, pointerEvents: "none", textAlign: "center"}}>
+                <div style={{position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-surface)", color: "var(--text-primary)", fontSize: 10.5, lineHeight: 1.55, padding: "9px 12px", borderRadius: 7, width: 200, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid var(--border-subtle)", zIndex: 50, pointerEvents: "none", textAlign: "center"}}>
                   {info}
                 </div>
               )}
@@ -207,7 +241,7 @@ function KPICard({
         </div>
         {href ? (
           <Link href={href} style={{ display: "flex", cursor: "pointer", flexShrink: 0, transition: "all 200ms ease" }}>
-            <ChevronRight size={16} color="#14306B" style={{ flexShrink: 0 }} />
+            <ChevronRight size={16} color="var(--brand-secondary)" style={{ flexShrink: 0 }} />
           </Link>
         ) : (
           <ChevronRight size={16} color="#D1D5DB" style={{ flexShrink: 0 }} />
@@ -216,8 +250,8 @@ function KPICard({
 
       {/* Row 2: Icon + value (centered, navy) */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8, flex: 1 }}>
-        {Icon && <Icon size={18} color="#14306B" style={{ flexShrink: 0, strokeWidth: 2 }} />}
-        <p style={{ fontSize: 28, fontWeight: 800, color: "#14306B", lineHeight: 1 }}>
+        {Icon && <Icon size={18} color="var(--brand-secondary)" style={{ flexShrink: 0, strokeWidth: 2 }} />}
+        <p style={{ fontSize: 28, fontWeight: 800, color: "var(--brand-secondary)", lineHeight: 1 }}>
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
@@ -230,7 +264,7 @@ function KPICard({
       )}
 
       {/* Row 4: Gender split or secondary text */}
-      <div style={{ display: "flex", gap: 8, paddingTop: 8, borderTop: "1px solid rgba(16, 44, 94, 0.1)", justifyContent: "center", alignItems: "center", minHeight: 16 }}>
+      <div style={{ display: "flex", gap: 8, paddingTop: 8, borderTop: "1px solid var(--border-subtle)", justifyContent: "center", alignItems: "center", minHeight: 16 }}>
         {femalePct !== undefined && malePct !== undefined ? (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -238,26 +272,26 @@ function KPICard({
                 <circle cx="12" cy="8" r="4" />
                 <path d="M12 14v8M8 18h8" />
               </svg>
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#4B5563" }}>{femalePct}%</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)" }}>{femalePct}%</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={BLUE_MALE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM9 11l5 9M14 20h-10" />
               </svg>
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#4B5563" }}>{malePct}%</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)" }}>{malePct}%</span>
             </div>
             {otherPct !== undefined && otherPct > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 7v5M9 12h6" />
                 </svg>
-                <span style={{ fontSize: 10, fontWeight: 600, color: "#4B5563" }}>{otherPct}%</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)" }}>{otherPct}%</span>
               </div>
             )}
           </>
         ) : (
-          <p style={{ fontSize: 10, fontWeight: 500, color: "#9CA3AF", lineHeight: 1 }}>
+          <p style={{ fontSize: 10, fontWeight: 500, color: "var(--text-muted)", lineHeight: 1 }}>
             {secondaryText || "—"}
           </p>
         )}
@@ -311,11 +345,11 @@ export default function AtAGlancePage() {
 
 
   return (
-    <div style={{ backgroundColor: `rgba(16, 44, 94, 0.02)`, minHeight: "100vh" }}>
+    <div style={{ backgroundColor: `var(--bg-tint)`, minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
       <div className="max-w-[1600px] mx-auto px-10 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
@@ -387,25 +421,25 @@ export default function AtAGlancePage() {
           display: "grid",
           gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
           gap: 0,
-          backgroundColor: "#F3F7FF",
+          backgroundColor: "var(--bg-surface-raised)",
           borderRadius: 10,
-          border: "1px solid #E0ECFF",
+          border: "1px solid var(--border-subtle)",
           padding: "20px 0",
-          boxShadow: "0 2px 4px rgba(16, 44, 94, 0.08)",
+          boxShadow: "var(--shadow-md)",
           transition: "all 200ms ease",
           overflow: "hidden",
-          backgroundImage: "linear-gradient(to right, #14306B 0%, #14306B 25%, #16A34A 25%, #16A34A 50%, #9333EA 50%, #9333EA 75%, #EAB308 75%, #EAB308 100%)",
+          backgroundImage: "linear-gradient(to right, var(--brand-secondary) 0%, var(--brand-secondary) 25%, #16A34A 25%, #16A34A 50%, #9333EA 50%, #9333EA 75%, #EAB308 75%, #EAB308 100%)",
           backgroundSize: "100% 5px",
           backgroundPosition: "0 0",
           backgroundRepeat: "no-repeat"
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#ECEFFF";
-          e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 44, 94, 0.12)";
+          e.currentTarget.style.backgroundColor = "var(--bg-surface)";
+          e.currentTarget.style.boxShadow = "var(--shadow-lg)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "#F3F7FF";
-          e.currentTarget.style.boxShadow = "0 2px 4px rgba(16, 44, 94, 0.08)";
+          e.currentTarget.style.backgroundColor = "var(--bg-surface-raised)";
+          e.currentTarget.style.boxShadow = "var(--shadow-md)";
         }}>
           {[
             {
@@ -413,7 +447,7 @@ export default function AtAGlancePage() {
               figure: "52%",
               detail: "Female participants (Target: 50%)",
               copy: "Strong gender parity across HEMP, HENT, and HECO programs. Consistent above target baseline.",
-              accentColor: "#14306B"
+              accentColor: "var(--brand-secondary)"
             },
             {
               title: "Regional Growth",
@@ -452,22 +486,22 @@ export default function AtAGlancePage() {
             >
 
               {/* Hero figure */}
-              <p style={{ fontSize: 32, fontWeight: 800, color: "#14306B", lineHeight: 1, margin: 0, marginTop: 8 }}>
+              <p style={{ fontSize: 32, fontWeight: 800, color: "var(--text-primary)", lineHeight: 1, margin: 0, marginTop: 8 }}>
                 {insight.figure}
               </p>
 
               {/* Label */}
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#14306B", lineHeight: 1.2, margin: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2, margin: 0 }}>
                 {insight.title}
               </p>
 
               {/* Detail line */}
-              <p style={{ fontSize: 11, fontWeight: 500, color: "#6B7280", lineHeight: 1.3, margin: 0 }}>
+              <p style={{ fontSize: 11, fontWeight: 500, color: "var(--text-muted)", lineHeight: 1.3, margin: 0 }}>
                 {insight.detail}
               </p>
 
               {/* Supporting copy */}
-              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4, margin: 0, marginBottom: 8 }}>
+              <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4, margin: 0, marginBottom: 8 }}>
                 {insight.copy}
               </p>
             </div>

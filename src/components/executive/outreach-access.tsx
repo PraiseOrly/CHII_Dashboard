@@ -129,7 +129,7 @@ export default function OutreachAccess() {
               if (index == null || !stackData[index]) return null;
               const total = stackData[index].total;
               return (
-                <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="var(--chart-label)" dominantBaseline="middle">
                   {fmt(total)}
                 </text>
               );

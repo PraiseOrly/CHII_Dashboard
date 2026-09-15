@@ -133,7 +133,7 @@ export default function ProgramImpactMatrix() {
               const { x, y, width, height: bh, index } = props;
               if (index == null || !chartData[index]) return null;
               return (
-                <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="var(--chart-label)" dominantBaseline="middle">
                   {fmt(chartData[index].total)}
                 </text>
               );

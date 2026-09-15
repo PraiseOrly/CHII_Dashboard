@@ -25,7 +25,7 @@ export function FilterSelect<T extends string | number>({
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: `1 1 ${basis}px` }}>
-      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      <label style={{ fontSize: 9.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
         {label}
       </label>
       <select
@@ -35,7 +35,7 @@ export function FilterSelect<T extends string | number>({
           const match = options.find(o => String(o.value) === e.target.value);
           if (match) onChange(match.value);
         }}
-        style={{ width: "100%", fontSize: 12, border: `1px solid ${tint}26`, borderRadius: 6, padding: "7px 9px", color: tint, backgroundColor: "white", cursor: "pointer" }}
+        style={{ width: "100%", fontSize: 12, border: `1px solid ${tint}26`, borderRadius: 6, padding: "7px 9px", color: tint, backgroundColor: "var(--bg-surface)", cursor: "pointer" }}
       >
         {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
       </select>
@@ -64,7 +64,7 @@ export function InlineFilterSelect({
         value={value}
         onChange={e => onChange(e.target.value)}
         className="text-[11px] font-medium normal-case tracking-normal rounded-md px-2 py-1 outline-none cursor-pointer"
-        style={{ color: tint, border: `1px solid ${labelTint}33`, backgroundColor: "white" }}
+        style={{ color: tint, border: `1px solid ${labelTint}33`, backgroundColor: "var(--bg-surface)" }}
       >
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>

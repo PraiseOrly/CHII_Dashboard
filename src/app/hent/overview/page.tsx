@@ -919,7 +919,7 @@ export default function HENTOverview() {
                     <Tooltip content={<ChartTip money />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={CHART_COLOR_2} radius={[0, 4, 4, 0]}>
-                      <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} formatter={(v: number) => fmt$(v)} />
+                      <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} formatter={(v: number) => fmt$(v)} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>

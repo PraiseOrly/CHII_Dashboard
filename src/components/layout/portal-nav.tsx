@@ -28,7 +28,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
   }, [pathname]);
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+    <div className="border-b border-gray-200 sticky top-0 z-50" style={{ backgroundColor: "var(--bg-surface)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 flex items-center h-16 gap-2 sm:gap-3">
 
         {/* Wordmark */}
@@ -57,7 +57,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
                 style={{ color: isActive ? tabAccent : `${tabAccent}80` }}
               >
                 {!isActive && (
-                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: "#F1F5F9" }} />
+                  <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: "var(--bg-surface-raised)" }} />
                 )}
                 <span className="relative text-[12px] font-bold leading-tight whitespace-nowrap">{label}</span>
                 {isActive && (
@@ -75,7 +75,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
             className="xl:hidden flex items-center justify-center w-8 h-8 rounded-md border transition-colors flex-shrink-0"
-            style={{ borderColor: "#E5E7EB", color: accent, backgroundColor: "white" }}
+            style={{ borderColor: "var(--border-default)", color: accent, backgroundColor: "var(--bg-surface)" }}
           >
             {menuOpen ? <X size={16} /> : <Menu size={16} />}
           </button>
@@ -84,7 +84,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
             onClick={toggleTheme}
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
             className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md border transition-colors flex-shrink-0"
-            style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+            style={{ borderColor: "var(--border-default)", color: "var(--text-muted)", backgroundColor: "var(--bg-surface)" }}
           >
             {isDark ? <Sun size={12} /> : <Moon size={12} />}
           </button>
@@ -92,7 +92,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
           <button
             title="Export"
             className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md border transition-colors flex-shrink-0"
-            style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+            style={{ borderColor: "var(--border-default)", color: "var(--text-muted)", backgroundColor: "var(--bg-surface)" }}
           >
             <Download size={12} />
           </button>
@@ -101,7 +101,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
             href="/"
             title="Sign out"
             className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-md border font-bold uppercase tracking-wide transition-colors flex-shrink-0"
-            style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
+            style={{ borderColor: "var(--border-default)", color: "var(--text-muted)", backgroundColor: "var(--bg-surface)" }}
           >
             <LogOut size={10} />
             <span className="hidden sm:inline">Logout</span>
@@ -111,7 +111,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
 
       {/* Mobile/tablet menu — mirrors the desktop tabs as a vertical list */}
       {menuOpen && (
-        <nav className="xl:hidden border-t border-gray-200 bg-white px-3 py-2 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <nav className="xl:hidden border-t border-gray-200 px-3 py-2 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto" style={{ backgroundColor: "var(--bg-surface)" }}>
           {config.items.map(({ label, href }) => {
             const isActive = href === activeHref;
             return (
@@ -120,7 +120,7 @@ export default function PortalNav({ portal }: { portal: Portal }) {
                 href={href}
                 className="flex items-center px-3 py-3 rounded-md text-[13px] font-bold transition-colors"
                 style={{
-                  color: isActive ? tabAccent : "#374151",
+                  color: isActive ? tabAccent : "var(--text-secondary)",
                   backgroundColor: isActive ? `${tabAccent}14` : "transparent",
                 }}
               >

@@ -6,8 +6,8 @@ import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import HeaderDesign from "@/components/layout/header-design";
 
 /* ── palette (matches the rest of the dashboard) ─────── */
-const NAVY = "#14306B";
-const BAND = "#14306B";
+const NAVY = "var(--brand-secondary)";
+const BAND = "var(--brand-secondary)";
 const TICK = "#D17A86";
 const ACCENT = "#102C5E";
 
@@ -159,12 +159,12 @@ function Card({ card }: { card: ResourceCard }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 9 }}>
           {card.tags.map(t => <TagPill key={t.label} tag={t} />)}
         </div>
-        <p style={{ fontSize: 11.5, color: "#6B7280", lineHeight: 1.55, flex: 1 }}>{card.desc}</p>
+        <p style={{ fontSize: 11.5, color: "var(--text-muted)", lineHeight: 1.55, flex: 1 }}>{card.desc}</p>
 
         {coming ? (
           <button disabled
-            style={{ marginTop: 13, width: "100%", fontSize: 11.5, fontWeight: 700, color: "#9CA3AF",
-              backgroundColor: "#F1F3F6", border: "1px solid rgba(0,33,71,0.08)", borderRadius: 7, padding: "9px 10px", cursor: "not-allowed" }}>
+            style={{ marginTop: 13, width: "100%", fontSize: 11.5, fontWeight: 700, color: "var(--text-muted)",
+              backgroundColor: "var(--bg-surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: 7, padding: "9px 10px", cursor: "not-allowed" }}>
             {card.statusLabel ?? "Coming soon"}
           </button>
         ) : (
@@ -209,11 +209,11 @@ export default function ImpactReportsPage() {
   };
 
   return (
-    <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
@@ -240,7 +240,7 @@ export default function ImpactReportsPage() {
         {/* ── Controls bar ─────────────────────────────── */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ position: "relative", flex: "1 1 240px", maxWidth: 360 }}>
-            <Search size={14} color="#9CA3AF" style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)" }} />
+            <Search size={14} color="var(--text-muted)" style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)" }} />
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search reports…"
               style={{ width: "100%", fontSize: 12.5, color: NAVY, backgroundColor: "white", border: "1px solid rgba(0,33,71,0.14)",
                 borderRadius: 8, padding: "9px 12px 9px 32px", outline: "none" }} />
@@ -252,7 +252,7 @@ export default function ImpactReportsPage() {
               return (
                 <button key={s} onClick={() => setSeg(s)}
                   style={{ fontSize: 11, fontWeight: 700, padding: "7px 13px", borderRadius: 6, border: "none", cursor: "pointer",
-                    backgroundColor: active ? NAVY : "transparent", color: active ? "white" : "#6B7280" }}>
+                    backgroundColor: active ? NAVY : "transparent", color: active ? "white" : "var(--text-muted)" }}>
                   {s}
                 </button>
               );
@@ -262,7 +262,7 @@ export default function ImpactReportsPage() {
 
         {/* ── Sections ─────────────────────────────────── */}
         {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "56px 24px", color: "#9CA3AF" }}>
+          <div style={{ textAlign: "center", padding: "56px 24px", color: "var(--text-muted)" }}>
             <FileText size={26} style={{ opacity: 0.5 }} />
             <p style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginTop: 10 }}>No reports match your search</p>
             <p style={{ fontSize: 11.5, marginTop: 4 }}>Try a different term or reset the filter.</p>
@@ -275,7 +275,7 @@ export default function ImpactReportsPage() {
                 <div style={{ width: 4, height: 22, borderRadius: 999, backgroundColor: TICK, flexShrink: 0 }} />
                 <div>
                   <h2 style={{ fontSize: 15, fontWeight: 800, color: NAVY, lineHeight: 1.2 }}>{section.title}</h2>
-                  <p style={{ fontSize: 10.5, color: "#9CA3AF", marginTop: 1 }}>
+                  <p style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 1 }}>
                     {section.cards.length} {section.cards.length === 1 ? "resource" : "resources"} · {section.range}
                   </p>
                 </div>

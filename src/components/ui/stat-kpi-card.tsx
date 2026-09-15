@@ -89,8 +89,8 @@ export default function StatsKpiCard({
               top: "calc(100% + 6px)",
               left: "50%",
               transform: "translateX(-50%)",
-              backgroundColor: "white",
-              color: "#0B5441",
+              backgroundColor: "var(--bg-surface)",
+              color: "var(--text-primary)",
               fontSize: 10.5,
               lineHeight: 1.55,
               padding: "9px 12px",
@@ -105,11 +105,11 @@ export default function StatsKpiCard({
                 position: "absolute", top: -4, left: "50%",
                 transform: "translateX(-50%) rotate(45deg)",
                 width: 8, height: 8,
-                backgroundColor: "white",
+                backgroundColor: "var(--bg-surface)",
               }} />
               {tooltip}
               {sub && (
-                <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(11,84,65,0.12)", color: "#2D9B7F" }}>
+                <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid var(--border-subtle)", color: "var(--text-secondary)" }}>
                   {sub}
                 </div>
               )}

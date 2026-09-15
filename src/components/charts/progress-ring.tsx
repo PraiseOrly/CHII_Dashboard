@@ -37,10 +37,10 @@ export default function ProgressRing({
           strokeLinecap="round" strokeDasharray={`${c * filled} ${c}`}
           transform={`rotate(-90 ${cx} ${cy})`} />
         {/* target tick */}
-        <line x1={t1.x} y1={t1.y} x2={t2.x} y2={t2.y} stroke="#111827" strokeWidth={2} />
+        <line x1={t1.x} y1={t1.y} x2={t2.x} y2={t2.y} stroke="var(--text-primary)" strokeWidth={2} />
         {/* centered percentage */}
         <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central"
-          fontSize={18} fontWeight={600} fill="#111827">{Math.round(value)}%</text>
+          fontSize={18} fontWeight={600} fill="var(--text-primary)">{Math.round(value)}%</text>
       </svg>
       <p style={{ fontSize: 11, color: PALETTE.mutedText, marginTop: 8 }}>{label}</p>
       <p style={{ fontSize: 11, fontWeight: 600, marginTop: 2, color: atTarget ? PALETTE.successGreen : PALETTE.amber }}>

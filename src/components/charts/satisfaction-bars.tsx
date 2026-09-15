@@ -9,12 +9,12 @@ import type { RadarSeries } from "./satisfaction-radar";
 function Tip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(14,70,51,0.12)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-      <p style={{ fontWeight: 700, color: PALETTE.text, marginBottom: 4 }}>{label}</p>
+    <div style={{ backgroundColor: "var(--bg-surface)", border: "1px solid rgba(14,70,51,0.12)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+      <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: 4 }}>{label}</p>
       {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: "#6B7280", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
+        <p key={i} style={{ color: "var(--chart-text)", display: "flex", alignItems: "center", gap: 5, margin: 0 }}>
           <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color || p.fill, display: "inline-block" }} />
-          {p.name}: <b style={{ color: PALETTE.text }}>{Number(p.value).toFixed(1)}</b>
+          {p.name}: <b style={{ color: "var(--text-primary)" }}>{Number(p.value).toFixed(1)}</b>
         </p>
       ))}
     </div>
@@ -53,8 +53,8 @@ export default function SatisfactionBars({
             </Bar>
           ))}
           {/* target reference line for context — drawn on top of the bars */}
-          <ReferenceLine x={target} stroke="#111827" strokeWidth={2} strokeDasharray="4 3" ifOverflow="extendDomain"
-            label={{ value: `target ${target}`, position: "insideTopRight", fontSize: 9.5, fontWeight: 700, fill: "#111827" }} />
+          <ReferenceLine x={target} stroke="var(--text-primary)" strokeWidth={2} strokeDasharray="4 3" ifOverflow="extendDomain"
+            label={{ value: `target ${target}`, position: "insideTopRight", fontSize: 9.5, fontWeight: 700, fill: "var(--text-primary)" }} />
         </BarChart>
       </ResponsiveContainer>
 

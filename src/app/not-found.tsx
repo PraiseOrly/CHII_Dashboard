@@ -3,11 +3,11 @@ import Link from "next/link";
 // Must not call redirect() here — Next re-enters this boundary while resolving
 // the redirect, which loops and makes even "/" return a 404.
 
-const NAVY = "#102C5E";
+const NAVY = "var(--brand-primary)";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen flex items-center justify-center px-6" style={{ backgroundColor: "#E6F1FB" }}>
+    <main className="min-h-screen flex items-center justify-center px-6" style={{ backgroundColor: "var(--bg-page)" }}>
       <div className="w-full max-w-sm text-center">
         <h1 className="text-xl font-black" style={{ color: NAVY }}>
           Page not found

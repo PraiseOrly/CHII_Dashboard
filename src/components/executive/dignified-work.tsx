@@ -210,8 +210,8 @@ export default function DignifiedWork() {
                 const bx = score > 0 ? x + (width * benchmark) / score : x;
                 return (
                   <g>
-                    <rect x={bx - 1} y={y - 3} width={2} height={bh + 6} rx={1} fill="#6B7280" />
-                    <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="#374151" dominantBaseline="middle">
+                    <rect x={bx - 1} y={y - 3} width={2} height={bh + 6} rx={1} fill="var(--chart-text)" />
+                    <text x={x + width + 7} y={y + bh / 2 + 1} textAnchor="start" fontSize={10} fontWeight={700} fill="var(--chart-label)" dominantBaseline="middle">
                       {score}
                     </text>
                   </g>

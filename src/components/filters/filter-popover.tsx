@@ -17,7 +17,7 @@ export function FilterSelect<T extends string | number>({ label, value, onChange
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: "1 1 150px" }}>
-      <label style={{ fontSize: 9.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      <label style={{ fontSize: 9.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
         {label}
       </label>
       <select
@@ -27,7 +27,7 @@ export function FilterSelect<T extends string | number>({ label, value, onChange
           const match = options.find(o => String(o.value) === raw);
           if (match) onChange(match.value);
         }}
-        style={{ width: "100%", fontSize: 12, border: "1px solid rgba(0,33,71,0.15)", borderRadius: 6, padding: "7px 9px", color: accent, backgroundColor: "white", cursor: "pointer" }}
+        style={{ width: "100%", fontSize: 12, border: "1px solid var(--border-subtle)", borderRadius: 6, padding: "7px 9px", color: accent, backgroundColor: "var(--bg-surface)", cursor: "pointer" }}
       >
         {options.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
       </select>
@@ -54,8 +54,8 @@ export default function OutreachFilters({
     <div style={{ position: "relative", flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)}
         style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-          border: `1px solid ${activeCount || open ? accent : "rgba(0,33,71,0.15)"}`,
-          backgroundColor: open ? accent : "white", color: open ? "white" : "#374151" }}>
+          border: `1px solid ${activeCount || open ? accent : "var(--border-subtle)"}`,
+          backgroundColor: open ? accent : "var(--bg-surface-raised)", color: open ? "white" : "var(--text-primary)" }}>
         <SlidersHorizontal size={13} />
         Filters
         {activeCount > 0 && (
@@ -66,7 +66,7 @@ export default function OutreachFilters({
       </button>
 
       {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.12)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50, width: 320, backgroundColor: "var(--bg-surface)", borderRadius: 10, border: "1px solid var(--border-subtle)", boxShadow: "0 10px 30px rgba(0,0,0,0.14)", overflow: "hidden" }}>
           <div style={{ backgroundColor: accent, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.04em" }}>Filters</p>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

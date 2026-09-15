@@ -217,7 +217,7 @@ function CustomDonut({ data, colors, label, valueFormatter = (v: number) => `${v
         ))}
         {label && (
           <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle"
-            fill="#111827" fontSize="20" fontWeight="900"
+            fill="var(--text-primary)" fontSize="20" fontWeight="900"
             fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
         )}
       </svg>
@@ -282,12 +282,12 @@ export default function InternshipsPage() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
       <PortalNav portal="hemp" />
 
       {/* â”€â”€ HEADER + KPIs â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -299,7 +299,7 @@ export default function InternshipsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, var(--brand-primary) 34%, var(--brand-primary) 66%, rgba(16,44,94,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -460,9 +460,9 @@ export default function InternshipsPage() {
               accent={AMBER}>
               <ResponsiveContainer width="100%" height={192}>
                 <BarChart data={placementsPerYear} barCategoryGap="40%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={18} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Orgs" fill={AMBER} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -480,9 +480,9 @@ export default function InternshipsPage() {
                       <stop offset="95%" stopColor={VIOLET} stopOpacity={0.03} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={25} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Area type="monotone" dataKey="Students" stroke={VIOLET} strokeWidth={2} fill="url(#intGrad)" dot={false} />
                 </AreaChart>
@@ -525,9 +525,9 @@ export default function InternshipsPage() {
               </div>
               <ResponsiveContainer width="100%" height={192}>
                 <BarChart data={trendData} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={25} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={25} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   {trendCats.map((cat, i) => (
                     <Bar key={cat} dataKey={cat} fill={trendColors[i]} radius={[0, 0, 0, 0]} />
@@ -678,9 +678,9 @@ export default function InternshipsPage() {
                   >
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={partnerBarData} barCategoryGap="30%" barGap={2}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                        <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} interval={0} />
-                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} interval={0} />
+                        <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                         {PARTNERS.map((c) => (
                           <Bar
@@ -744,9 +744,9 @@ export default function InternshipsPage() {
                   >
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={yearlyCohort} barGap={1}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                        <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                        <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                         {PARTNERS.map((c) => (
                           <Bar
@@ -775,9 +775,9 @@ export default function InternshipsPage() {
                   >
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={placedNotPlaced} barCategoryGap="30%" barGap={0}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                        <XAxis dataKey="cohort" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                        <XAxis dataKey="cohort" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                         <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                         {PARTNERS.map((c) => (
                           <Bar

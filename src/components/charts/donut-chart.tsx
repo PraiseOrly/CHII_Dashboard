@@ -99,13 +99,13 @@ export default function DonutChart({
     const x = cx + r * Math.cos(-midAngle * RAD);
     const y = cy + r * Math.sin(-midAngle * RAD);
     return (
-      <text x={x} y={y} fill="#374151" fontSize={10.5} fontWeight={600}
+      <text x={x} y={y} fill="var(--chart-label)" fontSize={10.5} fontWeight={600}
         textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">{name}</text>
     );
   };
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)", overflow: "hidden" }}>
+    <div style={{ backgroundColor: "var(--bg-surface)", borderRadius: 10, border: "1px solid var(--border-subtle)", overflow: "hidden" }}>
       {/* header bar */}
       <div style={{ backgroundColor: headerColor, padding: "10px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
@@ -142,7 +142,7 @@ export default function DonutChart({
                 activeIndex={active ?? undefined}
                 activeShape={ActiveShape}
                 label={renderLabel}
-                labelLine={{ stroke: "rgba(0,33,71,0.25)" }}
+                labelLine={{ stroke: "var(--chart-grid)" }}
                 onMouseEnter={(_: any, i: number) => setActive(i)}
                 onMouseLeave={() => setActive(null)}
                 className="donut-pie"
@@ -159,7 +159,7 @@ export default function DonutChart({
           {/* centre total */}
           <div style={{ position: "absolute", top: "50%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
             <p style={{ fontSize: 28, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{Math.round(centre).toLocaleString()}</p>
-            <p style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 3 }}>{totalLabel}</p>
+            <p style={{ fontSize: 10, color: "var(--chart-axis)", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 3 }}>{totalLabel}</p>
           </div>
         </div>
 
@@ -171,7 +171,7 @@ export default function DonutChart({
               style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", padding: 0,
                 opacity: active == null || active === i ? 1 : 0.45, transition: "opacity 180ms ease" }}>
               <span style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: d.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>{d.name}</span>
+              <span style={{ fontSize: 11, color: "var(--chart-label)", fontWeight: 600 }}>{d.name}</span>
             </button>
           ))}
         </div>
@@ -190,16 +190,16 @@ function ShareTip({ active, payload, total }: any) {
   if (!active || !payload?.length) return null;
   const p = payload[0];
   const pct = total ? Math.round((p.value / total) * 100) : 0;
-  const swatch = p.payload?.color || p.color || p.payload?.fill || "#9CA3AF";
+  const swatch = p.payload?.color || p.color || p.payload?.fill || "var(--chart-axis)";
   return (
-    <div style={{ backgroundColor: "white", border: "1px solid rgba(0,33,71,0.1)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 10px rgba(0,0,0,0.12)" }}>
-      <p style={{ display: "flex", alignItems: "center", gap: 6, color: "#6B7280" }}>
+    <div style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-subtle)", borderRadius: 6, padding: "8px 11px", fontSize: 11, boxShadow: "0 2px 10px rgba(0,0,0,0.12)" }}>
+      <p style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--chart-text)" }}>
         <span style={{ width: 9, height: 9, borderRadius: 2, backgroundColor: swatch, display: "inline-block" }} />
         <b style={{ color: NAVY }}>{p.name}</b>
       </p>
-      <p style={{ color: "#6B7280", marginTop: 3 }}>
+      <p style={{ color: "var(--chart-text)", marginTop: 3 }}>
         <b style={{ color: NAVY, fontSize: 13 }}>{Number(p.value).toLocaleString()}</b>
-        <span style={{ marginLeft: 6, color: "#9CA3AF" }}>{pct}% of total</span>
+        <span style={{ marginLeft: 6, color: "var(--chart-axis)" }}>{pct}% of total</span>
       </p>
     </div>
   );
@@ -237,7 +237,7 @@ export function DonutRing({
         const x = cx + r * Math.cos(-midAngle * RAD);
         const y = cy + r * Math.sin(-midAngle * RAD);
         return (
-          <text x={x} y={y} fill="#374151" fontSize={10} fontWeight={600}
+          <text x={x} y={y} fill="var(--chart-label)" fontSize={10} fontWeight={600}
             textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">{name}</text>
         );
       }
@@ -259,9 +259,9 @@ export function DonutRing({
     const ex = lx + (right ? 8 : -8);                          // small horizontal hook
     return (
       <g style={{ pointerEvents: "none" }}>
-        <polyline points={`${sx},${sy} ${lx},${ly} ${ex},${ly}`} stroke="#9CA3AF" strokeWidth={1} fill="none" />
+        <polyline points={`${sx},${sy} ${lx},${ly} ${ex},${ly}`} stroke="var(--chart-axis)" strokeWidth={1} fill="none" />
         <text x={ex + (right ? 4 : -4)} y={ly} textAnchor={right ? "start" : "end"}
-          dominantBaseline="central" fontSize={10.5} fontWeight={600} fill="#374151">{name}</text>
+          dominantBaseline="central" fontSize={10.5} fontWeight={600} fill="var(--chart-label)">{name}</text>
       </g>
     );
   };
@@ -277,7 +277,7 @@ export function DonutRing({
               isAnimationActive={firstRun} animationBegin={0} animationDuration={1000} animationEasing="ease-out"
               activeIndex={active ?? undefined} activeShape={ActiveShape}
               label={legendPercent ? renderPointer : renderLabel}
-              labelLine={labels && !legendPercent ? { stroke: "rgba(0,33,71,0.25)" } : false}
+              labelLine={labels && !legendPercent ? { stroke: "var(--chart-grid)" } : false}
               onMouseEnter={(_: any, i: number) => setActive(i)} onMouseLeave={() => setActive(null)}
               className="donut-pie">
               {data.map((d, i) => (
@@ -291,7 +291,7 @@ export function DonutRing({
         </ResponsiveContainer>
         <div style={{ position: "absolute", top: legendPercent ? "50%" : "40%", left: 0, right: 0, transform: "translateY(-50%)", textAlign: "center", pointerEvents: "none" }}>
           <p style={{ fontSize: 22, fontWeight: 800, color: NAVY, lineHeight: 1 }}>{Math.round(centre).toLocaleString()}</p>
-          <p style={{ fontSize: 9, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
+          <p style={{ fontSize: 9, color: "var(--chart-axis)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{totalLabel}</p>
         </div>
       </div>
 
@@ -303,7 +303,7 @@ export function DonutRing({
               style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", padding: 0,
                 opacity: active == null || active === i ? 1 : 0.45, transition: "opacity 180ms ease" }}>
               <span style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: colorFor(dd.name, i), flexShrink: 0 }} />
-              <span style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>{dd.name}</span>
+              <span style={{ fontSize: 11, color: "var(--chart-label)", fontWeight: 600 }}>{dd.name}</span>
             </button>
           ))}
         </div>

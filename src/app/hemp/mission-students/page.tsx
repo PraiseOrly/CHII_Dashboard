@@ -203,7 +203,7 @@ function MetricBar({ label, value, displayValue, max, color }: {
         <p className="text-[11px] font-semibold text-gray-700">{label}</p>
         <p className="text-[11px] font-black tabular-nums" style={{ color }}>{displayValue}</p>
       </div>
-      <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+      <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -250,12 +250,12 @@ export default function MissionStudentsPage() {
 
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
       <PortalNav portal="hemp" />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -267,7 +267,7 @@ export default function MissionStudentsPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, var(--brand-primary) 34%, var(--brand-primary) 66%, rgba(16,44,94,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -372,7 +372,7 @@ export default function MissionStudentsPage() {
                 </div>
                 <ResponsiveContainer width="100%" height={208}>
                   <BarChart data={mentorChartData} barCategoryGap="28%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
                     <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
@@ -466,7 +466,7 @@ export default function MissionStudentsPage() {
                   <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Student Feedback Collected</p>
                   <p className="text-lg font-black tabular-nums" style={{ color: SKY }}>{feedbackGPct}%</p>
                 </div>
-                <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
                   <div className="h-full rounded-full" style={{ width: `${feedbackGPct}%`, backgroundColor: SKY }} />
                 </div>
                 <p className="text-[9px] text-gray-400 mt-1.5 tabular-nums">
@@ -482,7 +482,7 @@ export default function MissionStudentsPage() {
                     style={{ color: disaggPct >= 70 ? MS.FAC_DISAGGREGATED : AMBER }}>{disaggPct}%</p>
 
                 </div>
-                <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
                     <div className="h-full rounded-full"
                     style={{ width: `${disaggPct}%`, backgroundColor: disaggPct >= 70 ? MS.FAC_DISAGGREGATED : AMBER }} />
 
@@ -508,7 +508,7 @@ export default function MissionStudentsPage() {
                 </div>
                 <ResponsiveContainer width="100%" height={208}>
                   <BarChart data={guestChartData} barCategoryGap="28%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
                     <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
@@ -593,7 +593,7 @@ export default function MissionStudentsPage() {
                 </div>
                 <ResponsiveContainer width="100%" height={168}>
                   <BarChart data={curatorChartData} barCategoryGap="30%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
                     <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
@@ -617,7 +617,7 @@ export default function MissionStudentsPage() {
 
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
                     <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />

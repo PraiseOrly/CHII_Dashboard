@@ -5,7 +5,7 @@ export default function HENTLoading() {
       {/* Brand mark */}
       <div className="flex items-center gap-3">
         <svg viewBox="0 0 200 200" width="44" height="44" aria-label="CHII logo">
-          <rect width="200" height="200" rx="24" fill="#002147" />
+          <rect width="200" height="200" rx="24" fill="var(--brand-secondary)" />
           <text x="100" y="97" textAnchor="middle" fill="white"
             fontFamily="Inter, ui-sans-serif, system-ui, sans-serif" fontWeight="900" fontSize="74">ALU</text>
           <text x="100" y="120" textAnchor="middle" fill="rgba(255,255,255,0.6)"

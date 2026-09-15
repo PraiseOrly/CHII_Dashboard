@@ -198,7 +198,7 @@ function Card({ title, sub, children }: {
   accent?: string; title: string; sub?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
+    <div className="overflow-hidden" style={{ backgroundColor: "var(--bg-surface)", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
       <div className="flex items-center gap-2.5" style={{ backgroundColor: "#14306B", padding: "11px 20px" }}>
         <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
         <div className="flex-1 min-w-0">
@@ -233,12 +233,12 @@ export default function HealthXPage() {
 
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
       <PortalNav portal="hemp" />
 
       {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
 
         {/* Faint triangle pattern across the whole header */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
@@ -250,7 +250,7 @@ export default function HealthXPage() {
           style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
 
         {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, var(--brand-primary) 34%, var(--brand-primary) 66%, rgba(16,44,94,0) 100%)" }} />
 
         {/* Content */}
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
@@ -445,7 +445,7 @@ export default function HealthXPage() {
                             style={{ color: barColor }}>{m.pct}%</p>
                         </div>
                         {/* 10px bar */}
-                        <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                        <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
                           <div className="h-full rounded-full transition-all"
                             style={{ width: `${m.pct}%`, backgroundColor: barColor }} />
                         </div>
@@ -481,7 +481,7 @@ export default function HealthXPage() {
                       <span className="text-gray-500 font-medium">Avg Satisfaction</span>
                       <span className="font-bold tabular-nums" style={{ color: TEAL }}>{avgSat}/5</span>
                     </div>
-                    <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                    <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
                       <div className="h-full rounded-full" style={{ width: `${(avgSat / 5) * 100}%`, backgroundColor: TEAL }} />
                     </div>
                   </div>
@@ -490,7 +490,7 @@ export default function HealthXPage() {
                       <span className="text-gray-500 font-medium">Avg Completion Rate</span>
                       <span className="font-bold tabular-nums" style={{ color: BLUE }}>{avgComp}%</span>
                     </div>
-                    <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "#E5E7EB" }}>
+                    <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
                       <div className="h-full rounded-full" style={{ width: `${avgComp}%`, backgroundColor: BLUE }} />
                     </div>
                   </div>
@@ -590,9 +590,9 @@ export default function HealthXPage() {
               sub="Count of HealthX sessions per calendar year">
               <ResponsiveContainer width="100%" height={188}>
                 <BarChart data={sessionsPerYear} barCategoryGap="40%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={18} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={18} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Sessions" fill={TEAL} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -609,9 +609,9 @@ export default function HealthXPage() {
                       <stop offset="95%" stopColor={BLUE_LIGHT} stopOpacity={0.03} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Area type="monotone" dataKey="Participants" stroke={BLUE_LIGHT} strokeWidth={2} fill="url(#hxGrad)" dot={false} />
                 </AreaChart>
@@ -716,9 +716,9 @@ export default function HealthXPage() {
               sub="Internship, employment and project-based leads — and how many became real">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={CX.byLeadType} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} interval={0} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Leads"     fill="#185FA5" radius={[4, 4, 0, 0]} maxBarSize={30} />
                   <Bar dataKey="Converted" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={30} />
@@ -759,9 +759,9 @@ export default function HealthXPage() {
               sub="Registered vs attended per topic — readiness is what makes the exhibition pay off">
               <ResponsiveContainer width="100%" height={230}>
                 <BarChart data={CX.byReadinessTopic} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="26%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={52} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={52} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Registered" fill="#85B7EB" radius={[4, 4, 0, 0]} maxBarSize={24} />
                   <Bar dataKey="Attended"   fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={24} />
@@ -780,9 +780,9 @@ export default function HealthXPage() {
               sub="Institutions, students, employers and leads — year on year">
               <ResponsiveContainer width="100%" height={230}>
                 <LineChart data={CX.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={34} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--chart-text)" }} axisLine={false} tickLine={false} width={34} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Line type="monotone" dataKey="Students"  stroke="#14306B" strokeWidth={2.5} dot={{ r: 4, fill: "#14306B", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                   <Line type="monotone" dataKey="Leads"     stroke="#0F6E56" strokeWidth={2.5} dot={{ r: 4, fill: "#0F6E56", strokeWidth: 0 }} activeDot={{ r: 6 }} />

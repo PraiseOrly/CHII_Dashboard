@@ -104,9 +104,9 @@ export default function AfricaChoropleth() {
           {METRICS.map(m => (
             <button key={m.key} onClick={() => setMetric(m.key)} style={{
               padding: "4px 12px", borderRadius: 6, border: "1px solid",
-              borderColor: metric === m.key ? accent : "rgba(0,33,71,0.12)",
+              borderColor: metric === m.key ? accent : "var(--border-subtle)",
               backgroundColor: metric === m.key ? accent : "transparent",
-              color: metric === m.key ? "white" : "#4B5563",
+              color: metric === m.key ? "white" : "var(--text-secondary)",
               fontSize: 11, fontWeight: 600, cursor: "pointer",
               transition: "all 0.15s",
             }}>
@@ -119,9 +119,9 @@ export default function AfricaChoropleth() {
           onChange={e => setRegion(e.target.value as Region)}
           style={{
             padding: "4px 8px", borderRadius: 6,
-            border: "1px solid rgba(0,33,71,0.12)",
-            fontSize: 11, color: "#374151",
-            backgroundColor: "white", cursor: "pointer",
+            border: "1px solid var(--border-subtle)",
+            fontSize: 11, color: "var(--text-primary)",
+            backgroundColor: "var(--bg-surface)", cursor: "pointer",
           }}
         >
           {REGIONS.map(r => (
@@ -136,7 +136,7 @@ export default function AfricaChoropleth() {
         {/* Map */}
         <div style={{
           flex: 1, position: "relative", borderRadius: 8, overflow: "hidden",
-          backgroundColor: "#EEF4FB",
+          backgroundColor: "var(--bg-surface-raised)",
         }}>
           {/* Zoom controls — top left */}
           <div style={{
@@ -149,8 +149,8 @@ export default function AfricaChoropleth() {
             ].map(b => (
               <button key={b.label} onClick={b.fn} style={{
                 width: 26, height: 26, borderRadius: 6,
-                border: "1px solid rgba(0,33,71,0.12)", backgroundColor: "white",
-                color: "#374151", fontSize: 16, fontWeight: 600, lineHeight: 1,
+                border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)",
+                color: "var(--text-primary)", fontSize: 16, fontWeight: 600, lineHeight: 1,
                 cursor: "pointer", display: "flex", alignItems: "center",
                 justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
               }}>
@@ -159,11 +159,11 @@ export default function AfricaChoropleth() {
             ))}
             <button onClick={resetView} title="Reset map view" style={{
               width: 26, height: 26, borderRadius: 6,
-              border: "1px solid rgba(0,33,71,0.12)", backgroundColor: "white",
-              color: "#374151", cursor: "pointer", display: "flex", alignItems: "center",
+              border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)",
+              color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center",
               justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
             }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
             </button>
           </div>
           <ComposableMap
@@ -253,7 +253,7 @@ export default function AfricaChoropleth() {
 
           {/* Color scale */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Scale</p>
+            <p style={{ fontSize: 9, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Scale</p>
             <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
               <div style={{
                 width: 12, height: 80, borderRadius: 4, flexShrink: 0,
@@ -264,23 +264,23 @@ export default function AfricaChoropleth() {
                   : "linear-gradient(to bottom, #042C53, #C7DFFE)",
               }} />
               <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: 80 }}>
-                <span style={{ fontSize: 10, color: "#6B7280" }}>High</span>
-                <span style={{ fontSize: 10, color: "#6B7280" }}>Low</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)" }}>High</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)" }}>Low</span>
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10 }}>
-              <div style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: "#E5E7EB", border: "1px solid #D1D5DB", flexShrink: 0 }} />
-              <span style={{ fontSize: 10, color: "#6B7280" }}>No data</span>
+              <div style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: "var(--border-subtle)", border: `1px solid var(--border-default)`, flexShrink: 0 }} />
+              <span style={{ fontSize: 10, color: "var(--text-muted)" }}>No data</span>
             </div>
           </div>
 
           {/* Top countries */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Top Countries</p>
+            <p style={{ fontSize: 9, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Top Countries</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
               {topCountries.map(([country, value]) => (
                 <div key={country} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 6 }}>
-                  <span style={{ fontSize: 11, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 11, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {country.length > 13 ? country.slice(0, 13) + "…" : country}
                   </span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: accent, flexShrink: 0 }}>{value}</span>

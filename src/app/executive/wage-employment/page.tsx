@@ -22,8 +22,8 @@ import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import { DonutRing as Donut } from "@/components/charts/donut-chart";
 
 /* ── palette ──────────────────────────────────────────── */
-const NAVY = "#14306B";
-const BAND = "#14306B";
+const NAVY = "var(--brand-secondary)";
+const BAND = "var(--brand-secondary)";
 const TICK = "#D17A86";
 const C_TOTAL = "#102C5E";
 const C_FEMALE = "#479BD6";
@@ -91,7 +91,7 @@ function Panel({ title, subtitle, info, children }: {
                   onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
                   <Info size={11} color="rgba(181,212,244,0.85)" />
                   {tip && (
-                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#14306B", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid #E0ECFF", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "var(--brand-secondary)", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid #E0ECFF", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
                       {info}
                     </span>
                   )}
@@ -149,7 +149,7 @@ function WrapTick({ x, y, payload }: any) {
   return (
     <g transform={`translate(${x},${y + 8})`}>
       {lines.slice(0, 2).map((ln, i) => (
-        <text key={i} x={0} y={i * 11} textAnchor="middle" fontSize={9} fill="#374151">{ln}</text>
+        <text key={i} x={0} y={i * 11} textAnchor="middle" fontSize={9} fill="var(--chart-label)">{ln}</text>
       ))}
     </g>
   );
@@ -313,11 +313,11 @@ export default function WageEmploymentPage() {
   const reset = () => { setYear("all"); setProgram("all"); setPtype("all"); setGender("all"); setCountry("all"); setCohort("all"); };
 
   return (
-    <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
@@ -544,7 +544,7 @@ export default function WageEmploymentPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Employed" fill={BAND} radius={[0, 4, 4, 0]} barSize={16}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -558,7 +558,7 @@ export default function WageEmploymentPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Employed" fill={C_FEMALE} radius={[0, 4, 4, 0]} barSize={16}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -581,7 +581,7 @@ export default function WageEmploymentPage() {
                 <Tooltip content={<PctTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Employment rate" fill={BAND} radius={[0, 4, 4, 0]} barSize={22}>
-                  <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} formatter={(v: number) => `${v}%`} />
+                  <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} formatter={(v: number) => `${v}%`} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -645,7 +645,7 @@ export default function WageEmploymentPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Respondents" fill={BAND} radius={[0, 4, 4, 0]} barSize={20}>
-                  <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                  <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -661,7 +661,7 @@ export default function WageEmploymentPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Respondents" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={40}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -677,7 +677,7 @@ export default function WageEmploymentPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="top" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Respondents" fill={BAND} radius={[4, 4, 0, 0]} barSize={40}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

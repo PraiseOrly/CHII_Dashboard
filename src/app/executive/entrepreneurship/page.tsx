@@ -22,8 +22,8 @@ import StatsKpiCard from "@/components/ui/stat-kpi-card";
 import { DonutRing as Donut } from "@/components/charts/donut-chart";
 
 /* ── palette ─────────────────────────────────────────── */
-const NAVY = "#14306B";
-const BAND = "#14306B";
+const NAVY = "var(--brand-secondary)";
+const BAND = "var(--brand-secondary)";
 const TICK = "#D17A86";
 const PALETTE = ["#102C5E", "#479BD6", "#D45F2C", "#A81B2D", "#102C5E", "#D17A86", "#C5D2E0"];
 const GENDER_COLOR: Record<Gender, string> = { Female: "#102C5E", Male: "#479BD6", "Non-binary": "#D45F2C" };
@@ -86,7 +86,7 @@ function Panel({ title, subtitle, info, children }: {
                   onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
                   <Info size={11} color="rgba(181,212,244,0.85)" />
                   {tip && (
-                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "#14306B", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid #E0ECFF", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: "var(--brand-secondary)", fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: "1px solid #E0ECFF", zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
                       {info}
                     </span>
                   )}
@@ -351,11 +351,11 @@ export default function EntrepreneurshipPage() {
   }, []);
 
   return (
-    <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
 
       {/* ── Header ─────────────────────────────────────── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#102C5E", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
         <HeaderDesign />
         <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
           <div style={{ textAlign: "center" }}>
@@ -465,7 +465,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={22}>
-                    <LabelList dataKey="value" position="right" fontSize={9.5} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={9.5} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -484,10 +484,10 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="All Enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={40}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                   <Bar dataKey="female" name="Female-Led" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={40}>
-                    <LabelList dataKey="female" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="female" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -556,7 +556,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Founders" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={34}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -573,7 +573,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={30}>
-                    <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={9.5} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -588,7 +588,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Enterprises" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={26}>
-                    <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={9.5} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -641,7 +641,7 @@ export default function EntrepreneurshipPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Jobs" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={48}>
-                  <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                  <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -658,7 +658,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Jobs" fill={C_FEMALE} radius={[4, 4, 0, 0]} barSize={48}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -673,7 +673,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Jobs" fill={C_ORANGE} radius={[4, 4, 0, 0]} barSize={48}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -688,7 +688,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Jobs" fill={C_RED} radius={[4, 4, 0, 0]} barSize={48}>
-                    <LabelList dataKey="value" position="top" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -702,7 +702,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Jobs" fill={C_INDIGO} radius={[0, 4, 4, 0]} barSize={20}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -755,7 +755,7 @@ export default function EntrepreneurshipPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Reporting" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={64}>
-                  <LabelList dataKey="value" position="top" fontSize={11} fill="#374151" fontWeight={700} formatter={(val: number) => `${val}%`} />
+                  <LabelList dataKey="value" position="top" fontSize={11} fill="var(--chart-label)" fontWeight={700} formatter={(val: number) => `${val}%`} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -770,7 +770,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Respondents" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={18}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -784,7 +784,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Founders" fill={C_FEMALE} radius={[0, 4, 4, 0]} barSize={18}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -799,7 +799,7 @@ export default function EntrepreneurshipPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={18}>
-                  <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                  <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -813,7 +813,7 @@ export default function EntrepreneurshipPage() {
                 <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                 <Bar dataKey="value" name="Enterprises" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={16}>
-                  <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                  <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -848,7 +848,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Founders" fill={C_ACCENT} radius={[0, 4, 4, 0]} barSize={16}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -862,7 +862,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Helpfulness" fill={C_FEMALE} radius={[0, 4, 4, 0]} barSize={16}>
-                    <LabelList dataKey="value" position="right" fontSize={10} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="right" fontSize={10} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -881,7 +881,7 @@ export default function EntrepreneurshipPage() {
                   <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(0,33,71,0.04)" }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 10 }} />
                   <Bar dataKey="value" name="Supported enterprises" fill={C_ACCENT} radius={[4, 4, 0, 0]} barSize={26}>
-                    <LabelList dataKey="value" position="top" fontSize={9.5} fill="#374151" fontWeight={700} />
+                    <LabelList dataKey="value" position="top" fontSize={9.5} fill="var(--chart-label)" fontWeight={700} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

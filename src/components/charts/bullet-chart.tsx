@@ -20,9 +20,9 @@ export default function BulletChart({
 }) {
   const pct = (v: number) => `${((v - min) / (max - min)) * 100}%`;
   const bands: { from: number; to: number; fill: string }[] = [
-    { from: 3.5, to: 4.0, fill: "#F1EFE8" },
-    { from: 4.0, to: 4.5, fill: "#E1DDD1" },
-    { from: 4.5, to: 5.0, fill: "#CFC9B7" },
+    { from: 3.5, to: 4.0, fill: "var(--bg-surface-raised)" },
+    { from: 4.0, to: 4.5, fill: "var(--border-subtle)" },
+    { from: 4.5, to: 5.0, fill: "var(--border-default)" },
   ];
 
   return (
@@ -47,7 +47,7 @@ export default function BulletChart({
             }} />
             {/* target tick */}
             <div className="absolute" style={{
-              left: pct(target), top: -3, height: 20, width: 2, backgroundColor: "#111827",
+              left: pct(target), top: -3, height: 20, width: 2, backgroundColor: "var(--text-primary)",
             }} />
           </div>
 

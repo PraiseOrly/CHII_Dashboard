@@ -18,7 +18,7 @@ export default function CoursePage() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F8F9FA" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
       <PortalNav portal="hemp" />
 
       {/* ── HEADER ─── */}
