@@ -762,15 +762,44 @@ export default function HENTOverview() {
                 <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-                    Funding
+                    Funding Overview
                   </p>
-                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Capital deployment across fund types</p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Capital deployment across fund types, stages, and efficiency metrics</p>
                 </div>
               </div>
             </div>
             <div style={{ marginBottom: 24 }} />
+
+            {/* Funding KPI Strip */}
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, padding: "16px 20px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 24 }}>
+                  <div style={{ borderRight: `1px solid ${LIGHT_BORDER}`, paddingRight: 20 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#6B7280", margin: "0 0 6px 0", letterSpacing: "0.02em" }}>Total Funding Deployed</p>
+                    <p style={{ fontSize: 20, fontWeight: 800, color: BRAND_DK, margin: 0 }}>{fmt$(TOTAL_FUNDING)}</p>
+                    <p style={{ fontSize: 10, color: "#9CA3AF", marginTop: 4, margin: "4px 0 0 0" }}>To {venturesFunded} ventures</p>
+                  </div>
+                  <div style={{ borderRight: `1px solid ${LIGHT_BORDER}`, paddingRight: 20 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#6B7280", margin: "0 0 6px 0", letterSpacing: "0.02em" }}>Average Ticket Size</p>
+                    <p style={{ fontSize: 20, fontWeight: 800, color: BRAND_DK, margin: 0 }}>{fmt$(venturesFunded > 0 ? Math.round(TOTAL_FUNDING / venturesFunded) : 0)}</p>
+                    <p style={{ fontSize: 10, color: "#9CA3AF", marginTop: 4, margin: "4px 0 0 0" }}>Per venture</p>
+                  </div>
+                  <div style={{ borderRight: `1px solid ${LIGHT_BORDER}`, paddingRight: 20 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#6B7280", margin: "0 0 6px 0", letterSpacing: "0.02em" }}>Cost per Job</p>
+                    <p style={{ fontSize: 20, fontWeight: 800, color: BRAND_DK, margin: 0 }}>{fmt$(TOTAL_JOBS > 0 ? Math.round(TOTAL_FUNDING / TOTAL_JOBS) : 0)}</p>
+                    <p style={{ fontSize: 10, color: "#9CA3AF", marginTop: 4, margin: "4px 0 0 0" }}>Capital per job created</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#6B7280", margin: "0 0 6px 0", letterSpacing: "0.02em" }}>Ventures Funded</p>
+                    <p style={{ fontSize: 20, fontWeight: 800, color: BRAND_DK, margin: 0 }}>{venturesFunded}</p>
+                    <p style={{ fontSize: 10, color: "#9CA3AF", marginTop: 4, margin: "4px 0 0 0" }}>{Math.round((venturesFunded / ALL_VENTURES.length) * 100)}% of portfolio</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Capital by Fund Type" subtitle="Charitable, Venture, and Catalytic" info="Funding distribution across Charitable, Venture Fund, and Catalytic sources" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingYear} onFilterChange={setFilterFundingYear}>
+              <Panel title="Capital by Fund Type" subtitle="Charitable, Venture, and Catalytic distribution" info="Funding distribution across Charitable, Venture Fund, and Catalytic sources" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingYear} onFilterChange={setFilterFundingYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart layout="vertical" data={fundTypeData} margin={{ top: 4, right: 36, bottom: 0, left: 8 }} barSize={16} barCategoryGap="20%">
                     <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
@@ -784,7 +813,7 @@ export default function HENTOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Funding Trend" subtitle="Capital deployed over time" info="Annual funding disbursement to ventures" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingTrendYear} onFilterChange={setFilterFundingTrendYear}>
+              <Panel title="Funding Trend" subtitle="Capital deployed annually" info="Annual funding disbursement to ventures showing acceleration or sustainability" filterOptions={["All Years", ...years.map(String)]} filterValue={filterFundingTrendYear} onFilterChange={setFilterFundingTrendYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={cohorts.map(c => ({ year: String(c), funding: ALL_VENTURES.filter(v => v.cohort === c && v.funding > 0).reduce((s, v) => s + v.funding, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -794,6 +823,33 @@ export default function HENTOverview() {
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
                     <Line type="monotone" dataKey="funding" stroke={CHART_COLOR_4} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Funding Deployed" />
                   </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+
+            <div style={{ marginTop: 16 }}>
+              <Panel title="Funding by Venture Stage" subtitle="Capital distribution across Expose, Build, and Scale stages" info="How capital flows to ventures at different stages of development, from initial exposure through scaling">
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={cohorts.map(c => {
+                    const exposeVentures = ALL_VENTURES.filter(v => v.cohort === c && sg(v.stage) === "Expose");
+                    const buildVentures = ALL_VENTURES.filter(v => v.cohort === c && sg(v.stage) === "Build");
+                    const scaleVentures = ALL_VENTURES.filter(v => v.cohort === c && sg(v.stage) === "Scale");
+                    return {
+                      year: String(c),
+                      "Expose": exposeVentures.reduce((s, v) => s + v.funding, 0),
+                      "Build": buildVentures.reduce((s, v) => s + v.funding, 0),
+                      "Scale": scaleVentures.reduce((s, v) => s + v.funding, 0),
+                    };
+                  })} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} tickFormatter={v => fmt$(v)} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip money />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="Expose" stackId="stage" fill={GREEN_RAMP[0]} barSize={26} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Build" stackId="stage" fill={GREEN_RAMP[2]} barSize={26} />
+                    <Bar dataKey="Scale" stackId="stage" fill={GREEN_RAMP[4]} barSize={26} radius={[4, 4, 0, 0]} />
+                  </BarChart>
                 </ResponsiveContainer>
               </Panel>
             </div>

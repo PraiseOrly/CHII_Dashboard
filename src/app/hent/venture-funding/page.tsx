@@ -321,7 +321,7 @@ export default function VentureFundingPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 {D.byMilestone.map(d => (
                   <div key={d.name} className="flex items-center gap-1.5 text-[10px]">
                     <span className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: MILESTONE_HEX[d.name as Milestone] }} />
@@ -332,51 +332,21 @@ export default function VentureFundingPage() {
               </div>
             </ChartCard>
 
-            <ChartCard title="Catalytic Funding Funnel" sub="From portfolio to funded, milestone-delivering and scaling ventures"
-              info="How the portfolio narrows: how many ventures win catalytic funding, how many then deliver at least half their milestones, and how many go on to reach the Scale stage.">
-              <div className="flex flex-col items-center justify-center py-4">
-                <div className="w-full max-w-2xl">
-                  <div className="grid grid-cols-4 gap-3">
-                    {D.funnel.map((step, idx) => {
-                      const pctOfTotal = filtered.length > 0 ? (step.value / filtered.length) * 100 : 0;
-                      const stepColors = ["#1B4332", "#2D6A4F", "#40916C", "#5BB4A0"];
-                      const stepColor = stepColors[idx] || "#2D6A4F";
-                      return (
-                        <div key={step.label}
-                          className="rounded-lg border-2 p-4 text-center transition-all hover:shadow-md"
-                          style={{ borderColor: stepColor, backgroundColor: `${stepColor}08` }}>
-                          <div className="mb-3 flex justify-center">
-                            <div
-                              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                              style={{ backgroundColor: stepColor }}>
-                              {idx + 1}
-                            </div>
-                          </div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-gray-600 mb-2 line-clamp-2">{step.label}</p>
-                          <p className="text-2xl font-black" style={{ color: stepColor }}>{step.value}</p>
-                          <p className="text-[10px] text-gray-500 mt-2 font-medium">{Math.round(pctOfTotal)}% of portfolio</p>
-                          <div className="mt-3 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all"
-                              style={{ width: `${pctOfTotal}%`, backgroundColor: stepColor }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 pt-4 border-t border-gray-100 flex justify-center gap-12 text-[10px]">
-                <div className="text-center">
-                  <p className="text-gray-500 mb-1.5 font-semibold uppercase tracking-wider">Conversion Rate</p>
-                  <p className="text-gray-900 font-black text-xl" style={{ color: "#1B4332" }}>{D.funnel.length > 0 && filtered.length > 0 ? Math.round((D.funnel[D.funnel.length - 1].value / filtered.length) * 100) : 0}%</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-gray-500 mb-1.5 font-semibold uppercase tracking-wider">Funded %</p>
-                  <p className="text-gray-900 font-black text-xl" style={{ color: "#2D6A4F" }}>{filtered.length > 0 ? Math.round((D.funded.length / filtered.length) * 100) : 0}%</p>
-                </div>
-              </div>
+            <ChartCard title="Catalytic Funding" sub="Portfolio distribution across catalytic funding milestones"
+              info="Distribution of ventures across catalytic funding journey stages.">
+              <DonutRing
+                data={D.funnel.map(f => ({ name: f.label, value: f.value }))}
+                colors={{
+                  "Ventures in portfolio": "#1B4332",
+                  "Received catalytic funding": "#2D6A4F",
+                  "Milestones met (≥50%)": "#40916C",
+                  "Progressed to Scale": "#5BB4A0"
+                }}
+                total={filtered.length}
+                totalLabel="Ventures"
+                height={340}
+                legendPercent
+              />
             </ChartCard>
           </div>
         </section>
