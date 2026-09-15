@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, type ComponentType } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
 import HeaderDesign from "@/components/layout/header-design";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import { OUTREACH_PARTICIPANTS } from "@/data/executive/outreach";
@@ -36,7 +37,6 @@ function MapContainer({
     const initMap = async () => {
       const leaflet = await import("leaflet");
       const L = (leaflet as any).default || leaflet;
-      await import("leaflet/dist/leaflet.css");
 
       if (!mapContainer.current) return;
 

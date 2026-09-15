@@ -257,7 +257,8 @@ export default function HENTVentures() {
       if (filterYear !== "All Years" && v.cohort !== parseInt(filterYear)) return false;
       if (filterStage !== "All" && sg(v.stage) !== filterStage) return false;
       if (filterGender !== "All") {
-        const founder = founders.find(f => f.ventureId === v.id);
+        const ventureId = `V${String(v.id).padStart(3, "0")}`;
+        const founder = founders.find(f => f.ventureId === ventureId);
         const gender = founder?.gender || "Unknown";
         if (filterGender === "Female" && gender !== "Female") return false;
         if (filterGender === "Male" && gender !== "Male") return false;

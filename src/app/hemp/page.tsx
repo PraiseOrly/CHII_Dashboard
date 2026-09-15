@@ -567,7 +567,7 @@ export default function HEMPOverview() {
             {[{ n: "all", label: "All Sections" }, ...HEMP_SECTIONS].map(({ n, label }) => {
               const on = n === "all" ? activeSection === "all" : activeSection === n;
               return (
-                <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : n)}
+                <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : (n as number))}
                   style={{
                     fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
                     border: `1px solid ${on ? BRAND : "rgba(0,33,71,0.15)"}`,
@@ -603,11 +603,11 @@ export default function HEMPOverview() {
                 </div>
                 <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   <FilterSelect label="Country" value={geoCountry} onChange={setGeoCountry}
-                    options={["All Countries", ...GEO_COUNTRIES].map(o => ({ value: o, label: o }))} />
+                    options={["All Countries", ...GEO_COUNTRIES]} />
                   <FilterSelect label="Year" value={geoYear} onChange={setGeoYear}
-                    options={["All Years", ...GEO_YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+                    options={["All Years", ...GEO_YEARS.map(String)]} />
                   <FilterSelect label="Region" value={geoRegion} onChange={setGeoRegion}
-                    options={["All Regions", ...GEO_REGIONS].map(o => ({ value: o, label: o }))} />
+                    options={["All Regions", ...GEO_REGIONS]} />
                 </div>
               </div>
             )}

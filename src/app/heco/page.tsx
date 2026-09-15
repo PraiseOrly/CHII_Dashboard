@@ -185,7 +185,7 @@ export default function HecoOverviewPage() {
             {[{ n: "all", label: "All Sections" }, ...HECO_SECTIONS].map(({ n, label }) => {
               const on = n === "all" ? activeSection === "all" : activeSection === n;
               return (
-                <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : n)}
+                <button key={n} onClick={() => setActiveSection(n === "all" ? "all" : (n as number))}
                   style={{
                     fontSize: 11.5, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
                     border: `1px solid ${on ? BRAND : "rgba(0,33,71,0.15)"}`,
@@ -221,9 +221,9 @@ export default function HecoOverviewPage() {
                 </div>
                 <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   <FilterSelect label="Year" value={fYear} onChange={setFYear}
-                    options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
+                    options={["All Years", ...YEARS.map(String)]} />
                   <FilterSelect label="Country" value={fCountry} onChange={setFCountry}
-                    options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
+                    options={["All Countries", ...COUNTRIES]} />
                 </div>
               </div>
             )}
