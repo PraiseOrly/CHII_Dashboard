@@ -4,6 +4,48 @@
 
 :root {
   --hent-primary: #0d6b72;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] * {
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+[data-theme="dark"] input::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: #1e293b !important;
+}
+
+[data-theme="dark"] .border-gray-200,
+[data-theme="dark"] .border-b {
+  border-color: #334155 !important;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 /* Smooth scrolling within the main panel */
