@@ -1,5 +1,5 @@
 ﻿"use client";
-import { HeaderStatsPanel } from "@/components/ui/hent";
+import { HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
 import { ChartCard, SectionHeader, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
 import { benchColor } from "@/theme/tokens";
 import { useState, useEffect, useRef } from "react";
@@ -153,7 +153,10 @@ const KPI_TILES = [
 export default function HackathonsPage() {
   const [trendTab, setTrendTab] = useState<"participants" | "projects" | "winners" | "startups">("participants");
   const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterYear, setFilterYear] = useState("All Years");
   const show = (n: number) => activeSection === "all" || activeSection === n;
+  const activeFilterCount = [filterYear !== "All Years"].filter(Boolean).length;
 
   // â”€â”€ per-year trend data â”€â”€
   const participantsTrend = YEARS.map(yr => {
@@ -296,18 +299,60 @@ export default function HackathonsPage() {
         />
 
         {/* â”€â”€ SECTION 1: PARTICIPANT PROFILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        {/* Section pills (HENT Overview design) */}
-        <SectionPills
-          accent="#0E4633"
-          value={activeSection === "all" ? "all" : String(activeSection)}
-          onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-          options={[
-            { label: "All Sections", value: "all" },
-            { label: "Profiles", value: "1" }, { label: "Per Year", value: "2" },
-            { label: "Trends", value: "3" }, { label: "Categories", value: "4" },
-            { label: "Lifecycle", value: "5" },
-          ]}
-        />
+        {/* Section pills + Filter button */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
+            <SectionPills
+              accent="#0E4633"
+              value={activeSection === "all" ? "all" : String(activeSection)}
+              onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+              options={[
+                { label: "All Sections", value: "all" },
+                { label: "Profiles", value: "1" }, { label: "Per Year", value: "2" },
+                { label: "Trends", value: "3" }, { label: "Categories", value: "4" },
+                { label: "Lifecycle", value: "5" },
+              ]}
+            />
+          </div>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={activeFilterCount}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => setFilterYear("All Years")}
+            >
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#0E4633", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  Year
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {["All Years", ...YEARS.map(String)].map(opt => (
+                    <button
+                      key={opt}
+                      onClick={() => setFilterYear(opt)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: filterYear === opt ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${filterYear === opt ? "#2D6A4F" : "rgba(14, 70, 51, 0.12)"}`,
+                        backgroundColor: filterYear === opt ? "#2D6A4F" : "white",
+                        color: filterYear === opt ? "white" : "#0E4633",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </FilterDropdown>
+          </div>
+        </div>
 
         <section style={{ display: show(1) ? undefined : "none" }}>
           <SectionHeader title="Participant Profiles"
