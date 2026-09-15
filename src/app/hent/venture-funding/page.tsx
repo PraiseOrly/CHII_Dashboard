@@ -143,8 +143,8 @@ export default function VentureFundingPage() {
   const D = useMemo(() => derive(filtered), [filtered]);
   const activeCount = (fCohort !== "All Cohorts" ? 1 : 0) + (fSector !== "All Sectors" ? 1 : 0) + (fStatus !== "All Instruments" ? 1 : 0);
 
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [activeSection, setActiveSection] = useState<number>(1);
+  const show = (n: number) => activeSection === n;
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
@@ -186,11 +186,61 @@ export default function VentureFundingPage() {
         <HeaderStatsPanel
           title="Venture Funding Metrics"
           cards={[
-            { label: "Capital Deployed", num: D.totalFunding, displayFmt: fmt$, icon: Banknote, tip: "Total catalytic funding disbursed to ventures across every milestone tranche." },
-            { label: "Ventures Funded", num: D.funded.length, displayFmt: (n) => String(Math.round(n)), icon: Rocket, tip: "Ventures that have received at least one tranche of catalytic funding." },
-            { label: "Milestone Rate", num: D.milestoneRate, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: "Average share of agreed milestones delivered by funded ventures — funding is released against these." },
-            { label: "Progressed to Scale", num: D.progressed, displayFmt: (n) => String(Math.round(n)), icon: TrendingUp, tip: "Funded ventures that have advanced to the Scaling or Investment/Funding stage." },
-            { label: "Jobs Created", num: D.jobs, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Total jobs created to date by ventures that received catalytic funding." },
+            {
+              label: "Capital Deployed",
+              num: D.totalFunding,
+              displayFmt: fmt$,
+              icon: Banknote,
+              sub: `${Math.round((D.totalFunding / 910_904) * 100)}% of $910.9K target`,
+              pace: true,
+              paceA: D.totalFunding,
+              paceT: 910_904,
+              tip: "Total catalytic funding disbursed to ventures across every milestone tranche."
+            },
+            {
+              label: "Ventures Funded",
+              num: D.funded.length,
+              displayFmt: (n) => String(Math.round(n)),
+              icon: Rocket,
+              sub: `${Math.round((D.funded.length / 400) * 100)}% of 400 target`,
+              pace: true,
+              paceA: D.funded.length,
+              paceT: 400,
+              tip: "Ventures that have received at least one tranche of catalytic funding."
+            },
+            {
+              label: "Milestone Rate",
+              num: D.milestoneRate,
+              displayFmt: (n) => `${Math.round(n)}%`,
+              icon: CheckCircle2,
+              sub: `Average delivery · ${D.funded.length} funded ventures`,
+              pace: true,
+              paceA: D.milestoneRate,
+              paceT: 100,
+              tip: "Average share of agreed milestones delivered by funded ventures — funding is released against these."
+            },
+            {
+              label: "Progressed to Scale",
+              num: D.progressed,
+              displayFmt: (n) => String(Math.round(n)),
+              icon: TrendingUp,
+              sub: `${D.funded.length > 0 ? Math.round((D.progressed / D.funded.length) * 100) : 0}% of funded ventures`,
+              pace: true,
+              paceA: D.progressed,
+              paceT: Math.max(D.funded.length > 0 ? Math.round(D.funded.length * 0.5) : 1, 1),
+              tip: "Funded ventures that have advanced to the Scaling or Investment/Funding stage."
+            },
+            {
+              label: "Jobs Created",
+              num: D.jobs,
+              displayFmt: (n) => Math.round(n).toLocaleString(),
+              icon: Users,
+              sub: `${Math.round((D.jobs / 2_000) * 100)}% of 2,000 target`,
+              pace: true,
+              paceA: D.jobs,
+              paceT: 2_000,
+              tip: "Total jobs created to date by ventures that received catalytic funding."
+            },
           ]}
         />
 
@@ -198,13 +248,12 @@ export default function VentureFundingPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
           <SectionPills
             accent={BRAND}
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            value={String(activeSection)}
+            onChange={(v) => setActiveSection(Number(v))}
             options={[
-              { label: "All Sections", value: "all" },
-              { label: "Milestone Deployment", value: "1" },
-              { label: "Over Time", value: "2" },
-              { label: "Instruments & Delivery", value: "3" },
+              { label: "Catalytic Capital & Milestones", value: "1" },
+              { label: "Funding Growth & Sustainability", value: "2" },
+              { label: "Capital Instruments & Venture Outcomes", value: "3" },
             ]}
           />
           <div style={{ position: "relative" }}>
@@ -253,10 +302,10 @@ export default function VentureFundingPage() {
           </div>
         </div>
 
-        {/* ── SECTION 1: Milestone-based deployment ─── */}
+        {/* ── SECTION 1: Catalytic Capital & Milestones ─── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
-          <SectionHeader title="Milestone-Based Deployment"
-            sub="What each tranche of catalytic funding is buying — validation, prototyping, customer discovery, pilots and early growth" />
+          <SectionHeader title="Catalytic Capital & Milestones"
+            sub="How catalytic funding is deployed against venture milestones — from validation through early growth — and the funnel from portfolio to scaling ventures" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Capital by Milestone" sub="Funding deployed against each milestone purpose"
@@ -272,16 +321,12 @@ export default function VentureFundingPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="mt-4 pt-3 border-t border-gray-100 space-y-1.5">
+              <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-3">
                 {D.byMilestone.map(d => (
-                  <div key={d.name} className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1.5 text-gray-600">
-                      <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: MILESTONE_HEX[d.name as Milestone] }} />
-                      {d.name}
-                    </span>
-                    <span className="text-gray-500 tabular-nums">
-                      <b className="text-gray-700">{fmt$(d.Funding)}</b> · {d.Ventures} ventures
-                    </span>
+                  <div key={d.name} className="flex items-center gap-1.5 text-[10px]">
+                    <span className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: MILESTONE_HEX[d.name as Milestone] }} />
+                    <span className="text-gray-700 font-medium">{d.name.split(" ").map(w => w[0]).join("")}</span>
+                    <span className="text-gray-500">{d.Ventures}v</span>
                   </div>
                 ))}
               </div>
@@ -289,17 +334,56 @@ export default function VentureFundingPage() {
 
             <ChartCard title="Catalytic Funding Funnel" sub="From portfolio to funded, milestone-delivering and scaling ventures"
               info="How the portfolio narrows: how many ventures win catalytic funding, how many then deliver at least half their milestones, and how many go on to reach the Scale stage.">
-              <Funnel steps={D.funnel} />
-              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
-                {filtered.length ? Math.round(D.funded.length / filtered.length * 100) : 0}% of the portfolio has received catalytic funding
-              </p>
+              <div className="flex flex-col items-center justify-center py-4">
+                <div className="w-full max-w-2xl">
+                  <div className="grid grid-cols-4 gap-3">
+                    {D.funnel.map((step, idx) => {
+                      const pctOfTotal = filtered.length > 0 ? (step.value / filtered.length) * 100 : 0;
+                      const stepColors = ["#1B4332", "#2D6A4F", "#40916C", "#5BB4A0"];
+                      const stepColor = stepColors[idx] || "#2D6A4F";
+                      return (
+                        <div key={step.label}
+                          className="rounded-lg border-2 p-4 text-center transition-all hover:shadow-md"
+                          style={{ borderColor: stepColor, backgroundColor: `${stepColor}08` }}>
+                          <div className="mb-3 flex justify-center">
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                              style={{ backgroundColor: stepColor }}>
+                              {idx + 1}
+                            </div>
+                          </div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-gray-600 mb-2 line-clamp-2">{step.label}</p>
+                          <p className="text-2xl font-black" style={{ color: stepColor }}>{step.value}</p>
+                          <p className="text-[10px] text-gray-500 mt-2 font-medium">{Math.round(pctOfTotal)}% of portfolio</p>
+                          <div className="mt-3 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${pctOfTotal}%`, backgroundColor: stepColor }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 pt-4 border-t border-gray-100 flex justify-center gap-12 text-[10px]">
+                <div className="text-center">
+                  <p className="text-gray-500 mb-1.5 font-semibold uppercase tracking-wider">Conversion Rate</p>
+                  <p className="text-gray-900 font-black text-xl" style={{ color: "#1B4332" }}>{D.funnel.length > 0 && filtered.length > 0 ? Math.round((D.funnel[D.funnel.length - 1].value / filtered.length) * 100) : 0}%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-gray-500 mb-1.5 font-semibold uppercase tracking-wider">Funded %</p>
+                  <p className="text-gray-900 font-black text-xl" style={{ color: "#2D6A4F" }}>{filtered.length > 0 ? Math.round((D.funded.length / filtered.length) * 100) : 0}%</p>
+                </div>
+              </div>
             </ChartCard>
           </div>
         </section>
 
-        {/* ── SECTION 2: Deployment over time ─── */}
+        {/* ── SECTION 2: Funding Growth & Sustainability ─── */}
         <section style={{ display: show(2) ? undefined : "none" }}>
-          <SectionHeader title="Deployment Over Time" sub="Capital deployed per cohort and the cumulative catalytic investment" />
+          <SectionHeader title="Funding Growth & Sustainability" sub="Capital deployment trends per cohort, cumulative funding trajectory, and whether funding is accelerating or sustainable" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Capital Deployed per Cohort" sub="Amount disbursed and ventures funded each year"
@@ -333,10 +417,10 @@ export default function VentureFundingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 3: Instruments, sectors, delivery ─── */}
+        {/* ── SECTION 3: Capital Instruments & Venture Outcomes ─── */}
         <section style={{ display: show(3) ? undefined : "none" }}>
-          <SectionHeader title="Instruments, Sectors & Milestone Delivery"
-            sub="How capital is structured, where it lands, and whether funded ventures are hitting their milestones" />
+          <SectionHeader title="Capital Instruments & Venture Outcomes"
+            sub="Mix of funding instruments, capital distribution by sector, and milestone delivery performance to show the relationship between capital type and venture outcomes" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Funding Instrument Mix" sub="Ventures by funding instrument"
