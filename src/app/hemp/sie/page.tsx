@@ -130,7 +130,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
 }
 
 export default function HEMPSie() {
-  const categories = ["Programme Reach", "Exposure & Outcomes", "Geography & Engagement", "Participant Profile"];
+  const categories = ["Programme Reach", "Exposure & Outcomes", "Geography & Engagement", "Participant Profile", "Quality & Feedback"];
   const [activeCategory, setActiveCategory] = useState(categories[0]);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -163,6 +163,26 @@ export default function HEMPSie() {
   const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
   const [filterExposureYear, setFilterExposureYear] = useState("All Years");
   const [filterGeoYear, setFilterGeoYear] = useState("All Years");
+  const [filterFunnelYear, setFilterFunnelYear] = useState("All Years");
+  const [filterFunnelCohort, setFilterFunnelCohort] = useState("All Cohorts");
+  const [filterFunnelOpen, setFilterFunnelOpen] = useState(false);
+
+  const avgRelevance = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.relevance, 0) / filteredCohorts.length).toFixed(1)) : 0;
+  const avgQuality = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.quality, 0) / filteredCohorts.length).toFixed(1)) : 0;
+  const avgUsefulness = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.usefulness, 0) / filteredCohorts.length).toFixed(1)) : 0;
+  const avgConfidence = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.confidence, 0) / filteredCohorts.length).toFixed(1)) : 0;
+  const avgNPS = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.nps, 0) / filteredCohorts.length).toFixed(1)) : 0;
+  const avgCompletion = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.completionFullProgramme, 0) / filteredCohorts.length).toFixed(1)) : 0;
+
+  const funnelFilteredCohorts = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterFunnelYear !== "All Years" && c.year !== parseInt(filterFunnelYear)) return false;
+      if (filterFunnelCohort !== "All Cohorts" && c.name !== filterFunnelCohort) return false;
+      return true;
+    });
+  }, [filterFunnelYear, filterFunnelCohort]);
+
+  const cohortNames = Array.from(new Set(sieCohorts.map(c => c.name))).sort();
 
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
@@ -565,6 +585,193 @@ export default function HEMPSie() {
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
                     <Line type="monotone" dataKey="satisfaction" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
                   </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Quality & Feedback") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Quality & Feedback
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Participant experience and programme quality ratings</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+                <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8, justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
+                    <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#479BD6", flexShrink: 0 }} />
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2, margin: 0 }}>Programme Completion Funnel</p>
+                      <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 1, margin: 0 }}>Participation journey through all phases</p>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={() => setFilterFunnelOpen(s => !s)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 600,
+                          padding: "5px 10px",
+                          borderRadius: 10,
+                          border: `1px solid ${LIGHT_BORDER}`,
+                          borderLeft: `5px solid white`,
+                          backgroundColor: "transparent",
+                          color: "white",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Year: {filterFunnelYear} <ChevronDown size={12} />
+                      </button>
+                      {filterFunnelOpen && (
+                        <div style={{
+                          position: "absolute",
+                          top: "calc(100% + 4px)",
+                          right: 0,
+                          backgroundColor: "white",
+                          border: `1px solid ${LIGHT_BORDER}`,
+                          borderLeft: `5px solid ${BRAND}`,
+                          borderRadius: 10,
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                          zIndex: 10,
+                          minWidth: 140,
+                          overflow: "hidden",
+                        }}>
+                          <button onClick={() => { setFilterFunnelYear("All Years"); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>All Years</button>
+                          {years.map(y => (
+                            <button key={y} onClick={() => { setFilterFunnelYear(String(y)); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: filterFunnelYear === String(y) ? "#F0F4F8" : "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>{y}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={() => setFilterFunnelOpen(s => !s)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 600,
+                          padding: "5px 10px",
+                          borderRadius: 10,
+                          border: `1px solid ${LIGHT_BORDER}`,
+                          borderLeft: `5px solid white`,
+                          backgroundColor: "transparent",
+                          color: "white",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Cohort: {filterFunnelCohort} <ChevronDown size={12} />
+                      </button>
+                      {filterFunnelOpen && (
+                        <div style={{
+                          position: "absolute",
+                          top: "calc(100% + 4px)",
+                          right: 0,
+                          backgroundColor: "white",
+                          border: `1px solid ${LIGHT_BORDER}`,
+                          borderLeft: `5px solid ${BRAND}`,
+                          borderRadius: 10,
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                          zIndex: 10,
+                          minWidth: 140,
+                          overflow: "hidden",
+                        }}>
+                          <button onClick={() => { setFilterFunnelCohort("All Cohorts"); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>All Cohorts</button>
+                          {cohortNames.map(c => (
+                            <button key={c} onClick={() => { setFilterFunnelCohort(c); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: filterFunnelCohort === c ? "#F0F4F8" : "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>{c}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 18px 18px" }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={[
+                      { stage: "Selected", participants: funnelFilteredCohorts.reduce((s, c) => s + c.selected, 0) },
+                      { stage: "Completed Virtual", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedVirtual, 0) },
+                      { stage: "Travelled In-Country", participants: funnelFilteredCohorts.reduce((s, c) => s + c.travelledInCountry, 0) },
+                      { stage: "Full Completion", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedProgramme, 0) },
+                    ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="stage" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="participants" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Participants">
+                      <LabelList dataKey="participants" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <Panel title="Quality Ratings" subtitle="Programme content assessment (1-5 scale)" info="Average ratings for relevance, quality, and usefulness">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { metric: "Relevance", rating: avgRelevance },
+                    { metric: "Quality", rating: avgQuality },
+                    { metric: "Usefulness", rating: avgUsefulness },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="rating" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]} name="Rating">
+                      <LabelList dataKey="rating" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Skill Confidence & NPS" subtitle="Learning confidence and recommendation likelihood" info="5-point confidence scale and 0-10 Net Promoter Score">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Confidence", value: avgConfidence, metric: "confidence" },
+                    { name: "NPS (÷2)", value: avgNPS / 2, metric: "nps" },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => v.toFixed(1)} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Score">
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} formatter={(v) => v.toFixed(1)} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Full Programme Completion Rate" subtitle="% who completed both virtual and in-person phases" info="Participants who successfully completed the full immersion experience">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    completion: c.completionFullProgramme,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="completion" fill="#A8BFD6" barSize={46} radius={[4, 4, 0, 0]} name="Completion %">
+                      <LabelList dataKey="completion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} formatter={(v) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </Panel>
             </div>

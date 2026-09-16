@@ -137,20 +137,29 @@ export default function HEMPInternships() {
   const [filterYear, setFilterYear] = useState("All Years");
   const [filterSector, setFilterSector] = useState("All");
   const [filterPartner, setFilterPartner] = useState("All");
+  const [filterCohort, setFilterCohort] = useState("All");
 
   const show = (category: string) => activeCategory === category;
-  const activeFilterCount = [filterYear !== "All Years", filterSector !== "All", filterPartner !== "All"].filter(Boolean).length;
+  const activeFilterCount = [filterYear !== "All Years", filterSector !== "All", filterPartner !== "All", filterCohort !== "All"].filter(Boolean).length;
 
   const years = Array.from(new Set(internships.map(i => i.year))).sort();
+  const cohorts = Array.from(new Set(internships.map(i => {
+    const cohortNum = parseInt(i.id.substring(1));
+    return Math.ceil(cohortNum / 5);
+  }))).sort((a, b) => a - b);
 
   const filteredInternships = useMemo(() => {
     return internships.filter(i => {
       if (filterYear !== "All Years" && i.year !== parseInt(filterYear)) return false;
       if (filterSector !== "All" && i.sector !== filterSector) return false;
       if (filterPartner !== "All" && i.partner !== filterPartner) return false;
+      if (filterCohort !== "All") {
+        const cohortNum = Math.ceil(parseInt(i.id.substring(1)) / 5);
+        if (cohortNum !== parseInt(filterCohort)) return false;
+      }
       return true;
     });
-  }, [filterYear, filterSector, filterPartner]);
+  }, [filterYear, filterSector, filterPartner, filterCohort]);
 
   const totalStudents = filteredInternships.reduce((s, i) => s + i.students, 0);
   const femaleStudents = filteredInternships.reduce((s, i) => s + i.femaleStudents, 0);
@@ -303,12 +312,14 @@ export default function HEMPInternships() {
                 setFilterYear("All Years");
                 setFilterSector("All");
                 setFilterPartner("All");
+                setFilterCohort("All");
               }}
             >
               {[
                 { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
                 { label: "Sector", value: filterSector, setValue: setFilterSector, options: ["All", ...INTERNSHIP_SECTORS] },
                 { label: "Partner", value: filterPartner, setValue: setFilterPartner, options: ["All", "Internal", "SFH", "WAG", "KASHA"] },
+                { label: "Cohort", value: filterCohort, setValue: setFilterCohort, options: ["All", ...cohorts.map(c => `Cohort ${c}`)] },
               ].map(filter => (
                 <div key={filter.label} style={{ marginBottom: 12 }}>
                   <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
@@ -400,15 +411,15 @@ export default function HEMPInternships() {
                 </ResponsiveContainer>
               </Panel>
               <Panel title="Satisfaction Scores" subtitle="Student experience ratings by placement" info="Average satisfaction rating (out of 5) for each internship placement">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredInternships.slice(0, 10).map(i => ({ name: i.organization.substring(0, 15), value: i.satisfactionScore }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={filteredInternships.slice(0, 10).map(i => ({ name: i.organization.substring(0, 20), value: i.satisfactionScore }))} layout="vertical" margin={{ top: 6, right: 40, bottom: 6, left: 140 }} barCategoryGap="20%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={130} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill="#7FA5D6" barSize={40} radius={[4, 4, 0, 0]} name="Satisfaction">
-                      <LabelList dataKey="value" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                    <Bar dataKey="value" fill="#7FA5D6" barSize={20} radius={[0, 4, 4, 0]} name="Satisfaction">
+                      <LabelList dataKey="value" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>

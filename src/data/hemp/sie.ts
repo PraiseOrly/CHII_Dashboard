@@ -58,6 +58,13 @@ export interface SieCohort {
   employmentLeads: number;
   projectsAdopted: number;   // partner-defined projects taken forward by the host
   satisfaction: number;      // out of 5
+  /** Participant Feedback Metrics (from feedback form) */
+  relevance: number;         // out of 5
+  quality: number;           // out of 5
+  usefulness: number;        // out of 5
+  confidence: number;        // out of 5
+  nps: number;               // Net Promoter Score 0-10
+  completionFullProgramme: number;  // % who completed both virtual and in-person
 }
 
 export const sieCohorts: SieCohort[] = [
@@ -73,6 +80,7 @@ export const sieCohorts: SieCohort[] = [
     },
     hours: { "Virtual Phase": 32, "In-Country Immersion": 60 },
     employmentLeads: 6, projectsAdopted: 2, satisfaction: 4.2,
+    relevance: 4.0, quality: 4.1, usefulness: 3.9, confidence: 4.0, nps: 7.8, completionFullProgramme: 79,
   },
   {
     id: "SIE02", name: "SIE Cohort II", year: 2025, country: "Rwanda",
@@ -86,6 +94,7 @@ export const sieCohorts: SieCohort[] = [
     },
     hours: { "Virtual Phase": 40, "In-Country Immersion": 72 },
     employmentLeads: 11, projectsAdopted: 4, satisfaction: 4.5,
+    relevance: 4.3, quality: 4.4, usefulness: 4.2, confidence: 4.3, nps: 8.1, completionFullProgramme: 84,
   },
   {
     id: "SIE03", name: "SIE Cohort III — Kenya", year: 2026, country: "Kenya",
@@ -99,6 +108,7 @@ export const sieCohorts: SieCohort[] = [
     },
     hours: { "Virtual Phase": 48, "In-Country Immersion": 80 },
     employmentLeads: 17, projectsAdopted: 6, satisfaction: 4.7,
+    relevance: 4.5, quality: 4.6, usefulness: 4.4, confidence: 4.5, nps: 8.4, completionFullProgramme: 88,
   },
 ];
 
