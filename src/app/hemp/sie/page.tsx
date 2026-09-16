@@ -163,9 +163,7 @@ export default function HEMPSie() {
   const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
   const [filterExposureYear, setFilterExposureYear] = useState("All Years");
   const [filterGeoYear, setFilterGeoYear] = useState("All Years");
-  const [filterFunnelYear, setFilterFunnelYear] = useState("All Years");
-  const [filterFunnelCohort, setFilterFunnelCohort] = useState("All Cohorts");
-  const [filterFunnelOpen, setFilterFunnelOpen] = useState(false);
+  const [filterFunnel, setFilterFunnel] = useState("All Years - All Cohorts");
 
   const avgRelevance = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.relevance, 0) / filteredCohorts.length).toFixed(1)) : 0;
   const avgQuality = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.quality, 0) / filteredCohorts.length).toFixed(1)) : 0;
@@ -175,14 +173,17 @@ export default function HEMPSie() {
   const avgCompletion = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.completionFullProgramme, 0) / filteredCohorts.length).toFixed(1)) : 0;
 
   const funnelFilteredCohorts = useMemo(() => {
+    const [yearPart, cohortPart] = filterFunnel.split(" - ");
     return sieCohorts.filter(c => {
-      if (filterFunnelYear !== "All Years" && c.year !== parseInt(filterFunnelYear)) return false;
-      if (filterFunnelCohort !== "All Cohorts" && c.name !== filterFunnelCohort) return false;
+      if (yearPart !== "All Years" && c.year !== parseInt(yearPart)) return false;
+      if (cohortPart !== "All Cohorts" && c.name !== cohortPart) return false;
       return true;
     });
-  }, [filterFunnelYear, filterFunnelCohort]);
+  }, [filterFunnel]);
 
   const cohortNames = Array.from(new Set(sieCohorts.map(c => c.name))).sort();
+
+  const funnelFilterOptions = ["All Years - All Cohorts", ...years.map(y => `${y} - All Cohorts`), ...cohortNames.map(c => `All Years - ${c}`)];
 
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
@@ -606,110 +607,14 @@ export default function HEMPSie() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
-                <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8, justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
-                    <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#479BD6", flexShrink: 0 }} />
-                    <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2, margin: 0 }}>Programme Completion Funnel</p>
-                      <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 1, margin: 0 }}>Participation journey through all phases</p>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <div style={{ position: "relative" }}>
-                      <button
-                        onClick={() => setFilterFunnelOpen(s => !s)}
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          padding: "5px 10px",
-                          borderRadius: 10,
-                          border: `1px solid ${LIGHT_BORDER}`,
-                          borderLeft: `5px solid white`,
-                          backgroundColor: "transparent",
-                          color: "white",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Year: {filterFunnelYear} <ChevronDown size={12} />
-                      </button>
-                      {filterFunnelOpen && (
-                        <div style={{
-                          position: "absolute",
-                          top: "calc(100% + 4px)",
-                          right: 0,
-                          backgroundColor: "white",
-                          border: `1px solid ${LIGHT_BORDER}`,
-                          borderLeft: `5px solid ${BRAND}`,
-                          borderRadius: 10,
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                          zIndex: 10,
-                          minWidth: 140,
-                          overflow: "hidden",
-                        }}>
-                          <button onClick={() => { setFilterFunnelYear("All Years"); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>All Years</button>
-                          {years.map(y => (
-                            <button key={y} onClick={() => { setFilterFunnelYear(String(y)); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: filterFunnelYear === String(y) ? "#F0F4F8" : "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>{y}</button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ position: "relative" }}>
-                      <button
-                        onClick={() => setFilterFunnelOpen(s => !s)}
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          padding: "5px 10px",
-                          borderRadius: 10,
-                          border: `1px solid ${LIGHT_BORDER}`,
-                          borderLeft: `5px solid white`,
-                          backgroundColor: "transparent",
-                          color: "white",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Cohort: {filterFunnelCohort} <ChevronDown size={12} />
-                      </button>
-                      {filterFunnelOpen && (
-                        <div style={{
-                          position: "absolute",
-                          top: "calc(100% + 4px)",
-                          right: 0,
-                          backgroundColor: "white",
-                          border: `1px solid ${LIGHT_BORDER}`,
-                          borderLeft: `5px solid ${BRAND}`,
-                          borderRadius: 10,
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                          zIndex: 10,
-                          minWidth: 140,
-                          overflow: "hidden",
-                        }}>
-                          <button onClick={() => { setFilterFunnelCohort("All Cohorts"); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>All Cohorts</button>
-                          {cohortNames.map(c => (
-                            <button key={c} onClick={() => { setFilterFunnelCohort(c); setFilterFunnelOpen(false); }} style={{ width: "100%", textAlign: "left", padding: "8px 12px", border: "none", backgroundColor: filterFunnelCohort === c ? "#F0F4F8" : "white", color: BRAND_DK, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>{c}</button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "12px 18px 18px" }}>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={[
-                      { stage: "Selected", participants: funnelFilteredCohorts.reduce((s, c) => s + c.selected, 0) },
-                      { stage: "Completed Virtual", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedVirtual, 0) },
-                      { stage: "Travelled In-Country", participants: funnelFilteredCohorts.reduce((s, c) => s + c.travelledInCountry, 0) },
-                      { stage: "Full Completion", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedProgramme, 0) },
-                    ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+              <Panel title="Programme Completion Funnel" subtitle="Participation journey through all phases" info="Progression from selected participants through virtual and in-country completion" filterOptions={funnelFilterOptions} filterValue={filterFunnel} onFilterChange={setFilterFunnel}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { stage: "Selected", participants: funnelFilteredCohorts.reduce((s, c) => s + c.selected, 0) },
+                    { stage: "Completed Virtual", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedVirtual, 0) },
+                    { stage: "Travelled In-Country", participants: funnelFilteredCohorts.reduce((s, c) => s + c.travelledInCountry, 0) },
+                    { stage: "Full Completion", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedProgramme, 0) },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="stage" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
@@ -719,9 +624,8 @@ export default function HEMPSie() {
                       <LabelList dataKey="participants" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+                </ResponsiveContainer>
+              </Panel>
               <Panel title="Quality Ratings" subtitle="Programme content assessment (1-5 scale)" info="Average ratings for relevance, quality, and usefulness">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
