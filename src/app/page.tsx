@@ -321,38 +321,59 @@ export default function LoginPage() {
 
         {/* ══ RIGHT (brand panel) ═══════════════════════════════════════ */}
         <div
-          className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-8"
+          className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-10"
           style={{ background: "#102C5E" }}
         >
-          <div className="relative z-10 flex flex-col h-full">
-            {/* Logo + narrative + capabilities */}
-            <div className="flex flex-col flex-1">
-              <img
-                src="/logos/CHII-Logo.png"
-                alt="Centre for Health Innovation and Impact"
-                style={{ height: 44, width: "auto", objectFit: "contain", display: "block", flexShrink: 0, marginBottom: 24 }}
-              />
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            {/* Logo */}
+            <img
+              src="/logos/CHII-Logo.png"
+              alt="Centre for Health Innovation and Impact"
+              style={{ height: 40, width: "auto", objectFit: "contain", display: "block", flexShrink: 0, marginBottom: 28 }}
+            />
 
-              <p style={{ fontSize: 14, lineHeight: 1.7, color: "#94A3B8", marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
+            {/* Mission narrative */}
+            <div style={{ marginBottom: 32 }}>
+              <p style={{ fontSize: 15, lineHeight: 1.8, color: "white", fontWeight: 500, maxWidth: "340px", margin: 0 }}>
                 Explore how CHII builds the evidence base for health innovation across Africa, tracking how young people move through programmes into dignified work, ventures, and lasting impact on health systems across the continent.
               </p>
+            </div>
 
-              {/* Capabilities */}
-              <ul className="flex flex-col" style={{ listStyle: "none", margin: 0, padding: 0, gap: 16, maxWidth: "360px" }}>
+            {/* Capabilities — enhanced visual treatment */}
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 20 }}>
+                Platform Capabilities
+              </p>
+              <ul className="flex flex-col" style={{ listStyle: "none", margin: 0, padding: 0, gap: 18, maxWidth: "340px" }}>
                 {CAPABILITIES.map(({ icon: Icon, title, body }) => (
-                  <li key={title}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
-                      <Icon size={16} color="#94A3B8" strokeWidth={1.5} />
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#94A3B8", lineHeight: 1.3, margin: 0, letterSpacing: "0.005em" }}>{title}</p>
+                  <li key={title} className="flex items-start gap-3">
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        minWidth: 32,
+                        borderRadius: 8,
+                        background: "rgba(255,255,255,0.08)",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginTop: 1,
+                      }}
+                    >
+                      <Icon size={16} color="white" strokeWidth={1.5} />
                     </div>
-                    <p style={{ fontSize: 12.5, color: "#94A3B8", opacity: 0.75, lineHeight: 1.5, margin: 0 }}>{body}</p>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "white", lineHeight: 1.3, margin: 0, marginBottom: 2 }}>{title}</p>
+                      <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, margin: 0 }}>{body}</p>
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* Copyright */}
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", flexShrink: 0, paddingTop: 20 }}>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", flexShrink: 0, margin: 0 }}>
               © 2026 CHII · African Leadership University
             </p>
           </div>
