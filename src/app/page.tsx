@@ -32,10 +32,10 @@ const PORTALS = [
 
 /** What the platform does — four capabilities, not a description of the org. */
 const CAPABILITIES = [
-  { icon: BarChart3,  title: "Real-time Analytics",  body: "Track programme KPIs and outcomes." },
-  { icon: TrendingUp, title: "Impact Dashboards",    body: "Monitor performance across initiatives." },
-  { icon: Zap,        title: "Data Intelligence",    body: "Actionable insights at a glance." },
-  { icon: FileText,   title: "Smart Reporting",      body: "Generate and export reports instantly." },
+  { icon: BarChart3,  title: "Real Outcomes",       body: "Monitor progress toward your mission." },
+  { icon: TrendingUp, title: "Impact Evidence",     body: "Data that proves change happens." },
+  { icon: Zap,        title: "Strategic Insights",  body: "Evidence guiding better decisions." },
+  { icon: FileText,   title: "Transform Stories",   body: "Reports that inspire action." },
 ] as const;
 
 const PARTNERS = [
@@ -62,6 +62,23 @@ export default function LoginPage() {
   const [focused, setFocused]           = useState<string | null>(null);
   const [hovered, setHovered]           = useState(false);
 
+  // Add option styling for dropdown
+  React.useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      select option {
+        background: white;
+        color: #172B4D;
+      }
+      select option:checked {
+        background: #F3F7FF;
+        color: #14306B;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -71,8 +88,8 @@ export default function LoginPage() {
 
   const field = (name: string): React.CSSProperties => ({
     width: "100%",
-    height: 42,
-    fontSize: 14,
+    height: 36,
+    fontSize: 13,
     fontWeight: 500,
     color: TEXT,
     background: "white",
@@ -80,8 +97,8 @@ export default function LoginPage() {
     boxShadow: focused === name
       ? `0 0 0 2px rgba(20,48,107,0.1), inset 0 0 0 1px ${PRIMARY}`
       : "none",
-    borderRadius: 8,
-    padding: "0 14px",
+    borderRadius: 6,
+    padding: "0 12px",
     outline: "none",
     transition: "border-color .15s, box-shadow .15s",
   });
@@ -111,20 +128,20 @@ export default function LoginPage() {
               Welcome Back
             </h1>
             <p style={{ fontSize: 14, color: SECONDARY, marginTop: 8, lineHeight: 1.5, marginBottom: 0, fontWeight: 400 }}>
-              Access comprehensive programme analytics and insights
+              Please sign in to access the dashboard
             </p>
 
-            <form onSubmit={handleSubmit} style={{ marginTop: 28 }}>
+            <form onSubmit={handleSubmit} style={{ marginTop: 24 }}>
 
-              <div style={{ marginBottom: 22 }}>
-                <label style={LABEL}>Programme</label>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{...LABEL, marginBottom: 6}}>Programme</label>
                 <div style={{ position: "relative" }}>
                   <select
                     value={portal}
                     onChange={e => setPortal(e.target.value)}
                     onFocus={() => setFocused("portal")}
                     onBlur={() => setFocused(null)}
-                    style={{ ...field("portal"), appearance: "none", WebkitAppearance: "none", paddingRight: 44, cursor: "pointer" }}
+                    style={{ ...field("portal"), appearance: "none", WebkitAppearance: "none", paddingRight: 44, cursor: "pointer", background: "white", backgroundColor: "white" }}
                   >
                     {PORTALS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
                   </select>
@@ -132,8 +149,8 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: 22 }}>
-                <label style={LABEL}>Email address</label>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{...LABEL, marginBottom: 6}}>Email address</label>
                 <input
                   type="email"
                   defaultValue="admin@chii.alu.edu"
@@ -144,8 +161,8 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div style={{ marginBottom: 24 }}>
-                <label style={LABEL}>Password</label>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{...LABEL, marginBottom: 6}}>Password</label>
                 <div style={{ position: "relative" }}>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -169,7 +186,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between" style={{ marginBottom: 26 }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" defaultChecked style={{ accentColor: PRIMARY, width: 16, height: 16 }} />
                   <span style={{ fontSize: 13, color: SECONDARY }}>Remember me</span>
@@ -190,8 +207,8 @@ export default function LoginPage() {
                 onMouseLeave={() => setHovered(false)}
                 className="w-full flex items-center justify-center gap-2"
                 style={{
-                  height: 44,
-                  fontSize: 14,
+                  height: 40,
+                  fontSize: 13,
                   fontWeight: 700,
                   letterSpacing: "0.01em",
                   color: "white",
@@ -276,7 +293,7 @@ export default function LoginPage() {
               />
 
               <p style={{ fontSize: 17, lineHeight: 1.7, color: BODY, marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
-                Comprehensive programme analytics, impact measurement, and strategic insights across all CHII initiatives.
+                Measure what matters. Track African-led programme outcomes. Build evidence for impact at scale.
               </p>
 
               {/* Capabilities — left-aligned horizontal layout */}
