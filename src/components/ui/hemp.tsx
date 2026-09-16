@@ -9,3 +9,8 @@ export const { theme, ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, StatC
 
 // Primitives that need no theming are re-exported so pages have one import site.
 export { ChartLegend, BarList, useCountUp } from ".";
+
+// HEMP-specific standardized components
+export { HeaderStatsPanel, type HeaderStatCard, type HeaderStatsPanelProps } from "@/components/hemp";
+export { FilterButton, type FilterButtonProps } from "@/components/hemp";
+export { FilterDropdown, type FilterDropdownProps, type FilterOption } from "@/components/hemp";

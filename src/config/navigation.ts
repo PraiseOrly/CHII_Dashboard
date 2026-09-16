@@ -41,7 +41,6 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     rootHref: "/hemp",
     items: [
       { label: "Overview",                       href: "/hemp" },
-      { label: "At a Glance",                    href: "/hemp/at-a-glance" },
       { label: "Internship",                     href: "/hemp/internships" },
       { label: "SIE",                             href: "/hemp/sie" },
       { label: "HealthX",                        href: "/hemp/healthx" },

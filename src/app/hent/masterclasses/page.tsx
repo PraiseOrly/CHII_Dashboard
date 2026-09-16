@@ -9,6 +9,20 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Star, Zap, Briefcase, Users, TrendingUp, CheckCircle2 } from "lucide-react";
+
+// Female icon - matches ventures page
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  );
+}
 import PortalNav from "@/components/layout/portal-nav";
 import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
@@ -197,8 +211,8 @@ export default function MasterclassesPage() {
   const [yearFilter,  setYearFilter]  = useState<"All"|"2022"|"2023"|"2024"|"2025"|"2026">("All");
   const [topicFilter, setTopicFilter] = useState<"All"|MCTopic>("All");
   const [genderView,  setGenderView]  = useState<"All"|"Female"|"Male">("All");
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [activeSection, setActiveSection] = useState<number>(1);
+  const show = (n: number) => activeSection === n;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (topicFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
@@ -332,11 +346,11 @@ export default function MasterclassesPage() {
         <HeaderStatsPanel
           title="Masterclasses Metrics"
           cards={[
-            { label: "Total Masterclasses", num: tot.sessions, displayFmt: (n) => String(Math.round(n)), icon: Briefcase, tip: "Capacity-building sessions delivered across all periods." },
-            { label: "Total Attendees", num: tot.attendees, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Cumulative participant attendance across all sessions." },
-            { label: "Ventures Represented", num: tot.ventures, displayFmt: (n) => Math.round(n).toLocaleString(), icon: TrendingUp, tip: "Unique ventures with founder/team attendance." },
-            { label: "Female-Led Ventures", num: tot.femaleVent, displayFmt: (n) => String(Math.round(n)), icon: Star, tip: `${tot.ventures > 0 ? Math.round((tot.femaleVent / tot.ventures) * 100) : 0}% of ventures represented are female-led.` },
-            { label: "Avg Completion Rate", num: tot.completion, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: "Average percentage of registered attendees who completed sessions." },
+            { label: "Total Masterclasses", num: tot.sessions, displayFmt: (n) => String(Math.round(n)), icon: Briefcase, tip: "Capacity-building sessions delivered across all periods.", sub: `${Math.round((tot.sessions / 20) * 100)}% of 20 target`, pace: true, paceA: tot.sessions, paceT: 20 },
+            { label: "Total Attendees", num: tot.attendees, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Cumulative participant attendance across all sessions.", sub: `${Math.round((tot.attendees / 797) * 100)}% of 797 target`, pace: true, paceA: tot.attendees, paceT: 797 },
+            { label: "Ventures Represented", num: tot.ventures, displayFmt: (n) => Math.round(n).toLocaleString(), icon: TrendingUp, tip: "Unique ventures with founder/team attendance.", sub: `${Math.round((tot.ventures / 200) * 100)}% of 200 target`, pace: true, paceA: tot.ventures, paceT: 200 },
+            { label: "Female Participants", num: femalePct, displayFmt: (n) => `${Math.round(n)}%`, icon: WomanIcon, tip: `${tot.female} female attendees out of ${tot.attendees} total.`, sub: "Gender diversity target: 50%", pace: true, paceA: tot.female, paceT: tot.attendees / 2 },
+            { label: "Alumni Participants", num: 100 - studentPct, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: `${alumniTot} alumni attendees out of ${tot.attendees} total.`, sub: "Alumni engagement goal: 40%", pace: true, paceA: alumniTot, paceT: tot.attendees * 0.4 },
           ]}
         />
 
@@ -344,13 +358,12 @@ export default function MasterclassesPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
           <SectionPills
             accent="#0E4633"
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            value={String(activeSection)}
+            onChange={(v) => setActiveSection(Number(v))}
             options={[
-              { label: "All Sections", value: "all" },
-              { label: "Ratings", value: "1" }, { label: "Demographics", value: "2" },
-              { label: "Attendance", value: "3" }, { label: "Growth", value: "4" },
-              { label: "Top Performers", value: "5" },
+              { label: "Delivery & Performance", value: "1" },
+              { label: "Participant Profile", value: "2" },
+              { label: "Quality & Impact", value: "3" },
             ]}
           />
 
@@ -446,52 +459,97 @@ export default function MasterclassesPage() {
           </div>
         </div>
 
-        {/* SECTION 1: RATINGS */}
+        {/* SECTION 1: DELIVERY & PERFORMANCE */}
         {show(1) && (
         <section>
-          <SectionHeader title="Venture Ratings of Masterclasses"
-            sub={`${filtered.length} sessions rated across Quality, Usefulness, Accessibility, Relevance`} />
+          <SectionHeader title="Delivery & Performance"
+            sub={`Attendance trends, completion rates, and growth metrics across ${filtered.length} sessions`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Rating Distribution by Criterion"
-              sub="Very High  ·  High  ·  Moderate  ·  Low  -  proportion of sessions per rating level">
-              <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
-                {(["Very High", "High", "Moderate", "Low"] as const).map(l => (
-                  <span key={l} className="flex items-center gap-1">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RATING_COLORS[l] }} />{l}
-                  </span>
-                ))}
-              </div>
-              {RATING_CRITERIA.map(c => <RatingBar key={c} label={c} sessions={filtered} criterion={c} />)}
+            <ChartCard title="Attendance by Session"
+              sub="Attendees per masterclass in chronological order"
+              accent={ORANGE_MC}>
+              <ResponsiveContainer width="100%" height={208}>
+                <BarChart data={attendanceTrend.slice(0, 12)} barCategoryGap="30%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
+                    axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
+                  <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <ChartLegend items={[["Attendees", ORANGE_MC]]} />
             </ChartCard>
 
-            <ChartCard title="Ratings by Gender of Attendees"
-              sub="Avg score per criterion  -  female-majority vs male-majority sessions"
+            <ChartCard title="Attendance by Gender per Year"
+              sub="Female vs male participants  -  yearly comparison"
               accent={VIOLET_MC}>
-              <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: VIOLET_MC }}>F</span> Female-majority sessions</span>
-                <span className="flex items-center gap-1"><span className="font-bold" style={{ color: SKY }}>M</span> Male-majority sessions</span>
+              <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET_MC }} />Female
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: SKY }} />Male
+                </span>
               </div>
-              {RATING_CRITERIA.map(c => (
-                <GenderRatingBar key={c} label={c} fSessions={fSessions} mSessions={mSessions} criterion={c} />
-              ))}
-              <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
-                {(["Expose", "Build", "Scale"] as const).map((stage, si) => {
-                  const ss = filtered.filter(m =>
-                    stage === "Expose" ? m.byStage.Expose > m.byStage.Build + m.byStage.Scale
-                    : stage === "Build" ? m.byStage.Build >= m.byStage.Scale
-                    : m.byStage.Scale > m.byStage.Build
-                  );
-                  const avg = ss.length
-                    ? RATING_CRITERIA.reduce((s, c) => s + ss.reduce((ss2, m) => ss2 + m.scores[c], 0) / ss.length, 0) / RATING_CRITERIA.length
-                    : 0;
-                  return (
-                    <div key={stage}>
-                      <p className="text-[10px] text-gray-400">{stage} Stage</p>
-                      <p className="text-sm font-bold" style={{ color: [SKY, ACCENT, VIOLET_MC][si] }}>{avg.toFixed(1)}</p>
-                      <p className="text-[9px] text-gray-400">avg score</p>
-                    </div>
-                  );
-                })}
+              <ResponsiveContainer width="100%" height={176}>
+                <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
+                  <Bar dataKey="Female" fill={VIOLET_MC} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Male"   fill={SKY}       radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <ChartLegend items={[["Female", VIOLET_MC], ["Male", SKY]]} />
+            </ChartCard>
+          </div>
+
+          {/* Growth & Completion */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <ChartCard title="Cumulative Attendee Growth"
+              sub="Running total of participants  -  shows programme reach expansion"
+              accent={VIOLET_MC}>
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={growthData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
+                  <Line type="monotone" dataKey="Cumulative Attendees"
+                    stroke={VIOLET_MC} strokeWidth={2.5} dot={{ r: 4, fill: VIOLET_MC, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              <ChartLegend items={[["Cumulative attendees", VIOLET_MC]]} />
+            </ChartCard>
+
+            <ChartCard title="Completion Rate by Session"
+              sub="Percentage of registered attendees who completed each masterclass"
+              accent={TEAL}>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={completionData} barCategoryGap="30%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
+                    axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
+                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
+                  <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
+                <div>
+                  <p className="text-lg font-bold" style={{ color: VIOLET_MC }}>{tot.completion}%</p>
+                  <p className="text-[9px] text-gray-400">Avg completion</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold" style={{ color: EMERALD_MC }}>{filtered.filter(m => m.completionRate >= 90).length}</p>
+                  <p className="text-[9px] text-gray-400">Sessions ≥90%</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold" style={{ color: AMBER_MC }}>{filtered.filter(m => m.completionRate < 80).length}</p>
+                  <p className="text-[9px] text-gray-400">Sessions &lt;80%</p>
+                </div>
               </div>
             </ChartCard>
           </div>
@@ -503,12 +561,6 @@ export default function MasterclassesPage() {
         <section>
           <SectionHeader title="Participant Demographics"
             sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ProfileCard label="Female Participants"  value={tot.female}              pct={femalePct}      total={tot.attendees} color={VIOLET_MC}  />
-            <ProfileCard label="Male Participants"    value={tot.attendees - tot.female} pct={100 - femalePct} total={tot.attendees} color={ACCENT}  />
-            <ProfileCard label="Student Participants" value={tot.students}            pct={studentPct}     total={tot.attendees} color={EMERALD_MC} />
-            <ProfileCard label="Alumni Participants"  value={alumniTot}               pct={100 - studentPct} total={tot.attendees} color={AMBER_MC} />
-          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Age Group Distribution" sub="Participants by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={AGE_COLORS} className="h-36" valueFormatter={v => `${v}`} />
@@ -577,7 +629,7 @@ export default function MasterclassesPage() {
         </section>
         )}
 
-        {/* SECTION 3: ATTENDANCE TRENDS */}
+        {/* SECTION 3: QUALITY & IMPACT */}
         {show(3) && (
         <section>
           <SectionHeader title="Attendance Trends"
@@ -626,8 +678,8 @@ export default function MasterclassesPage() {
         </section>
         )}
 
-        {/* SECTION 4+6: GROWTH + COMPLETION  -  same row */}
-        {show(4) && (
+        {/* HIDDEN: Old Section 4 (merged into Section 1) */}
+        {false && (
         <section>
           <SectionHeader title="Growth &amp; Completion Analytics"
             sub="Cumulative reach and per-session completion rates across all masterclasses" />
@@ -680,8 +732,8 @@ export default function MasterclassesPage() {
         </section>
         )}
 
-        {/* SECTION 5: TOP PERFORMING + MOST ENGAGED */}
-        {show(5) && (
+        {/* HIDDEN: Old Section 5 (merged into Section 3) */}
+        {false && (
         <section>
           <SectionHeader title="Top Performing Masterclasses & Most Engaged Ventures"
             sub="Highest-rated sessions and the ventures that attend most" />

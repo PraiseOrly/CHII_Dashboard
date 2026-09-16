@@ -1,370 +1,579 @@
 "use client";
-import { PortalThemeProvider, ChartCard, SectionHeader, InfoDot, Funnel, BarList, ChartTip, ChartLegend } from "@/components/ui";
+import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
-import StatsKpiCard from "@/components/ui/stat-kpi-card";
-import SectionPills from "@/components/filters/section-pills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import PortalFooter from "@/components/layout/portal-footer";
-import { DonutRing } from "@/components/charts/donut-chart";
+import { sieCohorts, SIE_DISCIPLINES, SIE_EXPOSURE_AREAS } from "@/data/hemp/sie";
+import { useState, useMemo } from "react";
 import {
-  sieCohorts, sieSiteVisits,
-  SIE_ACTIVITIES, SIE_EXPOSURE_AREAS, SIE_DISCIPLINES, SIE_PHASES,
-  type SieExposureArea, type SieDiscipline, type SiePhase,
-} from "@/data/hemp/sie";
-import {
-  Building2, Globe2, GraduationCap, Laptop, Plane, Star, Users, type LucideIcon,
-} from "lucide-react";
-import { useMemo, useRef, useState } from "react";
-import {
-  Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Legend, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
+import { Briefcase, Target, TrendingUp, Users, Info, type LucideIcon, ChevronDown } from "lucide-react";
 
-// ─── Theme (HEMP navy, mirroring the executive) ──────────────────────────────
-const HERO     = "#102C5E";
-const BRAND    = "#14306B";
-const SECTION  = "#185FA5";
-const BRAND_DK = "#0C447C";
-
-const PHASE_HEX: Record<SiePhase, string> = {
-  "Virtual Phase":        "#479BD6",
-  "In-Country Immersion": "#102C5E",
-};
-const EXPOSURE_HEX: Record<SieExposureArea, string> = {
-  "Health System Function": "#185FA5",
-  "Innovation in Practice": "#0F6E56",
-  "Employment Pathways":    "#D45F2C",
-};
-const DISTINCT = ["#185FA5","#0F6E56","#534AB7","#BA7517","#479BD6","#1D9E75","#7F77DD","#D45F2C","#14306B","#085041"];
-const RAMP     = ["#14306B","#185FA5","#2F5FD1","#378ADD","#479BD6","#85B7EB","#0F6E56","#1D9E75"];
-
-function sum(a: number[]) { return a.reduce((x, y) => x + y, 0); }
-function avg(a: number[]) { return a.length ? sum(a) / a.length : 0; }
-
-const YEARS     = Array.from(new Set(sieCohorts.map(c => c.year))).sort();
-const COUNTRIES = Array.from(new Set(sieCohorts.map(c => c.country))).sort();
-
-// ─── Derivations (filter-aware) ──────────────────────────────────────────────
-function derive(cohorts: typeof sieCohorts, visits: typeof sieSiteVisits) {
-  const selected   = sum(cohorts.map(c => c.selected));
-  const completed  = sum(cohorts.map(c => c.completedProgramme));
-  const female     = sum(cohorts.map(c => c.female));
-  const femalePct  = selected ? Math.round(female / selected * 100) : 0;
-  const partners   = sum(cohorts.map(c => c.partnerOrgs));
-  const projects   = sum(cohorts.map(c => c.partnerProjects));
-  const adopted    = sum(cohorts.map(c => c.projectsAdopted));
-  const leads      = sum(cohorts.map(c => c.employmentLeads));
-  const siteVisits = sum(cohorts.map(c => c.siteVisits));
-  const satisfaction = parseFloat(avg(cohorts.map(c => c.satisfaction)).toFixed(1));
-
-  // Hybrid delivery: hours split between the virtual phase and the in-country immersion
-  const byPhase = SIE_PHASES.map(p => ({
-    name: p,
-    value: sum(cohorts.map(c => c.hours[p])),
-  }));
-
-  // Participation funnel — application through to completion, incl. the travel step
-  const funnel = [
-    { label: "Applied",                 value: sum(cohorts.map(c => c.applied)) },
-    { label: "Selected",                value: selected },
-    { label: "Completed virtual phase", value: sum(cohorts.map(c => c.completedVirtual)) },
-    { label: "Travelled in-country",    value: sum(cohorts.map(c => c.travelledInCountry)) },
-    { label: "Completed programme",     value: completed },
-  ];
-
-  // The three things the immersion is designed to expose students to
-  const byExposure = SIE_EXPOSURE_AREAS.map(a => ({
-    name: a,
-    value: parseFloat(avg(cohorts.map(c => c.exposure[a])).toFixed(1)),
-  }));
-
-  // Interdisciplinary, non-clinical intake
-  const byDiscipline = SIE_DISCIPLINES.map(d => ({
-    name: d,
-    value: sum(cohorts.map(c => c.disciplines[d])),
-  })).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
-
-  // Three activity pillars — volume delivered
-  const byActivity = [
-    { name: "Site Visits",           value: siteVisits },
-    { name: "Partner Projects",      value: projects },
-    { name: "Structured Reflection", value: sum(cohorts.map(c => c.reflectionSessions)) },
-  ];
-
-  // Cohort-on-cohort growth
-  const byYear = cohorts.map(c => ({
-    Year: String(c.year),
-    Selected: c.selected,
-    Completed: c.completedProgramme,
-    "Site Visits": c.siteVisits,
-    Leads: c.employmentLeads,
-  }));
-
-  // Site visits by host type — where students are actually taken
-  const byHostType = Array.from(new Set(visits.map(v => v.hostType)))
-    .map(t => ({ name: t, value: visits.filter(v => v.hostType === t).length }))
-    .sort((a, b) => b.value - a.value);
-
-  // Highest-rated site visits
-  const topVisits = [...visits].sort((a, b) => b.insightScore - a.insightScore).slice(0, 8);
-
-  return {
-    selected, completed, femalePct, partners, projects, adopted, leads, siteVisits, satisfaction,
-    byPhase, funnel, byExposure, byDiscipline, byActivity, byYear, byHostType, topVisits,
-  };
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  );
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
-export default function SiePage() {
-  const [fYear, setFYear]       = useState("All Years");
-  const [fCountry, setFCountry] = useState("All Countries");
+const HERO = "#102C5E";
+const BRAND = "#14306B";
+const BRAND_DK = "#0C447C";
+const LIGHT_BORDER = "rgba(16, 44, 94, 0.12)";
+const LIGHT_BG = "#F8F9FA";
 
-  const cohorts = useMemo(() => sieCohorts.filter(c =>
-    (fYear === "All Years" || String(c.year) === fYear) &&
-    (fCountry === "All Countries" || c.country === fCountry)
-  ), [fYear, fCountry]);
+function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
+  const [tip, setTip] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  return (
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+      <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
+          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#479BD6", flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+              {info && (
+                <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
+                  onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+                  <Info size={12} color="white" opacity={0.6} />
+                  {tip && (
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: BRAND_DK, fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: `1px solid ${LIGHT_BORDER}`, zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                      {info}
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 1 }}>{subtitle}</p>
+          </div>
+        </div>
+      </div>
+      {filterOptions && filterValue && onFilterChange && (
+        <div style={{ padding: "8px 18px", display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                padding: "5px 10px",
+                borderRadius: 10,
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                backgroundColor: "white",
+                color: BRAND_DK,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {filterValue} <ChevronDown size={12} />
+            </button>
+            {filterOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: 0,
+                backgroundColor: "white",
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                borderRadius: 10,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                minWidth: 140,
+                overflow: "hidden",
+              }}>
+                {filterOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => {
+                      onFilterChange(opt);
+                      setFilterOpen(false);
+                    }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 12px",
+                      fontSize: 11,
+                      fontWeight: opt === filterValue ? 700 : 500,
+                      backgroundColor: opt === filterValue ? BRAND : "white",
+                      color: opt === filterValue ? "white" : BRAND_DK,
+                      border: `1px solid ${LIGHT_BORDER}`,
+                      borderLeft: `5px solid ${BRAND}`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div style={{ padding: "12px 18px 18px" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
-  const visits = useMemo(() => sieSiteVisits.filter(v =>
-    (fYear === "All Years" || String(v.year) === fYear) &&
-    (fCountry === "All Countries" || v.country === fCountry)
-  ), [fYear, fCountry]);
+export default function HEMPSie() {
+  const categories = ["Programme Reach", "Exposure & Outcomes", "Geography & Engagement", "Participant Profile"];
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
 
-  const D = useMemo(() => derive(cohorts, visits), [cohorts, visits]);
-  const activeCount = (fYear !== "All Years" ? 1 : 0) + (fCountry !== "All Countries" ? 1 : 0);
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterYear, setFilterYear] = useState("All Years");
+  const [filterCountry, setFilterCountry] = useState("All Countries");
+
+  const show = (category: string) => activeCategory === category;
+  const activeFilterCount = [filterYear !== "All Years", filterCountry !== "All Countries"].filter(Boolean).length;
+
+  const years = Array.from(new Set(sieCohorts.map(i => i.year))).sort();
+  const countries = Array.from(new Set(sieCohorts.map(i => i.country))).sort();
+
+  const filteredCohorts = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterYear !== "All Years" && c.year !== parseInt(filterYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      return true;
+    });
+  }, [filterYear, filterCountry]);
+
+  const totalSelected = filteredCohorts.reduce((s, c) => s + c.selected, 0);
+  const totalCompleted = filteredCohorts.reduce((s, c) => s + c.completedProgramme, 0);
+  const femaleParticipants = filteredCohorts.reduce((s, c) => s + c.female, 0);
+  const femalePct = totalSelected ? Math.round((femaleParticipants / totalSelected) * 100) : 0;
+  const avgSatisfaction = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.satisfaction, 0) / filteredCohorts.length).toFixed(1)) : 0;
+  const totalEmploymentLeads = filteredCohorts.reduce((s, c) => s + c.employmentLeads, 0);
+  const totalProjectsAdopted = filteredCohorts.reduce((s, c) => s + c.projectsAdopted, 0);
+  const avgExposure = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + (c.exposure["Health System Function"] + c.exposure["Innovation in Practice"] + c.exposure["Employment Pathways"]) / 3, 0) / filteredCohorts.length).toFixed(1)) : 0;
+
+  const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
+  const [filterExposureYear, setFilterExposureYear] = useState("All Years");
+  const [filterGeoYear, setFilterGeoYear] = useState("All Years");
 
   return (
-    <PortalThemeProvider portal="hemp">
-    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
+    <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
       <PortalNav portal="hemp" />
 
-      {/* ── HEADER ─── */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
         <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
           <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design2.png" alt="" aria-hidden="true"
+          <img src="/images/design1.png" alt="" aria-hidden="true"
             style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
           <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
           <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
             <div style={{ textAlign: "center" }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Signature Immersive Experience (SIE)</h1>
-              <p className="text-[13px] sm:text-sm mt-2 font-medium" style={{ color: "#85B7EB" }}>
-                A hybrid virtual and in-country immersion for non-clinical Health Missions students
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>SIE Programme</h1>
+              <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(120,180,240,0.78)" }}>
+                Signature Immersive Experience — student outcomes and healthcare exposure
               </p>
-              <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px] sm:text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>
-                <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Data source:</span> HEMP Consolidated Database</span>
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(120,180,240,0.5)" }}>
+                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
+                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Period:</span> 2024–2026</span>
                 <span aria-hidden="true">·</span>
-                <span>{D.selected} students selected · {D.siteVisits} site visits</span>
-                <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(255,255,255,0.98)", fontWeight: 700 }}>2026 cohort:</span> Kenya</span>
+                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
               </div>
             </div>
           </div>
         </header>
       </div>
 
-      {/* ── BODY ─── */}
-      <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
+      <div className="max-w-[1440px] mx-auto px-6 py-7">
 
-        {/* KPI strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <StatsKpiCard label="Students Selected"  num={D.selected}     sub={`${D.femalePct}% female`}                Icon={Users}         tooltip="Non-clinical Health Missions students selected onto the immersive programme." />
-          <StatsKpiCard label="Completed Programme" num={D.completed}   sub="Both phases finished"                    Icon={GraduationCap} tooltip="Students who completed both the virtual phase and the in-country immersion." />
-          <StatsKpiCard label="Site Visits"        num={D.siteVisits}   sub="Hospitals, startups, regulators"         Icon={Building2}     tooltip="Site visits delivered during the in-country immersion — the primary exposure mechanism." />
-          <StatsKpiCard label="Partner Projects"   num={D.projects}     sub={`${D.adopted} adopted by hosts`}         Icon={Globe2}        tooltip="Partner-defined projects students worked on. 'Adopted' means the host organisation took the work forward." />
-          <StatsKpiCard label="Employment Leads"   num={D.leads}        sub="Generated via immersion"                 Icon={Plane}         tooltip="Employment pathways opened for students as a direct result of the immersion." />
-          <StatsKpiCard label="Satisfaction"       num={D.satisfaction} displayFmt={n => `${n.toFixed(1)}/5`} sub="Student-rated" Icon={Star} tooltip="How students rate the overall immersive experience, out of 5." />
-        </div>
+        <HeaderStatsPanel
+          title="Programme Overview"
+          cards={[
+            {
+              label: "Participants Selected",
+              num: totalSelected,
+              icon: Users,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: `Across ${filteredCohorts.length} cohorts`,
+              tip: "Total participants selected for the programme",
+              pace: true,
+              paceA: totalSelected,
+              paceT: 100,
+            },
+            {
+              label: "Completion Rate",
+              num: totalSelected ? Math.round((totalCompleted / totalSelected) * 100) : 0,
+              icon: Target,
+              displayFmt: (n) => n + "%",
+              sub: `${totalCompleted} completed programme`,
+              tip: "Percentage who completed the full SIE programme",
+              pace: true,
+              paceA: totalSelected ? Math.round((totalCompleted / totalSelected) * 100) : 0,
+              paceT: 100,
+            },
+            {
+              label: "Female Participation",
+              num: femalePct,
+              icon: WomanIcon,
+              displayFmt: (n) => n + "%",
+              sub: `${femaleParticipants} female participants`,
+              tip: "Percentage of female participants",
+              pace: true,
+              paceA: femalePct,
+              paceT: 50,
+            },
+            {
+              label: "Avg Exposure Score",
+              num: avgExposure,
+              icon: Briefcase,
+              displayFmt: (n) => n.toFixed(1),
+              sub: `Out of 5`,
+              tip: "Average self-reported exposure gain across areas",
+              pace: true,
+              paceA: avgExposure * 20,
+              paceT: 100,
+            },
+            {
+              label: "Employment Leads",
+              num: totalEmploymentLeads,
+              icon: TrendingUp,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: `Generated from programme`,
+              tip: "Number of employment opportunities identified",
+              pace: true,
+              paceA: totalEmploymentLeads,
+              paceT: 50,
+            },
+            {
+              label: "Satisfaction Score",
+              num: avgSatisfaction,
+              icon: Briefcase,
+              displayFmt: (n) => n.toFixed(1),
+              sub: `Out of 5`,
+              tip: "Average participant satisfaction rating",
+              pace: true,
+              paceA: avgSatisfaction * 20,
+              paceT: 100,
+            },
+          ]}
+        />
 
-        {/* Section pills (left) + outreach-style filters popover (right) */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <SectionPills
-            accent={BRAND}
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-            options={[
-              { label: "All Sections", value: "all" },
-              { label: "Hybrid Model", value: "1" },
-              { label: "Exposure", value: "2" },
-              { label: "Intake & Delivery", value: "3" },
-              { label: "Cohort Growth", value: "4" },
-            ]}
-          />
-          <OutreachFilters
-            accent={BRAND}
-            activeCount={activeCount}
-            onReset={() => { setFYear("All Years"); setFCountry("All Countries"); }}
-          >
-            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent={BRAND}
-              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
-            <OFilterSelect label="Country" value={fCountry} onChange={setFCountry} accent={BRAND}
-              options={["All Countries", ...COUNTRIES].map(o => ({ value: o, label: o }))} />
-          </OutreachFilters>
-        </div>
-
-        {/* ── SECTION 1: The hybrid model ─── */}
-        <section style={{ display: show(1) ? undefined : "none" }}>
-          <SectionHeader title="The Hybrid Model"
-            sub="How the programme splits between a virtual phase and the in-country immersion, and how many students make it all the way through" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-            <ChartCard title="Delivery Hours by Phase" sub="Virtual phase vs in-country immersion"
-              info="The programme is deliberately hybrid: a virtual phase builds context and prepares students, then the in-country immersion delivers direct exposure. This shows how the contact hours are split.">
-              <DonutRing data={D.byPhase} colors={[PHASE_HEX["Virtual Phase"], PHASE_HEX["In-Country Immersion"]]}
-                total={sum(D.byPhase.map(p => p.value))} totalLabel="Hours" height={300} legendPercent />
-            </ChartCard>
-
-            <ChartCard title="Participation Funnel" sub="Applied → selected → virtual → travelled → completed"
-              info="Where students drop out. The travel step is the programme's biggest logistical risk — a large gap between 'completed virtual' and 'travelled in-country' points to visa, funding or scheduling failure.">
-              <Funnel steps={D.funnel} />
-              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
-                {D.selected ? Math.round(D.completed / D.selected * 100) : 0}% of selected students complete the full programme
-              </p>
-            </ChartCard>
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  fontSize: 11,
+                  fontWeight: activeCategory === cat ? 700 : 600,
+                  padding: "8px 14px",
+                  borderRadius: 20,
+                  border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
+                  backgroundColor: activeCategory === cat ? BRAND : "white",
+                  color: activeCategory === cat ? "white" : BRAND_DK,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
-        </section>
-
-        {/* ── SECTION 2: What students are exposed to ─── */}
-        <section style={{ display: show(2) ? undefined : "none" }}>
-          <SectionHeader title="What Students Are Exposed To"
-            sub="The three things the immersion is designed to deliver — how health systems function, how innovation is applied, and what employment pathways exist" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-            <ChartCard title="Exposure Gain by Area" sub="Student-rated exposure, out of 5"
-              info="Self-reported exposure gain against the programme's three stated aims. A low score on Employment Pathways would mean students are seeing the system but not seeing a route into it.">
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={D.byExposure} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }} barCategoryGap="28%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" horizontal={false} />
-                  <XAxis type="number" domain={[0, 5]} tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} width={132} interval={0} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
-                  <Bar dataKey="value" name="Exposure score" radius={[0, 4, 4, 0]} maxBarSize={26}>
-                    {D.byExposure.map(d => <Cell key={d.name} fill={EXPOSURE_HEX[d.name as SieExposureArea]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={SIE_EXPOSURE_AREAS.map(a => [a, EXPOSURE_HEX[a]] as const)} />
-            </ChartCard>
-
-            <ChartCard title="Site Visits by Host Type" sub="Where students are actually taken"
-              info="The mix of hosts determines what students see. Referral hospitals show how the system functions; startups show innovation in practice; regulators and manufacturers reveal employment pathways.">
-              <DonutRing data={D.byHostType} colors={DISTINCT}
-                total={sum(D.byHostType.map(h => h.value))} totalLabel="Visits" height={300} legendPercent />
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* ── SECTION 3: Interdisciplinary intake & delivery ─── */}
-        <section style={{ display: show(3) ? undefined : "none" }}>
-          <SectionHeader title="Interdisciplinary Intake & Delivery"
-            sub="The programme is explicitly for non-clinical students — this is the mix of disciplines it draws, and the activity pillars it delivers" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-            <ChartCard title="Participants by Discipline" sub="Non-clinical, interdisciplinary intake"
-              info="SIE is designed for non-clinical students. A healthy spread across business, engineering, computing and policy is the point — concentration in one discipline would undercut the interdisciplinary design.">
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {D.byDiscipline.map((row, i) => {
-                  const col = RAMP[i % RAMP.length];
-                  const max = D.byDiscipline[0]?.value || 1;
-                  return (
-                    <div key={row.name} className="flex items-center gap-2.5">
-                      <div className="w-[132px] text-[11px] text-gray-600 text-right flex-shrink-0 truncate">{row.name}</div>
-                      <div className="flex-1 rounded-sm overflow-hidden" style={{ height: 18, backgroundColor: col + "1A" }}>
-                        <div className="h-full" style={{ width: `${(row.value / max) * 100}%`, backgroundColor: col }} />
-                      </div>
-                      <div className="text-[11px] font-bold w-6 flex-shrink-0 tabular-nums text-right" style={{ color: col }}>{row.value}</div>
-                    </div>
-                  );
-                })}
-                {!D.byDiscipline.length && <p className="text-[11px] text-gray-400 text-center py-6">No cohorts match the selected filters.</p>}
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Activity Pillars Delivered" sub="Site visits · partner projects · structured reflection"
-              info="The three delivery mechanisms named in the programme design. Reflection sessions are what convert raw exposure into articulated learning — a low count here means students are seeing a lot but processing little.">
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={D.byActivity} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
-                  <Bar dataKey="value" name="Delivered" radius={[4, 4, 0, 0]} maxBarSize={56}>
-                    {D.byActivity.map((d, i) => <Cell key={d.name} fill={["#185FA5", "#0F6E56", "#534AB7"][i]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={SIE_ACTIVITIES.map((a, i) => [a, ["#185FA5", "#0F6E56", "#534AB7"][i]] as const)} />
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* ── SECTION 4: Cohort growth & top visits ─── */}
-        <section style={{ display: show(4) ? undefined : "none" }}>
-          <SectionHeader title="Cohort Growth & Highest-Value Visits"
-            sub="How the programme has scaled cohort on cohort, and which site visits students rated most valuable" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-            <ChartCard title="Cohort Growth" sub="Students selected, completed and employment leads per cohort"
-              info="Cohort-on-cohort scale. Employment leads growing faster than intake would mean the programme is getting better at converting exposure into opportunity.">
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={D.byYear} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip />} />
-                  <Bar dataKey="Selected"  fill="#14306B" radius={[4, 4, 0, 0]} maxBarSize={20} />
-                  <Bar dataKey="Completed" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={20} />
-                  <Bar dataKey="Leads"     fill="#D45F2C" radius={[4, 4, 0, 0]} maxBarSize={20} />
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Selected", "#14306B"], ["Completed", "#479BD6"], ["Employment Leads", "#D45F2C"]]} />
-            </ChartCard>
-
-            <ChartCard title="Highest-Rated Site Visits" sub="Which hosts students found most valuable"
-              info="Student-rated insight value of each site visit, out of 5. Use it to decide which hosts to prioritise for the next cohort.">
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px]">
-                  <thead>
-                    <tr>
-                      <th className="text-left text-gray-400 font-bold pb-3 pr-4 uppercase tracking-wider text-[9px]">Host</th>
-                      <th className="text-left text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Focus</th>
-                      <th className="text-center text-gray-400 font-bold pb-3 px-2 uppercase tracking-wider text-[9px]">Students</th>
-                      <th className="text-center text-gray-400 font-bold pb-3 pl-2 uppercase tracking-wider text-[9px]">Rating</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {D.topVisits.map(v => (
-                      <tr key={v.id} className="border-t border-gray-100">
-                        <td className="py-2.5 pr-4 whitespace-nowrap font-semibold text-gray-700">{v.host}</td>
-                        <td className="py-2.5 px-2 whitespace-nowrap">
-                          <span className="flex items-center gap-1.5 text-gray-600">
-                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: EXPOSURE_HEX[v.focus] }} />
-                            {v.focus}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2 text-center tabular-nums text-gray-600">{v.students}</td>
-                        <td className="py-2.5 pl-2 text-center font-bold tabular-nums" style={{ color: BRAND_DK }}>{v.insightScore}/5</td>
-                      </tr>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={activeFilterCount}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => {
+                setFilterYear("All Years");
+                setFilterCountry("All Countries");
+              }}
+            >
+              {[
+                { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
+                { label: "Country", value: filterCountry, setValue: setFilterCountry, options: ["All Countries", ...countries] },
+              ].map(filter => (
+                <div key={filter.label} style={{ marginBottom: 12 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    {filter.label}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {filter.options.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => filter.setValue(opt)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: filter.value === opt ? 700 : 500,
+                          padding: "5px 10px",
+                          borderRadius: 6,
+                          border: `1px solid ${filter.value === opt ? BRAND : LIGHT_BORDER}`,
+                          backgroundColor: filter.value === opt ? BRAND : "white",
+                          color: filter.value === opt ? "white" : BRAND_DK,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {opt}
+                      </button>
                     ))}
-                    {!D.topVisits.length && (
-                      <tr><td colSpan={4} className="text-center text-gray-400 py-6">No site visits match the selected filters.</td></tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </ChartCard>
+                  </div>
+                </div>
+              ))}
+            </FilterDropdown>
           </div>
-        </section>
+        </div>
 
-        <PortalFooter portal="hemp" />
+        {show("Programme Reach") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Programme Reach
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Recruitment funnel and participation trends</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Recruitment Funnel" subtitle="Application to completion journey" info="The progression from applications through to programme completion">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map((c, i) => ({
+                    name: c.name.substring(0, 12),
+                    applied: c.applied,
+                    selected: c.selected,
+                    completed: c.completedProgramme,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="applied" fill="#A8C5E6" barSize={30} name="Applied" />
+                    <Bar dataKey="selected" fill="#479BD6" barSize={30} name="Selected" />
+                    <Bar dataKey="completed" fill={BRAND} barSize={30} name="Completed" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Selection Rate Trend" subtitle="Percentage of applicants selected over time" info="Selection rate as a percentage of total applicants per cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), rate: Math.round((c.selected / c.applied) * 100) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="rate" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selection Rate %" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Gender Distribution" subtitle="Female and male participant breakdown" info="Gender diversity across selected participants">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Female", value: femaleParticipants },
+                    { name: "Male", value: totalSelected - femaleParticipants },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Participation Trend" subtitle="Growth in total selected participants over time" info="Annual trend in participant selection">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), selected: c.selected }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="selected" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selected" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Exposure & Outcomes") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Exposure & Outcomes
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Learning outcomes and career opportunities generated</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Exposure Area Scores" subtitle="Self-reported learning outcomes (1-5)" info="Average exposure gain across three key learning areas" filterOptions={["All Years", ...years.map(String)]} filterValue={filterExposureYear} onFilterChange={setFilterExposureYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={SIE_EXPOSURE_AREAS.map(area => ({
+                    name: area,
+                    score: filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.exposure[area], 0) / filteredCohorts.length).toFixed(1)) : 0,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="score" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Exposure Score">
+                      <LabelList dataKey="score" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Employment & Project Outcomes" subtitle="Career opportunities and innovation adoption" info="Employment leads and partner projects adopted by host organisations">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Employment Leads", value: totalEmploymentLeads },
+                    { name: "Projects Adopted", value: totalProjectsAdopted },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Geography & Engagement") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Geography & Engagement
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Geographic expansion and partner engagement</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Participants by Country" subtitle="Geographic distribution of cohorts" info="Total participants per implementation country" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={countries.map(c => ({
+                    name: c,
+                    value: filteredCohorts.filter(co => co.country === c).reduce((s, co) => s + co.selected, 0),
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Participants">
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Partner Engagement" subtitle="Number of partner organizations per cohort" info="Host organizations and site visits across cohorts">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 12),
+                    orgs: c.partnerOrgs,
+                    visits: c.siteVisits,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="orgs" fill={BRAND} barSize={30} name="Partner Orgs" />
+                    <Bar dataKey="visits" fill="#7FA5D6" barSize={30} name="Site Visits" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Participant Profile") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Participant Profile
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Academic discipline and satisfaction insights</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Participants by Discipline" subtitle="Academic background distribution" info="Number of participants from each academic discipline">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={SIE_DISCIPLINES.map(disc => ({
+                    name: disc,
+                    count: filteredCohorts.length ? filteredCohorts.reduce((s, c) => s + c.disciplines[disc], 0) : 0,
+                  })).sort((a, b) => b.count - a.count)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="count" fill={BRAND} barSize={40} radius={[4, 4, 0, 0]} name="Participants">
+                      <LabelList dataKey="count" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), satisfaction: c.satisfaction }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="satisfaction" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        <PortalFooter portal="hemp" synced="18 Jun 2026, EAT" />
 
       </div>
     </div>
-    </PortalThemeProvider>
   );
 }
