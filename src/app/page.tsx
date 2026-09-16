@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Fraunces, Playfair_Display } from "next/font/google";
 import {
   ChevronDown, ArrowRight,
@@ -63,7 +63,7 @@ export default function LoginPage() {
   const [hovered, setHovered]           = useState(false);
 
   // Add option styling for dropdown
-  React.useEffect(() => {
+  useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
       select option {
@@ -273,7 +273,7 @@ export default function LoginPage() {
         {/* ══ RIGHT (50%) — brand and capabilities ═══════════════════════════ */}
         <div
           className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-8"
-          style={{ background: `linear-gradient(145deg, ${NAVY} 0%, ${NAVY_DEEP} 100%)` }}
+          style={{ background: `linear-gradient(135deg, #0A1E3F 0%, #102C5E 50%, #0B2145 100%)` }}
         >
           <div
             aria-hidden
@@ -292,8 +292,8 @@ export default function LoginPage() {
                 style={{ height: 44, width: "auto", objectFit: "contain", display: "block", flexShrink: 0, marginBottom: 24 }}
               />
 
-              <p style={{ fontSize: 17, lineHeight: 1.7, color: BODY, marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
-                Measure what matters. Track African-led programme outcomes. Build evidence for impact at scale.
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: BODY, marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
+                Explore how CHII builds the evidence base for health innovation across Africa, tracking how young people move through programmes into dignified work, ventures, and lasting impact on health systems across the continent.
               </p>
 
               {/* Capabilities — left-aligned horizontal layout */}
