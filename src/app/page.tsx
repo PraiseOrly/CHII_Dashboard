@@ -103,7 +103,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(165deg, #F5F8FC 0%, #EEF2F8 50%, #F3F6FB 100%)" }}
+      style={{ background: "white" }}
     >
       <div
         className="w-full flex flex-col lg:flex-row overflow-hidden"
@@ -117,7 +117,7 @@ export default function LoginPage() {
         }}
       >
 
-        {/* ══ LEFT (50%) — the form ════════════════════════════════════════ */}
+        {/* ══ LEFT (form panel) ════════════════════════════════════════ */}
         <div className="relative w-full lg:w-[50%] flex flex-col px-11 py-8 justify-between">
           <div style={{ maxWidth: "19rem", width: "100%", margin: "0 auto" }}>
 
@@ -319,21 +319,13 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ══ RIGHT (50%) — brand and capabilities ═══════════════════════════ */}
+        {/* ══ RIGHT (brand panel) ═══════════════════════════════════════ */}
         <div
           className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-8"
-          style={{ background: `linear-gradient(135deg, #0A1E3F 0%, #102C5E 50%, #0B2145 100%)` }}
+          style={{ background: "#102C5E" }}
         >
-          <div
-            aria-hidden
-            style={{
-              position: "absolute", inset: 0,
-              background: "radial-gradient(750px 420px at 0% 0%, rgba(133,183,235,0.18), transparent 65%)",
-            }}
-          />
-
           <div className="relative z-10 flex flex-col h-full">
-            {/* Logo + tagline + capabilities — top-aligned with left panel heading */}
+            {/* Logo + narrative + capabilities */}
             <div className="flex flex-col flex-1">
               <img
                 src="/logos/CHII-Logo.png"
@@ -345,26 +337,21 @@ export default function LoginPage() {
                 Explore how CHII builds the evidence base for health innovation across Africa, tracking how young people move through programmes into dignified work, ventures, and lasting impact on health systems across the continent.
               </p>
 
-              {/* Capabilities — left-aligned horizontal layout */}
-              <ul className="flex flex-col" style={{ listStyle: "none", margin: 0, padding: 0, gap: 18, maxWidth: "360px" }}>
+              {/* Capabilities */}
+              <ul className="flex flex-col" style={{ listStyle: "none", margin: 0, padding: 0, gap: 16, maxWidth: "360px" }}>
                 {CAPABILITIES.map(({ icon: Icon, title, body }) => (
-                  <li key={title} className="flex items-start gap-3">
-                    <span
-                      className="flex items-center justify-center flex-shrink-0"
-                      style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(133,183,235,0.16)", border: "1px solid rgba(133,183,235,0.34)" }}
-                    >
-                      <Icon size={18} color={ICON} strokeWidth={1.5} />
-                    </span>
-                    <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "#94A3B8", lineHeight: 1.3, margin: 0, letterSpacing: "0.005em" }}>{title}</p>
-                      <p style={{ fontSize: 13.5, color: "#94A3B8", opacity: 0.8, lineHeight: 1.5, marginTop: 3 }}>{body}</p>
+                  <li key={title}>
+                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
+                      <Icon size={16} color="#94A3B8" strokeWidth={1.5} />
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#94A3B8", lineHeight: 1.3, margin: 0, letterSpacing: "0.005em" }}>{title}</p>
                     </div>
+                    <p style={{ fontSize: 12.5, color: "#94A3B8", opacity: 0.75, lineHeight: 1.5, margin: 0 }}>{body}</p>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Copyright — pinned to the bottom of the panel */}
+            {/* Copyright */}
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", flexShrink: 0, paddingTop: 20 }}>
               © 2026 CHII · African Leadership University
             </p>
