@@ -1,15 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Playfair_Display } from "next/font/google";
 import {
   ChevronDown, ArrowRight,
-  LineChart, Target, Briefcase, FileBarChart,
+  BarChart3, TrendingUp, Zap, FileText,
 } from "lucide-react";
 
-/** Editorial serif for the headline only. Paired with Inter (from the root layout)
- *  for all UI text — the pairing reads considered rather than startup-generic. */
-const serif = Fraunces({ subsets: ["latin"], weight: ["500", "600"], display: "swap" });
+/** Premium serif fonts for executive branding */
+const serif = Fraunces({ subsets: ["latin"], weight: ["500", "600", "700"], display: "swap" });
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"], display: "swap" });
 
 // ─── Palette ─────────────────────────────────────────────────────────────────
 // Blues matched to the Executive page header/KPI navy (#102C5E / #14306B / #85B7EB).
@@ -32,10 +32,10 @@ const PORTALS = [
 
 /** What the platform does — four capabilities, not a description of the org. */
 const CAPABILITIES = [
-  { icon: LineChart,    title: "Programme Analytics",           body: "Track participation, reach, and completion." },
-  { icon: Target,       title: "Impact Measurement",            body: "Monitor outcomes using MEL indicators." },
-  { icon: Briefcase,    title: "Venture & Employment Tracking", body: "Follow ventures, internships, and employment." },
-  { icon: FileBarChart, title: "Reports & Insights",            body: "Generate programme reports and export data." },
+  { icon: BarChart3,  title: "Real-time Analytics",  body: "Track programme KPIs and outcomes." },
+  { icon: TrendingUp, title: "Impact Dashboards",    body: "Monitor performance across initiatives." },
+  { icon: Zap,        title: "Data Intelligence",    body: "Actionable insights at a glance." },
+  { icon: FileText,   title: "Smart Reporting",      body: "Generate and export reports instantly." },
 ] as const;
 
 const PARTNERS = [
@@ -45,13 +45,13 @@ const PARTNERS = [
 ];
 
 const LABEL: React.CSSProperties = {
-  fontSize: 12.5,
-  fontWeight: 600,
-  letterSpacing: "0.08em",
+  fontSize: 13,
+  fontWeight: 700,
+  letterSpacing: "0.06em",
   textTransform: "uppercase",
-  color: SECONDARY,
+  color: "#475569",
   display: "block",
-  marginBottom: 9,
+  marginBottom: 11,
 };
 
 export default function LoginPage() {
@@ -71,34 +71,34 @@ export default function LoginPage() {
 
   const field = (name: string): React.CSSProperties => ({
     width: "100%",
-    height: 40,
-    fontSize: 14,
+    height: 44,
+    fontSize: 14.5,
     fontWeight: 500,
     color: TEXT,
     background: "white",
-    border: `1px solid ${focused === name ? PRIMARY : BORDER}`,
+    border: `1.5px solid ${focused === name ? PRIMARY : "#D0D5E0"}`,
     boxShadow: focused === name
-      ? `0 0 0 2px ${PRIMARY}2E, 0 1px 2px rgba(16,32,64,0.04)`
-      : "0 1px 2px rgba(16,32,64,0.03)",
-    borderRadius: 8,
-    padding: "0 14px",
+      ? `0 0 0 3px ${PRIMARY}15, 0 4px 12px rgba(20,48,107,0.08)`
+      : "0 2px 4px rgba(16,32,64,0.05)",
+    borderRadius: 10,
+    padding: "0 16px",
     outline: "none",
-    transition: "border-color .15s, box-shadow .15s",
+    transition: "border-color .2s, box-shadow .2s",
   });
 
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(165deg, #F8FAFC 0%, #EEF2F8 55%, #F7F8FA 100%)" }}
+      style={{ background: "linear-gradient(165deg, #F5F8FC 0%, #EEF2F8 50%, #F3F6FB 100%)" }}
     >
       <div
         className="w-full flex flex-col lg:flex-row overflow-hidden"
         style={{
           maxWidth: "62rem",
           maxHeight: "680px",
-          borderRadius: 16,
+          borderRadius: 18,
           border: `1px solid ${BORDER}`,
-          boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(16,32,64,0.10)",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 20px 48px rgba(16,32,64,0.14), 0 0 1px rgba(0,0,0,0.02)",
           background: "white",
         }}
       >
@@ -107,11 +107,11 @@ export default function LoginPage() {
         <div className="relative w-full lg:w-[50%] flex flex-col px-12 py-8 overflow-y-auto">
           <div style={{ maxWidth: "21.25rem", width: "100%" }}>
 
-            <h1 className={serif.className} style={{ fontSize: 36, fontWeight: 600, color: TEXT, lineHeight: 1.1, letterSpacing: "-0.01em" }}>
-              Welcome back
+            <h1 className={playfair.className} style={{ fontSize: 44, fontWeight: 600, color: TEXT, lineHeight: 1.05, letterSpacing: "-0.015em", marginBottom: 4 }}>
+              Welcome Back
             </h1>
-            <p style={{ fontSize: 14, color: SECONDARY, marginTop: 8, lineHeight: 1.4, marginBottom: 0 }}>
-              Sign in to access CHII programme dashboards.
+            <p style={{ fontSize: 15, color: SECONDARY, marginTop: 10, lineHeight: 1.5, marginBottom: 0, fontWeight: 500 }}>
+              Access comprehensive programme analytics and insights
             </p>
 
             <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
@@ -190,20 +190,21 @@ export default function LoginPage() {
                 onMouseLeave={() => setHovered(false)}
                 className="w-full flex items-center justify-center gap-2"
                 style={{
-                  height: 48,
+                  height: 50,
                   fontSize: 16,
-                  fontWeight: 600,
+                  fontWeight: 700,
+                  letterSpacing: "0.01em",
                   color: "white",
                   background: hovered && !loading ? HOVER : PRIMARY,
                   border: "none",
-                  borderRadius: 10,
+                  borderRadius: 12,
                   cursor: loading ? "not-allowed" : "pointer",
                   opacity: loading ? 0.75 : 1,
-                  transform: hovered && !loading ? "translateY(-2px)" : "none",
+                  transform: hovered && !loading ? "translateY(-1px)" : "none",
                   boxShadow: hovered && !loading
-                    ? "0 10px 24px rgba(20,61,122,0.30)"
-                    : "0 4px 14px rgba(20,61,122,0.20)",
-                  transition: "background .16s, transform .16s, box-shadow .16s",
+                    ? "0 12px 28px rgba(20,48,107,0.35)"
+                    : "0 4px 16px rgba(20,48,107,0.22)",
+                  transition: "background .2s, transform .2s, box-shadow .2s",
                 }}
               >
                 {loading ? (
@@ -255,13 +256,13 @@ export default function LoginPage() {
         {/* ══ RIGHT (50%) — brand and capabilities ═══════════════════════════ */}
         <div
           className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-12"
-          style={{ background: `linear-gradient(165deg, ${NAVY} 0%, ${NAVY_DEEP} 100%)` }}
+          style={{ background: `linear-gradient(145deg, ${NAVY} 0%, ${NAVY_DEEP} 100%)` }}
         >
           <div
             aria-hidden
             style={{
               position: "absolute", inset: 0,
-              background: "radial-gradient(720px 380px at 0% 0%, rgba(133,183,235,0.12), transparent 70%)",
+              background: "radial-gradient(750px 420px at 0% 0%, rgba(133,183,235,0.18), transparent 65%)",
             }}
           />
 
@@ -274,9 +275,8 @@ export default function LoginPage() {
                 style={{ height: 44, width: "auto", objectFit: "contain", display: "block", flexShrink: 0, marginBottom: 24 }}
               />
 
-              <p style={{ fontSize: 18, lineHeight: 1.6, color: BODY, marginBottom: 24 }}>
-                Access programme data, monitor outcomes, and generate insights across HENT,
-                HEMP, and HECO.
+              <p style={{ fontSize: 19, lineHeight: 1.7, color: BODY, marginBottom: 28, fontWeight: 500 }}>
+                Comprehensive programme analytics, impact measurement, and strategic insights across all CHII initiatives.
               </p>
 
               {/* Capabilities — left-aligned horizontal layout */}
@@ -285,13 +285,13 @@ export default function LoginPage() {
                   <li key={title} className="flex items-start gap-4">
                     <span
                       className="flex items-center justify-center flex-shrink-0"
-                      style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(133,183,235,0.12)", border: "1px solid rgba(133,183,235,0.28)" }}
+                      style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(133,183,235,0.18)", border: "1.5px solid rgba(133,183,235,0.38)", boxShadow: "0 2px 8px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,0.1)" }}
                     >
-                      <Icon size={18} color={ICON} strokeWidth={1.5} />
+                      <Icon size={22} color={ICON} strokeWidth={1.3} />
                     </span>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 17, fontWeight: 600, color: "white", lineHeight: 1.3, margin: 0 }}>{title}</p>
-                      <p style={{ fontSize: 15, color: BODY, opacity: 0.75, lineHeight: 1.5, marginTop: 4 }}>{body}</p>
+                      <p style={{ fontSize: 17.5, fontWeight: 700, color: "white", lineHeight: 1.3, margin: 0, letterSpacing: "0.01em" }}>{title}</p>
+                      <p style={{ fontSize: 15.5, color: BODY, opacity: 0.8, lineHeight: 1.6, marginTop: 6 }}>{body}</p>
                     </div>
                   </li>
                 ))}
