@@ -29,7 +29,7 @@ const BRAND_DK = "#0C447C";
 const LIGHT_BORDER = "rgba(16, 44, 94, 0.12)";
 const LIGHT_BG = "#F8F9FA";
 
-function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
+function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange, filterContent }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void; filterContent?: React.ReactNode }) {
   const [tip, setTip] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   return (
@@ -56,7 +56,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
           </div>
         </div>
       </div>
-      {filterOptions && filterValue && onFilterChange && (
+      {(filterOptions || filterContent) && filterValue && onFilterChange && (
         <div style={{ padding: "8px 18px", display: "flex", justifyContent: "flex-end" }}>
           <div style={{ position: "relative" }}>
             <button
@@ -84,39 +84,70 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
                 position: "absolute",
                 top: "calc(100% + 4px)",
                 right: 0,
+                zIndex: 50,
+                width: 280,
                 backgroundColor: "white",
+                borderRadius: 10,
                 border: `1px solid ${LIGHT_BORDER}`,
                 borderLeft: `5px solid ${BRAND}`,
-                borderRadius: 10,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                zIndex: 10,
-                minWidth: 140,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.14)",
                 overflow: "hidden",
               }}>
-                {filterOptions.map(opt => (
+                <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", margin: 0, textTransform: "uppercase", letterSpacing: "0.02em" }}>Filters</p>
                   <button
-                    key={opt}
                     onClick={() => {
-                      onFilterChange(opt);
+                      onFilterChange("reset");
                       setFilterOpen(false);
                     }}
                     style={{
-                      display: "block",
-                      width: "100%",
-                      textAlign: "left",
-                      padding: "8px 12px",
-                      fontSize: 11,
-                      fontWeight: opt === filterValue ? 700 : 500,
-                      backgroundColor: opt === filterValue ? BRAND : "white",
-                      color: opt === filterValue ? "white" : BRAND_DK,
-                      border: `1px solid ${LIGHT_BORDER}`,
-                      borderLeft: `5px solid ${BRAND}`,
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: "white",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      borderRadius: 6,
+                      padding: "3px 8px",
+                      backgroundColor: "rgba(255,255,255,0.08)",
                       cursor: "pointer",
+                      transition: "all 0.2s ease",
                     }}
                   >
-                    {opt}
+                    Reset
                   </button>
-                ))}
+                </div>
+                <div style={{ padding: "12px 14px" }}>
+                  {filterContent ? (
+                    filterContent
+                  ) : (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {filterOptions?.map(opt => {
+                        const isSelected = filterValue === opt;
+                        return (
+                          <button
+                            key={opt}
+                            onClick={() => {
+                              onFilterChange(opt);
+                              setFilterOpen(false);
+                            }}
+                            style={{
+                              fontSize: 10,
+                              fontWeight: isSelected ? 700 : 500,
+                              padding: "5px 10px",
+                              borderRadius: 6,
+                              border: `1px solid ${isSelected ? BRAND : LIGHT_BORDER}`,
+                              backgroundColor: isSelected ? BRAND : "white",
+                              color: isSelected ? "white" : BRAND_DK,
+                              cursor: "pointer",
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -163,7 +194,8 @@ export default function HEMPSie() {
   const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
   const [filterExposureYear, setFilterExposureYear] = useState("All Years");
   const [filterGeoYear, setFilterGeoYear] = useState("All Years");
-  const [filterFunnel, setFilterFunnel] = useState("All Years - All Cohorts");
+  const [filterFunnelYear, setFilterFunnelYear] = useState("All Years");
+  const [filterFunnelCohort, setFilterFunnelCohort] = useState("All Cohorts");
 
   const avgRelevance = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.relevance, 0) / filteredCohorts.length).toFixed(1)) : 0;
   const avgQuality = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.quality, 0) / filteredCohorts.length).toFixed(1)) : 0;
@@ -173,17 +205,14 @@ export default function HEMPSie() {
   const avgCompletion = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.completionFullProgramme, 0) / filteredCohorts.length).toFixed(1)) : 0;
 
   const funnelFilteredCohorts = useMemo(() => {
-    const [yearPart, cohortPart] = filterFunnel.split(" - ");
     return sieCohorts.filter(c => {
-      if (yearPart !== "All Years" && c.year !== parseInt(yearPart)) return false;
-      if (cohortPart !== "All Cohorts" && c.name !== cohortPart) return false;
+      if (filterFunnelYear !== "All Years" && c.year !== parseInt(filterFunnelYear)) return false;
+      if (filterFunnelCohort !== "All Cohorts" && c.name !== filterFunnelCohort) return false;
       return true;
     });
-  }, [filterFunnel]);
+  }, [filterFunnelYear, filterFunnelCohort]);
 
   const cohortNames = Array.from(new Set(sieCohorts.map(c => c.name))).sort();
-
-  const funnelFilterOptions = ["All Years - All Cohorts", ...years.map(y => `${y} - All Cohorts`), ...cohortNames.map(c => `All Years - ${c}`)];
 
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
@@ -607,21 +636,90 @@ export default function HEMPSie() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Programme Completion Funnel" subtitle="Participation journey through all phases" info="Progression from selected participants through virtual and in-country completion" filterOptions={funnelFilterOptions} filterValue={filterFunnel} onFilterChange={setFilterFunnel}>
+              <Panel
+                title="Programme Completion Funnel"
+                subtitle="Participation journey through all phases"
+                info="Progression from selected participants through virtual and in-country completion"
+                filterValue={`${filterFunnelYear} / ${filterFunnelCohort}`}
+                onFilterChange={(v) => {
+                  if (v === "reset") {
+                    setFilterFunnelYear("All Years");
+                    setFilterFunnelCohort("All Cohorts");
+                  }
+                }}
+                filterContent={
+                  <div style={{ marginBottom: -6 }}>
+                    <div style={{ marginBottom: 12 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>Year</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {["All Years", ...years.map(String)].map(opt => {
+                          const isSelected = filterFunnelYear === opt;
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => setFilterFunnelYear(opt)}
+                              style={{
+                                fontSize: 10,
+                                fontWeight: isSelected ? 700 : 500,
+                                padding: "5px 10px",
+                                borderRadius: 6,
+                                border: `1px solid ${isSelected ? BRAND : LIGHT_BORDER}`,
+                                backgroundColor: isSelected ? BRAND : "white",
+                                color: isSelected ? "white" : BRAND_DK,
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                              }}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>Cohort</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {["All Cohorts", ...cohortNames].map(opt => {
+                          const isSelected = filterFunnelCohort === opt;
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => setFilterFunnelCohort(opt)}
+                              style={{
+                                fontSize: 10,
+                                fontWeight: isSelected ? 700 : 500,
+                                padding: "5px 10px",
+                                borderRadius: 6,
+                                border: `1px solid ${isSelected ? BRAND : LIGHT_BORDER}`,
+                                backgroundColor: isSelected ? BRAND : "white",
+                                color: isSelected ? "white" : BRAND_DK,
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                              }}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                }
+              >
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { stage: "Selected", participants: funnelFilteredCohorts.reduce((s, c) => s + c.selected, 0) },
                     { stage: "Completed Virtual", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedVirtual, 0) },
                     { stage: "Travelled In-Country", participants: funnelFilteredCohorts.reduce((s, c) => s + c.travelledInCountry, 0) },
                     { stage: "Full Completion", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedProgramme, 0) },
-                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  ]} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="stage" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="participants" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Participants">
-                      <LabelList dataKey="participants" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                      <LabelList dataKey="participants" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -632,14 +730,14 @@ export default function HEMPSie() {
                     { metric: "Relevance", rating: avgRelevance },
                     { metric: "Quality", rating: avgQuality },
                     { metric: "Usefulness", rating: avgUsefulness },
-                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  ]} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="rating" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]} name="Rating">
-                      <LabelList dataKey="rating" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                      <LabelList dataKey="rating" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -649,14 +747,14 @@ export default function HEMPSie() {
                   <BarChart data={[
                     { name: "Confidence", value: avgConfidence, metric: "confidence" },
                     { name: "NPS (÷2)", value: avgNPS / 2, metric: "nps" },
-                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  ]} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => v.toFixed(1)} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Score">
-                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} formatter={(v) => v.toFixed(1)} />
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: number) => v.toFixed(1)} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -666,14 +764,14 @@ export default function HEMPSie() {
                   <BarChart data={filteredCohorts.map(c => ({
                     name: c.name.substring(0, 18),
                     completion: c.completionFullProgramme,
-                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="completion" fill="#A8BFD6" barSize={46} radius={[4, 4, 0, 0]} name="Completion %">
-                      <LabelList dataKey="completion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} formatter={(v) => `${v}%`} />
+                      <LabelList dataKey="completion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v) => `${v}%`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
