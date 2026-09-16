@@ -62,22 +62,19 @@ export default function LoginPage() {
   const [focused, setFocused]           = useState<string | null>(null);
   const [hovered, setHovered]           = useState(false);
 
-  // Add option styling for dropdown
+  // Close dropdown when clicking outside
   useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      select option {
-        background: white;
-        color: #172B4D;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (focused === "portal") {
+        const target = e.target as HTMLElement;
+        if (!target.closest("div[data-dropdown]")) {
+          setFocused(null);
+        }
       }
-      select option:checked {
-        background: #F3F7FF;
-        color: #14306B;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [focused]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -135,17 +132,69 @@ export default function LoginPage() {
 
               <div style={{ marginBottom: 14 }}>
                 <label style={{...LABEL, marginBottom: 6}}>Programme</label>
-                <div style={{ position: "relative" }}>
-                  <select
-                    value={portal}
-                    onChange={e => setPortal(e.target.value)}
-                    onFocus={() => setFocused("portal")}
-                    onBlur={() => setFocused(null)}
-                    style={{ ...field("portal"), appearance: "none", WebkitAppearance: "none", paddingRight: 44, cursor: "pointer", background: "white", backgroundColor: "white" }}
+                <div style={{ position: "relative" }} data-dropdown="portal">
+                  <button
+                    type="button"
+                    onClick={() => setFocused(focused === "portal" ? null : "portal")}
+                    style={{
+                      ...field("portal"),
+                      paddingRight: 44,
+                      cursor: "pointer",
+                      background: "white",
+                      textAlign: "left",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
                   >
-                    {PORTALS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
-                  </select>
+                    <span>{PORTALS.find(p => p.id === portal)?.label || portal}</span>
+                  </button>
                   <ChevronDown size={18} style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", color: SECONDARY, pointerEvents: "none" }} />
+
+                  {focused === "portal" && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        right: 0,
+                        marginTop: 4,
+                        background: "white",
+                        border: `1px solid #D5D8E0`,
+                        borderRadius: 6,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                        zIndex: 10,
+                        overflow: "hidden",
+                      }}
+                    >
+                      {PORTALS.map(p => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            setPortal(p.id);
+                            setFocused(null);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "10px 14px",
+                            textAlign: "left",
+                            background: portal === p.id ? "#F3F7FF" : "white",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: 13,
+                            color: TEXT,
+                            fontWeight: 500,
+                            transition: "background .15s",
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#F3F7FF"}
+                          onMouseLeave={e => e.currentTarget.style.background = portal === p.id ? "#F3F7FF" : "white"}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -292,7 +341,7 @@ export default function LoginPage() {
                 style={{ height: 44, width: "auto", objectFit: "contain", display: "block", flexShrink: 0, marginBottom: 24 }}
               />
 
-              <p style={{ fontSize: 14, lineHeight: 1.7, color: BODY, marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: "#94A3B8", marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
                 Explore how CHII builds the evidence base for health innovation across Africa, tracking how young people move through programmes into dignified work, ventures, and lasting impact on health systems across the continent.
               </p>
 
@@ -307,8 +356,8 @@ export default function LoginPage() {
                       <Icon size={18} color={ICON} strokeWidth={1.5} />
                     </span>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "white", lineHeight: 1.3, margin: 0, letterSpacing: "0.005em" }}>{title}</p>
-                      <p style={{ fontSize: 13.5, color: BODY, opacity: 0.8, lineHeight: 1.5, marginTop: 3 }}>{body}</p>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: "#94A3B8", lineHeight: 1.3, margin: 0, letterSpacing: "0.005em" }}>{title}</p>
+                      <p style={{ fontSize: 13.5, color: "#94A3B8", opacity: 0.8, lineHeight: 1.5, marginTop: 3 }}>{body}</p>
                     </div>
                   </li>
                 ))}
