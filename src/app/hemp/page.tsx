@@ -2,6 +2,7 @@
 import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
+import { DonutRing } from "@/components/charts/donut-chart";
 import { sieCohorts } from "@/data/hemp/sie";
 import { ghCohorts } from "@/data/hemp/global-health";
 import { healthXSymposia, LEAD_TYPES, EMPLOYER_SECTORS } from "@/data/hemp/healthx-careers";
@@ -646,7 +647,7 @@ export default function HEMPOverview() {
               </Panel>
             </div>
 
-            <div style={{ marginTop: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 16 }}>
               <Panel title="Gender Participation" subtitle="Female vs. male by engagement">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={genderByEngagement} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
@@ -663,9 +664,7 @@ export default function HEMPOverview() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#85B7EB" }} /> Male</span>
                 </div>
               </Panel>
-            </div>
 
-            <div style={{ marginTop: 16 }}>
               <Panel title="Reach by Region" subtitle="Participants by African region" filterOptions={["All Years", ...GEO_YEARS.map(String)]} filterValue={filterRegionYear} onFilterChange={setFilterRegionYear}>
                 {regionChartData.length ? (
                   <>
@@ -727,21 +726,29 @@ export default function HEMPOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Overall Programme Satisfaction" subtitle="Average score across all engagements">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 200 }}>
-                  <div style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#6B7280", margin: "0 0 12px 0" }}>Average Satisfaction</p>
-                    <div style={{ fontSize: 56, fontWeight: 800, color: BRAND_DK, margin: "0 0 4px 0" }}>
-                      {AVG_SAT.toFixed(1)}
-                    </div>
-                    <p style={{ fontSize: 12, color: "#6B7280", margin: 0 }}>out of 5.0</p>
-                    <div style={{ marginTop: 12, height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, width: 120, margin: "12px auto 0" }}>
-                      <div style={{ height: "100%", borderRadius: 2, width: `${Math.min((AVG_SAT / 5) * 100, 100)}%`, backgroundColor: BRAND }} />
-                    </div>
-                    <p style={{ fontSize: 10, color: AVG_SAT >= 4.5 ? "#16A34A" : "#F59E0B", marginTop: 6, fontWeight: 600 }}>
-                      {AVG_SAT >= 4.5 ? "On target" : "Below target"}
-                    </p>
-                  </div>
+              <Panel title="Overall Programme Satisfaction" subtitle="Average scores by engagement type">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "HealthX", value: hxSatAvg },
+                    { name: "Internships", value: intSatAvg },
+                    { name: "SIE", value: sieSatAvg },
+                    { name: "Courses", value: ghSatAvg },
+                    { name: "Career Symposia", value: symUsefulnessAvg },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                      {[hxSatAvg, intSatAvg, sieSatAvg, ghSatAvg, symUsefulnessAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN, VIOLET][i]} />))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, textAlign: "center" }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: BRAND_DK, margin: 0 }}>Average: {AVG_SAT.toFixed(1)}/5</p>
+                  <p style={{ fontSize: 10, color: AVG_SAT >= 4.5 ? "#16A34A" : "#F59E0B", marginTop: 4, fontWeight: 600, margin: 0 }}>
+                    {AVG_SAT >= 4.5 ? "✓ On target" : "⚠ Below target"}
+                  </p>
                 </div>
               </Panel>
             </div>
@@ -793,17 +800,15 @@ export default function HEMPOverview() {
             <SectionTitle title="Ecosystem & Impact" subtitle="Partner ecosystem and sectoral reach" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Internship Sector Distribution" subtitle="Placements by host sector">
-                <ResponsiveContainer width="100%" height={280}>
-                  <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                    <Pie data={sectorCounts} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" nameKey="name">
-                      {sectorCounts.map((_, i) => (
-                        <Cell key={i} fill={DISTINCT[i % DISTINCT.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+              <Panel title="Internship Sector Distribution" subtitle="Portfolio distribution across health sectors">
+                <DonutRing
+                  data={sectorCounts}
+                  colors={DISTINCT}
+                  total={internships.length}
+                  totalLabel="Placements"
+                  height={340}
+                  legendPercent
+                />
               </Panel>
               <Panel title="Internship Conversions" subtitle="Sector snapshot">
                 <div style={{ paddingTop: 20 }}>
