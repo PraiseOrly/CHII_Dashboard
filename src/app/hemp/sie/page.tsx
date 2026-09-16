@@ -771,7 +771,7 @@ export default function HEMPSie() {
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="completion" fill="#A8BFD6" barSize={46} radius={[4, 4, 0, 0]} name="Completion %">
-                      <LabelList dataKey="completion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v) => `${v}%`} />
+                      <LabelList dataKey="completion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: any) => `${v}%`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>

@@ -152,10 +152,10 @@ const KPI_TILES = [
 // â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function HackathonsPage() {
   const [trendTab, setTrendTab] = useState<"participants" | "projects" | "winners" | "startups">("participants");
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
+  const [activeSection, setActiveSection] = useState<number>(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterYear, setFilterYear] = useState("All Years");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const show = (n: number) => activeSection === n;
   const activeFilterCount = [filterYear !== "All Years"].filter(Boolean).length;
 
   // â”€â”€ per-year trend data â”€â”€
@@ -289,12 +289,12 @@ export default function HackathonsPage() {
         <HeaderStatsPanel
           title="Hackathons Metrics"
           cards={[
-            { label: "Total Hackathons", num: total.events, displayFmt: (n) => String(Math.round(n)), icon: Briefcase, tip: "Innovation events conducted across all years." },
-            { label: "Participants", num: total.participants, displayFmt: (n) => Math.round(n) >= 1000 ? `${(Math.round(n) / 1000).toFixed(1)}k` : String(Math.round(n)), icon: Users, tip: "Total founder and team member participation across all events." },
-            { label: "Winning Teams", num: total.winningTeams, displayFmt: (n) => String(Math.round(n)), icon: Trophy, tip: "Teams selected as winners across all hackathons." },
-            { label: "Projects Developed", num: total.projects, displayFmt: (n) => String(Math.round(n)), icon: Lightbulb, tip: "Project submissions across all events." },
-            { label: "Startups Created", num: total.startups, displayFmt: (n) => String(Math.round(n)), icon: Zap, tip: "Ventures founded from hackathon projects." },
-            { label: "Partnerships", num: total.partnerships, displayFmt: (n) => String(Math.round(n)), icon: Handshake, tip: "Sponsor and partner organizations engaged." },
+            { label: "Total Hackathons", num: total.events, displayFmt: (n) => String(Math.round(n)), icon: Briefcase, tip: "Innovation events conducted across all years.", sub: `${Math.round((total.events / 20) * 100)}% of 20 target`, pace: true, paceA: total.events, paceT: 20 },
+            { label: "Participants", num: total.participants, displayFmt: (n) => Math.round(n) >= 1000 ? `${(Math.round(n) / 1000).toFixed(1)}k` : String(Math.round(n)), icon: Users, tip: "Total founder and team member participation across all events.", sub: `${Math.round((total.participants / 3000) * 100)}% of 3000 target`, pace: true, paceA: total.participants, paceT: 3000 },
+            { label: "Winning Teams", num: total.winningTeams, displayFmt: (n) => String(Math.round(n)), icon: Trophy, tip: "Teams selected as winners across all hackathons.", sub: `${Math.round((total.winningTeams / 150) * 100)}% of 150 target`, pace: true, paceA: total.winningTeams, paceT: 150 },
+            { label: "Projects Developed", num: total.projects, displayFmt: (n) => String(Math.round(n)), icon: Lightbulb, tip: "Project submissions across all events.", sub: `${Math.round((total.projects / 400) * 100)}% of 400 target`, pace: true, paceA: total.projects, paceT: 400 },
+            { label: "Startups Created", num: total.startups, displayFmt: (n) => String(Math.round(n)), icon: Zap, tip: "Ventures founded from hackathon projects.", sub: `${Math.round((total.startups / 25) * 100)}% of 25 target`, pace: true, paceA: total.startups, paceT: 25 },
+            { label: "Partnerships", num: total.partnerships, displayFmt: (n) => String(Math.round(n)), icon: Handshake, tip: "Sponsor and partner organizations engaged.", sub: `${Math.round((total.partnerships / 30) * 100)}% of 30 target`, pace: true, paceA: total.partnerships, paceT: 30 },
           ]}
         />
 
@@ -304,13 +304,12 @@ export default function HackathonsPage() {
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
             <SectionPills
               accent="#0E4633"
-              value={activeSection === "all" ? "all" : String(activeSection)}
-              onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+              value={String(activeSection)}
+              onChange={(v: string) => setActiveSection(Number(v))}
               options={[
-                { label: "All Sections", value: "all" },
-                { label: "Profiles", value: "1" }, { label: "Per Year", value: "2" },
-                { label: "Trends", value: "3" }, { label: "Categories", value: "4" },
-                { label: "Lifecycle", value: "5" },
+                { label: "Delivery & Performance", value: "1" },
+                { label: "Participant Profile", value: "2" },
+                { label: "Innovation & Impact", value: "3" },
               ]}
             />
           </div>
@@ -470,7 +469,7 @@ export default function HackathonsPage() {
             <SectionPills
               accent="#0E4633"
               value={trendTab}
-              onChange={setTrendTab}
+              onChange={(v: string) => setTrendTab(v as "participants" | "projects" | "winners" | "startups")}
               options={[
                 { label: "Participants",       value: "participants" },
                 { label: "Projects Developed", value: "projects" },
