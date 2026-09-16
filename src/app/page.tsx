@@ -45,13 +45,13 @@ const PARTNERS = [
 ];
 
 const LABEL: React.CSSProperties = {
-  fontSize: 13,
+  fontSize: 10,
   fontWeight: 700,
-  letterSpacing: "0.06em",
+  letterSpacing: "0.1em",
   textTransform: "uppercase",
-  color: "#475569",
+  color: "#6B7280",
   display: "block",
-  marginBottom: 11,
+  marginBottom: 8,
 };
 
 export default function LoginPage() {
@@ -71,19 +71,19 @@ export default function LoginPage() {
 
   const field = (name: string): React.CSSProperties => ({
     width: "100%",
-    height: 44,
-    fontSize: 14.5,
+    height: 42,
+    fontSize: 14,
     fontWeight: 500,
     color: TEXT,
     background: "white",
-    border: `1.5px solid ${focused === name ? PRIMARY : "#D0D5E0"}`,
+    border: `1px solid ${focused === name ? PRIMARY : "#D5D8E0"}`,
     boxShadow: focused === name
-      ? `0 0 0 3px ${PRIMARY}15, 0 4px 12px rgba(20,48,107,0.08)`
-      : "0 2px 4px rgba(16,32,64,0.05)",
-    borderRadius: 10,
-    padding: "0 16px",
+      ? `0 0 0 2px rgba(20,48,107,0.1), inset 0 0 0 1px ${PRIMARY}`
+      : "none",
+    borderRadius: 8,
+    padding: "0 14px",
     outline: "none",
-    transition: "border-color .2s, box-shadow .2s",
+    transition: "border-color .15s, box-shadow .15s",
   });
 
   return (
@@ -94,29 +94,29 @@ export default function LoginPage() {
       <div
         className="w-full flex flex-col lg:flex-row overflow-hidden"
         style={{
-          maxWidth: "62rem",
-          maxHeight: "680px",
-          borderRadius: 18,
+          maxWidth: "55rem",
+          maxHeight: "620px",
+          borderRadius: 14,
           border: `1px solid ${BORDER}`,
-          boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 20px 48px rgba(16,32,64,0.14), 0 0 1px rgba(0,0,0,0.02)",
+          boxShadow: "0 8px 32px rgba(20,48,107,0.10), 0 1px 2px rgba(0,0,0,0.02)",
           background: "white",
         }}
       >
 
         {/* ══ LEFT (50%) — the form ════════════════════════════════════════ */}
-        <div className="relative w-full lg:w-[50%] flex flex-col px-12 py-8 overflow-y-auto">
-          <div style={{ maxWidth: "21.25rem", width: "100%" }}>
+        <div className="relative w-full lg:w-[50%] flex flex-col px-11 py-8 justify-between">
+          <div style={{ maxWidth: "19rem", width: "100%", margin: "0 auto" }}>
 
-            <h1 className={playfair.className} style={{ fontSize: 44, fontWeight: 600, color: TEXT, lineHeight: 1.05, letterSpacing: "-0.015em", marginBottom: 4 }}>
+            <h1 className={playfair.className} style={{ fontSize: 34, fontWeight: 600, color: TEXT, lineHeight: 1.05, letterSpacing: "-0.015em", marginBottom: 6 }}>
               Welcome Back
             </h1>
-            <p style={{ fontSize: 15, color: SECONDARY, marginTop: 10, lineHeight: 1.5, marginBottom: 0, fontWeight: 500 }}>
+            <p style={{ fontSize: 14, color: SECONDARY, marginTop: 8, lineHeight: 1.5, marginBottom: 0, fontWeight: 400 }}>
               Access comprehensive programme analytics and insights
             </p>
 
-            <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
+            <form onSubmit={handleSubmit} style={{ marginTop: 28 }}>
 
-              <div style={{ marginBottom: 18 }}>
+              <div style={{ marginBottom: 22 }}>
                 <label style={LABEL}>Programme</label>
                 <div style={{ position: "relative" }}>
                   <select
@@ -132,7 +132,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: 18 }}>
+              <div style={{ marginBottom: 22 }}>
                 <label style={LABEL}>Email address</label>
                 <input
                   type="email"
@@ -144,7 +144,7 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 24 }}>
                 <label style={LABEL}>Password</label>
                 <div style={{ position: "relative" }}>
                   <input
@@ -159,8 +159,8 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword(v => !v)}
                     style={{
-                      position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)",
-                      fontSize: 14, fontWeight: 600, color: SECONDARY,
+                      position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                      fontSize: 13, fontWeight: 500, color: "#9CA3AF",
                       background: "none", border: "none", cursor: "pointer", padding: 0,
                     }}
                   >
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: 26 }}>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" defaultChecked style={{ accentColor: PRIMARY, width: 16, height: 16 }} />
                   <span style={{ fontSize: 13, color: SECONDARY }}>Remember me</span>
@@ -177,7 +177,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="hover:underline"
-                  style={{ fontSize: 13, fontWeight: 600, color: PRIMARY, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                  style={{ fontSize: 13, fontWeight: 500, color: PRIMARY, background: "none", border: "none", cursor: "pointer", padding: 0 }}
                 >
                   Forgot password?
                 </button>
@@ -190,21 +190,21 @@ export default function LoginPage() {
                 onMouseLeave={() => setHovered(false)}
                 className="w-full flex items-center justify-center gap-2"
                 style={{
-                  height: 50,
-                  fontSize: 16,
+                  height: 44,
+                  fontSize: 14,
                   fontWeight: 700,
                   letterSpacing: "0.01em",
                   color: "white",
-                  background: hovered && !loading ? HOVER : PRIMARY,
+                  background: hovered && !loading ? "#0B2145" : PRIMARY,
                   border: "none",
-                  borderRadius: 12,
+                  borderRadius: 8,
                   cursor: loading ? "not-allowed" : "pointer",
-                  opacity: loading ? 0.75 : 1,
-                  transform: hovered && !loading ? "translateY(-1px)" : "none",
+                  opacity: loading ? 0.7 : 1,
+                  transform: hovered && !loading ? "translateY(-0.5px)" : "none",
                   boxShadow: hovered && !loading
-                    ? "0 12px 28px rgba(20,48,107,0.35)"
-                    : "0 4px 16px rgba(20,48,107,0.22)",
-                  transition: "background .2s, transform .2s, box-shadow .2s",
+                    ? "0 4px 12px rgba(20,48,107,0.18)"
+                    : "0 1px 3px rgba(0,0,0,0.08)",
+                  transition: "background .15s, transform .15s, box-shadow .15s",
                 }}
               >
                 {loading ? (
@@ -225,9 +225,9 @@ export default function LoginPage() {
             </form>
 
             {/* Need access — centred under the button */}
-            <p style={{ fontSize: 13, color: SECONDARY, textAlign: "center", marginTop: 14 }}>
+            <p style={{ fontSize: 13, color: SECONDARY, textAlign: "center", marginTop: 18 }}>
               Need access?{" "}
-              <a href="mailto:admin@chii.alu.edu" className="hover:underline" style={{ color: PRIMARY, fontWeight: 600 }}>
+              <a href="mailto:admin@chii.alu.edu" className="hover:underline" style={{ color: PRIMARY, fontWeight: 500 }}>
                 Contact your programme lead
               </a>
             </p>
@@ -238,14 +238,14 @@ export default function LoginPage() {
               <p style={{ ...LABEL, textAlign: "center", marginBottom: 12 }}>
                 In partnership with
               </p>
-              <div className="flex items-center justify-center gap-10">
+              <div className="flex items-center justify-center gap-8">
                 {PARTNERS.map(p => (
                   <img
                     key={p.src}
                     src={p.src}
                     alt={p.alt}
                     className="chii-partner-logo"
-                    style={{ height: 28, width: "auto", objectFit: "contain", display: "block" }}
+                    style={{ height: 22, width: "auto", objectFit: "contain", display: "block" }}
                   />
                 ))}
               </div>
@@ -255,7 +255,7 @@ export default function LoginPage() {
 
         {/* ══ RIGHT (50%) — brand and capabilities ═══════════════════════════ */}
         <div
-          className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-12"
+          className="relative w-full lg:w-[50%] flex flex-col overflow-hidden px-12 py-8"
           style={{ background: `linear-gradient(145deg, ${NAVY} 0%, ${NAVY_DEEP} 100%)` }}
         >
           <div
@@ -267,31 +267,31 @@ export default function LoginPage() {
           />
 
           <div className="relative z-10 flex flex-col h-full">
-            {/* Logo + tagline + capabilities as one vertically centered block */}
-            <div className="flex flex-col flex-1 justify-center">
+            {/* Logo + tagline + capabilities — top-aligned with left panel heading */}
+            <div className="flex flex-col flex-1">
               <img
                 src="/logos/CHII-Logo.png"
                 alt="Centre for Health Innovation and Impact"
                 style={{ height: 44, width: "auto", objectFit: "contain", display: "block", flexShrink: 0, marginBottom: 24 }}
               />
 
-              <p style={{ fontSize: 19, lineHeight: 1.7, color: BODY, marginBottom: 28, fontWeight: 500 }}>
+              <p style={{ fontSize: 17, lineHeight: 1.7, color: BODY, marginBottom: 24, fontWeight: 500, maxWidth: "360px" }}>
                 Comprehensive programme analytics, impact measurement, and strategic insights across all CHII initiatives.
               </p>
 
               {/* Capabilities — left-aligned horizontal layout */}
-              <ul className="flex flex-col gap-5" style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <ul className="flex flex-col" style={{ listStyle: "none", margin: 0, padding: 0, gap: 18, maxWidth: "360px" }}>
                 {CAPABILITIES.map(({ icon: Icon, title, body }) => (
-                  <li key={title} className="flex items-start gap-4">
+                  <li key={title} className="flex items-start gap-3">
                     <span
                       className="flex items-center justify-center flex-shrink-0"
-                      style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(133,183,235,0.18)", border: "1.5px solid rgba(133,183,235,0.38)", boxShadow: "0 2px 8px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,0.1)" }}
+                      style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(133,183,235,0.16)", border: "1px solid rgba(133,183,235,0.34)" }}
                     >
-                      <Icon size={22} color={ICON} strokeWidth={1.3} />
+                      <Icon size={18} color={ICON} strokeWidth={1.5} />
                     </span>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 17.5, fontWeight: 700, color: "white", lineHeight: 1.3, margin: 0, letterSpacing: "0.01em" }}>{title}</p>
-                      <p style={{ fontSize: 15.5, color: BODY, opacity: 0.8, lineHeight: 1.6, marginTop: 6 }}>{body}</p>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: "white", lineHeight: 1.3, margin: 0, letterSpacing: "0.005em" }}>{title}</p>
+                      <p style={{ fontSize: 13.5, color: BODY, opacity: 0.8, lineHeight: 1.5, marginTop: 3 }}>{body}</p>
                     </div>
                   </li>
                 ))}
@@ -299,7 +299,7 @@ export default function LoginPage() {
             </div>
 
             {/* Copyright — pinned to the bottom of the panel */}
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", flexShrink: 0, paddingTop: 24 }}>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", flexShrink: 0, paddingTop: 20 }}>
               © 2026 CHII · African Leadership University
             </p>
           </div>
