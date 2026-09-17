@@ -1,42 +1,144 @@
-﻿"use client";
-import { HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hent";
-import { ChartCard, SectionHeader, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hent";
-import { benchColor } from "@/theme/tokens";
-import { useState, useMemo, useEffect, useRef } from "react";
+"use client";
+import { HeaderStatsPanel, FilterButton, FilterDropdown, ChartTip } from "@/components/ui/hent";
+import { ChartLegend } from "@/components/ui/hent";
+import { useState, useMemo } from "react";
 import {
-  BarChart, Bar, AreaChart, Area, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LabelList,
 } from "recharts";
-import { Star, Award, Users, Target, Zap, Briefcase, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Star, Award, Users, Target, Zap, Briefcase, TrendingUp, CheckCircle2, Info, ChevronDown } from "lucide-react";
 import PortalNav from "@/components/layout/portal-nav";
-import { CHART } from "@/theme/tokens";
 import PortalFooter from "@/components/layout/portal-footer";
-import SectionPills from "@/components/filters/section-pills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import { DonutRing } from "@/components/charts/donut-chart";
 import {
   mentorshipPrograms, MF_CRITERIA, MF_QUAL_AREAS,
   type MFCriterion, type MFQualArea,
 } from "@/data/mentorships";
 
-// â”€â”€â”€ palette (green family, distinct by hue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const NAVY    = "#0F4C3A"; // footer bg + testimonial border only (brand green)
-const ACCENT  = "#2D6A4F"; // page identity — mentorship = forest
-const SKY     = "#1F9E9E"; // teal
-const VIOLET  = "#6B8E5B"; // moss
-const TEAL    = "#2D8A8A"; // deep teal
-const EMERALD = "#40916C"; // sea green
-const INDIGO  = "#2D6A4F"; // forest
-const AMBER   = "#A6C13C"; // lime
-const ROSE    = "#94A93B"; // olive
-const PRIMARY = "#1B4332"; // pine (primary series)
+// Color palette - HENT green (matching ventures)
+const HERO = "#2D6A4F";
+const BRAND = "#2D6A4F";
+const BRAND_DK = "#0E4633";
+const LIGHT_BORDER = "rgba(14, 70, 51, 0.12)";
+const LIGHT_BG = "#f8fafc";
+const GREEN_RAMP = ["#1B4332", "#2D6A4F", "#40916C", "#5BB4A0", "#8ECCC4"];
+
+const ACCENT  = "#2D6A4F";
+const SKY     = "#1F9E9E";
+const VIOLET  = "#6B8E5B";
+const TEAL    = "#2D8A8A";
+const EMERALD = "#40916C";
+const INDIGO  = "#2D6A4F";
+const AMBER   = "#A6C13C";
+const ROSE    = "#94A93B";
+const PRIMARY = "#1B4332";
 
 const BAR_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
 
 const RATING_COLORS: Record<string, string> = {
   "Very High": "#1B4332", High: "#40916C", Moderate: "#A6C13C", Low: "#C44536",
 };
-const RANK_BG = ["#C9A227", "#9CA3AF", "#CD7F32"];
+
+// Panel Component for Charts (matching ventures page)
+function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
+  const [tip, setTip] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  return (
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+      <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
+          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D4AF87", flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+              {info && (
+                <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
+                  onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+                  <Info size={12} color="white" opacity={0.6} />
+                  {tip && (
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: BRAND_DK, fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: `1px solid ${LIGHT_BORDER}`, zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                      {info}
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 1 }}>{subtitle}</p>
+          </div>
+        </div>
+      </div>
+      {filterOptions && filterValue && onFilterChange && (
+        <div style={{ padding: "8px 18px", display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                padding: "5px 10px",
+                borderRadius: 10,
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                backgroundColor: "white",
+                color: BRAND_DK,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {filterValue} <ChevronDown size={12} />
+            </button>
+            {filterOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: 0,
+                backgroundColor: "white",
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                borderRadius: 10,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                minWidth: 140,
+                overflow: "hidden",
+              }}>
+                {filterOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => {
+                      onFilterChange(opt);
+                      setFilterOpen(false);
+                    }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 12px",
+                      fontSize: 11,
+                      fontWeight: opt === filterValue ? 700 : 500,
+                      backgroundColor: opt === filterValue ? BRAND : "white",
+                      color: opt === filterValue ? "white" : BRAND_DK,
+                      border: `1px solid ${LIGHT_BORDER}`,
+                      borderLeft: `5px solid ${BRAND}`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div style={{ padding: "12px 18px 18px" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function ratingLabel(s: number): string {
   return s >= 4.5 ? "Very High" : s >= 3.8 ? "High" : s >= 3.0 ? "Moderate" : "Low";
@@ -48,7 +150,7 @@ function heatBg(s: number): string {
   return ROSE;
 }
 
-// â”€â”€â”€ shared components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ shared components â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5","#00BBF9","#BC6C25","#8AB17D","#D62828","#3D405B"];
 function CustomDonut({ data, className = "" }: {
@@ -182,7 +284,7 @@ function Stars({ score }: { score: number }) {
 }
 
 
-// â”€â”€â”€ KPI tile map (4 metrics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ KPI tile map (4 metrics) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 const KPI_TILES = [
   { label: "Total Fellows",       clr: "#1E3A8A" },  // deep blue
   { label: "Mentor Engagements",  clr: "#C2410C" },  // orange
@@ -210,15 +312,16 @@ type YearVal  = "All" | "2022" | "2023" | "2024" | "2025" | "2026";
 type TypeVal  = "All" | "Mentorship" | "Fellowship" | "One-Year Fellowship" | "Advisory";
 type GenderVal = "All" | "Female" | "Male";
 
-// â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Youth-in-Work-style filter select (green theme)
 export default function MentorshipPage() {
+  const categories = ["Program Delivery & Performance", "Participant Profile", "Learning & Outcomes"];
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
+
   const [yearFilter,  setYearFilter]  = useState<YearVal>("All");
   const [typeFilter,  setTypeFilter]  = useState<TypeVal>("All");
   const [genderView,  setGenderView]  = useState<GenderVal>("All");
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const show = (category: string) => activeCategory === category;
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (typeFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
   const filtered = useMemo(() => mentorshipPrograms.filter(p => {
@@ -332,43 +435,36 @@ export default function MentorshipPage() {
     <div className="min-h-screen" style={{ backgroundColor: "#f1f5f9" }}>
       <PortalNav portal="hent" />
 
-      {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* HEADER */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "#2D6A4F", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
-
-        {/* Faint triangle pattern across the whole header */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-
-        {/* Full design elements anchored to the left & right edges */}
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-
-        {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(14,70,51,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(14,70,51,0) 100%)" }} />
-
-        {/* Content */}
-        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
-          <div style={{ textAlign: "center" }}>
-            <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>Fellowship tracks, fellows supported and completion outcomes</p>
-            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
-              <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
-              <span aria-hidden="true">·</span>
-              <span>{mentorshipPrograms.length} programmes tracked</span>
-              <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(45,106,79,0) 0%, #2D6A4F 34%, #2D6A4F 66%, rgba(45,106,79,0) 100%)" }} />
+          <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
+            <div style={{ textAlign: "center" }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mentorship &amp; Fellowships</h1>
+              <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(190,228,214,0.78)" }}>Fellowship tracks, fellows supported and completion outcomes</p>
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(190,228,214,0.5)" }}>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Data source:</span> HENT Consolidated Database</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Period:</span> 2022–2026</span>
+                <span aria-hidden="true">·</span>
+                <span>{mentorshipPrograms.length} programmes tracked</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(190,228,214,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
       </div>
 
-      {/* â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-8">
+      {/* MAIN */}
+      <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
+      <div className="max-w-[1440px] mx-auto px-6 py-7">
 
         {/* KPI strip */}
         <HeaderStatsPanel
@@ -382,21 +478,29 @@ export default function MentorshipPage() {
         />
 
 
-        {/* S1: VENTURE RATINGS */}
-        {/* Section pills (left) + outreach-style filters popover (right) */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <SectionPills
-            accent="#0E4633"
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-            options={[
-              { label: "All Sections", value: "all" },
-              { label: "Ratings", value: "1" }, { label: "Satisfaction", value: "2" },
-              { label: "Demographics", value: "3" }, { label: "Heatmap", value: "4" },
-              { label: "Engagement", value: "5" }, { label: "Top Rated", value: "6" },
-              { label: "Outcomes", value: "7" }, { label: "Completion", value: "8" },
-            ]}
-          />
+        {/* Category navigation */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  fontSize: 11,
+                  fontWeight: activeCategory === cat ? 700 : 600,
+                  padding: "8px 14px",
+                  borderRadius: 20,
+                  border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
+                  backgroundColor: activeCategory === cat ? BRAND : "white",
+                  color: activeCategory === cat ? "white" : BRAND_DK,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
 
           <div style={{ position: "relative" }}>
             <FilterButton
@@ -490,512 +594,272 @@ export default function MentorshipPage() {
           </div>
         </div>
 
-        <section style={{ display: show(1) ? undefined : "none" }}>
-          <SectionHeader title="Venture Ratings of Mentorship &amp; Fellowship Support"
-            sub={`${filtered.length} programmes rated across Quality, Usefulness, Accessibility, Relevance`} />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Rating Distribution by Criterion"
-              sub="Very High  ·  High  ·  Moderate  ·  Low  -  proportion of programmes per level"
-              accent={ACCENT}>
-              <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
-                {(["Very High","High","Moderate","Low"] as const).map(l => (
-                  <span key={l} className="flex items-center gap-1">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RATING_COLORS[l] }} />{l}
-                  </span>
-                ))}
-              </div>
-              {MF_CRITERIA.map(c => <RatingBar key={c} label={c} programs={filtered} criterion={c} />)}
-            </ChartCard>
-
-            <ChartCard title="Ratings by Gender of Participants"
-              sub="Avg score per criterion  -  female-majority vs male-majority programmes"
-              accent={VIOLET}>
-              <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>F</span> Female-majority programmes</span>
-                <span className="flex items-center gap-1"><span style={{ color: SKY }}>M</span> Male-majority programmes</span>
-              </div>
-              {MF_CRITERIA.map(c => (
-                <GenderRatingBar key={c} label={c} fPrograms={fProgs} mPrograms={mProgs} criterion={c} />
-              ))}
-              <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
-                {(["Expose","Build","Scale"] as const).map((stage, si) => {
-                  const sp = filtered.filter(p =>
-                    stage === "Expose" ? p.byStage.Expose > p.byStage.Build + p.byStage.Scale
-                    : stage === "Build" ? p.byStage.Build >= p.byStage.Scale
-                    : p.byStage.Scale > p.byStage.Build
-                  );
-                  const avg = sp.length
-                    ? MF_CRITERIA.reduce((s, c) => s + sp.reduce((ss, p) => ss + p.scores[c], 0) / sp.length, 0) / MF_CRITERIA.length : 0;
-                  return (
-                    <div key={stage}>
-                      <p className="text-[10px] text-gray-400">{stage} Stage</p>
-                      <p className="text-sm font-bold" style={{ color: [SKY, PRIMARY, INDIGO][si] }}>{avg.toFixed(1)}</p>
-                      <p className="text-[9px] text-gray-400">avg score</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* S2: SATISFACTION */}
-        <section style={{ display: show(2) ? undefined : "none" }}>
-          <SectionHeader title="Fellow Satisfaction &amp; Qualitative Feedback"
-            sub={`${avgHighSat}% average high/very-high satisfaction across filtered programmes`} />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="% Rating High or Very High by Criterion"
-              sub="Proportion of programmes where criterion avg score ≥ 3.8 (High)"
-              accent={EMERALD}>
-              <div className="space-y-3">
-                {highSatData.map(d => (
-                  <div key={d.name}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-700 font-medium">{d.name}</span>
-                      <span className="font-bold" style={{ color: d.value >= 80 ? EMERALD : d.value >= 60 ? PRIMARY : AMBER }}>{d.value}%</span>
-                    </div>
-                    <div className="h-3 bg-gray-100 rounded-sm overflow-hidden">
-                      <div className="h-full transition-all"
-                        style={{ width: `${d.value}%`, backgroundColor: d.value >= 80 ? EMERALD : d.value >= 60 ? PRIMARY : AMBER }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-3 gap-3 text-center">
+        {/* SECTION 1: Program Delivery & Performance */}
+        {show("Program Delivery & Performance") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
                 <div>
-                  <p className="text-xl font-bold" style={{ color: ACCENT }}>{avgHighSat}%</p>
-                  <p className="text-[10px] text-gray-400">Avg high satisfaction</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold" style={{ color: EMERALD }}>{filtered.filter(p => p.highSatisfactionPct >= 85).length}</p>
-                  <p className="text-[10px] text-gray-400">Programmes ≥85%</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold" style={{ color: AMBER }}>{filtered.filter(p => p.highSatisfactionPct < 70).length}</p>
-                  <p className="text-[10px] text-gray-400">Programmes &lt;70%</p>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Program Delivery & Performance
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Top-rated programs and satisfaction metrics</p>
                 </div>
               </div>
-            </ChartCard>
-
-            <ChartCard title="Qualitative Feedback by Area"
-              sub="Average programme score across five qualitative feedback dimensions (1 - 5)"
-              accent={SKY}>
-              <ColorBarList data={qualAvgData} colors={BAR_COLORS} />
-              <div className="mt-5">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Feedback Themes</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {themeData.map(t => {
-                    const big = t.count >= 12, med = t.count >= 7;
-                    return (
-                      <span key={t.text}
-                        className={`rounded-full border font-medium transition-colors ${big ? "text-xs px-3 py-1.5" : med ? "text-[11px] px-2.5 py-1" : "text-[10px] px-2 py-0.5"}`}
-                        style={big
-                          ? { borderColor: ACCENT + "60", backgroundColor: ACCENT + "10", color: ACCENT }
-                          : med
-                          ? { borderColor: ACCENT + "40", backgroundColor: ACCENT + "08", color: ACCENT + "CC" }
-                          : { borderColor: "#E5E7EB", backgroundColor: "#F9FAFB", color: "#9CA3AF" }}>
-                        {t.text} <span className="opacity-60 ml-0.5">{t.count}</span>
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* S3: DEMOGRAPHICS */}
-        <section style={{ display: show(3) ? undefined : "none" }}>
-          <SectionHeader title="Participant Demographics"
-            sub="Attendance breakdown by gender, age, stage, region, and social inclusion" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <ProfileCard label="Female Fellows"  value={tot.female}               pct={femalePct}        total={tot.fellows} color={VIOLET}  />
-            <ProfileCard label="Male Fellows"    value={tot.fellows - tot.female} pct={100 - femalePct}  total={tot.fellows} color={SKY}     />
-            <ProfileCard label="Student Fellows" value={studentSum}               pct={studentPct}       total={tot.fellows} color={EMERALD} />
-            <ProfileCard label="Alumni Fellows"  value={alumniTotal}              pct={100 - studentPct} total={tot.fellows} color={AMBER}   />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Age Group Distribution" sub="Fellows by age bracket" accent={SKY}>
-              <CustomDonut data={ageData} colors={[ACCENT, "#C2410C", "#059669", ROSE]} className="h-36" valueFormatter={(v) => `${v}`} />
-              <div className="mt-2 space-y-0.5">
-                {ageData.map((d, i) => (
-                  <div key={d.name} className="flex items-center justify-between text-[10px]">
-                    <span className="flex items-center gap-1.5 text-gray-500">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [ACCENT,"#C2410C","#059669",ROSE][i] }} />{d.name}
-                    </span>
-                    <span className="font-medium" style={{ color: [ACCENT,"#C2410C","#059669",ROSE][i] }}>{d.value}</span>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-            <ChartCard title="Geographic Region" sub="Fellows by region of origin" accent={EMERALD}>
-              <CustomDonut data={regionData} colors={[EMERALD, TEAL, "#C2410C", VIOLET]} className="h-36" valueFormatter={(v) => `${v}`} />
-              <div className="mt-2 space-y-0.5">
-                {regionData.map((d, i) => (
-                  <div key={d.name} className="flex items-center justify-between text-[10px]">
-                    <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: [EMERALD,TEAL,"#C2410C",VIOLET][i] }} />
-                      <span className="truncate">{d.name}</span>
-                    </span>
-                    <span className="font-medium ml-1 flex-shrink-0" style={{ color: [EMERALD,TEAL,"#C2410C",VIOLET][i] }}>{d.value}</span>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-            <ChartCard title="Venture Stage" sub="Fellows by venture development stage" accent={ACCENT}>
-              <CustomDonut data={stageData} colors={[SKY, "#C2410C", VIOLET]} className="h-36" valueFormatter={(v) => `${v}`} />
-              <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
-                {stageData.map((d, i) => (
-                  <div key={d.name}>
-                    <p className="text-sm font-black" style={{ color: [SKY,"#C2410C",VIOLET][i] }}>{d.value}</p>
-                    <p className="text-[9px] text-gray-400">{d.name}</p>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-            <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER}>
-              <div className="space-y-3 mt-2">
-                {socialData.map((d, i) => {
-                  const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
-                  return (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-600">{d.name}</span>
-                        <span className="font-medium" style={{ color: col }}>{d.value}</span>
-                      </div>
-                      <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                        <div className="h-full"
-                          style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-0.5">
-                        {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* S4: HEATMAP */}
-        <section style={{ display: show(4) ? undefined : "none" }}>
-          <SectionHeader title="Satisfaction Heatmap"
-            sub="Score per criterion across top-rated programmes" />
-          <ChartCard title="Programme × Criterion Satisfaction Matrix"
-            sub="Top 10 programmes by avg score  ·  Green ≥4.5  ·  Blue ≥4.0  ·  Amber ≥3.5  ·  Red <3.5"
-            accent={TEAL}>
-            {heatmapRows.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">No programmes match the current filters.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px]">
-                  <thead>
-                    <tr>
-                      <th className="text-left text-gray-500 font-medium pb-2 pr-4 min-w-[180px]">Programme</th>
-                      {MF_CRITERIA.map(c => (
-                        <th key={c} className="text-center text-gray-500 font-medium pb-2 px-1 min-w-[90px] leading-tight">{c}</th>
-                      ))}
-                      <th className="text-center text-gray-500 font-medium pb-2 px-1 min-w-[70px]">Avg</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {heatmapRows.map(p => (
-                      <tr key={p.id} className="border-t border-gray-50">
-                        <td className="py-1.5 pr-4 text-gray-700 leading-tight">
-                          {p.name.length > 28 ? p.name.slice(0, 28) + "â€¦" : p.name}
-                          <span className="text-[9px] text-gray-400 ml-1">({p.year})</span>
-                        </td>
-                        {MF_CRITERIA.map(c => (
-                          <td key={c} className="py-1.5 px-1 text-center">
-                            <span className="inline-block px-2 py-0.5 rounded text-white text-[10px] font-bold tabular-nums"
-                              style={{ backgroundColor: heatBg(p.scores[c]) }}>
-                              {p.scores[c].toFixed(1)}
-                            </span>
-                          </td>
-                        ))}
-                        <td className="py-1.5 px-1 text-center">
-                          <span className="inline-block px-2 py-0.5 rounded text-white text-[10px] font-bold tabular-nums"
-                            style={{ backgroundColor: INDIGO }}>
-                            {p.avgScore.toFixed(1)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="flex gap-4 mt-3 pt-3 border-t border-gray-100 text-[10px] text-gray-500 flex-wrap">
-                  {[[`Very High`, EMERALD,"≥4.5"],[`High`,PRIMARY,"≥4.0"],[`Moderate`,AMBER,"≥3.5"],[`Low`,ROSE,"<3.5"]].map(([l, c, r]) => (
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Rating Distribution by Criterion"
+                subtitle="Proportion of programmes per rating level">
+                <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
+                  {(["Very High","High","Moderate","Low"] as const).map(l => (
                     <span key={l} className="flex items-center gap-1">
-                      <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: c }} />{l} ({r})
+                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RATING_COLORS[l] }} />{l}
                     </span>
                   ))}
                 </div>
-              </div>
-            )}
-          </ChartCard>
-        </section>
+                {MF_CRITERIA.map(c => <RatingBar key={c} label={c} programs={filtered} criterion={c} />)}
+              </Panel>
 
-        {/* S5: TRENDS */}
-        <section style={{ display: show(5) ? undefined : "none" }}>
-          <SectionHeader title="Participation &amp; Engagement Trends"
-            sub="Fellow counts, gender breakdown, venture-stage distribution, and cumulative growth" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            <ChartCard title="Fellows per Programme"
-              sub="Attendance per programme in chronological order"
-              accent={SKY}>
-              <ResponsiveContainer width="100%" height={208}>
-                <BarChart data={attendanceTrend.slice(0, 14)} barCategoryGap="30%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Program" tick={{ fontSize: 11, fill: "#6B7280" }}
-                    axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Bar dataKey="Fellows" fill={SKY} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Fellows", SKY]]} />
-            </ChartCard>
-            <ChartCard title="Participation by Gender per Year"
-              sub="Female vs male fellows  -  yearly comparison"
-              accent={VIOLET}>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET }}/>Female</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: SKY }}/>Male</span>
-              </div>
-              <ResponsiveContainer width="100%" height={176}>
-                <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Female", VIOLET], ["Male", SKY]]} />
-            </ChartCard>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Venture-Stage Distribution per Year"
-              sub="Expose  ·  Build  ·  Scale fellow counts by cohort year"
-              accent={INDIGO}>
-              <div className="flex gap-4 text-[11px] text-gray-500 mb-3">
-                {(["Expose","Build","Scale"] as const).map((l, i) => (
-                  <span key={l} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: [SKY, PRIMARY, INDIGO][i] }} />{l}
-                  </span>
-                ))}
-              </div>
-              <ResponsiveContainer width="100%" height={176}>
-                <BarChart data={stageTrend} barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Bar dataKey="Expose" fill={SKY}    radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Build"  fill={PRIMARY} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Scale"  fill={INDIGO}  radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Expose", SKY], ["Build", PRIMARY], ["Scale", INDIGO]]} />
-            </ChartCard>
-            <ChartCard title="Cumulative Fellow Growth"
-              sub="Running total of fellows  -  shows programme reach expansion over time"
-              accent={EMERALD}>
-              <ResponsiveContainer width="100%" height={176}>
-                <LineChart data={growthData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Period" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Line type="monotone" dataKey="Cumulative Fellows" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-              <ChartLegend items={[["Cumulative fellows", EMERALD]]} />
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* S6: TOP + TESTIMONIALS */}
-        <section style={{ display: show(6) ? undefined : "none" }}>
-          <SectionHeader title="Top Rated Programmes &amp; Success Stories"
-            sub="Ranked by average fellow feedback  -  voices from the field" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Top Rated Mentorship &amp; Fellowship Programmes"
-              sub="Ranked by average score across all four rating criteria"
-              accent={AMBER}>
-              <div className="space-y-3">
-                {topPrograms.map((p, i) => (
-                  <div key={p.id} className="flex items-start gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white"
-                      style={{ backgroundColor: RANK_BG[i] ?? ACCENT }}>
-                      {i + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{p.name}</p>
-                      <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                        <Stars score={p.avgScore} />
-                        <span className="text-[10px] text-gray-400">{p.type}</span>
-                        <span className="text-[10px] text-gray-400">{p.fellows} fellows</span>
-                        <span className="text-[10px] text-gray-400">{p.year}</span>
-                      </div>
-                      <div className="flex gap-1.5 flex-wrap mt-1.5">
-                        {MF_CRITERIA.map(c => (
-                          <span key={c} className="text-[9px] px-1.5 py-0.5 rounded font-medium"
-                            style={{ backgroundColor: RATING_COLORS[ratingLabel(p.scores[c])] + "22", color: RATING_COLORS[ratingLabel(p.scores[c])] }}>
-                            {c.split(" ")[0]}: {p.scores[c].toFixed(1)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-
-            <div className="space-y-4">
-              {testimonials.length > 0
-                ? testimonials.map(p => {
-                  const t = p.testimonial!;
-                  return (
-                    <div key={p.id} className="bg-white rounded shadow-sm p-4 border-l-4 flex gap-3"
-                      style={{ borderLeftColor: ACCENT }}>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold"
-                        style={{ backgroundColor: ACCENT }}>
-                        {t.author.split(" ").map(n => n[0]).join("").slice(0, 2)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] text-gray-600 italic leading-relaxed">"{t.quote}"</p>
-                        <div className="mt-2">
-                          <p className="text-xs font-bold text-gray-900">{t.author}</p>
-                          <p className="text-[10px] text-gray-400">{t.role}{t.venture ? `  ·  ${t.venture}` : ""}</p>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-[9px] px-1.5 py-0.5 rounded font-medium"
-                            style={{ backgroundColor: ACCENT + "15", color: ACCENT }}>{p.type}</span>
-                          <span className="text-[9px] text-gray-400">{p.year}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-                : (
-                  <div className="bg-white rounded shadow-sm p-8 text-center">
-                    <Award size={28} className="text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-400">No testimonials available for the current filter selection.</p>
-                  </div>
-                )
-              }
-            </div>
-          </div>
-        </section>
-
-        {/* S7: FELLOWSHIP OUTCOMES */}
-        <section style={{ display: show(7) ? undefined : "none" }}>
-          <SectionHeader title="Fellowship Outcomes &amp; Impact"
-            sub="One-year fellowship graduate participation, mentor ratios, and partnership outcomes" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ChartCard title="Graduates in One-Year Fellowship by Year"
-              sub="Programme graduates enrolled as fellows in the flagship one-year track"
-              accent={EMERALD}>
-              <ResponsiveContainer width="100%" height={176}>
-                <BarChart data={graduateTrend} barCategoryGap="40%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                  <Bar dataKey="Graduates" fill={EMERALD} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <div className="mt-3 grid grid-cols-4 gap-3 pt-3 border-t border-gray-100 text-center">
-                {[
-                  { value: String(tot.grad1yr),        color: ACCENT,   label: "Total graduates enrolled"  },
-                  { value: String(oneYearProgs.length), color: EMERALD,  label: "One-year cohorts"          },
-                  { value: fellowshipMentorRatio,       color: VIOLET,   label: "Mentor-to-fellow ratio"    },
-                  { value: `${oneYearProgs.length > 0 ? Math.round(oneYearProgs.reduce((s,p)=>s+p.completionRate,0)/oneYearProgs.length) : 0}%`,
-                    color: AMBER, label: "1-yr completion rate" },
-                ].map(s => (
-                  <div key={s.label}>
-                    <p className="text-xl font-bold tabular-nums" style={{ color: s.color }}>{s.value}</p>
-                    <p className="text-[10px] text-gray-400 leading-tight mt-0.5">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Mentor-to-Fellow Engagement Analytics"
-              sub="Mentorship intensity and programme engagement metrics across filtered programmes"
-              accent={ACCENT}>
-              <div className="space-y-4">
-                {[
-                  { icon: Users,  label: "Total Mentor Engagements",  value: String(tot.mentors),           sub: "Mentor slots across filtered programmes",      color: PRIMARY  },
-                  { icon: Target, label: "Mentor-to-Fellow Ratio",     value: mentorRatio,                   sub: "Mentors per fellow (lower = more intensive)",  color: ACCENT   },
-                  { icon: Award,  label: "Avg High Satisfaction",      value: `${avgHighSat}%`,              sub: "Fellows rating quality/usefulness as High+",   color: EMERALD  },
-                  { icon: Target, label: "Venture Participation",      value: tot.ventures.toLocaleString(), sub: "Ventures represented across programmes",       color: TEAL     },
-                ].map(m => {
-                  const Icon = m.icon;
-                  return (
-                    <div key={m.label} className="flex items-center gap-4 p-3 rounded border-l-2"
-                      style={{ backgroundColor: m.color + "0E", borderColor: m.color }}>
-                      <div className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: m.color + "18" }}>
-                        <Icon size={16} style={{ color: m.color }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: m.color + "AA" }}>{m.label}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5">{m.sub}</p>
-                      </div>
-                      <p className="text-xl font-bold tabular-nums flex-shrink-0" style={{ color: m.color }}>{m.value}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </ChartCard>
-          </div>
-        </section>
-
-        {/* S8: COMPLETION */}
-        <section style={{ display: show(8) ? undefined : "none" }}>
-          <SectionHeader title="Participation &amp; Completion Analytics"
-            sub="Engagement and completion rates across all mentorship and fellowship programmes" />
-          <ChartCard title="Completion Rate by Programme"
-            sub="Percentage of enrolled fellows who completed each programme"
-            accent={EMERALD}>
-            <ResponsiveContainer width="100%" height={208}>
-              <BarChart
-                data={[...filtered].sort((a, b) => a.date.localeCompare(b.date)).map(p => ({
-                  Programme: `${MF_MONTHS[p.month - 1]} '${String(p.year).slice(2)}`,
-                  "Completion %": p.completionRate,
-                }))}
-                barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                <XAxis dataKey="Programme" tick={{ fontSize: 11, fill: "#6B7280" }}
-                  axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
-                <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                <Bar dataKey="Completion %" fill={EMERALD} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-3 border-t border-gray-100 text-center">
-              {[
-                { value: `${tot.completion}%`, color: INDIGO,  label: "Avg completion rate"       },
-                { value: String(filtered.filter(p => p.completionRate >= 92).length), color: EMERALD, label: "Programmes ≥92%" },
-                { value: String(filtered.filter(p => p.completionRate < 85).length),  color: AMBER,   label: "Programmes <85%" },
-                { value: String(filtered.filter(p => p.highSatisfactionPct >= 85).length), color: ACCENT, label: "High satisfaction (≥85%)" },
-              ].map(s => (
-                <div key={s.label}>
-                  <p className="text-xl font-bold tabular-nums" style={{ color: s.color }}>{s.value}</p>
-                  <p className="text-[10px] text-gray-400">{s.label}</p>
+              <Panel title="Ratings by Gender of Participants"
+                subtitle="Avg score per criterion - female vs male programs">
+                <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
+                  <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>F</span> Female-majority programmes</span>
+                  <span className="flex items-center gap-1"><span style={{ color: SKY }}>M</span> Male-majority programmes</span>
                 </div>
-              ))}
+                {MF_CRITERIA.map(c => (
+                  <GenderRatingBar key={c} label={c} fPrograms={fProgs} mPrograms={mProgs} criterion={c} />
+                ))}
+                <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
+                  {(["Expose","Build","Scale"] as const).map((stage, si) => {
+                    const sp = filtered.filter(p =>
+                      stage === "Expose" ? p.byStage.Expose > p.byStage.Build + p.byStage.Scale
+                      : stage === "Build" ? p.byStage.Build >= p.byStage.Scale
+                      : p.byStage.Scale > p.byStage.Build
+                    );
+                    const avg = sp.length
+                      ? MF_CRITERIA.reduce((s, c) => s + sp.reduce((ss, p) => ss + p.scores[c], 0) / sp.length, 0) / MF_CRITERIA.length : 0;
+                    return (
+                      <div key={stage}>
+                        <p className="text-[10px] text-gray-400">{stage} Stage</p>
+                        <p className="text-sm font-bold" style={{ color: [SKY, PRIMARY, INDIGO][si] }}>{avg.toFixed(1)}</p>
+                        <p className="text-[9px] text-gray-400">avg score</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Panel>
             </div>
-          </ChartCard>
-        </section>
+          </section>
+        )}
+
+        {/* SECTION 2: Participant Profile */}
+        {show("Participant Profile") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Participant Profile
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Demographics and participant distribution</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <ProfileCard label="Female Fellows"  value={tot.female}               pct={femalePct}        total={tot.fellows} color={VIOLET}  />
+              <ProfileCard label="Male Fellows"    value={tot.fellows - tot.female} pct={100 - femalePct}  total={tot.fellows} color={SKY}     />
+              <ProfileCard label="Student Fellows" value={studentSum}               pct={studentPct}       total={tot.fellows} color={EMERALD} />
+              <ProfileCard label="Alumni Fellows"  value={alumniTotal}              pct={100 - studentPct} total={tot.fellows} color={AMBER}   />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Age Group Distribution"
+                subtitle="Fellows by age bracket">
+                <CustomDonut data={ageData} className="h-36" />
+                <div className="mt-2 space-y-0.5">
+                  {ageData.map((d, i) => (
+                    <div key={d.name} className="flex items-center justify-between text-[10px]">
+                      <span className="flex items-center gap-1.5 text-gray-500">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />{d.name}
+                      </span>
+                      <span className="font-medium" style={{ color: GREEN_RAMP[i % GREEN_RAMP.length] }}>{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+              <Panel title="Geographic Region"
+                subtitle="Fellows by region of origin">
+                <CustomDonut data={regionData} className="h-36" />
+                <div className="mt-2 space-y-0.5">
+                  {regionData.map((d, i) => (
+                    <div key={d.name} className="flex items-center justify-between text-[10px]">
+                      <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />
+                        <span className="truncate">{d.name}</span>
+                      </span>
+                      <span className="font-medium ml-1 flex-shrink-0" style={{ color: GREEN_RAMP[i % GREEN_RAMP.length] }}>{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+              <Panel title="Venture Stage Distribution"
+                subtitle="Fellows by development stage">
+                <CustomDonut data={stageData} className="h-36" />
+                <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
+                  {stageData.map((d, i) => (
+                    <div key={d.name}>
+                      <p className="text-sm font-black" style={{ color: GREEN_RAMP[i % GREEN_RAMP.length] }}>{d.value}</p>
+                      <p className="text-[9px] text-gray-400">{d.name}</p>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+              <Panel title="Social Inclusion Groups"
+                subtitle="MCF scholars, PWD, refugee-displaced">
+                <div className="space-y-3 mt-2">
+                  {socialData.map((d, i) => {
+                    const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
+                    return (
+                      <div key={d.name}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-gray-600">{d.name}</span>
+                          <span className="font-medium" style={{ color: col }}>{d.value}</span>
+                        </div>
+                        <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
+                          <div className="h-full"
+                            style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
+                        </div>
+                        <p className="text-[10px] text-gray-400 mt-0.5">
+                          {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 3: Learning & Outcomes */}
+        {show("Learning & Outcomes") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Learning & Outcomes
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Engagement trends, satisfaction, and impact metrics</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Satisfaction by Criterion"
+                subtitle="Proportion rated High or Very High">
+                <div className="space-y-3">
+                  {highSatData.map(d => (
+                    <div key={d.name}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-700 font-medium">{d.name}</span>
+                        <span className="font-bold" style={{ color: d.value >= 80 ? EMERALD : d.value >= 60 ? PRIMARY : AMBER }}>{d.value}%</span>
+                      </div>
+                      <div className="h-3 bg-gray-100 rounded-sm overflow-hidden">
+                        <div className="h-full transition-all"
+                          style={{ width: `${d.value}%`, backgroundColor: d.value >= 80 ? EMERALD : d.value >= 60 ? PRIMARY : AMBER }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-2 gap-3 text-center">
+                  <div>
+                    <p className="text-lg font-bold" style={{ color: ACCENT }}>{avgHighSat}%</p>
+                    <p className="text-[10px] text-gray-400">Avg high satisfaction</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold" style={{ color: EMERALD }}>{filtered.filter(p => p.highSatisfactionPct >= 85).length}</p>
+                    <p className="text-[10px] text-gray-400">Programmes ≥85%</p>
+                  </div>
+                </div>
+              </Panel>
+
+              <Panel title="Gender Participation Trend"
+                subtitle="Female vs male fellows by year">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} vertical={false} />
+                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: LIGHT_BORDER }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+
+              <Panel title="Venture Stage Distribution"
+                subtitle="Expose, Build, Scale by cohort year">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={stageTrend} barCategoryGap="30%" barGap={2}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} vertical={false} />
+                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: LIGHT_BORDER }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="Expose" fill={SKY}    radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Build"  fill={PRIMARY} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Scale"  fill={INDIGO}  radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+
+              <Panel title="Cumulative Fellow Growth"
+                subtitle="Running total expansion over time">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={growthData} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="Period" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="Cumulative Fellows" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Cumulative fellows" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+
+              <Panel title="Completion Rate by Program"
+                subtitle="Percentage of enrolled fellows completing">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart
+                    data={[...filtered].sort((a, b) => a.date.localeCompare(b.date)).map(p => ({
+                      Programme: `${MF_MONTHS[p.month - 1]} '${String(p.year).slice(2)}`,
+                      "Completion %": p.completionRate,
+                    }))}
+                    barCategoryGap="30%"
+                    margin={{ top: 6, right: 10, bottom: 0, left: -16 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} vertical={false} />
+                    <XAxis dataKey="Programme" tick={{ fontSize: 11, fill: "#6B7280" }}
+                      axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: LIGHT_BORDER }} />
+                    <Bar dataKey="Completion %" fill={EMERALD} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
 
         {/* FOOTER */}
-        <PortalFooter portal="hent" synced="01 Jun 2026, EAT" />
+        <PortalFooter portal="hent" synced="18 Jun 2026, EAT" />
 
+      </div>
       </div>
     </div>
   );

@@ -1,703 +1,739 @@
-﻿"use client";
-import { InlineFilterSelect as FilterSelect } from "@/components/ui/hemp";
-import { ChartCard, SectionHeader, InfoDot, Funnel, ChartTip, ChartLegend, BarList, useCountUp } from "@/components/ui/hemp";
+"use client";
+import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
-import { CHART } from "@/theme/tokens";
-import SectionPills from "@/components/filters/section-pills";
-import OutreachFilters, { FilterSelect as OFilterSelect } from "@/components/filters/filter-popover";
 import PortalFooter from "@/components/layout/portal-footer";
-import StatsKpiCard from "@/components/ui/stat-kpi-card";
-import { missionStudents } from "@/data/hemp/mission-students";
+import { missionStudents, STUDENT_TRACKS } from "@/data/hemp/mission-students";
+import { useState, useMemo } from "react";
 import {
-  AlertTriangle,
-  BookOpen,
-  CheckCircle2,
-  Download, FileText,
-  GraduationCap,
-  Mic,
-  Package,
-  Users,
-  Briefcase,
-  Award,
-  Star,
-  TrendingUp,
-} from "lucide-react";
-import { useEffect, useMemo, useState, type ComponentType } from "react";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis, YAxis,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Legend, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
+import { Briefcase, Target, TrendingUp, Users, Info, type LucideIcon, ChevronDown, Award } from "lucide-react";
 
-// â”€â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Page identity (header KPIs only): purple/violet
-// Keep section header accents as-is for brand consistency.
-const VIOLET      = "#14306B"; // page identity now navy (mirrors exec theme)
-const VIOLET_MID  = "#2F5FD1";
-const VIOLET_DARK = "#0C447C";
-const NAVY        = "#14306B";
-
-// Section header accents
-const INDIGO      = "#14306B";
-const INDIGO_MID  = "#2F5FD1";
-const TEAL        = "#185FA5";
-const SKY         = "#7F77DD";
-const PURPLE_MED  = "#534AB7";
-const ORANGE      = "#D45F2C";
-const GREEN       = "#1D9E75";
-const AMBER       = "#BA7517";
-const ROSE_900    = "#D45F2C";
-const AMBER_BG    = "#FEF3C7";
-const AMBER_TEXT  = "#92400E";
-
-// â”€â”€â”€ Distinct series colours (for Mission Students visualizations) â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Using a dedicated palette per chart so categories are visually distinct.
-const MS = {
-  // Mentorship series: mentors / enrolled / feedback
-  MENTORS:  "#14306B", // indigo-700
-  ENROLLED: "#479BD6", // violet
-  FEEDBACK: "#1D9E75", // emerald-500
-
-  // Guest faculty series: sessions / feedback / disaggregated
-  FAC_SESSIONS:      "#185FA5", // teal
-  FAC_FEEDBACK:      "#7F77DD", // sky
-  FAC_DISAGGREGATED: "#BA7517", // amber
-
-  // Curator series: career events / training / 1-on-1
-  CUR_CAREER: "#D45F2C", // orange
-  CUR_TRAIN: "#085041", // green-500 (distinct from amber/emerald)
-  CUR_ONEON1: "#534AB7", // purple
-
-  // Courses completed line
-  COURSES_COMPLETED: "#1D9E75", // emerald
-
-  // Tooltip/markers use bright variants if needed (kept simple here)
-} as const;
-
-
-// â”€â”€â”€ Program operation data (2021 - 2026) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const mentorData = [
-  { year: 2021, mentors:  8, enrolled: 14, feedback: 11, feedbackPct: 79 },
-  { year: 2022, mentors: 10, enrolled: 18, feedback: 15, feedbackPct: 83 },
-  { year: 2023, mentors: 14, enrolled: 22, feedback: 19, feedbackPct: 86 },
-  { year: 2024, mentors: 16, enrolled: 24, feedback: 21, feedbackPct: 88 },
-  { year: 2025, mentors: 12, enrolled: 22, feedback: 18, feedbackPct: 82 },
-  { year: 2026, mentors:  4, enrolled: 12, feedback:  8, feedbackPct: 67 },
-];
-
-const guestData = [
-  { year: 2021, sessions: 4, feedbackCollected: 3, disaggregated: 2 },
-  { year: 2022, sessions: 6, feedbackCollected: 5, disaggregated: 4 },
-  { year: 2023, sessions: 8, feedbackCollected: 7, disaggregated: 6 },
-  { year: 2024, sessions: 9, feedbackCollected: 8, disaggregated: 7 },
-  { year: 2025, sessions: 8, feedbackCollected: 7, disaggregated: 5 },
-  { year: 2026, sessions: 5, feedbackCollected: 3, disaggregated: 2 },
-];
-
-const curatorData = [
-  { year: 2021, careerEvents: 2, training: 2, oneOnOne:  8, coursesCompleted:  38 },
-  { year: 2022, careerEvents: 3, training: 3, oneOnOne: 10, coursesCompleted:  52 },
-  { year: 2023, careerEvents: 5, training: 3, oneOnOne: 14, coursesCompleted:  74 },
-  { year: 2024, careerEvents: 6, training: 4, oneOnOne: 16, coursesCompleted:  89 },
-  { year: 2025, careerEvents: 6, training: 4, oneOnOne: 16, coursesCompleted:  95 },
-  { year: 2026, careerEvents: 2, training: 2, oneOnOne:  6, coursesCompleted:  39 },
-];
-
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function sm(arr: number[]): number { return arr.reduce((a, b) => a + b, 0); }
-function avg(arr: number[]): number { return arr.length ? sm(arr) / arr.length : 0; }
-
-// â”€â”€â”€ Filter option list â”€â”€â”€
-const YEARS = mentorData.map(d => d.year);
-
-// Derive every aggregate + chart dataset from (possibly year-filtered) operational rows.
-function derive(
-  mRows: typeof mentorData,
-  gRows: typeof guestData,
-  cRows: typeof curatorData,
-) {
-  const totalMentors   = sm(mRows.map(d => d.mentors));
-  const totalEnrolled  = sm(mRows.map(d => d.enrolled));
-  const totalFeedbackM = sm(mRows.map(d => d.feedback));
-  const avgFeedbackPct = Math.round(avg(mRows.map(d => d.feedbackPct)));
-
-  const totalSessions  = sm(gRows.map(d => d.sessions));
-  const totalFeedbackG = sm(gRows.map(d => d.feedbackCollected));
-  const totalDisagg    = sm(gRows.map(d => d.disaggregated));
-  const feedbackGPct   = totalSessions ? Math.round(totalFeedbackG / totalSessions * 100) : 0;
-  const disaggPct      = totalSessions ? Math.round(totalDisagg    / totalSessions * 100) : 0;
-
-  const totalCareerEvt = sm(cRows.map(d => d.careerEvents));
-  const totalTraining  = sm(cRows.map(d => d.training));
-  const totalOneOnOne  = sm(cRows.map(d => d.oneOnOne));
-  const totalCourses   = sm(cRows.map(d => d.coursesCompleted));
-  const totalCuratorRes = totalCareerEvt + totalTraining + totalOneOnOne;
-
-  const mentorChartData = mRows.map(d => ({
-    Year: String(d.year), Mentors: d.mentors, Enrolled: d.enrolled, Feedback: d.feedback,
-  }));
-  const guestChartData = gRows.map(d => ({
-    Year: String(d.year), Sessions: d.sessions,
-    Feedback: d.feedbackCollected, Disaggregated: d.disaggregated,
-  }));
-  const curatorChartData = cRows.map(d => ({
-    Year: String(d.year),
-    "Career Events": d.careerEvents,
-    Training: d.training,
-    "1-on-1": d.oneOnOne,
-  }));
-  const coursesChartData = cRows.map(d => ({
-    Year: String(d.year), Completed: d.coursesCompleted,
-  }));
-
-  return {
-    totalMentors, totalEnrolled, totalFeedbackM, avgFeedbackPct,
-    totalSessions, totalFeedbackG, totalDisagg, feedbackGPct, disaggPct,
-    totalCareerEvt, totalTraining, totalOneOnOne, totalCourses, totalCuratorRes,
-    mentorChartData, guestChartData, curatorChartData, coursesChartData,
-  };
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  );
 }
 
-// â”€â”€â”€ Survey checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const SURVEY_ITEMS = [
-  { label: "Mentorship feedback survey",                        status: "complete" as const, note: null },
-  { label: "Student + guest faculty feedback survey",           status: "complete" as const, note: null },
-  { label: "Student feedback survey  -  mission curator",         status: "complete" as const, note: null },
-  { label: "Event registration + 1-on-1 session data ownership",
-    status: "warning" as const,
-    note:   "Mission curator may not be tracking these resources consistently." },
-] as const;
+const HERO = "#102C5E";
+const BRAND = "#14306B";
+const BRAND_DK = "#0C447C";
+const LIGHT_BORDER = "rgba(16, 44, 94, 0.12)";
+const LIGHT_BG = "#F8F9FA";
 
-// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-function Card({ title, sub, children }: {
-  accent?: string; title: string; sub?: string; children: React.ReactNode;
-}) {
+function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
+  const [tip, setTip] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   return (
-    <div className="overflow-hidden" style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid rgba(0,33,71,0.08)" }}>
-      <div className="flex items-center gap-2.5" style={{ backgroundColor: "#14306B", padding: "11px 20px" }}>
-        <div className="flex-shrink-0" style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#D17A86" }} />
-        <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold uppercase leading-none text-white" style={{ letterSpacing: "0.04em" }}>{title}</p>
-          {sub && <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>{sub}</p>}
+    <div style={{ backgroundColor: "white", borderRadius: 10, border: `1px solid ${LIGHT_BORDER}`, overflow: "hidden" }}>
+      <div style={{ backgroundColor: BRAND, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 2.5, minWidth: 0, flex: 1 }}>
+          <div style={{ width: 3, height: 15, borderRadius: 999, backgroundColor: "#479BD6", flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "white", lineHeight: 1.2 }}>{title}</p>
+              {info && (
+                <span style={{ position: "relative", display: "flex", cursor: "pointer" }}
+                  onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+                  <Info size={12} color="white" opacity={0.6} />
+                  {tip && (
+                    <span style={{ position: "absolute", top: "calc(100% + 7px)", left: "50%", transform: "translateX(-50%)", backgroundColor: "white", color: BRAND_DK, fontSize: 10.5, fontWeight: 400, textTransform: "none", letterSpacing: 0, lineHeight: 1.5, padding: "8px 11px", borderRadius: 7, width: 210, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", border: `1px solid ${LIGHT_BORDER}`, zIndex: 100, textAlign: "left", pointerEvents: "none" }}>
+                      {info}
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 1 }}>{subtitle}</p>
+          </div>
         </div>
       </div>
-      <div className="p-5">{children}</div>
+      {filterOptions && filterValue && onFilterChange && (
+        <div style={{ padding: "8px 18px", display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                padding: "5px 10px",
+                borderRadius: 10,
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                backgroundColor: "white",
+                color: BRAND_DK,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {filterValue} <ChevronDown size={12} />
+            </button>
+            {filterOpen && (
+              <div style={{
+                position: "absolute",
+                top: "calc(100% + 4px)",
+                right: 0,
+                backgroundColor: "white",
+                border: `1px solid ${LIGHT_BORDER}`,
+                borderLeft: `5px solid ${BRAND}`,
+                borderRadius: 10,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                minWidth: 140,
+                overflow: "hidden",
+              }}>
+                {filterOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => {
+                      onFilterChange(opt);
+                      setFilterOpen(false);
+                    }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 12px",
+                      fontSize: 11,
+                      fontWeight: opt === filterValue ? 700 : 500,
+                      backgroundColor: opt === filterValue ? BRAND : "white",
+                      color: opt === filterValue ? "white" : BRAND_DK,
+                      border: `1px solid ${LIGHT_BORDER}`,
+                      borderLeft: `5px solid ${BRAND}`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div style={{ padding: "12px 18px 18px" }}>
+        {children}
+      </div>
     </div>
   );
 }
 
-function MetricBar({ label, value, displayValue, max, color }: {
-  label: string; value: number; displayValue: string; max: number; color: string;
-}) {
-  const pct = Math.min(Math.round((value / max) * 100), 100);
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-1.5">
-        <p className="text-[11px] font-semibold text-gray-700">{label}</p>
-        <p className="text-[11px] font-black tabular-nums" style={{ color }}>{displayValue}</p>
-      </div>
-      <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
-        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
-      </div>
-    </div>
-  );
-}
-
-function StatTile({ icon: Icon, label, value, sub }: {
-  icon: ComponentType<any>; iconBg?: string; iconColor?: string;
-  label: string; value: string | number; valueColor?: string; sub: string;
-}) {
-  const numeric = typeof value === "number" ? value : parseFloat(String(value).replace(/[^0-9.\-]/g, "")) || 0;
-  return (
-    <StatsKpiCard
-      label={label}
-      num={numeric}
-      displayFmt={typeof value === "number" ? undefined : () => String(value)}
-      sub={sub}
-      Icon={Icon}
-      tooltip={label}
-    />
-  );
-}
-
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MissionStudentsPage() {
-  // â”€â”€ Filters â”€â”€
-  const [fYear, setFYear] = useState("All Years");
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
-  const byYear = <T extends { year: number }>(rows: T[]) =>
-    fYear === "All Years" ? rows : rows.filter(d => String(d.year) === fYear);
-  const mRows = useMemo(() => byYear(mentorData),  [fYear]);
-  const gRows = useMemo(() => byYear(guestData),   [fYear]);
-  const cRows = useMemo(() => byYear(curatorData), [fYear]);
-  const {
-    totalMentors, totalEnrolled, totalFeedbackM, avgFeedbackPct,
-    totalSessions, totalFeedbackG, totalDisagg, feedbackGPct, disaggPct,
-    totalCareerEvt, totalTraining, totalOneOnOne, totalCourses, totalCuratorRes,
-    mentorChartData, guestChartData, curatorChartData, coursesChartData,
-  } = useMemo(() => derive(mRows, gRows, cRows), [mRows, gRows, cRows]);
-  const activeMission = useMemo(() => missionStudents.filter(ms =>
-    ms.status === "Active" && (fYear === "All Years" || String(ms.cohort) === fYear)
-  ).length, [fYear]);
+  const categories = ["Enrollment & Progress", "Academic Performance", "Career Outcomes", "Venture Metrics"];
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
 
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterYear, setFilterYear] = useState("All Years");
+  const [filterCohort, setFilterCohort] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+
+  const show = (category: string) => activeCategory === category;
+  const activeFilterCount = [filterYear !== "All Years", filterCohort !== "All", filterStatus !== "All"].filter(Boolean).length;
+
+  const years = Array.from(new Set(missionStudents.map(s => s.cohort))).sort();
+  const cohorts = Array.from(new Set(missionStudents.map(s => {
+    const cohortNum = Math.ceil((years.indexOf(s.cohort) + 1));
+    return cohortNum;
+  }))).sort((a, b) => a - b);
+
+  const filteredStudents = useMemo(() => {
+    return missionStudents.filter(s => {
+      if (filterYear !== "All Years" && s.cohort !== parseInt(filterYear)) return false;
+      if (filterCohort !== "All") {
+        const cohortNum = Math.ceil((years.indexOf(s.cohort) + 1));
+        if (cohortNum !== parseInt(filterCohort)) return false;
+      }
+      if (filterStatus !== "All" && s.status !== filterStatus) return false;
+      return true;
+    });
+  }, [filterYear, filterCohort, filterStatus]);
+
+  const totalEnrolled = filteredStudents.length;
+  const completed = filteredStudents.filter(s => s.status === "Completed").length;
+  const completionRate = totalEnrolled ? Math.round((completed / totalEnrolled) * 100) : 0;
+  const femaleStudents = filteredStudents.filter(s => s.gender === "Female").length;
+  const femalePct = totalEnrolled ? Math.round((femaleStudents / totalEnrolled) * 100) : 0;
+  const avgGPA = filteredStudents.length ? parseFloat((filteredStudents.reduce((s, st) => s + st.gpa, 0) / filteredStudents.length).toFixed(2)) : 0;
+  const employed = filteredStudents.filter(s => s.employment === "Employed").length;
+  const completedStudents = filteredStudents.filter(s => s.status === "Completed");
+  const employmentRate = completedStudents.length ? Math.round((employed / completedStudents.length) * 100) : 0;
+  const venturesCreated = filteredStudents.filter(s => s.ventureCreated).length;
+  const internshipRate = totalEnrolled ? Math.round((filteredStudents.filter(s => s.hasInternship).length / totalEnrolled) * 100) : 0;
+
+  const [filterProgressYear, setFilterProgressYear] = useState("All Years");
+  const [filterPerformanceYear, setFilterPerformanceYear] = useState("All Years");
+  const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
+  const [filterVentureYear, setFilterVentureYear] = useState("All Years");
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
+    <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
       <PortalNav portal="hemp" />
 
-      {/* â”€â”€ HEADER â”€â”€â”€ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
-      <header style={{ position: "relative", overflow: "hidden", backgroundColor: "var(--brand-primary)", borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
-
-        {/* Faint triangle pattern across the whole header */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-
-        {/* Full design elements anchored to the left & right edges */}
-        <img src="/images/design1.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-        <img src="/images/design2.png" alt="" aria-hidden="true"
-          style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-
-        {/* Center overlay */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, var(--brand-primary) 34%, var(--brand-primary) 66%, rgba(16,44,94,0) 100%)" }} />
-
-        {/* Content */}
-        <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mission Students</h1>
-            </div>
-            <p className="text-[11px] mt-1.5 font-medium" style={{ color: "rgba(181,212,244,0.78)" }}>
-              Mentorship, guest faculty and mission curator — three pillars of student support
-            </p>
-            <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px]" style={{ color: "rgba(181,212,244,0.5)" }}>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
-              <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> {YEARS[0]}–{YEARS[YEARS.length - 1]}</span>
-              <span aria-hidden="true">·</span>
-              <span>{activeMission} students active</span>
-              <span aria-hidden="true">·</span>
-              <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 04 Jun 2026, 16:30 EAT</span>
-            </div>
-          </div>
-        </div>
-      </header>
-      </div>
-
-      {/* â”€â”€ THREE HEADLINE KPIs â”€â”€â”€ */}
-      <div className="max-w-[1440px] mx-auto px-6 pt-6">
-
-          {/* â”€â”€ THREE HEADLINE KPIs â”€â”€â”€ */}
-          <div className="pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <StatsKpiCard
-              label="Health Mission Students Active"
-              num={activeMission}
-              sub="Currently enrolled in mission pillars"
-              Icon={Users}
-              tooltip="Mission students currently active across the three support pillars."
-            />
-            <StatsKpiCard
-              label="Courses Completed (Canvas / Coursera)"
-              num={totalCourses}
-              sub="Across all cohorts  ·  2021 - 2026"
-              Icon={BookOpen}
-              tooltip="Online courses completed by mission students on Canvas and Coursera."
-            />
-            <StatsKpiCard
-              label="Resources by Mission Curators"
-              num={totalCuratorRes}
-              sub="Events  ·  courses  ·  1-on-1 sessions"
-              Icon={Package}
-              tooltip="Career events, training courses and 1-on-1 sessions delivered by mission curators."
-            />
-          </div>
-      </div>
-
-      {/* â”€â”€ BODY â”€â”€â”€ */}
-      <div className="max-w-[1440px] mx-auto px-6 py-7 space-y-8">
-
-        {/* FILTER BAR */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-          <SectionPills
-            accent="#14306B"
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
-            options={[
-              { label: "All Sections", value: "all" },
-              { label: "Mentorship", value: "1" },
-              { label: "Guest Faculty", value: "2" },
-              { label: "Mission Curator", value: "3" },
-              { label: "Data Quality", value: "4" },
-            ]}
-          />
-          <OutreachFilters
-            accent="#14306B"
-            activeCount={fYear !== "All Years" ? 1 : 0}
-            onReset={() => setFYear("All Years")}
-          >
-            <OFilterSelect label="Year" value={fYear} onChange={setFYear} accent="#14306B"
-              options={["All Years", ...YEARS.map(String)].map(o => ({ value: o, label: o }))} />
-          </OutreachFilters>
-        </div>
-
-        {/* â•â• SECTION A: MENTORSHIP  -  indigo identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        <section style={{ display: show(1) ? undefined : "none" }}>
-          <SectionHeader
-            accent={INDIGO}
-            title="Mentorship Program"
-            sub={`${totalMentors} mentors recruited  ·  ${totalEnrolled} students enrolled  ·  ${avgFeedbackPct}% avg feedback rate`}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
-            {/* Mentorship activity bar chart  -  3/5 cols */}
-            <div className="lg:col-span-3">
-              <Card accent={INDIGO} title="Mentorship Activity by Year"
-                sub="Mentors recruited  ·  students enrolled  ·  feedback collected per cohort year">
-                <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                  {[["Mentors", MS.MENTORS], ["Enrolled", MS.ENROLLED], ["Feedback", MS.FEEDBACK]].map(([l, c]) => (
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
-                    </span>
-                  ))}
-
-                </div>
-                <ResponsiveContainer width="100%" height={208}>
-                  <BarChart data={mentorChartData} barCategoryGap="28%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
-                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                    <Bar dataKey="Mentors"  fill={MS.MENTORS}      radius={[0,0,0,0]} />
-                    <Bar dataKey="Enrolled" fill={MS.ENROLLED}    radius={[0,0,0,0]} />
-                    <Bar dataKey="Feedback" fill={MS.FEEDBACK}    radius={[0,0,0,0]} />
-
-                  </BarChart>
-                </ResponsiveContainer>
-              </Card>
-            </div>
-
-            {/* Mentorship indicators card  -  2/5 cols */}
-            <div className="lg:col-span-2">
-              <Card accent={INDIGO_MID} title="Mentorship Program Indicators"
-                sub="Recruitment reach and programme engagement quality">
-
-                <div className="space-y-5 py-1">
-                  <MetricBar
-                    label="Mentors Recruited"
-                    value={totalMentors}
-                    displayValue={String(totalMentors)}
-                    max={80}
-                    color={INDIGO}
-                  />
-                  <MetricBar
-                    label="Program Feedback Collected"
-                    value={avgFeedbackPct}
-                    displayValue={`${avgFeedbackPct}%`}
-                    max={100}
-                    color={GREEN}
-                  />
-                </div>
-
-                {/* Amber flag note */}
-                <div className="flex items-start gap-2 p-2.5 rounded mt-5"
-                  style={{ backgroundColor: AMBER_BG, borderLeft: `2px solid ${AMBER}` }}>
-                  <AlertTriangle size={11} className="flex-shrink-0 mt-0.5" style={{ color: AMBER }} />
-                  <p className="text-[10px] font-medium leading-relaxed" style={{ color: AMBER_TEXT }}>
-                    Note: enrollment â‰  active participation  -  secondary source required.
-                  </p>
-                </div>
-
-                {/* Breakdown summary */}
-                <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-3 text-center">
-                  {[
-                    { label: "Enrolled",  value: totalEnrolled,  color: MS.ENROLLED },
-                    { label: "Feedback",  value: totalFeedbackM, color: MS.FEEDBACK },
-                    { label: "Mentors",   value: totalMentors,   color: MS.MENTORS },
-                  ].map(m => (
-
-                    <div key={m.label}>
-                      <p className="text-lg font-black tabular-nums" style={{ color: m.color }}>{m.value}</p>
-                      <p className="text-[9px] text-gray-400 mt-0.5 font-medium">{m.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-              </Card>
-            </div>
-
-          </div>
-        </section>
-
-        {/* â•â• SECTION B: GUEST FACULTY  -  teal + sky identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        <section style={{ display: show(2) ? undefined : "none" }}>
-          <SectionHeader
-            accent={TEAL}
-            title="Guest Faculty &amp; Sessions"
-            sub={`${totalSessions} lectures held  ·  ${feedbackGPct}% feedback collected  ·  ${disaggPct}% feedback disaggregated`}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-            {/* Three metric stat tiles */}
-            <div className="space-y-3">
-
-              <StatTile
-                icon={Mic}
-                iconBg="#E1F5EE"
-                iconColor={TEAL}
-                label="Lectures Held"
-                value={totalSessions}
-                valueColor={TEAL}
-                sub="Sessions delivered 2021 - 2026"
-              />
-
-              {/* Feedback collected  -  sky */}
-              <div className="bg-white rounded border border-gray-100 shadow-sm p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Student Feedback Collected</p>
-                  <p className="text-lg font-black tabular-nums" style={{ color: SKY }}>{feedbackGPct}%</p>
-                </div>
-                <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${feedbackGPct}%`, backgroundColor: SKY }} />
-                </div>
-                <p className="text-[9px] text-gray-400 mt-1.5 tabular-nums">
-                  {totalFeedbackG} of {totalSessions} sessions  ·  survey submitted
-                </p>
-              </div>
-
-              {/* Feedback disaggregated  -  purple-medium */}
-              <div className="bg-white rounded border border-gray-100 shadow-sm p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Feedback Disaggregated</p>
-                  <p className="text-lg font-black tabular-nums"
-                    style={{ color: disaggPct >= 70 ? MS.FAC_DISAGGREGATED : AMBER }}>{disaggPct}%</p>
-
-                </div>
-                <div className="h-[10px] rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
-                    <div className="h-full rounded-full"
-                    style={{ width: `${disaggPct}%`, backgroundColor: disaggPct >= 70 ? MS.FAC_DISAGGREGATED : AMBER }} />
-
-                </div>
-                <p className="text-[9px] text-gray-400 mt-1.5 tabular-nums">
-                  {totalDisagg} of {totalSessions} sessions  ·  by gender &amp; cohort
-                </p>
-              </div>
-
-            </div>
-
-            {/* Guest faculty bar chart  -  2/3 cols */}
-            <div className="lg:col-span-2">
-              <Card accent={TEAL} title="Guest Faculty Sessions per Year"
-                sub="Sessions held  ·  feedback collected  ·  feedback disaggregated  -  annual comparison">
-                <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                  {[["Sessions", MS.FAC_SESSIONS], ["Feedback", MS.FAC_FEEDBACK], ["Disaggregated", MS.FAC_DISAGGREGATED]].map(([l, c]) => (
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
-                    </span>
-                  ))}
-
-                </div>
-                <ResponsiveContainer width="100%" height={208}>
-                  <BarChart data={guestChartData} barCategoryGap="28%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
-                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                    <Bar dataKey="Sessions"      fill={MS.FAC_SESSIONS}       radius={[0,0,0,0]} />
-                    <Bar dataKey="Feedback"      fill={MS.FAC_FEEDBACK}       radius={[0,0,0,0]} />
-                    <Bar dataKey="Disaggregated" fill={MS.FAC_DISAGGREGATED}  radius={[0,0,0,0]} />
-
-                  </BarChart>
-                </ResponsiveContainer>
-              </Card>
-            </div>
-
-          </div>
-        </section>
-
-        {/* â•â• SECTION C: CURATOR RESOURCES  -  orange + green + amber identity â•â•â• */}
-        <section style={{ display: show(3) ? undefined : "none" }}>
-          <SectionHeader
-            accent={ORANGE}
-            title="Mission Curator Resources"
-            sub={`${totalCareerEvt} career events  ·  ${totalTraining} training courses  ·  ${totalOneOnOne} one-on-one sessions`}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-            {/* Three resource tiles + source note */}
-            <div className="space-y-3">
-
-              <StatTile
-                icon={GraduationCap}
-                iconBg="#FEF3C7"
-                iconColor={ORANGE}
-                label="Career Centre Events"
-                value={totalCareerEvt}
-                valueColor={ORANGE}
-                sub="Panel sessions &amp; employer fairs"
-              />
-
-              <StatTile
-                icon={BookOpen}
-                iconBg="#E1F5EE"
-                iconColor={GREEN}
-                label="Training Courses"
-                value={totalTraining}
-                valueColor={GREEN}
-                sub="Canvas / Coursera modules"
-              />
-
-              <StatTile
-                icon={Users}
-                iconBg="#FEF3C7"
-                iconColor={AMBER}
-                label="1-on-1 Sessions"
-                value={totalOneOnOne}
-                valueColor={AMBER}
-                sub="Individual student support"
-              />
-
-              {/* Source note */}
-              <div className="bg-white rounded border border-gray-100 shadow-sm px-4 py-3 flex items-start gap-2">
-                <div className="rounded-full flex-shrink-0 mt-1"
-                  style={{ backgroundColor: "#9CA3AF", width: "3px", minWidth: "3px", height: "36px" }} />
-                <p className="text-[10px] text-gray-400 leading-relaxed">
-                  Mission Curator records  -  event registration, feedback forms.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Two charts  -  2/3 cols */}
-            <div className="lg:col-span-2 space-y-4">
-
-              <Card accent={ORANGE} title="Curator Resources Delivered per Year"
-                sub="Career events  ·  training courses  ·  1-on-1 sessions  -  stacked by type">
-                <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 mb-4">
-                  {[["Career Events", MS.CUR_CAREER], ["Training", MS.CUR_TRAIN], ["1-on-1", MS.CUR_ONEON1]].map(([l, c]) => (
-
-                    <span key={l} className="flex items-center gap-1.5">
-                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c as string }} />{l}
-                    </span>
-                  ))}
-                </div>
-                <ResponsiveContainer width="100%" height={168}>
-                  <BarChart data={curatorChartData} barCategoryGap="30%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={22} />
-                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-                    <Bar dataKey="Career Events" fill={MS.CUR_CAREER} radius={[0,0,0,0]} stackId="a" />
-                    <Bar dataKey="Training"       fill={MS.CUR_TRAIN}  radius={[0,0,0,0]} stackId="a" />
-                    <Bar dataKey="1-on-1"         fill={MS.CUR_ONEON1}  radius={[4,4,0,0]} stackId="a" />
-
-
-                  </BarChart>
-                </ResponsiveContainer>
-              </Card>
-
-              <Card accent={GREEN} title="Courses Completed per Year"
-                sub="Canvas / Coursera module completions  -  cumulative annual total">
-                <ResponsiveContainer width="100%" height={128}>
-                  <AreaChart data={coursesChartData}>
-                    <defs>
-                      <linearGradient id="courseGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={MS.COURSES_COMPLETED} stopOpacity={0.30} />
-                        <stop offset="95%" stopColor={MS.COURSES_COMPLETED} stopOpacity={0.03} />
-
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={28} />
-                    <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
-
-                    <Area type="monotone" dataKey="Completed" stroke={MS.COURSES_COMPLETED} strokeWidth={2} fill="url(#courseGrad)" dot={false} />
-
-                  </AreaChart>
-                </ResponsiveContainer>
-              </Card>
-
-            </div>
-
-          </div>
-        </section>
-
-        {/* â•â• SECTION D: SURVEY STATUS  -  rose identity â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        <section style={{ display: show(4) ? undefined : "none" }}>
-          <SectionHeader
-            accent={ROSE_900}
-            title="Survey &amp; Data Status"
-            sub="Checklist of active feedback mechanisms  -  amber items require attention"
-          />
-
-          <div className="bg-white rounded border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-3.5 flex items-center gap-2.5" style={{ backgroundColor: ROSE_900 }}>
-              <div className="w-[3px] h-[14px] rounded-full flex-shrink-0"
-                style={{ backgroundColor: "rgba(255,255,255,0.72)" }} />
-              <p className="text-[11px] font-black uppercase tracking-[0.08em] leading-none text-white">
-                Survey Coverage Checklist
+        <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <img src="/images/design1.png" alt="" aria-hidden="true"
+            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+          <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
+            <div style={{ textAlign: "center" }}>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Mission Students Programme</h1>
+              <p className="text-[13px] mt-2 font-medium" style={{ color: "rgba(215,225,245,0.8)" }}>
+                Enrollment, academic performance and career outcomes
               </p>
-              <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-semibold"
-                style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "rgba(255,255,255,0.85)" }}>
-                {SURVEY_ITEMS.filter(i => i.status === "complete").length}/{SURVEY_ITEMS.length} complete
-              </span>
+              <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px]" style={{ color: "rgba(215,225,245,0.5)" }}>
+                <span><span style={{ color: "rgba(215,225,245,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
+                <span aria-hidden="true">·</span>
+                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+              </div>
             </div>
+          </div>
+        </header>
+      </div>
 
-            <div className="divide-y divide-gray-100">
-              {SURVEY_ITEMS.map((item, i) => (
-                <div key={i}
-                  className="px-5 py-4 flex items-start gap-4"
-                  style={item.status === "warning" ? { backgroundColor: AMBER_BG } : {}}>
+      <div className="max-w-[1440px] mx-auto px-6 py-7">
 
-                  {item.status === "complete"
-                    ? <CheckCircle2 size={16} className="flex-shrink-0 mt-0.5" style={{ color: GREEN }} />
-                    : <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" style={{ color: AMBER }} />}
+        <HeaderStatsPanel
+          title="Programme Overview"
+          cards={[
+            {
+              label: "Total Enrolled",
+              num: totalEnrolled,
+              icon: Users,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: `Across all cohorts`,
+              tip: "Total mission students enrolled in the programme",
+              pace: true,
+              paceA: totalEnrolled,
+              paceT: 150,
+            },
+            {
+              label: "Completion Rate",
+              num: completionRate,
+              icon: TrendingUp,
+              displayFmt: (n) => n + "%",
+              sub: `${completed} students completed`,
+              tip: "Percentage of students who have completed the programme",
+              pace: true,
+              paceA: completionRate,
+              paceT: 100,
+            },
+            {
+              label: "Female Participation",
+              num: femalePct,
+              icon: WomanIcon,
+              displayFmt: (n) => n + "%",
+              sub: `${femaleStudents} female students`,
+              tip: "Percentage of female students in the programme",
+              pace: true,
+              paceA: femalePct,
+              paceT: 50,
+            },
+            {
+              label: "Average GPA",
+              num: avgGPA,
+              icon: Award,
+              displayFmt: (n) => n.toFixed(2),
+              sub: `Out of 4.0`,
+              tip: "Average cumulative GPA across all students",
+              pace: true,
+              paceA: avgGPA * 25,
+              paceT: 100,
+            },
+            {
+              label: "Employment Rate",
+              num: employmentRate,
+              icon: Briefcase,
+              displayFmt: (n) => n + "%",
+              sub: `${employed} employed`,
+              tip: "Percentage of completed students who are employed",
+              pace: true,
+              paceA: employmentRate,
+              paceT: 100,
+            },
+            {
+              label: "Ventures Created",
+              num: venturesCreated,
+              icon: Target,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: `Entrepreneurship outcomes`,
+              tip: "Number of students who have created ventures",
+              pace: true,
+              paceA: Math.min(venturesCreated * 5, 100),
+              paceT: 100,
+            },
+          ]}
+        />
 
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold leading-snug"
-                      style={{ color: item.status === "warning" ? AMBER_TEXT : "#111827" }}>
-                      {item.label}
-                    </p>
-                    {item.note && (
-                      <p className="text-[10px] mt-1 leading-relaxed" style={{ color: AMBER_TEXT }}>
-                        {item.note}
-                      </p>
-                    )}
+        <div style={{ marginBottom: 32, display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  fontSize: 11,
+                  fontWeight: activeCategory === cat ? 700 : 600,
+                  padding: "8px 14px",
+                  borderRadius: 20,
+                  border: `1px solid ${activeCategory === cat ? BRAND : LIGHT_BORDER}`,
+                  backgroundColor: activeCategory === cat ? BRAND : "white",
+                  color: activeCategory === cat ? "white" : BRAND_DK,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <div style={{ position: "relative" }}>
+            <FilterButton
+              activeFilterCount={activeFilterCount}
+              isOpen={filtersOpen}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            />
+            <FilterDropdown
+              isOpen={filtersOpen}
+              onResetFilters={() => {
+                setFilterYear("All Years");
+                setFilterCohort("All");
+                setFilterStatus("All");
+              }}
+            >
+              {[
+                { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
+                { label: "Cohort", value: filterCohort, setValue: setFilterCohort, options: ["All", ...cohorts.map(c => `Cohort ${c}`)] },
+                { label: "Status", value: filterStatus, setValue: setFilterStatus, options: ["All", "Active", "Completed", "Deferred"] },
+              ].map(filter => (
+                <div key={filter.label} style={{ marginBottom: 12 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    {filter.label}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {filter.options.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => filter.setValue(opt)}
+                        style={{
+                          fontSize: 10,
+                          fontWeight: filter.value === opt ? 700 : 500,
+                          padding: "5px 10px",
+                          borderRadius: 6,
+                          border: `1px solid ${filter.value === opt ? BRAND : LIGHT_BORDER}`,
+                          backgroundColor: filter.value === opt ? BRAND : "white",
+                          color: filter.value === opt ? "white" : BRAND_DK,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
                   </div>
-
-                  <div className="flex-shrink-0">
-                    {item.status === "complete" ? (
-                      <span className="inline-flex items-center text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: GREEN + "18", color: GREEN }}>
-                        Complete
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: AMBER_BG, color: AMBER_TEXT, border: `1px solid ${AMBER}` }}>
-                        âš  Flag
-                      </span>
-                    )}
-                  </div>
-
                 </div>
               ))}
-            </div>
+            </FilterDropdown>
           </div>
-        </section>
+        </div>
 
-        {/* â”€â”€ FOOTER STRIP  -  one tile per section, each its own hue â”€â”€â”€ */}
-        <PortalFooter portal="hemp" synced="04 Jun 2026, EAT" />
+        {show("Enrollment & Progress") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Enrollment & Progress
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Student enrollment and completion progress</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Enrollment Trend" subtitle="Student enrollment over time" info="Annual trend of students enrolled in mission programme" filterOptions={["All Years", ...years.map(String)]} filterValue={filterProgressYear} onFilterChange={setFilterProgressYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={years.map(y => ({ year: String(y), enrolled: missionStudents.filter(s => s.cohort === y).length }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="enrolled" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Enrolled" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Completion Status" subtitle="Student progression through programme" info="Distribution of students across completion statuses">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Active", value: filteredStudents.filter(s => s.status === "Active").length },
+                    { name: "Completed", value: filteredStudents.filter(s => s.status === "Completed").length },
+                    { name: "Deferred", value: filteredStudents.filter(s => s.status === "Deferred").length },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Female Participation Trend" subtitle="Gender diversity over time" info="Female student participation trend across years">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={years.map(y => ({ year: String(y), female: missionStudents.filter(s => s.cohort === y && s.gender === "Female").length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="female" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Female Students">
+                      <LabelList dataKey="female" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Internship Participation" subtitle="Students engaged in internships" info="Percentage of students with internship experience">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "With Internship", value: filteredStudents.filter(s => s.hasInternship).length },
+                    { name: "No Internship", value: filteredStudents.filter(s => !s.hasInternship).length },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Academic Performance") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Academic Performance
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>GPA and academic achievement across cohorts</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="GPA by Cohort" subtitle="Academic performance by year" info="Average GPA by enrollment cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterPerformanceYear} onFilterChange={setFilterPerformanceYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={years.map(y => ({
+                    year: String(y),
+                    gpa: missionStudents.filter(s => s.cohort === y).length > 0
+                      ? parseFloat((missionStudents.filter(s => s.cohort === y).reduce((sum, s) => sum + s.gpa, 0) / missionStudents.filter(s => s.cohort === y).length).toFixed(2))
+                      : 0
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 4]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="gpa" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Average GPA">
+                      <LabelList dataKey="gpa" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="GPA by Track" subtitle="Academic performance by study track" info="Average GPA across different study tracks">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={STUDENT_TRACKS.map(track => ({
+                    name: track,
+                    gpa: filteredStudents.filter(s => s.track === track).length > 0
+                      ? parseFloat((filteredStudents.filter(s => s.track === track).reduce((sum, s) => sum + s.gpa, 0) / filteredStudents.filter(s => s.track === track).length).toFixed(2))
+                      : 0
+                  })).sort((a, b) => b.gpa - a.gpa)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 4]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="gpa" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Average GPA">
+                      <LabelList dataKey="gpa" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Students by Track" subtitle="Enrollment distribution across programmes" info="Number of students in each study track">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={STUDENT_TRACKS.map(track => ({
+                    name: track,
+                    value: filteredStudents.filter(s => s.track === track).length
+                  })).sort((a, b) => b.value - a.value)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="HealthX Participation" subtitle="Students with HealthX engagement" info="Percentage of students enrolled in HealthX courses">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "HealthX Enrolled", value: filteredStudents.filter(s => s.hasHealthX).length },
+                    { name: "Not Enrolled", value: filteredStudents.filter(s => !s.hasHealthX).length },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Career Outcomes") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Career Outcomes
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Post-graduation employment and career progression</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Employment Status" subtitle="Post-graduation employment outcomes" info="Distribution of completed students by employment status" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Employed", value: completedStudents.filter(s => s.employment === "Employed").length },
+                    { name: "Entrepreneur", value: completedStudents.filter(s => s.employment === "Entrepreneur").length },
+                    { name: "Further Study", value: completedStudents.filter(s => s.employment === "Further Study").length },
+                    { name: "Seeking", value: completedStudents.filter(s => s.employment === "Seeking").length },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Employment by Track" subtitle="Career placement rate by study programme" info="Percentage employed for each study track">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={STUDENT_TRACKS.map(track => {
+                    const trackCompleted = completedStudents.filter(s => s.track === track);
+                    const trackEmployed = trackCompleted.filter(s => s.employment === "Employed");
+                    return {
+                      name: track,
+                      rate: trackCompleted.length ? Math.round((trackEmployed.length / trackCompleted.length) * 100) : 0
+                    };
+                  }).sort((a, b) => b.rate - a.rate)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="rate" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Employment %">
+                      <LabelList dataKey="rate" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Employment Trend" subtitle="Career outcomes over time" info="Employment outcomes by cohort year">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={years.map(y => {
+                    const yearCompleted = missionStudents.filter(s => s.cohort === y && s.status === "Completed");
+                    const yearEmployed = yearCompleted.filter(s => s.employment === "Employed");
+                    return {
+                      year: String(y),
+                      employed: yearCompleted.length ? Math.round((yearEmployed.length / yearCompleted.length) * 100) : 0
+                    };
+                  })} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="employed" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Employment %">
+                      <LabelList dataKey="employed" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Internship Impact" subtitle="Career outcomes with internship experience" info="Employment rate comparison for students with and without internship">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    {
+                      name: "With Internship",
+                      value: (() => {
+                        const withIntern = completedStudents.filter(s => s.hasInternship);
+                        return withIntern.length ? Math.round((withIntern.filter(s => s.employment === "Employed").length / withIntern.length) * 100) : 0;
+                      })()
+                    },
+                    {
+                      name: "Without Internship",
+                      value: (() => {
+                        const noIntern = completedStudents.filter(s => !s.hasInternship);
+                        return noIntern.length ? Math.round((noIntern.filter(s => s.employment === "Employed").length / noIntern.length) * 100) : 0;
+                      })()
+                    },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Venture Metrics") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Venture Metrics
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Entrepreneurship outcomes and venture creation</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Venture Creation Trend" subtitle="Entrepreneurship outcomes over time" info="Number of ventures created by cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterVentureYear} onFilterChange={setFilterVentureYear}>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={years.map(y => ({
+                    year: String(y),
+                    ventures: missionStudents.filter(s => s.cohort === y && s.ventureCreated).length
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="ventures" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Ventures Created">
+                      <LabelList dataKey="ventures" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Venture Creation by Track" subtitle="Entrepreneurship outcomes by study programme" info="Number of ventures created per study track">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={STUDENT_TRACKS.map(track => ({
+                    name: track,
+                    value: filteredStudents.filter(s => s.track === track && s.ventureCreated).length
+                  })).sort((a, b) => b.value - a.value)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Venture Creation Rate" subtitle="Percentage of completed students creating ventures" info="Entrepreneur ratio among completed cohorts">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={years.map(y => {
+                    const yearCompleted = missionStudents.filter(s => s.cohort === y && s.status === "Completed");
+                    const yearVentures = yearCompleted.filter(s => s.ventureCreated);
+                    return {
+                      year: String(y),
+                      rate: yearCompleted.length ? Math.round((yearVentures.length / yearCompleted.length) * 100) : 0
+                    };
+                  })} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="rate" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Venture Rate %">
+                      <LabelList dataKey="rate" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Venture by Employment Status" subtitle="Entrepreneurship among employed graduates" info="Venture creation rate by employment category">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    {
+                      name: "Entrepreneurs",
+                      value: completedStudents.filter(s => s.employment === "Entrepreneur").length
+                    },
+                    {
+                      name: "Employed (Non-Venture)",
+                      value: completedStudents.filter(s => s.employment === "Employed").length
+                    },
+                    {
+                      name: "Further Study",
+                      value: completedStudents.filter(s => s.employment === "Further Study").length
+                    },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        <PortalFooter portal="hemp" synced="18 Jun 2026, EAT" />
 
       </div>
     </div>

@@ -28,6 +28,20 @@ const SECTION  = "#185FA5";
 const LIGHT_BORDER = "rgba(16, 44, 94, 0.12)";
 const LIGHT_BG = "#F8F9FA";
 
+// ─── Custom Icons ────────────────────────────────────────────────────────────
+function WomanIcon({ size = 20, color, style }: { size?: number; color?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color ?? "currentColor"} stroke={color ?? "currentColor"} style={style}>
+      <circle cx="12" cy="3.4" r="3.25" stroke="none" />
+      <path d="M8.3 7.1 L15.7 7.1 L14.24 12.2 L17.15 18.3 L6.85 18.3 L9.76 12.2 Z" stroke="none" />
+      <path d="M8.98 7.5 C7.07 9.8 6.29 12.45 6.29 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M15.02 7.5 C16.93 9.8 17.71 12.45 17.71 15.5" fill="none" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M10.21 18.3 L10.21 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M13.79 18.3 L13.79 22.3" fill="none" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 // Chart colors
 const TH_NAVY   = "#102C5E";
 const TH_BLUE   = "#479BD6";
@@ -41,11 +55,10 @@ const GREEN    = "#0F6E56";
 const VIOLET   = TH_ORANGE;
 
 const ENGAGEMENT: Record<string, string> = {
-  HealthX:            TEAL,
+  "Career Exposure":  TEAL,
   Internships:        AMBER,
   SIE:                SKY,
   Courses:            GREEN,
-  "Career Symposia":  VIOLET,
 };
 
 const DISTINCT = ["#185FA5","#0F6E56","#534AB7","#BA7517","#479BD6","#1D9E75","#7F77DD","#D45F2C","#14306B","#085041","#2F5FD1","#85B7EB","#378ADD","#5F5E5A","#102C5E"];
@@ -82,15 +95,22 @@ const symStudents      = healthXSymposia.reduce((s, x) => s + x.studentsAttendin
 const symFem           = healthXSymposia.reduce((s, x) => s + x.femaleStudents, 0);
 const symUsefulnessAvg = parseFloat(avg(healthXSymposia.map(x => x.usefulness)).toFixed(1));
 
+// Career Exposure (combined HealthX + Career Symposia)
+const careerExposurePart    = hxPart + symStudents;
+const careerExposureFem     = hxFem + symFem;
+const careerExposureSessions = hxSessions + healthXSymposia.length;
+const careerExposureSatAvg  = parseFloat(avg([hxSatAvg, symUsefulnessAvg]).toFixed(1));
+
 // Totals
-const TOTAL_REACH    = hxPart + intStudents + sieSelected + ghEnrolled + symStudents;
-const TOTAL_FEM      = hxFem + intFem + sieFem + ghFem + symFem;
+const TOTAL_REACH    = careerExposurePart + intStudents + sieSelected + ghEnrolled;
+const TOTAL_FEM      = careerExposureFem + intFem + sieFem + ghFem;
 const FEMALE_PCT_ALL = pct(TOTAL_FEM, TOTAL_REACH);
-const AVG_SAT         = parseFloat(avg([hxSatAvg, intSatAvg, sieSatAvg, ghSatAvg, symUsefulnessAvg]).toFixed(1));
-const ENGAGEMENT_COUNT = hxSessions + internships.length + sieCohorts.length + ghCohorts.length + healthXSymposia.length;
+const AVG_SAT         = parseFloat(avg([careerExposureSatAvg, intSatAvg, sieSatAvg, ghSatAvg]).toFixed(1));
+const ENGAGEMENT_COUNT = careerExposureSessions + internships.length + sieCohorts.length + ghCohorts.length;
 
 const REFUGEE_PCT = 8;
 const PWD_PCT     = 5;
+const VULNERABLE_PCT = REFUGEE_PCT + PWD_PCT;
 
 // Graduate outcomes
 const totalStudents = missionStudents.length;
@@ -104,33 +124,32 @@ const YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
 
 const reachByYear = YEARS
   .map(yr => {
+    const hx = healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0);
+    const sym = healthXSymposia.filter(x => x.year === yr).reduce((s, x) => s + x.studentsAttending, 0);
     const row = {
       Year: String(yr),
-      HealthX: healthXSessions.filter(h => h.year === yr).reduce((s, h) => s + h.participants, 0),
+      "Career Exposure": hx + sym,
       Internships: internships.filter(i => i.year === yr).reduce((s, i) => s + i.students, 0),
       SIE: sieCohorts.filter(c => c.year === yr).reduce((s, c) => s + c.selected, 0),
       Courses: ghCohorts.filter(c => c.cohortYear === yr).reduce((s, c) => s + c.enrolled, 0),
-      "Career Symposia": healthXSymposia.filter(x => x.year === yr).reduce((s, x) => s + x.studentsAttending, 0),
     };
-    const Total = row.HealthX + row.Internships + row.SIE + row.Courses + row["Career Symposia"];
+    const Total = row["Career Exposure"] + row.Internships + row.SIE + row.Courses;
     return { ...row, Total };
   })
   .filter(d => d.Total > 0);
 
 const participantsByProgData = [
-  { name: "HealthX", value: hxPart },
+  { name: "Career Exposure", value: careerExposurePart },
   { name: "Internships", value: intStudents },
   { name: "SIE", value: sieSelected },
   { name: "Courses", value: ghEnrolled },
-  { name: "Career Symposia", value: symStudents },
 ].sort((a, b) => b.value - a.value);
 
 const genderByEngagement = [
-  { name: "HealthX", Female: hxFem, Male: hxPart - hxFem },
+  { name: "Career Exposure", Female: careerExposureFem, Male: careerExposurePart - careerExposureFem },
   { name: "Internships", Female: intFem, Male: intStudents - intFem },
   { name: "SIE", Female: sieFem, Male: sieSelected - sieFem },
   { name: "Courses", Female: ghFem, Male: ghEnrolled - ghFem },
-  { name: "Career Symposia", Female: symFem, Male: symStudents - symFem },
 ].sort((a, b) => (b.Female + b.Male) - (a.Female + a.Male));
 
 const outcomesByYear = YEARS
@@ -367,7 +386,7 @@ export default function HEMPOverview() {
             {
               label: "Female Participation",
               num: FEMALE_PCT_ALL,
-              icon: Sparkles,
+              icon: WomanIcon,
               displayFmt: (n) => n + "%",
               sub: "Female share",
               tip: `Female participants across HEMP (${TOTAL_FEM.toLocaleString()} people)`,
@@ -380,12 +399,12 @@ export default function HEMPOverview() {
               tip: "Total number of engagements and interventions",
             },
             {
-              label: "Satisfaction Score",
-              num: AVG_SAT,
-              icon: Award,
-              displayFmt: (n) => n.toFixed(1),
-              sub: "Average / 5",
-              tip: "Average satisfaction across all programmes (target: 4.5/5)",
+              label: "Refugees & Disability",
+              num: VULNERABLE_PCT,
+              icon: Accessibility,
+              displayFmt: (n) => n + "%",
+              sub: "Vulnerable populations",
+              tip: "Refugees (8%) and persons living with disability (5%) participation rate",
             },
             {
               label: "Employment Rate",
@@ -710,18 +729,17 @@ export default function HEMPOverview() {
               <Panel title="Satisfaction by Engagement" subtitle="Average scores vs. target of 4.5/5">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "HealthX", value: hxSatAvg },
+                    { name: "Career Exposure", value: careerExposureSatAvg },
                     { name: "Internships", value: intSatAvg },
                     { name: "SIE", value: sieSatAvg },
                     { name: "Courses", value: ghSatAvg },
-                    { name: "Career Symposia", value: symUsefulnessAvg },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={46}>
-                      {[hxSatAvg, intSatAvg, sieSatAvg, ghSatAvg, symUsefulnessAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN, VIOLET][i]} />))}
+                      {[careerExposureSatAvg, intSatAvg, sieSatAvg, ghSatAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN][i]} />))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -729,18 +747,17 @@ export default function HEMPOverview() {
               <Panel title="Overall Programme Satisfaction" subtitle="Average scores by engagement type">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "HealthX", value: hxSatAvg },
+                    { name: "Career Exposure", value: careerExposureSatAvg },
                     { name: "Internships", value: intSatAvg },
                     { name: "SIE", value: sieSatAvg },
                     { name: "Courses", value: ghSatAvg },
-                    { name: "Career Symposia", value: symUsefulnessAvg },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={46}>
-                      {[hxSatAvg, intSatAvg, sieSatAvg, ghSatAvg, symUsefulnessAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN, VIOLET][i]} />))}
+                      {[careerExposureSatAvg, intSatAvg, sieSatAvg, ghSatAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN][i]} />))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>

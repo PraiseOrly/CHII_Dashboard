@@ -43,8 +43,9 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
       { label: "Overview",                       href: "/hemp" },
       { label: "Internship",                     href: "/hemp/internships" },
       { label: "SIE",                             href: "/hemp/sie" },
-      { label: "HealthX",                        href: "/hemp/healthx" },
+      { label: "Career Exposure",                href: "/hemp/career-exposure" },
       { label: "Courses",                        href: "/hemp/course" },
+      { label: "Mission Students",               href: "/hemp/mission-students" },
     ],
   },
 
@@ -55,7 +56,6 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     items: [
       { label: "Overview",          href: "/heco" },
       { label: "CRA",               href: "/heco/cra" },
-      { label: "Mission Students",  href: "/hemp/mission-students" },
     ],
   },
 
