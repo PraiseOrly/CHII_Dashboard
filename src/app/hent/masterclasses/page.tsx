@@ -604,25 +604,41 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER_MC}>
-              <div className="space-y-3 mt-2">
-                {socialData.map((d, i) => {
-                  const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
-                  return (
-                    <div key={d.name}>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-600">{d.name}</span>
-                        <span className="font-medium" style={{ color: col }}>{d.value}</span>
-                      </div>
-                      <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                        <div className="h-full"
-                          style={{ width: `${tot.attendees > 0 ? (d.value / tot.attendees) * 100 : 0}%`, backgroundColor: col }} />
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-0.5">
-                        {tot.attendees > 0 ? Math.round((d.value / tot.attendees) * 100) : 0}% of attendees
-                      </p>
-                    </div>
-                  );
-                })}
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: "#0E4633", margin: "0 0 12px 0" }}>
+                  Total: {tot.attendees} participants across social inclusion groups
+                </p>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart
+                    data={socialData.map((s, i) => ({
+                      name: s.name,
+                      value: s.value,
+                      percentage: tot.attendees > 0 ? Math.round((s.value / tot.attendees) * 100) : 0,
+                      idx: i,
+                    }))}
+                    margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+                    barCategoryGap="30%"
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={40} />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload?.[0]) {
+                          const data = payload[0].payload as typeof socialData[0] & { percentage: number };
+                          return (
+                            <div style={{ backgroundColor: "white", padding: "8px 10px", borderRadius: 4, border: "1px solid #E5E7EB" }}>
+                              <p style={{ fontSize: 10, fontWeight: 600, color: "#0E4633", margin: "0 0 4px 0" }}>{data.name}</p>
+                              <p style={{ fontSize: 10, color: "#6B7280", margin: 0 }}>{data.value} participants ({data.percentage}%)</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Bar dataKey="value" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </ChartCard>
           </div>

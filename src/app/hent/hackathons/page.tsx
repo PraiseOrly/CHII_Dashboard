@@ -357,28 +357,6 @@ export default function HackathonsPage() {
           <SectionHeader title="Participant Profiles"
             sub={`${total.participants.toLocaleString()} participants across all hackathons`} />
 
-          {/* Participant profile stat cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            {([
-              { label: "Female Participants",  value: total.female,                       pct: femalePct,  color: VIOLET  },
-              { label: "Male Participants",    value: total.participants - total.female,  pct: malePct,    color: SKY     },
-              { label: "Student Participants", value: total.students,                     pct: studentPct, color: EMERALD },
-              { label: "Alumni Participants",  value: alumniTotal,                        pct: alumniPct,  color: AMBER   },
-            ] as const).map((item) => (
-              <div key={item.label} className="rounded-[10px]"
-                style={{ backgroundColor: "#ffffff", border: "1px solid #2D6A4F", padding: "13px 15px" }}>
-                <p className="tabular-nums" style={{ fontSize: 21, fontWeight: 800, color: "#2D6A4F", lineHeight: 1.05 }}>{item.pct}%</p>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 2 }}>{item.label}</p>
-                <p className="tabular-nums" style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", marginTop: 2 }}>
-                  {item.value.toLocaleString()} / {total.participants.toLocaleString()}
-                </p>
-                <div className="rounded-sm mt-2 overflow-hidden" style={{ height: 5, backgroundColor: item.color + "20" }}>
-                  <div className="h-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
-                </div>
-              </div>
-            ))}
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Gender Composition"
               sub="Distribution of participants by gender across all events"

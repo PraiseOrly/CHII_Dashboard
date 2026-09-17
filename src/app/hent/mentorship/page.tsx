@@ -374,10 +374,10 @@ export default function MentorshipPage() {
         <HeaderStatsPanel
           title="Mentorship & Fellowship Metrics"
           cards={[
-            { label: "Total Fellows", num: tot.fellows, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, tip: "Participants in mentorship and fellowship programs." },
-            { label: "Mentor Engagements", num: tot.mentors, displayFmt: (n) => String(Math.round(n)), icon: Award, tip: "Mentorship slots deployed across programs." },
-            { label: "Female Fellows", num: femalePct, displayFmt: (n) => `${Math.round(n)}%`, icon: Star, tip: "Percentage of female participation across all programs." },
-            { label: "Avg Completion Rate", num: tot.completion, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, tip: "Average completion rate across all programs." },
+            { label: "Total Fellows", num: tot.fellows, displayFmt: (n) => Math.round(n).toLocaleString(), icon: Users, sub: `${Math.round((tot.fellows / 1000) * 100)}% of 1,000`, pace: true, paceA: tot.fellows, paceT: 1000, tip: "Participants in mentorship and fellowship programs." },
+            { label: "Mentor Engagements", num: tot.mentors, displayFmt: (n) => String(Math.round(n)), icon: Award, sub: `${Math.round((tot.mentors / 500) * 100)}% of 500`, pace: true, paceA: tot.mentors, paceT: 500, tip: "Mentorship slots deployed across programs." },
+            { label: "Female Fellows", num: femalePct, displayFmt: (n) => `${Math.round(n)}%`, icon: Star, sub: `${femalePct}% · ${tot.female}/${tot.fellows}`, pace: true, paceA: femalePct, paceT: 50, tip: "Percentage of female participation across all programs." },
+            { label: "Avg Completion Rate", num: tot.completion, displayFmt: (n) => `${Math.round(n)}%`, icon: CheckCircle2, sub: `${tot.completion}% target`, pace: true, paceA: tot.completion, paceT: 85, tip: "Average completion rate across all programs." },
           ]}
         />
 
