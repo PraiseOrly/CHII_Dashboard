@@ -130,7 +130,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
 }
 
 export default function HEMPInternships() {
-  const categories = ["Growth & Outcomes", "Sector Mix", "Geography & Impact", "Quality & Placements"];
+  const categories = ["Growth & Outcomes", "Sector Mix", "Quality & Placements"];
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [expandedSections, setExpandedSections] = useState({ employer: true, student: true });
 
@@ -179,7 +179,6 @@ export default function HEMPInternships() {
 
   const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
   const [filterSectorYear, setFilterSectorYear] = useState("All Years");
-  const [filterGeoYear, setFilterGeoYear] = useState("All Years");
 
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
@@ -499,60 +498,7 @@ export default function HEMPInternships() {
           </section>
         )}
 
-        {show("Geography & Impact") && (
-          <section style={{ marginBottom: 48 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-                    Geography & Impact
-                  </p>
-                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Geographic distribution and regional outcomes</p>
-                </div>
-              </div>
-            </div>
-            <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Placements by Country" subtitle="Geographic distribution" info="Number of placements across countries" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.country))).map(c => ({
-                    name: c,
-                    value: filteredInternships.filter(i => i.country === c).length
-                  })).sort((a, b) => b.value - a.value).slice(0, 8)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
-                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="Students by Country" subtitle="Reach across regions" info="Total students placed per country">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.country))).map(c => ({
-                    name: c,
-                    value: filteredInternships.filter(i => i.country === c).reduce((s, i) => s + i.students, 0)
-                  })).sort((a, b) => b.value - a.value).slice(0, 8)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]} name="Students">
-                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Panel>
-            </div>
-          </section>
-        )}
-
-        {show("Quality & Placements") && (
+{show("Quality & Placements") && (
           <section style={{ marginBottom: 48 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
