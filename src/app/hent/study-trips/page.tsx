@@ -193,8 +193,8 @@ export default function FieldVisitsPage() {
   const [typeFilter,   setTypeFilter]   = useState<"All"|TripType>("All");
   const [regionFilter, setRegionFilter] = useState<"All"|TripRegion>("All");
   const [genderView,   setGenderView]   = useState<"All"|"Female"|"Male">("All");
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [activeSection, setActiveSection] = useState<number>(1);
+  const show = (n: number) => activeSection === n;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersActive = (yearFilter !== "All" ? 1 : 0) + (typeFilter !== "All" ? 1 : 0) + (regionFilter !== "All" ? 1 : 0) + (genderView !== "All" ? 1 : 0);
 
@@ -385,10 +385,9 @@ export default function FieldVisitsPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
           <SectionPills
             accent="#0E4633"
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            value={String(activeSection)}
+            onChange={(v) => setActiveSection(Number(v))}
             options={[
-              { label: "All Sections", value: "all" },
               { label: "Ratings", value: "1" }, { label: "Demographics", value: "2" },
               { label: "Geography", value: "3" }, { label: "Attendance", value: "4" },
               { label: "Impactful Visits", value: "5" }, { label: "Partnerships", value: "6" },
@@ -662,12 +661,8 @@ export default function FieldVisitsPage() {
             <ChartCard title="Participation by Gender per Year"
               sub="Female vs male participants across all study trips by year  —  shows cohort composition trends"
               accent={VIOLET}>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET }}/>Female</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: SKY }}/>Male</span>
-              </div>
               <ResponsiveContainer width="100%" height={208}>
-                <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
+                <BarChart data={genderTrend} barCategoryGap="30%" barGap={2} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
@@ -676,7 +671,10 @@ export default function FieldVisitsPage() {
                   <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-              <ChartLegend items={[["Female", VIOLET], ["Male", SKY]]} />
+              <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET }} />Female</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: SKY }} />Male</span>
+              </div>
             </ChartCard>
           </div>
         </section>
@@ -835,7 +833,9 @@ export default function FieldVisitsPage() {
                   <Line type="monotone" dataKey="Cumulative Participants" stroke={EMERALD} strokeWidth={2.5} dot={{ r: 4, fill: EMERALD, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
-              <ChartLegend items={[["Cumulative participants", EMERALD]]} />
+              <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: EMERALD }} />Cumulative participants</span>
+              </div>
             </ChartCard>
 
             <ChartCard title="Completion Insights"
