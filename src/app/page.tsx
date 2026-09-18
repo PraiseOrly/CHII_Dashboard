@@ -311,7 +311,7 @@ export default function LoginPage() {
                     src={p.src}
                     alt={p.alt}
                     className="chii-partner-logo"
-                    style={{ height: 22, width: "auto", objectFit: "contain", display: "block" }}
+                    style={{ height: 48, width: "auto", objectFit: "contain", display: "block" }}
                   />
                 ))}
               </div>
