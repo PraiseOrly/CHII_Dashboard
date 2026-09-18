@@ -376,14 +376,12 @@ export default function HEMPCareerExposure() {
                       <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                       <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={90} />
                       <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]}>
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]} name="Count">
                         <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                  <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
-                  </div>
                 </div>
               </Panel>
               <Panel title="Gender Breakdown" subtitle="Female and male participation" info="Percentage of female vs male participants">
@@ -492,7 +490,7 @@ export default function HEMPCareerExposure() {
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /></span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Score</span>
                 </div>
               </Panel>
               <Panel title="Confidence & Recommendation" subtitle="Participant confidence and likelihood to recommend" info="Confidence in applying skills (1-5) and recommendation score (0-10)">
@@ -509,11 +507,14 @@ export default function HEMPCareerExposure() {
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 10]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
                     <Bar dataKey="confidence" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={20} name="Confidence (1-5)" />
                     <Bar dataKey="recommendation" fill="#7FA5D6" radius={[4, 4, 0, 0]} maxBarSize={20} name="Recommend (0-10)" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Confidence (1-5)</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Recommend (0-10)</span>
+                </div>
               </Panel>
             </div>
           </section>

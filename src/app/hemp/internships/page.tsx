@@ -402,26 +402,30 @@ export default function HEMPInternships() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Female Participation Trend" subtitle="Gender diversity over time" info="Female student participation trend across years">
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={years.map(y => ({ year: String(y), female: filteredInternships.filter(i => i.year === y).reduce((s, i) => s + i.femaleStudents, 0) }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  <BarChart data={years.map(y => ({ year: String(y), female: filteredInternships.filter(i => i.year === y).reduce((s, i) => s + i.femaleStudents, 0) }))} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="female" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Female Students">
                       <LabelList dataKey="female" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Female Students</span>
+                </div>
               </Panel>
               <Panel title="Satisfaction Scores" subtitle="Student experience ratings by placement" info="Average satisfaction rating (out of 5) for each internship placement">
                 <ResponsiveContainer width="100%" height={350}>
