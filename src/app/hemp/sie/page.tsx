@@ -776,6 +776,41 @@ export default function HEMPSie() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
+              <Panel title="Career Direction Clarity" subtitle="% who gained clarity on career direction" info="Percentage of participants who reported having clear direction for next career steps">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    clarity: c.careerClarityPct,
+                  }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
+                    <Bar dataKey="clarity" fill="#1D9E75" barSize={46} radius={[4, 4, 0, 0]} name="Clarity %">
+                      <LabelList dataKey="clarity" position="top" fontSize={11} fill="#085041" fontWeight={700} offset={5} formatter={(v: any) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="NPS Distribution" subtitle="Promoters, Passives, Detractors breakdown" info="Net Promoter Score distribution across participant response categories (Promoters: 9-10, Passives: 7-8, Detractors: 0-6)">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    Promoters: c.npsPromoters,
+                    Passives: c.npsPassives,
+                    Detractors: c.npsDetractors,
+                  }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%" barGap={0}>
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="Promoters" stackId="a" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={36} />
+                    <Bar dataKey="Passives" stackId="a" fill="#7F77DD" radius={[0, 0, 0, 0]} maxBarSize={36} />
+                    <Bar dataKey="Detractors" stackId="a" fill="#D45F2C" radius={[0, 4, 4, 0]} maxBarSize={36} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
             </div>
           </section>
         )}
