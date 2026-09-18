@@ -132,6 +132,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
 export default function HEMPInternships() {
   const categories = ["Growth & Outcomes", "Sector Mix", "Geography & Impact", "Quality & Placements"];
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [expandedSections, setExpandedSections] = useState({ employer: true, student: true });
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterYear, setFilterYear] = useState("All Years");
@@ -564,8 +565,31 @@ export default function HEMPInternships() {
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+            <div style={{ marginBottom: 32 }} />
+
+            <div style={{ marginBottom: 28 }}>
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, employer: !prev.employer }))}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  marginBottom: 12
+                }}
+              >
+                <span style={{ width: 2, height: 14, borderRadius: 999, backgroundColor: "#185FA5", flexShrink: 0 }} />
+                <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "#185FA5", lineHeight: 1.2, margin: 0 }}>
+                  Employer Feedback
+                </p>
+                <ChevronDown size={14} color="#185FA5" style={{ marginLeft: 4, transform: expandedSections.employer ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s" }} />
+              </button>
+            </div>
+            {expandedSections.employer && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 40 }}>
               <Panel title="Student and Partner Feedback" subtitle="Feedback ratings by organization" info="Average feedback scores from students and partner organizations">
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
@@ -647,6 +671,97 @@ export default function HEMPInternships() {
                     <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
                     <Bar dataKey="Recommend ALU" fill="#D45F2C" radius={[0, 4, 4, 0]} />
                     <Bar dataKey="Likely to Hire" fill="#F5A76D" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+            )}
+
+            <div style={{ marginBottom: 28, marginTop: 40 }}>
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, student: !prev.student }))}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  marginBottom: 12
+                }}
+              >
+                <span style={{ width: 2, height: 14, borderRadius: 999, backgroundColor: "#1D9E75", flexShrink: 0 }} />
+                <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "#1D9E75", lineHeight: 1.2, margin: 0 }}>
+                  Student Feedback
+                </p>
+                <ChevronDown size={14} color="#1D9E75" style={{ marginLeft: 4, transform: expandedSections.student ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s" }} />
+              </button>
+            </div>
+            {expandedSections.student && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Internship Quality & Relevance" subtitle="Student perception of internship experience" info="Average student ratings for quality, relevance, clarity, and support (1-5 scale)">
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={[
+                    {
+                      dimension: "Relevance to Career Goals",
+                      score: filteredInternships.length ? parseFloat((filteredInternships.reduce((s, i) => s + i.relevanceToCareer, 0) / filteredInternships.length).toFixed(2)) : 0
+                    },
+                    {
+                      dimension: "Overall Quality",
+                      score: filteredInternships.length ? parseFloat((filteredInternships.reduce((s, i) => s + i.overallQuality, 0) / filteredInternships.length).toFixed(2)) : 0
+                    },
+                    {
+                      dimension: "Clarity of Role & Responsibilities",
+                      score: filteredInternships.length ? parseFloat((filteredInternships.reduce((s, i) => s + i.clarityOfRole, 0) / filteredInternships.length).toFixed(2)) : 0
+                    },
+                    {
+                      dimension: "Support & Supervision",
+                      score: filteredInternships.length ? parseFloat((filteredInternships.reduce((s, i) => s + i.supportSupervision, 0) / filteredInternships.length).toFixed(2)) : 0
+                    },
+                  ]} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 190 }} barCategoryGap="12%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="dimension" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={180} />
+                    <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Bar dataKey="score" fill="#7FA5D6" radius={[0, 4, 4, 0]}>
+                      <LabelList dataKey="score" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Learning & Skill Application" subtitle="Student-perceived capability growth" info="Average student rating of ability to apply skills to real-world health challenges (1-5 scale)">
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
+                    const orgInternships = filteredInternships.filter(i => i.organization === o);
+                    const avgSkillApplication = orgInternships.length ? parseFloat((orgInternships.reduce((s, i) => s + i.skillApplicationToRealWorld, 0) / orgInternships.length).toFixed(1)) : 0;
+                    return { name: o, "Real-World Application": avgSkillApplication };
+                  })} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 120 }} barCategoryGap="12%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
+                    <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Bar dataKey="Real-World Application" fill="#1D9E75" radius={[0, 4, 4, 0]}>
+                      <LabelList dataKey="Real-World Application" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Intern Recommendation & Completion" subtitle="Student satisfaction and programme completion" info="Student recommendation score (0-10 scale) and completion rate (% of interns who completed)">
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
+                    const orgInternships = filteredInternships.filter(i => i.organization === o);
+                    const avgRecommendation = orgInternships.length ? parseFloat((orgInternships.reduce((s, i) => s + i.internRecommendationScore, 0) / orgInternships.length).toFixed(1)) : 0;
+                    const avgCompletion = orgInternships.length ? parseFloat((orgInternships.reduce((s, i) => s + i.completionRate, 0) / orgInternships.length).toFixed(0)) : 0;
+                    return { name: o, "Recommendation": avgRecommendation, "Completion %": avgCompletion };
+                  })} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 120 }} barCategoryGap="12%" barGap={2}>
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
+                    <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
+                    <Bar dataKey="Recommendation" fill="#479BD6" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="Completion %" fill="#7FA5D6" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
