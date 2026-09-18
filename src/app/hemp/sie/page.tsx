@@ -161,7 +161,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
 }
 
 export default function HEMPSie() {
-  const categories = ["Programme Reach", "Exposure & Outcomes", "Geography & Engagement", "Participant Profile", "Quality & Feedback", "Performance Tracking"];
+  const categories = ["Reach & Profile", "Exposure & Outcomes", "Geography & Engagement", "Quality & Feedback", "Performance Tracking"];
   const [activeCategory, setActiveCategory] = useState(categories[0]);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -388,16 +388,16 @@ export default function HEMPSie() {
           </div>
         </div>
 
-        {show("Programme Reach") && (
+        {show("Reach & Profile") && (
           <section style={{ marginBottom: 48 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                 <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-                    Programme Reach
+                    Reach & Profile
                   </p>
-                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Recruitment funnel and participation trends</p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Recruitment funnel, participation trends, and participant profile</p>
                 </div>
               </div>
             </div>
@@ -461,6 +461,71 @@ export default function HEMPSie() {
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
                     <Line type="monotone" dataKey="selected" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selected" />
                   </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Participants by Discipline" subtitle="Academic background distribution" info="Number of participants from each academic discipline">
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={SIE_DISCIPLINES.map(disc => ({
+                      name: disc,
+                      count: filteredCohorts.length ? filteredCohorts.reduce((s, c) => s + c.disciplines[disc], 0) : 0,
+                    })).sort((a, b) => b.count - a.count)} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 120 }} barCategoryGap="12%">
+                      <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]} name="Participants">
+                        <LabelList dataKey="count" position="right" offset={5} fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </Panel>
+              <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), satisfaction: c.satisfaction }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="satisfaction" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Persons with Disabilities (PWD)" subtitle="PWD participant distribution across cohorts" info="Number of participants identifying as persons with disabilities">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    pwd: c.pwd,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="pwd" fill="#1D9E75" barSize={46} radius={[4, 4, 0, 0]} name="PWD">
+                      <LabelList dataKey="pwd" position="top" fontSize={11} fill="#085041" fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="IDP & Refugees" subtitle="IDP/Refugee participant distribution across cohorts" info="Number of internally displaced persons and refugees">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    idp: c.idpRefugees,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="idp" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="IDP/Refugees">
+                      <LabelList dataKey="idp" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </Panel>
             </div>
@@ -607,91 +672,7 @@ export default function HEMPSie() {
           </section>
         )}
 
-        {show("Participant Profile") && (
-          <section style={{ marginBottom: 48 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-                    Participant Profile
-                  </p>
-                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Academic discipline and satisfaction insights</p>
-                </div>
-              </div>
-            </div>
-            <div style={{ marginBottom: 24 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Participants by Discipline" subtitle="Academic background distribution" info="Number of participants from each academic discipline">
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={SIE_DISCIPLINES.map(disc => ({
-                      name: disc,
-                      count: filteredCohorts.length ? filteredCohorts.reduce((s, c) => s + c.disciplines[disc], 0) : 0,
-                    })).sort((a, b) => b.count - a.count)} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 120 }} barCategoryGap="12%">
-                      <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                      <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                      <Legend wrapperStyle={{ fontSize: 10 }} />
-                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]} name="Participants">
-                        <LabelList dataKey="count" position="right" offset={5} fontSize={10} fill={BRAND_DK} fontWeight={700} />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </Panel>
-              <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort">
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), satisfaction: c.satisfaction }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="satisfaction" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="Persons with Disabilities (PWD)" subtitle="PWD participant distribution across cohorts" info="Number of participants identifying as persons with disabilities">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
-                    name: c.name.substring(0, 18),
-                    pwd: c.pwd,
-                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="pwd" fill="#1D9E75" barSize={46} radius={[4, 4, 0, 0]} name="PWD">
-                      <LabelList dataKey="pwd" position="top" fontSize={11} fill="#085041" fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="IDP & Refugees" subtitle="IDP/Refugee participant distribution across cohorts" info="Number of internally displaced persons and refugees">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
-                    name: c.name.substring(0, 18),
-                    idp: c.idpRefugees,
-                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="idp" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="IDP/Refugees">
-                      <LabelList dataKey="idp" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Panel>
-            </div>
-          </section>
-        )}
-
-        {show("Quality & Feedback") && (
+{show("Quality & Feedback") && (
           <section style={{ marginBottom: 48 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
