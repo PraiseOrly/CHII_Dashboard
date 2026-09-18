@@ -3,6 +3,7 @@ import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/comp
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import { healthXSessions, HX_TYPES, ORG_TYPES } from "@/data/hemp/healthx";
+import { healthXSymposia } from "@/data/hemp/healthx-careers";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -365,21 +366,22 @@ export default function HEMPCareerExposure() {
                 </ResponsiveContainer>
               </Panel>
               <Panel title="Sessions by Type" subtitle="Distribution across session formats" info="Number of sessions by type (facility visits, challenges, etc.)">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={HX_TYPES.map(t => ({
-                    name: t,
-                    count: filteredSessions.filter(s => s.type === t).length,
-                  })).sort((a, b) => b.count - a.count)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="count" fill={BRAND} barSize={40} radius={[4, 4, 0, 0]}>
-                      <LabelList dataKey="count" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={HX_TYPES.map(t => ({
+                      name: t,
+                      count: filteredSessions.filter(s => s.type === t).length,
+                    })).sort((a, b) => b.count - a.count)} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 100 }} barCategoryGap="12%">
+                      <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={90} />
+                      <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </Panel>
               <Panel title="Gender Breakdown" subtitle="Female and male participation" info="Percentage of female vs male participants">
                 <ResponsiveContainer width="100%" height={250}>
@@ -432,18 +434,18 @@ export default function HEMPCareerExposure() {
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Completion Rates" subtitle="Session completion by type" info="Average completion rate by session type (1-5)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={HX_TYPES.map(t => ({
                     name: t,
                     completion: filteredSessions.filter(s => s.type === t).length ? Math.round(filteredSessions.filter(s => s.type === t).reduce((a, s) => a + s.completionRate, 0) / filteredSessions.filter(s => s.type === t).length) : 0,
-                  })).sort((a, b) => b.completion - a.completion)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                  })).sort((a, b) => b.completion - a.completion)} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 100 }} barCategoryGap="12%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={90} />
+                    <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="completion" fill="#479BD6" barSize={40} radius={[4, 4, 0, 0]} name="Completion %">
-                      <LabelList dataKey="completion" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                    <Bar dataKey="completion" fill="#479BD6" radius={[0, 4, 4, 0]} name="Completion %">
+                      <LabelList dataKey="completion" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -466,6 +468,43 @@ export default function HEMPCareerExposure() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
+              <Panel title="Career Exposure Quality Ratings" subtitle="Participant perception of programme quality" info="Average ratings for relevance, quality, and usefulness (1-5 scale)">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { dimension: "Relevance", score: healthXSymposia.length ? parseFloat((healthXSymposia.reduce((s, h) => s + h.relevanceScore, 0) / healthXSymposia.length).toFixed(2)) : 0 },
+                    { dimension: "Quality", score: healthXSymposia.length ? parseFloat((healthXSymposia.reduce((s, h) => s + h.qualityScore, 0) / healthXSymposia.length).toFixed(2)) : 0 },
+                    { dimension: "Usefulness", score: healthXSymposia.length ? parseFloat((healthXSymposia.reduce((s, h) => s + h.usefulnessScore, 0) / healthXSymposia.length).toFixed(2)) : 0 },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="dimension" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Bar dataKey="score" fill="#1D9E75" barSize={40} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="score" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Confidence & Recommendation" subtitle="Participant confidence and likelihood to recommend" info="Confidence in applying skills (1-5) and recommendation score (0-10)">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={years.map(y => {
+                    const yearSymposia = healthXSymposia.filter(s => s.year === y);
+                    return {
+                      year: String(y),
+                      confidence: yearSymposia.length ? parseFloat((yearSymposia.reduce((s, h) => s + h.confidenceScore, 0) / yearSymposia.length).toFixed(1)) : 0,
+                      recommendation: yearSymposia.length ? parseFloat((yearSymposia.reduce((s, h) => s + h.recommendationScore, 0) / yearSymposia.length).toFixed(1)) : 0,
+                    };
+                  })} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%" barGap={2}>
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 10]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
+                    <Bar dataKey="confidence" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={20} name="Confidence (1-5)" />
+                    <Bar dataKey="recommendation" fill="#7FA5D6" radius={[4, 4, 0, 0]} maxBarSize={20} name="Recommend (0-10)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
             </div>
           </section>
         )}
@@ -486,21 +525,23 @@ export default function HEMPCareerExposure() {
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Partnerships by Organization Type" subtitle="Distribution across partner types" info="Number of partnerships built with different organization types">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={ORG_TYPES.map(t => ({
-                    name: t,
-                    count: filteredSessions.filter(s => s.orgType === t).reduce((a, s) => a + s.partnerships, 0),
-                  })).sort((a, b) => b.count - a.count)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} angle={-15} height={100} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="count" fill={BRAND} barSize={40} radius={[4, 4, 0, 0]} name="Partnerships">
-                      <LabelList dataKey="count" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={ORG_TYPES.map(t => ({
+                      name: t,
+                      count: filteredSessions.filter(s => s.orgType === t).reduce((a, s) => a + s.partnerships, 0),
+                    })).sort((a, b) => b.count - a.count)} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 150 }} barCategoryGap="12%">
+                      <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="name" type="category" tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={140} />
+                      <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]} name="Partnerships">
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} offset={5} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </Panel>
               <Panel title="Partnership Growth" subtitle="Cumulative partnerships over time" info="Year-on-year partnership development trend">
                 <ResponsiveContainer width="100%" height={250}>
