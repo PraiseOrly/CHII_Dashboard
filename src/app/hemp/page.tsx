@@ -532,23 +532,30 @@ export default function HEMPOverview() {
                 minWidth: 300,
                 overflow: "hidden",
               }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", borderBottom: `1px solid ${LIGHT_BORDER}` }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: BRAND_DK, margin: 0 }}>Filters</p>
+                <div style={{ backgroundColor: BRAND, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "white", margin: 0, textTransform: "uppercase", letterSpacing: "0.02em" }}>Filters</p>
                   <button
-                    onClick={() => setFiltersOpen(false)}
+                    onClick={() => {
+                      setFilterYear("All");
+                      setFilterRegion("All Regions");
+                      setFilterCountry("All Countries");
+                    }}
                     style={{
-                      background: "none",
-                      border: "none",
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: "white",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      borderRadius: 6,
+                      padding: "3px 8px",
+                      backgroundColor: "rgba(255,255,255,0.08)",
                       cursor: "pointer",
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
+                      transition: "all 0.2s ease",
                     }}
                   >
-                    <X size={16} color={BRAND_DK} />
+                    Reset
                   </button>
                 </div>
-                <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
                   {/* Year Filter */}
                   <div>
                     <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 6px 0" }}>Year</p>
@@ -624,30 +631,6 @@ export default function HEMPOverview() {
                     </div>
                   </div>
 
-                  {/* Reset Button */}
-                  {activeFilters > 0 && (
-                    <button
-                      onClick={() => {
-                        setFilterYear("All");
-                        setFilterRegion("All Regions");
-                        setFilterCountry("All Countries");
-                      }}
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 600,
-                        padding: "6px 12px",
-                        borderRadius: 10,
-                        border: `1px solid ${LIGHT_BORDER}`,
-                        borderLeft: `5px solid ${BRAND}`,
-                        backgroundColor: "transparent",
-                        color: BRAND_DK,
-                        cursor: "pointer",
-                        marginTop: 4,
-                      }}
-                    >
-                      Reset Filters
-                    </button>
-                  )}
                 </div>
               </div>
             )}
