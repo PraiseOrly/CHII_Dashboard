@@ -661,30 +661,35 @@ export default function HEMPOverview() {
                 </div>
               </Panel>
               <Panel title="Reach Over Time" subtitle="Total participant reach across 2021–2026" info="Year-on-year trend of total programme participants showing growth trajectory across all HEMP initiatives">
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={reachByYear} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="Year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} />
-                    <Line type="monotone" dataKey="Total" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3, fill: BRAND }} activeDot={{ r: 5 }} name="Total Reach" />
-                  </LineChart>
-                </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={reachByYear} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis dataKey="Year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                      <Line type="monotone" dataKey="Total" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3, fill: BRAND }} activeDot={{ r: 5 }} name="Total Reach" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </Panel>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 16 }}>
               <Panel title="Gender Participation" subtitle="Female vs. male by engagement" info="Gender distribution of participants across Career Exposure, Internships, SIE, and Courses programmes">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={genderByEngagement} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Bar dataKey="Female" stackId="g" fill="#185FA5" />
-                    <Bar dataKey="Male" stackId="g" fill="#85B7EB" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={genderByEngagement} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                      <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
+                      <Bar dataKey="Female" stackId="g" fill="#185FA5" />
+                      <Bar dataKey="Male" stackId="g" fill="#85B7EB" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
                 <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> Female</span>
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#85B7EB" }} /> Male</span>
