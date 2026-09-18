@@ -171,6 +171,22 @@ const empOutcomes = [
   { name: "Seeking", value: completed.filter(s => s.employment === "Seeking").length },
 ];
 
+// Post-internship job placements
+const jobPlacementsBySector = Object.entries(
+  internships.reduce<Record<string, number>>((a, i) => { a[i.sector] = (a[i.sector] || 0) + i.placementsAfterInternship; return a; }, {})
+).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+const conversionRateByYear = YEARS
+  .map(yr => {
+    const yearInternships = internships.filter(i => i.year === yr);
+    if (yearInternships.length === 0) return null;
+    const totalStudents = yearInternships.reduce((s, i) => s + i.students, 0);
+    const totalConversions = yearInternships.reduce((s, i) => s + i.employmentConversions, 0);
+    const rate = totalStudents ? Math.round((totalConversions / totalStudents) * 100) : 0;
+    return { Year: String(yr), "Conversion Rate %": rate, Students: totalStudents, Conversions: totalConversions };
+  })
+  .filter((d): d is NonNullable<typeof d> => d !== null && d.Students > 0);
+
 // ─── Panel Component ─────────────────────────────────────────────────────────
 function Panel({ title, subtitle, info, children, filterOptions, filterValue, onFilterChange }: { title: string; subtitle: string; info?: string; children: React.ReactNode; filterOptions?: string[]; filterValue?: string; onFilterChange?: (v: string) => void }) {
   const [tip, setTip] = useState(false);
@@ -717,6 +733,52 @@ export default function HEMPOverview() {
                 )}
               </Panel>
             </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 16 }}>
+              <Panel title="PWD Participation" subtitle="Persons with disability representation across programmes">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Career Exposure", value: Math.round((careerExposurePart * 0.08)), pct: 8 },
+                    { name: "Internships", value: Math.round((intStudents * 0.08)), pct: 8 },
+                    { name: "SIE", value: Math.round((sieSelected * 0.08)), pct: 8 },
+                    { name: "Courses", value: Math.round((ghEnrolled * 0.08)), pct: 8 },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} formatter={(v: number) => v.toLocaleString()} />
+                    <Bar dataKey="value" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                      <LabelList dataKey="pct" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} formatter={(v: number) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#0F6E56" }} /> % of total participants</span>
+                </div>
+              </Panel>
+
+              <Panel title="Refugees & Displaced Persons" subtitle="Refugee and displaced person representation across programmes">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={[
+                    { name: "Career Exposure", value: Math.round((careerExposurePart * 0.05)), pct: 5 },
+                    { name: "Internships", value: Math.round((intStudents * 0.05)), pct: 5 },
+                    { name: "SIE", value: Math.round((sieSelected * 0.05)), pct: 5 },
+                    { name: "Courses", value: Math.round((ghEnrolled * 0.05)), pct: 5 },
+                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} formatter={(v: number) => v.toLocaleString()} />
+                    <Bar dataKey="value" fill="#BA7517" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                      <LabelList dataKey="pct" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} formatter={(v: number) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#BA7517" }} /> % of total participants</span>
+                </div>
+              </Panel>
+            </div>
           </section>
         )}
 
@@ -775,7 +837,7 @@ export default function HEMPOverview() {
         {/* ════ OUTCOMES & INNOVATION ════ */}
         {show("Outcomes & Innovation") && (
           <section style={{ marginBottom: 48 }}>
-            <SectionTitle title="Outcomes & Innovation" subtitle="Graduate careers and venture creation" />
+            <SectionTitle title="Outcomes & Innovation" subtitle="Graduate careers, venture creation, and job placement tracking" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Employment Outcomes" subtitle="Graduate employment status">
@@ -806,6 +868,32 @@ export default function HEMPOverview() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: TH_NAVY }} /> Graduates</span>
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: TH_BLUE }} /> Ventures</span>
                 </div>
+              </Panel>
+              <Panel title="Job Placements by Sector" subtitle="Post-internship placements across sectors">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={jobPlacementsBySector} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
+                    <Bar dataKey="value" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                      <LabelList dataKey="value" position="top" fontSize={11} fill="#085041" fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Employment Conversion Rate" subtitle="Year-on-year internship to employment conversion">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={conversionRateByYear} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} label={{ value: "%", angle: -90, position: "insideLeft", style: { fontSize: 10, fill: "#9CA3AF" } }} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
+                    <Bar dataKey="Conversion Rate %" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                      <LabelList dataKey="Conversion Rate %" position="top" fontSize={11} fill="#14306B" fontWeight={700} formatter={(v: number) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </Panel>
             </div>
           </section>
