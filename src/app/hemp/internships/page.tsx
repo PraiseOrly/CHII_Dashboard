@@ -470,12 +470,14 @@ export default function HEMPInternships() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Departments by Organization" subtitle="Department distribution across partner organizations" info="Number of internship placements by department within each organization">
                 <ResponsiveContainer width="100%" height={280}>
@@ -491,12 +493,14 @@ export default function HEMPInternships() {
                     <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <YAxis dataKey="organization" type="category" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
                     <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
                     {Array.from(new Set(filteredInternships.map(i => i.department))).map((dept, idx) => (
                       <Bar key={dept} dataKey={dept} stackId="a" fill={BRAND_DK} opacity={0.6 + (idx * 0.05)} radius={idx === Array.from(new Set(filteredInternships.map(i => i.department))).length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0]} />
                     ))}
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND_DK }} /> Departments</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -587,6 +591,9 @@ export default function HEMPInternships() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#14306B" }} /> Score</span>
+                </div>
               </Panel>
               <Panel title="Health Sector Readiness" subtitle="Understanding and application of health context" info="Average employer ratings on health systems understanding and practical application (1=Not at all, 5=Extremely)">
                 <ResponsiveContainer width="100%" height={280}>
@@ -679,6 +686,9 @@ export default function HEMPInternships() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Score</span>
+                </div>
               </Panel>
               <Panel title="Learning & Skill Application" subtitle="Student-perceived capability growth" info="Average student rating of ability to apply skills to real-world health challenges (1-5 scale)">
                 <ResponsiveContainer width="100%" height={200}>
@@ -696,6 +706,9 @@ export default function HEMPInternships() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Real-World Application</span>
+                </div>
               </Panel>
               <Panel title="Intern Recommendation & Completion" subtitle="Student satisfaction and programme completion" info="Student recommendation score (0-10 scale) and completion rate (% of interns who completed)">
                 <ResponsiveContainer width="100%" height={280}>

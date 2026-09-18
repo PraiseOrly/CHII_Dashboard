@@ -415,12 +415,16 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="applied" fill="#A8C5E6" barSize={30} name="Applied" />
                     <Bar dataKey="selected" fill="#479BD6" barSize={30} name="Selected" />
                     <Bar dataKey="completed" fill={BRAND} barSize={30} name="Completed" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A8C5E6" }} /> Applied</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Selected</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Completed</span>
+                </div>
               </Panel>
               <Panel title="Selection Rate Trend" subtitle="Percentage of applicants selected over time" info="Selection rate as a percentage of total applicants per cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
@@ -432,23 +436,6 @@ export default function HEMPSie() {
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
                     <Line type="monotone" dataKey="rate" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selection Rate %" />
                   </LineChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="Gender Distribution" subtitle="Female and male participant breakdown" info="Gender diversity across selected participants">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={[
-                    { name: "Female", value: femaleParticipants },
-                    { name: "Male", value: totalSelected - femaleParticipants },
-                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]}>
-                      <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
                 </ResponsiveContainer>
               </Panel>
               <Panel title="Participation Trend" subtitle="Growth in total selected participants over time" info="Annual trend in participant selection">
@@ -494,39 +481,34 @@ export default function HEMPSie() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Persons with Disabilities (PWD)" subtitle="PWD participant distribution across cohorts" info="Number of participants identifying as persons with disabilities">
+              <Panel title="Diversity Metrics" subtitle="Gender, disability, and refugee representation" info="Participants identifying as female, PWD, or IDP/Refugees across cohorts">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={filteredCohorts.map(c => ({
                     name: c.name.substring(0, 18),
+                    female: c.female,
                     pwd: c.pwd,
-                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="pwd" fill="#1D9E75" barSize={46} radius={[4, 4, 0, 0]} name="PWD">
-                      <LabelList dataKey="pwd" position="top" fontSize={11} fill="#085041" fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="IDP & Refugees" subtitle="IDP/Refugee participant distribution across cohorts" info="Number of internally displaced persons and refugees">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
-                    name: c.name.substring(0, 18),
                     idp: c.idpRefugees,
-                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%" barGap={1}>
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="idp" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="IDP/Refugees">
-                      <LabelList dataKey="idp" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    <Bar dataKey="female" fill="#479BD6" barSize={20} radius={[4, 4, 0, 0]} name="Female">
+                      <LabelList dataKey="female" position="top" fontSize={9} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                    <Bar dataKey="pwd" fill="#1D9E75" barSize={20} radius={[4, 4, 0, 0]} name="PWD">
+                      <LabelList dataKey="pwd" position="top" fontSize={9} fill="#085041" fontWeight={700} />
+                    </Bar>
+                    <Bar dataKey="idp" fill="#185FA5" barSize={20} radius={[4, 4, 0, 0]} name="IDP/Refugees">
+                      <LabelList dataKey="idp" position="top" fontSize={9} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Female</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> PWD</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> IDP/Refugees</span>
+                </div>
               </Panel>
             </div>
           </section>
