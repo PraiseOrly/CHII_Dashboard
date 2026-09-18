@@ -160,8 +160,8 @@ const outcomesByYear = YEARS
   })
   .filter(d => d.Graduates + d.Ventures > 0);
 
-const sectorCounts = Object.entries(
-  internships.reduce<Record<string, number>>((a, i) => { a[i.sector] = (a[i.sector] || 0) + i.students; return a; }, {})
+const organizationCounts = Object.entries(
+  internships.reduce<Record<string, number>>((a, i) => { a[i.organization] = (a[i.organization] || 0) + i.students; return a; }, {})
 ).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 
 const empOutcomes = [
@@ -172,8 +172,8 @@ const empOutcomes = [
 ];
 
 // Post-internship job placements
-const jobPlacementsBySector = Object.entries(
-  internships.reduce<Record<string, number>>((a, i) => { a[i.sector] = (a[i.sector] || 0) + i.placementsAfterInternship; return a; }, {})
+const jobPlacementsByOrganization = Object.entries(
+  internships.reduce<Record<string, number>>((a, i) => { a[i.organization] = (a[i.organization] || 0) + i.placementsAfterInternship; return a; }, {})
 ).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 
 const conversionRateByYear = YEARS
@@ -340,13 +340,16 @@ export default function HEMPOverview() {
     const reach: Record<string, number> = {};
     const female: Record<string, number> = {};
     const countries: Record<string, Set<string>> = {};
+    const excludedRegions = ["East Africa", "West Africa", "Southern Africa"];
     REACH_RECORDS
       .filter(r => filterRegionYear === "All Years" || String(r.year) === filterRegionYear)
       .forEach(r => {
         const reg = COUNTRY_REGION[r.country] || "Other";
-        reach[reg] = (reach[reg] || 0) + r.reach;
-        female[reg] = (female[reg] || 0) + r.female;
-        (countries[reg] = countries[reg] || new Set()).add(r.country);
+        if (!excludedRegions.includes(reg)) {
+          reach[reg] = (reach[reg] || 0) + r.reach;
+          female[reg] = (female[reg] || 0) + r.female;
+          (countries[reg] = countries[reg] || new Set()).add(r.country);
+        }
       });
     return Object.keys(reach)
       .map(reg => ({ name: reg, value: reach[reg], countries: countries[reg].size, female: female[reg] }))
@@ -437,6 +440,14 @@ export default function HEMPOverview() {
               displayFmt: (n) => n + "%",
               sub: "Employment conversion",
               tip: "Internship placements converting to employment",
+            },
+            {
+              label: "Global Health Course",
+              num: ghEnrolled,
+              icon: GraduationCap,
+              displayFmt: (n) => n.toLocaleString(),
+              sub: "Enrolled",
+              tip: `Students enrolled in Intro to Global Health (${pct(ghFem, ghEnrolled)}% female, avg satisfaction: ${ghSatAvg}/5)`,
             },
           ]}
         />
@@ -649,7 +660,7 @@ export default function HEMPOverview() {
             <SectionTitle title="Reach & Participation" subtitle="Programme attendance and participant diversity" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Participants by Engagement" subtitle="Distribution across all HEMP programmes" filterOptions={["All Years", ...YEARS.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
+              <Panel title="Participants by Engagement" subtitle="Distribution across all HEMP programmes" info="Total participants across Career Exposure, Internships, SIE, and Courses programmes by year" filterOptions={["All Years", ...YEARS.map(String)]} filterValue={filterReachYear} onFilterChange={setFilterReachYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={participantsByProgData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -669,7 +680,7 @@ export default function HEMPOverview() {
                   ))}
                 </div>
               </Panel>
-              <Panel title="Reach Over Time" subtitle="Total participant reach across 2021–2026">
+              <Panel title="Reach Over Time" subtitle="Total participant reach across 2021–2026" info="Year-on-year trend of total programme participants showing growth trajectory across all HEMP initiatives">
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={reachByYear} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -683,7 +694,7 @@ export default function HEMPOverview() {
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 16 }}>
-              <Panel title="Gender Participation" subtitle="Female vs. male by engagement">
+              <Panel title="Gender Participation" subtitle="Female vs. male by engagement" info="Gender distribution of participants across Career Exposure, Internships, SIE, and Courses programmes">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={genderByEngagement} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -700,7 +711,7 @@ export default function HEMPOverview() {
                 </div>
               </Panel>
 
-              <Panel title="Reach by Region" subtitle="Participants by African region" filterOptions={["All Years", ...GEO_YEARS.map(String)]} filterValue={filterRegionYear} onFilterChange={setFilterRegionYear}>
+              <Panel title="Reach by Region" subtitle="Participants by African region" info="Distribution of programme participants across African regions with year-on-year filtering capability" filterOptions={["All Years", ...GEO_YEARS.map(String)]} filterValue={filterRegionYear} onFilterChange={setFilterRegionYear}>
                 {regionChartData.length ? (
                   <>
                     <ResponsiveContainer width="100%" height={220}>
@@ -735,7 +746,7 @@ export default function HEMPOverview() {
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 16 }}>
-              <Panel title="PWD Participation" subtitle="Persons with disability representation across programmes">
+              <Panel title="PWD Participation" subtitle="Persons with disability representation across programmes" info="8% representation of persons with disabilities across all HEMP programmes">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Career Exposure", value: Math.round((careerExposurePart * 0.08)), pct: 8 },
@@ -757,7 +768,7 @@ export default function HEMPOverview() {
                 </div>
               </Panel>
 
-              <Panel title="Refugees & Displaced Persons" subtitle="Refugee and displaced person representation across programmes">
+              <Panel title="Refugees & Displaced Persons" subtitle="Refugee and displaced person representation across programmes" info="5% representation of refugees and displaced persons across all HEMP programmes">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Career Exposure", value: Math.round((careerExposurePart * 0.05)), pct: 5 },
@@ -788,7 +799,7 @@ export default function HEMPOverview() {
             <SectionTitle title="Learning & Quality" subtitle="Participant satisfaction and experience" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Satisfaction by Engagement" subtitle="Average scores vs. target of 4.5/5">
+              <Panel title="Satisfaction by Engagement" subtitle="Average scores vs. target of 4.5/5" info="Participant satisfaction ratings by engagement type compared against the target score of 4.5 out of 5">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Career Exposure", value: careerExposureSatAvg },
@@ -806,7 +817,7 @@ export default function HEMPOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Overall Programme Satisfaction" subtitle="Average scores by engagement type">
+              <Panel title="Overall Programme Satisfaction" subtitle="Average scores by engagement type" info="Satisfaction ratings from participants across all engagement types, measured on a scale of 1-5">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Career Exposure", value: careerExposureSatAvg },
@@ -840,7 +851,7 @@ export default function HEMPOverview() {
             <SectionTitle title="Outcomes & Innovation" subtitle="Graduate careers, venture creation, and job placement tracking" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Employment Outcomes" subtitle="Graduate employment status">
+              <Panel title="Employment Outcomes" subtitle="Graduate employment status" info="Employment status of programme graduates including employed, entrepreneurs, pursuing further study, and job seekers">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={empOutcomes} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -853,7 +864,7 @@ export default function HEMPOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Venture & Graduate Trends" subtitle="Graduates and ventures created by year">
+              <Panel title="Venture & Graduate Trends" subtitle="Graduates and ventures created by year" info="Year-on-year comparison of programme graduates and ventures created by alumni">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={outcomesByYear} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%" barGap={2}>
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -869,9 +880,9 @@ export default function HEMPOverview() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: TH_BLUE }} /> Ventures</span>
                 </div>
               </Panel>
-              <Panel title="Job Placements by Sector" subtitle="Post-internship placements across sectors">
+              <Panel title="Job Placements by Organization" subtitle="Post-internship placements across partner organizations" info="Total job placements achieved after internship completion across all partner organizations">
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={jobPlacementsBySector} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  <BarChart data={jobPlacementsByOrganization} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
@@ -882,7 +893,7 @@ export default function HEMPOverview() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Employment Conversion Rate" subtitle="Year-on-year internship to employment conversion">
+              <Panel title="Employment Conversion Rate" subtitle="Year-on-year internship to employment conversion" info="Percentage of interns who secured employment as a result of their internship each year">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={conversionRateByYear} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
@@ -902,12 +913,12 @@ export default function HEMPOverview() {
         {/* ════ ECOSYSTEM & IMPACT ════ */}
         {show("Ecosystem & Impact") && (
           <section style={{ marginBottom: 48 }}>
-            <SectionTitle title="Ecosystem & Impact" subtitle="Partner ecosystem and sectoral reach" />
+            <SectionTitle title="Ecosystem & Impact" subtitle="Partner ecosystem and organizational distribution" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Internship Sector Distribution" subtitle="Portfolio distribution across health sectors">
+              <Panel title="Internship Organization Distribution" subtitle="Portfolio distribution across partner organizations" info="Distribution of internship placements across CHII Internal programmes and external partner organizations (SFH, KASHA, Heza, RCR, mIndora Health)">
                 <DonutRing
-                  data={sectorCounts}
+                  data={organizationCounts}
                   colors={DISTINCT}
                   total={internships.length}
                   totalLabel="Placements"
@@ -915,22 +926,31 @@ export default function HEMPOverview() {
                   legendPercent
                 />
               </Panel>
-              <Panel title="Internship Conversions" subtitle="Sector snapshot">
-                <div style={{ paddingTop: 20 }}>
-                  {sectorCounts.slice(0, 5).map((item, i) => (
-                    <div key={item.name} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                      <span className="w-3 h-2 rounded-sm" style={{ backgroundColor: DISTINCT[i % DISTINCT.length], flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 11, fontWeight: 600, color: "#1F2937", margin: 0 }}>{item.name}</p>
-                        <div style={{ height: 4, borderRadius: 2, backgroundColor: LIGHT_BORDER, marginTop: 4 }}>
-                          <div style={{ height: "100%", borderRadius: 2, width: `${Math.min((item.value / sectorCounts[0]?.value) * 100, 100)}%`, backgroundColor: DISTINCT[i % DISTINCT.length] }} />
-                        </div>
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: BRAND_DK, fontVariantNumeric: "tabular-nums", minWidth: 40, textAlign: "right" }}>
-                        {item.value} placements
-                      </span>
-                    </div>
-                  ))}
+              <Panel title="Internship Placements" subtitle="Students enrolled vs. placements achieved" info="Comparison of total students enrolled and successful job placements achieved by partner organization">
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={organizationCounts.map((org, i) => {
+                    const orgInternships = internships.filter(int => int.organization === org.name);
+                    const totalStudents = orgInternships.reduce((s, int) => s + int.students, 0);
+                    const totalPlacements = orgInternships.reduce((s, int) => s + int.placementsAfterInternship, 0);
+                    const placementRate = totalStudents ? Math.round((totalPlacements / totalStudents) * 100) : 0;
+                    return {
+                      name: org.name,
+                      Students: totalStudents,
+                      Placements: totalPlacements,
+                      "Rate %": placementRate
+                    };
+                  })} margin={{ top: 20, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%" barGap={2}>
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
+                    <Bar dataKey="Students" fill="#A8B5C8" radius={[4, 4, 0, 0]} maxBarSize={20} />
+                    <Bar dataKey="Placements" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={20} />
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-6 text-[11px] text-gray-500 mt-6 pt-4 border-t border-gray-100">
+                  <span className="flex items-center gap-2"><span className="w-4 h-3 rounded-sm inline-block" style={{ backgroundColor: "#A8B5C8" }} /> Enrolled</span>
+                  <span className="flex items-center gap-2"><span className="w-4 h-3 rounded-sm inline-block" style={{ backgroundColor: "#0F6E56" }} /> Placed</span>
                 </div>
               </Panel>
             </div>

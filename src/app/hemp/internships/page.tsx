@@ -2,7 +2,7 @@
 import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
-import { internships, INTERNSHIP_SECTORS } from "@/data/hemp/internships";
+import { internships, INTERNSHIP_ORGANIZATIONS, INTERNSHIP_DEPARTMENTS } from "@/data/hemp/internships";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -135,12 +135,12 @@ export default function HEMPInternships() {
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterYear, setFilterYear] = useState("All Years");
-  const [filterSector, setFilterSector] = useState("All");
-  const [filterPartner, setFilterPartner] = useState("All");
+  const [filterOrganization, setFilterOrganization] = useState("All");
+  const [filterDepartment, setFilterDepartment] = useState("All");
   const [filterCohort, setFilterCohort] = useState("All");
 
   const show = (category: string) => activeCategory === category;
-  const activeFilterCount = [filterYear !== "All Years", filterSector !== "All", filterPartner !== "All", filterCohort !== "All"].filter(Boolean).length;
+  const activeFilterCount = [filterYear !== "All Years", filterOrganization !== "All", filterDepartment !== "All", filterCohort !== "All"].filter(Boolean).length;
 
   const years = Array.from(new Set(internships.map(i => i.year))).sort();
   const cohorts = Array.from(new Set(internships.map(i => {
@@ -151,15 +151,15 @@ export default function HEMPInternships() {
   const filteredInternships = useMemo(() => {
     return internships.filter(i => {
       if (filterYear !== "All Years" && i.year !== parseInt(filterYear)) return false;
-      if (filterSector !== "All" && i.sector !== filterSector) return false;
-      if (filterPartner !== "All" && i.partner !== filterPartner) return false;
+      if (filterOrganization !== "All" && i.organization !== filterOrganization) return false;
+      if (filterDepartment !== "All" && i.department !== filterDepartment) return false;
       if (filterCohort !== "All") {
         const cohortNum = Math.ceil(parseInt(i.id.substring(1)) / 5);
         if (cohortNum !== parseInt(filterCohort)) return false;
       }
       return true;
     });
-  }, [filterYear, filterSector, filterPartner, filterCohort]);
+  }, [filterYear, filterOrganization, filterDepartment, filterCohort]);
 
   const totalStudents = filteredInternships.reduce((s, i) => s + i.students, 0);
   const femaleStudents = filteredInternships.reduce((s, i) => s + i.femaleStudents, 0);
@@ -310,15 +310,15 @@ export default function HEMPInternships() {
               isOpen={filtersOpen}
               onResetFilters={() => {
                 setFilterYear("All Years");
-                setFilterSector("All");
-                setFilterPartner("All");
+                setFilterOrganization("All");
+                setFilterDepartment("All");
                 setFilterCohort("All");
               }}
             >
               {[
                 { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
-                { label: "Sector", value: filterSector, setValue: setFilterSector, options: ["All", ...INTERNSHIP_SECTORS] },
-                { label: "Partner", value: filterPartner, setValue: setFilterPartner, options: ["All", "Internal", "SFH", "WAG", "KASHA"] },
+                { label: "Organization", value: filterOrganization, setValue: setFilterOrganization, options: ["All", ...INTERNSHIP_ORGANIZATIONS] },
+                { label: "Department", value: filterDepartment, setValue: setFilterDepartment, options: ["All", ...INTERNSHIP_DEPARTMENTS] },
                 { label: "Cohort", value: filterCohort, setValue: setFilterCohort, options: ["All", ...cohorts.map(c => `Cohort ${c}`)] },
               ].map(filter => (
                 <div key={filter.label} style={{ marginBottom: 12 }}>
@@ -443,11 +443,11 @@ export default function HEMPInternships() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Placements by Sector" subtitle="Distribution across industries" info="Number of placements across different health sectors" filterOptions={["All Years", ...years.map(String)]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
+              <Panel title="Placements by Organization" subtitle="Distribution across partner organizations" info="Number of placements across different organizations" filterOptions={["All Years", ...years.map(String)]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.sector))).map(s => ({
-                    name: s,
-                    value: filteredInternships.filter(i => i.sector === s).length
+                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).map(o => ({
+                    name: o,
+                    value: filteredInternships.filter(i => i.organization === o).length
                   })).sort((a, b) => b.value - a.value)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -460,22 +460,24 @@ export default function HEMPInternships() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Sector Performance" subtitle="Student placement and outcomes by sector" info="Employment conversion rate by sector">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.sector))).map(s => {
-                    const sectorInternships = filteredInternships.filter(i => i.sector === s);
-                    const totalStud = sectorInternships.reduce((s, i) => s + i.students, 0);
-                    const conversions = sectorInternships.reduce((s, i) => s + i.employmentConversions, 0);
-                    return { name: s, conversion: totalStud ? Math.round((conversions / totalStud) * 100) : 0 };
-                  }).sort((a, b) => b.conversion - a.conversion)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="conversion" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Conversion %">
-                      <LabelList dataKey="conversion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
+              <Panel title="Departments by Organization" subtitle="Department distribution across partner organizations" info="Number of internship placements by department within each organization">
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
+                    const orgInternships = filteredInternships.filter(i => i.organization === o);
+                    const deptCounts: Record<string, number> = {};
+                    orgInternships.forEach(i => {
+                      deptCounts[i.department] = (deptCounts[i.department] || 0) + 1;
+                    });
+                    return { organization: o, ...deptCounts };
+                  })} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 120 }} barCategoryGap="12%">
+                    <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="organization" type="category" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
+                    <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
+                    {Array.from(new Set(filteredInternships.map(i => i.department))).map((dept, idx) => (
+                      <Bar key={dept} dataKey={dept} stackId="a" fill={BRAND_DK} opacity={0.6 + (idx * 0.05)} radius={idx === Array.from(new Set(filteredInternships.map(i => i.department))).length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0]} />
+                    ))}
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
