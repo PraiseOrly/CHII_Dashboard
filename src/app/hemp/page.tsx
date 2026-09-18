@@ -326,6 +326,13 @@ export default function HEMPOverview() {
 
   const [filterReachYear, setFilterReachYear] = useState("All Years");
   const [filterRegionYear, setFilterRegionYear] = useState("All Years");
+  const [filterRegions, setFilterRegions] = useState<Record<string, boolean>>({
+    "North Africa": true,
+    "Central Africa": true,
+    "East Africa": false,
+    "West Africa": false,
+    "Southern Africa": false,
+  });
 
   const geoCountryData = useMemo(() => {
     const counts = REACH_RECORDS
@@ -344,14 +351,16 @@ export default function HEMPOverview() {
       .filter(r => filterRegionYear === "All Years" || String(r.year) === filterRegionYear)
       .forEach(r => {
         const reg = COUNTRY_REGION[r.country] || "Other";
-        reach[reg] = (reach[reg] || 0) + r.reach;
-        female[reg] = (female[reg] || 0) + r.female;
-        (countries[reg] = countries[reg] || new Set()).add(r.country);
+        if (filterRegions[reg] !== false) {
+          reach[reg] = (reach[reg] || 0) + r.reach;
+          female[reg] = (female[reg] || 0) + r.female;
+          (countries[reg] = countries[reg] || new Set()).add(r.country);
+        }
       });
     return Object.keys(reach)
       .map(reg => ({ name: reg, value: reach[reg], countries: countries[reg].size, female: female[reg] }))
       .sort((a, b) => b.value - a.value);
-  }, [filterRegionYear]);
+  }, [filterRegionYear, filterRegions]);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: LIGHT_BG }}>
@@ -696,7 +705,65 @@ export default function HEMPOverview() {
                 </div>
               </Panel>
 
-              <Panel title="Reach by Region" subtitle="Participants by African region" info="Distribution of programme participants across African regions with year-on-year filtering capability" filterOptions={["All Years", ...GEO_YEARS.map(String)]} filterValue={filterRegionYear} onFilterChange={setFilterRegionYear}>
+              <Panel
+                title="Reach by Region"
+                subtitle="Participants by African region"
+                info="Distribution of programme participants across African regions with year-on-year filtering capability"
+                filterValue={`${filterRegionYear}`}
+                onFilterChange={(v) => {
+                  if (v === "reset") {
+                    setFilterRegionYear("All Years");
+                    setFilterRegions({ "North Africa": true, "Central Africa": true, "East Africa": false, "West Africa": false, "Southern Africa": false });
+                  }
+                }}
+                filterContent={
+                  <div style={{ marginBottom: -6 }}>
+                    <div style={{ marginBottom: 12 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>Year</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {["All Years", ...GEO_YEARS.map(String)].map(opt => {
+                          const isSelected = filterRegionYear === opt;
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => setFilterRegionYear(opt)}
+                              style={{
+                                fontSize: 10,
+                                fontWeight: isSelected ? 700 : 500,
+                                padding: "5px 10px",
+                                borderRadius: 6,
+                                border: `1px solid ${isSelected ? BRAND : LIGHT_BORDER}`,
+                                backgroundColor: isSelected ? BRAND : "white",
+                                color: isSelected ? "white" : BRAND_DK,
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                              }}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>Regions</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {Object.keys(filterRegions).map(region => (
+                          <label key={region} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 10 }}>
+                            <input
+                              type="checkbox"
+                              checked={filterRegions[region] !== false}
+                              onChange={(e) => setFilterRegions({ ...filterRegions, [region]: e.target.checked })}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <span style={{ color: BRAND_DK, fontWeight: 500 }}>{region}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                }
+              >
                 {regionChartData.length ? (
                   <>
                     <ResponsiveContainer width="100%" height={220}>
