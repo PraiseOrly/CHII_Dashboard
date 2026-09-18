@@ -71,6 +71,9 @@ export interface SieCohort {
   npsPromoters: number;       // % scoring 9-10
   npsPassives: number;        // % scoring 7-8
   npsDetractors: number;      // % scoring 0-6
+  /** Diversity Metrics */
+  pwd: number;                // Number of participants with disabilities
+  idpRefugees: number;        // Number of IDP/Refugee participants
 }
 
 export const sieCohorts: SieCohort[] = [
@@ -88,6 +91,7 @@ export const sieCohorts: SieCohort[] = [
     employmentLeads: 6, projectsAdopted: 2, satisfaction: 4.2,
     relevance: 4.0, quality: 4.1, usefulness: 3.9, confidence: 4.0, nps: 7.8, completionFullProgramme: 79,
     careerClarityPct: 74, npsPromoters: 47, npsPassives: 42, npsDetractors: 11,
+    pwd: 2, idpRefugees: 1,
   },
   {
     id: "SIE02", name: "SIE Cohort II", year: 2025, country: "Rwanda",
@@ -103,21 +107,7 @@ export const sieCohorts: SieCohort[] = [
     employmentLeads: 11, projectsAdopted: 4, satisfaction: 4.5,
     relevance: 4.3, quality: 4.4, usefulness: 4.2, confidence: 4.3, nps: 8.1, completionFullProgramme: 84,
     careerClarityPct: 81, npsPromoters: 56, npsPassives: 38, npsDetractors: 6,
-  },
-  {
-    id: "SIE03", name: "SIE Cohort III — Kenya", year: 2026, country: "Kenya",
-    applied: 132, selected: 40, completedVirtual: 38, travelledInCountry: 36, completedProgramme: 35,
-    female: 20,
-    siteVisits: 12, partnerOrgs: 10, partnerProjects: 11, reflectionSessions: 16,
-    exposure: { "Health System Function": 4.6, "Innovation in Practice": 4.5, "Employment Pathways": 4.3 },
-    disciplines: {
-      "Business & Entrepreneurship": 11, "Computer Science": 8, "Engineering": 5,
-      "Social Sciences": 6, "Public Policy": 5, "Data Science": 5,
-    },
-    hours: { "Virtual Phase": 48, "In-Country Immersion": 80 },
-    employmentLeads: 17, projectsAdopted: 6, satisfaction: 4.7,
-    relevance: 4.5, quality: 4.6, usefulness: 4.4, confidence: 4.5, nps: 8.4, completionFullProgramme: 88,
-    careerClarityPct: 86, npsPromoters: 63, npsPassives: 31, npsDetractors: 6,
+    pwd: 3, idpRefugees: 2,
   },
 ];
 
@@ -152,17 +142,4 @@ export const sieSiteVisits: SieSiteVisit[] = [
   { id: "SV13", cohortId: "SIE02", host: "Ministry of Health Rwanda",   hostType: "Regulator / Ministry", year: 2025, country: "Rwanda", students: 24, focus: "Employment Pathways",    insightScore: 4.2 },
   { id: "SV14", cohortId: "SIE02", host: "Kigali Health Institute",     hostType: "Research Institute",   year: 2025, country: "Rwanda", students: 26, focus: "Health System Function", insightScore: 4.1 },
   { id: "SV15", cohortId: "SIE02", host: "Insightiv AI",                hostType: "Health Startup",       year: 2025, country: "Rwanda", students: 27, focus: "Innovation in Practice", insightScore: 4.6 },
-
-  { id: "SV16", cohortId: "SIE03", host: "Kenyatta National Hospital",  hostType: "Referral Hospital",    year: 2026, country: "Kenya", students: 36, focus: "Health System Function", insightScore: 4.6 },
-  { id: "SV17", cohortId: "SIE03", host: "Ministry of Health Kenya",    hostType: "Regulator / Ministry", year: 2026, country: "Kenya", students: 35, focus: "Health System Function", insightScore: 4.4 },
-  { id: "SV18", cohortId: "SIE03", host: "M-TIBA / CarePay",            hostType: "Health Startup",       year: 2026, country: "Kenya", students: 36, focus: "Innovation in Practice", insightScore: 4.8 },
-  { id: "SV19", cohortId: "SIE03", host: "Ilara Health",                hostType: "Health Startup",       year: 2026, country: "Kenya", students: 34, focus: "Innovation in Practice", insightScore: 4.7 },
-  { id: "SV20", cohortId: "SIE03", host: "KEMRI",                       hostType: "Research Institute",   year: 2026, country: "Kenya", students: 35, focus: "Health System Function", insightScore: 4.5 },
-  { id: "SV21", cohortId: "SIE03", host: "Pharmaceutical Society KE",   hostType: "Regulator / Ministry", year: 2026, country: "Kenya", students: 33, focus: "Employment Pathways",    insightScore: 4.2 },
-  { id: "SV22", cohortId: "SIE03", host: "Revital Healthcare",          hostType: "Health Manufacturer",  year: 2026, country: "Kenya", students: 34, focus: "Employment Pathways",    insightScore: 4.4 },
-  { id: "SV23", cohortId: "SIE03", host: "Access Afya",                 hostType: "Health Startup",       year: 2026, country: "Kenya", students: 35, focus: "Innovation in Practice", insightScore: 4.6 },
-  { id: "SV24", cohortId: "SIE03", host: "Aga Khan University Hospital",hostType: "Referral Hospital",    year: 2026, country: "Kenya", students: 36, focus: "Health System Function", insightScore: 4.5 },
-  { id: "SV25", cohortId: "SIE03", host: "Amref Health Africa",         hostType: "Research Institute",   year: 2026, country: "Kenya", students: 34, focus: "Employment Pathways",    insightScore: 4.3 },
-  { id: "SV26", cohortId: "SIE03", host: "Jacaranda Health",            hostType: "Health Startup",       year: 2026, country: "Kenya", students: 35, focus: "Innovation in Practice", insightScore: 4.7 },
-  { id: "SV27", cohortId: "SIE03", host: "Kenya Medical Supplies Auth.",hostType: "Regulator / Ministry", year: 2026, country: "Kenya", students: 32, focus: "Health System Function", insightScore: 4.1 },
 ];

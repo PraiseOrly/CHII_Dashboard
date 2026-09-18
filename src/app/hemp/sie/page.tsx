@@ -589,21 +589,23 @@ export default function HEMPSie() {
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Participants by Discipline" subtitle="Academic background distribution" info="Number of participants from each academic discipline">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={SIE_DISCIPLINES.map(disc => ({
-                    name: disc,
-                    count: filteredCohorts.length ? filteredCohorts.reduce((s, c) => s + c.disciplines[disc], 0) : 0,
-                  })).sort((a, b) => b.count - a.count)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="count" fill={BRAND} barSize={40} radius={[4, 4, 0, 0]} name="Participants">
-                      <LabelList dataKey="count" position="top" fontSize={10} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={SIE_DISCIPLINES.map(disc => ({
+                      name: disc,
+                      count: filteredCohorts.length ? filteredCohorts.reduce((s, c) => s + c.disciplines[disc], 0) : 0,
+                    })).sort((a, b) => b.count - a.count)} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 120 }} barCategoryGap="12%">
+                      <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 9, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      <Bar dataKey="count" fill={BRAND} radius={[0, 4, 4, 0]} name="Participants">
+                        <LabelList dataKey="count" position="right" offset={5} fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </Panel>
               <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort">
                 <ResponsiveContainer width="100%" height={250}>
@@ -615,6 +617,40 @@ export default function HEMPSie() {
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
                     <Line type="monotone" dataKey="satisfaction" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
                   </LineChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Persons with Disabilities (PWD)" subtitle="PWD participant distribution across cohorts" info="Number of participants identifying as persons with disabilities">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    pwd: c.pwd,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="pwd" fill="#1D9E75" barSize={46} radius={[4, 4, 0, 0]} name="PWD">
+                      <LabelList dataKey="pwd" position="top" fontSize={11} fill="#085041" fontWeight={700} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="IDP & Refugees" subtitle="IDP/Refugee participant distribution across cohorts" info="Number of internally displaced persons and refugees">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    idp: c.idpRefugees,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="idp" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="IDP/Refugees">
+                      <LabelList dataKey="idp" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </Panel>
             </div>
@@ -706,23 +742,25 @@ export default function HEMPSie() {
                   </div>
                 }
               >
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={[
-                    { stage: "Selected", participants: funnelFilteredCohorts.reduce((s, c) => s + c.selected, 0) },
-                    { stage: "Completed Virtual", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedVirtual, 0) },
-                    { stage: "Travelled In-Country", participants: funnelFilteredCohorts.reduce((s, c) => s + c.travelledInCountry, 0) },
-                    { stage: "Full Completion", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedProgramme, 0) },
-                  ]} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="stage" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="participants" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Participants">
-                      <LabelList dataKey="participants" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={[
+                      { stage: "Selected", participants: funnelFilteredCohorts.reduce((s, c) => s + c.selected, 0) },
+                      { stage: "Completed Virtual", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedVirtual, 0) },
+                      { stage: "Travelled In-Country", participants: funnelFilteredCohorts.reduce((s, c) => s + c.travelledInCountry, 0) },
+                      { stage: "Full Completion", participants: funnelFilteredCohorts.reduce((s, c) => s + c.completedProgramme, 0) },
+                    ]} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 130 }} barCategoryGap="12%">
+                      <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="stage" type="category" width={120} tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      <Bar dataKey="participants" fill={BRAND} radius={[0, 4, 4, 0]} name="Participants">
+                        <LabelList dataKey="participants" position="right" offset={5} fontSize={11} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </Panel>
               <Panel title="Quality Ratings" subtitle="Programme content assessment (1-5 scale)" info="Average ratings for relevance, quality, and usefulness">
                 <ResponsiveContainer width="100%" height={250}>
