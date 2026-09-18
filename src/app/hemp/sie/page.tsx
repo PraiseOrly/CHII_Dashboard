@@ -161,7 +161,7 @@ function Panel({ title, subtitle, info, children, filterOptions, filterValue, on
 }
 
 export default function HEMPSie() {
-  const categories = ["Programme Reach", "Exposure & Outcomes", "Geography & Engagement", "Participant Profile", "Quality & Feedback"];
+  const categories = ["Programme Reach", "Exposure & Outcomes", "Geography & Engagement", "Participant Profile", "Quality & Feedback", "Performance Tracking"];
   const [activeCategory, setActiveCategory] = useState(categories[0]);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -516,6 +516,40 @@ export default function HEMPSie() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
+              <Panel title="Employment & Internship Placements" subtitle="Post-SIE employment and internship outcomes" info="Number of participants securing employment or internship positions after SIE completion">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    employment: c.employmentPlacements,
+                    internship: c.internshipPlacements,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="employment" fill="#1D9E75" barSize={30} name="Employment" />
+                    <Bar dataKey="internship" fill="#479BD6" barSize={30} name="Internship" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Placement Conversion Rate" subtitle="% of participants securing placements" info="Percentage of SIE participants who secured employment or internship placements post-programme">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    rate: c.placementConversionRate,
+                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="rate" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="Conversion Rate %">
+                      <LabelList dataKey="rate" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} formatter={(v: any) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
             </div>
           </section>
         )}
@@ -847,6 +881,61 @@ export default function HEMPSie() {
                     <Bar dataKey="Passives" stackId="a" fill="#7F77DD" radius={[0, 0, 0, 0]} maxBarSize={36} />
                     <Bar dataKey="Detractors" stackId="a" fill="#D45F2C" radius={[0, 4, 4, 0]} maxBarSize={36} />
                   </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+            </div>
+          </section>
+        )}
+
+        {show("Performance Tracking") && (
+          <section style={{ marginBottom: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                    Performance Tracking
+                  </p>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>SIE programme performance metrics and achievement</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Overall Performance Score" subtitle="Aggregate programme performance by cohort (0-100)" info="Combined performance metric reflecting overall SIE programme quality and delivery">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={filteredCohorts.map(c => ({
+                    name: c.name.substring(0, 18),
+                    score: c.overallPerformanceScore,
+                  }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="score" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="Performance Score">
+                      <LabelList dataKey="score" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: any) => `${v}%`} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Panel>
+              <Panel title="Performance Trend" subtitle="Programme performance progression over time" info="Trend showing how SIE programme performance has evolved across all cohorts">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={filteredCohorts.map(c => ({
+                    name: String(c.year),
+                    overall: c.overallPerformanceScore,
+                    learning: c.learningOutcomesScore,
+                    target: c.targetAchievementRate,
+                  }))} margin={{ top: 24, right: 14, bottom: 0, left: -12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTip />} formatter={(v) => `${v}%`} />
+                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
+                    <Line type="monotone" dataKey="overall" stroke="#185FA5" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Overall Performance" />
+                    <Line type="monotone" dataKey="learning" stroke="#1D9E75" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Learning Outcomes" />
+                    <Line type="monotone" dataKey="target" stroke="#0F6E56" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Target Achievement" />
+                  </LineChart>
                 </ResponsiveContainer>
               </Panel>
             </div>

@@ -74,6 +74,15 @@ export interface SieCohort {
   /** Diversity Metrics */
   pwd: number;                // Number of participants with disabilities
   idpRefugees: number;        // Number of IDP/Refugee participants
+  /** Employment & Internship Placements (post-SIE outcomes) */
+  employmentPlacements: number;    // Number securing employment post-SIE
+  internshipPlacements: number;    // Number securing internships post-SIE
+  placementConversionRate: number; // % of participants securing placements
+  /** SIE Performance Tracking */
+  overallPerformanceScore: number; // Overall programme performance (0-100)
+  learningOutcomesScore: number;   // Average learning outcomes achievement (0-100)
+  participantEngagement: number;   // Engagement level (0-100)
+  targetAchievementRate: number;   // % of programme targets achieved
 }
 
 export const sieCohorts: SieCohort[] = [
@@ -92,6 +101,8 @@ export const sieCohorts: SieCohort[] = [
     relevance: 4.0, quality: 4.1, usefulness: 3.9, confidence: 4.0, nps: 7.8, completionFullProgramme: 79,
     careerClarityPct: 74, npsPromoters: 47, npsPassives: 42, npsDetractors: 11,
     pwd: 2, idpRefugees: 1,
+    employmentPlacements: 5, internshipPlacements: 8, placementConversionRate: 68,
+    overallPerformanceScore: 78, learningOutcomesScore: 82, participantEngagement: 75, targetAchievementRate: 85,
   },
   {
     id: "SIE02", name: "SIE Cohort II", year: 2025, country: "Rwanda",
@@ -108,6 +119,8 @@ export const sieCohorts: SieCohort[] = [
     relevance: 4.3, quality: 4.4, usefulness: 4.2, confidence: 4.3, nps: 8.1, completionFullProgramme: 84,
     careerClarityPct: 81, npsPromoters: 56, npsPassives: 38, npsDetractors: 6,
     pwd: 3, idpRefugees: 2,
+    employmentPlacements: 9, internshipPlacements: 14, placementConversionRate: 76,
+    overallPerformanceScore: 86, learningOutcomesScore: 89, participantEngagement: 84, targetAchievementRate: 92,
   },
 ];
 
