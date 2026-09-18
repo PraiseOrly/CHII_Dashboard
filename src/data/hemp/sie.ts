@@ -36,6 +36,7 @@ export interface SieCohort {
   name: string;
   year: number;
   country: string;
+  region?: "East Africa" | "West Africa" | "Southern Africa" | "Central Africa";
   /** Recruitment / participation funnel */
   applied: number;
   selected: number;
@@ -87,7 +88,7 @@ export interface SieCohort {
 
 export const sieCohorts: SieCohort[] = [
   {
-    id: "SIE01", name: "SIE Pilot Cohort", year: 2024, country: "Rwanda",
+    id: "SIE01", name: "SIE Pilot Cohort", year: 2024, country: "Rwanda", region: "East Africa",
     applied: 64, selected: 24, completedVirtual: 22, travelledInCountry: 20, completedProgramme: 19,
     female: 11,
     siteVisits: 6, partnerOrgs: 5, partnerProjects: 5, reflectionSessions: 8,
@@ -105,7 +106,7 @@ export const sieCohorts: SieCohort[] = [
     overallPerformanceScore: 78, learningOutcomesScore: 82, participantEngagement: 75, targetAchievementRate: 85,
   },
   {
-    id: "SIE02", name: "SIE Cohort II", year: 2025, country: "Rwanda",
+    id: "SIE02", name: "SIE Cohort II", year: 2025, country: "Rwanda", region: "East Africa",
     applied: 98, selected: 32, completedVirtual: 30, travelledInCountry: 28, completedProgramme: 27,
     female: 15,
     siteVisits: 9, partnerOrgs: 7, partnerProjects: 8, reflectionSessions: 12,
@@ -121,6 +122,42 @@ export const sieCohorts: SieCohort[] = [
     pwd: 3, idpRefugees: 2,
     employmentPlacements: 9, internshipPlacements: 14, placementConversionRate: 76,
     overallPerformanceScore: 86, learningOutcomesScore: 89, participantEngagement: 84, targetAchievementRate: 92,
+  },
+  {
+    id: "SIE03", name: "SIE Cohort III - Kenya", year: 2024, country: "Kenya", region: "East Africa",
+    applied: 75, selected: 28, completedVirtual: 26, travelledInCountry: 24, completedProgramme: 22,
+    female: 13,
+    siteVisits: 7, partnerOrgs: 6, partnerProjects: 6, reflectionSessions: 10,
+    exposure: { "Health System Function": 4.2, "Innovation in Practice": 4.1, "Employment Pathways": 3.9 },
+    disciplines: {
+      "Business & Entrepreneurship": 8, "Computer Science": 5, "Engineering": 4,
+      "Social Sciences": 5, "Public Policy": 3, "Data Science": 3,
+    },
+    hours: { "Virtual Phase": 36, "In-Country Immersion": 66 },
+    employmentLeads: 7, projectsAdopted: 3, satisfaction: 4.3,
+    relevance: 4.1, quality: 4.2, usefulness: 4.0, confidence: 4.1, nps: 8.0, completionFullProgramme: 81,
+    careerClarityPct: 77, npsPromoters: 50, npsPassives: 40, npsDetractors: 10,
+    pwd: 2, idpRefugees: 1,
+    employmentPlacements: 6, internshipPlacements: 10, placementConversionRate: 72,
+    overallPerformanceScore: 82, learningOutcomesScore: 85, participantEngagement: 80, targetAchievementRate: 88,
+  },
+  {
+    id: "SIE04", name: "SIE Cohort IV - Ghana", year: 2025, country: "Ghana", region: "West Africa",
+    applied: 82, selected: 30, completedVirtual: 28, travelledInCountry: 26, completedProgramme: 24,
+    female: 14,
+    siteVisits: 8, partnerOrgs: 6, partnerProjects: 7, reflectionSessions: 11,
+    exposure: { "Health System Function": 4.3, "Innovation in Practice": 4.2, "Employment Pathways": 4.0 },
+    disciplines: {
+      "Business & Entrepreneurship": 9, "Computer Science": 5, "Engineering": 4,
+      "Social Sciences": 6, "Public Policy": 3, "Data Science": 3,
+    },
+    hours: { "Virtual Phase": 38, "In-Country Immersion": 70 },
+    employmentLeads: 8, projectsAdopted: 3, satisfaction: 4.4,
+    relevance: 4.2, quality: 4.3, usefulness: 4.1, confidence: 4.2, nps: 8.2, completionFullProgramme: 83,
+    careerClarityPct: 79, npsPromoters: 52, npsPassives: 39, npsDetractors: 9,
+    pwd: 2, idpRefugees: 2,
+    employmentPlacements: 7, internshipPlacements: 11, placementConversionRate: 75,
+    overallPerformanceScore: 84, learningOutcomesScore: 87, participantEngagement: 82, targetAchievementRate: 90,
   },
 ];
 

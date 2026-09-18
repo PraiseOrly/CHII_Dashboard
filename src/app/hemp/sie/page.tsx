@@ -167,20 +167,23 @@ export default function HEMPSie() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterYear, setFilterYear] = useState("All Years");
   const [filterCountry, setFilterCountry] = useState("All Countries");
+  const [filterRegion, setFilterRegion] = useState("All Regions");
 
   const show = (category: string) => activeCategory === category;
-  const activeFilterCount = [filterYear !== "All Years", filterCountry !== "All Countries"].filter(Boolean).length;
+  const activeFilterCount = [filterYear !== "All Years", filterCountry !== "All Countries", filterRegion !== "All Regions"].filter(Boolean).length;
 
   const years = Array.from(new Set(sieCohorts.map(i => i.year))).sort();
   const countries = Array.from(new Set(sieCohorts.map(i => i.country))).sort();
+  const regions = Array.from(new Set(sieCohorts.map(i => i.region).filter(Boolean))).sort() as string[];
 
   const filteredCohorts = useMemo(() => {
     return sieCohorts.filter(c => {
       if (filterYear !== "All Years" && c.year !== parseInt(filterYear)) return false;
       if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
       return true;
     });
-  }, [filterYear, filterCountry]);
+  }, [filterYear, filterCountry, filterRegion]);
 
   const totalSelected = filteredCohorts.reduce((s, c) => s + c.selected, 0);
   const totalCompleted = filteredCohorts.reduce((s, c) => s + c.completedProgramme, 0);
@@ -351,10 +354,12 @@ export default function HEMPSie() {
               onResetFilters={() => {
                 setFilterYear("All Years");
                 setFilterCountry("All Countries");
+                setFilterRegion("All Regions");
               }}
             >
               {[
                 { label: "Year", value: filterYear, setValue: setFilterYear, options: ["All Years", ...years.map(String)] },
+                { label: "Region", value: filterRegion, setValue: setFilterRegion, options: ["All Regions", ...regions] },
                 { label: "Country", value: filterCountry, setValue: setFilterCountry, options: ["All Countries", ...countries] },
               ].map(filter => (
                 <div key={filter.label} style={{ marginBottom: 12 }}>
@@ -539,12 +544,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="score" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Exposure Score">
                       <LabelList dataKey="score" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Exposure Score</span>
+                </div>
               </Panel>
               <Panel title="Employment & Project Outcomes" subtitle="Career opportunities and innovation adoption" info="Employment leads and partner projects adopted by host organisations">
                 <ResponsiveContainer width="100%" height={250}>
@@ -556,12 +563,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Employment & Internship Placements" subtitle="Post-SIE employment and internship outcomes" info="Number of participants securing employment or internship positions after SIE completion">
                 <ResponsiveContainer width="100%" height={250}>
@@ -574,11 +583,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="employment" fill="#1D9E75" barSize={30} name="Employment" />
                     <Bar dataKey="internship" fill="#479BD6" barSize={30} name="Internship" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Employment</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Internship</span>
+                </div>
               </Panel>
               <Panel title="Placement Conversion Rate" subtitle="% of participants securing placements" info="Percentage of SIE participants who secured employment or internship placements post-programme">
                 <ResponsiveContainer width="100%" height={250}>
@@ -590,12 +602,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="rate" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="Conversion Rate %">
                       <LabelList dataKey="rate" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} formatter={(v: any) => `${v}%`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> Conversion Rate %</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -616,7 +630,7 @@ export default function HEMPSie() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Participants by Country" subtitle="Geographic distribution of cohorts" info="Total participants per implementation country" filterOptions={["All Years", ...years.map(String)]} filterValue={filterGeoYear} onFilterChange={setFilterGeoYear}>
+              <Panel title="Participants by Country" subtitle="Geographic distribution across African regions" info="Total participants per implementation country and region" filterOptions={["All Regions", ...regions]} filterValue={filterRegion} onFilterChange={setFilterRegion}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={countries.map(c => ({
                     name: c,
@@ -626,12 +640,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Participants">
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Participants</span>
+                </div>
               </Panel>
               <Panel title="Partner Engagement" subtitle="Number of partner organizations per cohort" info="Host organizations and site visits across cohorts">
                 <ResponsiveContainer width="100%" height={250}>
@@ -644,11 +660,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="orgs" fill={BRAND} barSize={30} name="Partner Orgs" />
                     <Bar dataKey="visits" fill="#7FA5D6" barSize={30} name="Site Visits" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Partner Orgs</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Site Visits</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -770,12 +789,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="rating" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]} name="Rating">
                       <LabelList dataKey="rating" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Rating</span>
+                </div>
               </Panel>
               <Panel title="Skill Confidence & NPS" subtitle="Learning confidence and recommendation likelihood" info="5-point confidence scale and 0-10 Net Promoter Score">
                 <ResponsiveContainer width="100%" height={250}>
@@ -787,12 +808,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Score">
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: number) => v.toFixed(1)} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Score</span>
+                </div>
               </Panel>
               <Panel title="Full Programme Completion Rate" subtitle="% who completed both virtual and in-person phases" info="Participants who successfully completed the full immersion experience">
                 <ResponsiveContainer width="100%" height={250}>
@@ -804,12 +827,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="completion" fill="#A8BFD6" barSize={46} radius={[4, 4, 0, 0]} name="Completion %">
                       <LabelList dataKey="completion" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: any) => `${v}%`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A8BFD6" }} /> Completion %</span>
+                </div>
               </Panel>
               <Panel title="Career Direction Clarity" subtitle="% who gained clarity on career direction" info="Percentage of participants who reported having clear direction for next career steps">
                 <ResponsiveContainer width="100%" height={250}>
@@ -826,6 +851,9 @@ export default function HEMPSie() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Clarity %</span>
+                </div>
               </Panel>
               <Panel title="NPS Distribution" subtitle="Promoters, Passives, Detractors breakdown" info="Net Promoter Score distribution across participant response categories (Promoters: 9-10, Passives: 7-8, Detractors: 0-6)">
                 <ResponsiveContainer width="100%" height={250}>
@@ -839,12 +867,16 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="Promoters" stackId="a" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={36} />
                     <Bar dataKey="Passives" stackId="a" fill="#7F77DD" radius={[0, 0, 0, 0]} maxBarSize={36} />
                     <Bar dataKey="Detractors" stackId="a" fill="#D45F2C" radius={[0, 4, 4, 0]} maxBarSize={36} />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#0F6E56" }} /> Promoters</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7F77DD" }} /> Passives</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#D45F2C" }} /> Detractors</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -875,12 +907,14 @@ export default function HEMPSie() {
                     <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 100]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="score" fill="#185FA5" barSize={46} radius={[4, 4, 0, 0]} name="Performance Score">
                       <LabelList dataKey="score" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: any) => `${v}%`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> Performance Score</span>
+                </div>
               </Panel>
               <Panel title="Performance Trend" subtitle="Programme performance progression over time" info="Trend showing how SIE programme performance has evolved across all cohorts">
                 <ResponsiveContainer width="100%" height={250}>
