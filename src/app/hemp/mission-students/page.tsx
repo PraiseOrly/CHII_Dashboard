@@ -389,43 +389,49 @@ export default function MissionStudentsPage() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Female Participation Trend" subtitle="Gender diversity over time" info="Female student participation trend across years">
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={years.map(y => ({ year: String(y), female: missionStudents.filter(s => s.cohort === y && s.gender === "Female").length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  <BarChart data={years.map(y => ({ year: String(y), female: missionStudents.filter(s => s.cohort === y && s.gender === "Female").length }))} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="female" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Female Students">
                       <LabelList dataKey="female" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Female Students</span>
+                </div>
               </Panel>
               <Panel title="Internship Participation" subtitle="Students engaged in internships" info="Percentage of students with internship experience">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "With Internship", value: filteredStudents.filter(s => s.hasInternship).length },
                     { name: "No Internship", value: filteredStudents.filter(s => !s.hasInternship).length },
-                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  ]} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Count</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -458,12 +464,14 @@ export default function MissionStudentsPage() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Employment by Track" subtitle="Career placement rate by study programme" info="Percentage employed for each study track">
                 <ResponsiveContainer width="100%" height={250}>
@@ -474,17 +482,19 @@ export default function MissionStudentsPage() {
                       name: track,
                       rate: trackCompleted.length ? Math.round((trackEmployed.length / trackCompleted.length) * 100) : 0
                     };
-                  }).sort((a, b) => b.rate - a.rate)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  }).sort((a, b) => b.rate - a.rate)} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="rate" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Employment %">
                       <LabelList dataKey="rate" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Employment %</span>
+                </div>
               </Panel>
               <Panel title="Employment Trend" subtitle="Career outcomes over time" info="Employment outcomes by cohort year">
                 <ResponsiveContainer width="100%" height={250}>
@@ -495,17 +505,19 @@ export default function MissionStudentsPage() {
                       year: String(y),
                       employed: yearCompleted.length ? Math.round((yearEmployed.length / yearCompleted.length) * 100) : 0
                     };
-                  })} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  })} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="employed" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Employment %">
                       <LabelList dataKey="employed" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Employment %</span>
+                </div>
               </Panel>
               <Panel title="Internship Impact" subtitle="Career outcomes with internship experience" info="Employment rate comparison for students with and without internship">
                 <ResponsiveContainer width="100%" height={250}>
@@ -524,17 +536,19 @@ export default function MissionStudentsPage() {
                         return noIntern.length ? Math.round((noIntern.filter(s => s.employment === "Employed").length / noIntern.length) * 100) : 0;
                       })()
                     },
-                  ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  ]} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Count</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -565,29 +579,33 @@ export default function MissionStudentsPage() {
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="ventures" fill={BRAND} barSize={46} radius={[4, 4, 0, 0]} name="Ventures Created">
                       <LabelList dataKey="ventures" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Ventures Created</span>
+                </div>
               </Panel>
               <Panel title="Venture Creation by Track" subtitle="Entrepreneurship outcomes by study programme" info="Number of ventures created per study track">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={STUDENT_TRACKS.map(track => ({
                     name: track,
                     value: filteredStudents.filter(s => s.track === track && s.ventureCreated).length
-                  })).sort((a, b) => b.value - a.value)} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  })).sort((a, b) => b.value - a.value)} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Venture Creation Rate" subtitle="Percentage of completed students creating ventures" info="Entrepreneur ratio among completed cohorts">
                 <ResponsiveContainer width="100%" height={250}>

@@ -796,11 +796,14 @@ export default function HEMPOverview() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="learning" fill="#1D9E75" barSize={20} name="Learning Outcomes" />
                     <Bar dataKey="relevance" fill="#479BD6" barSize={20} name="Relevance" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Learning Outcomes</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Relevance</span>
+                </div>
               </Panel>
               <Panel title="Programme Quality & Satisfaction" subtitle="Quality ratings vs. satisfaction (1-5 scale)" info="Programme quality assessment and overall participant satisfaction compared to 4.5/5 target">
                 <ResponsiveContainer width="100%" height={250}>
@@ -814,11 +817,14 @@ export default function HEMPOverview() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="quality" fill="#185FA5" barSize={20} name="Quality" />
                     <Bar dataKey="satisfaction" fill="#F59E0B" barSize={20} name="Satisfaction" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> Quality</span>
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#F59E0B" }} /> Satisfaction</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -837,12 +843,14 @@ export default function HEMPOverview() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill={BRAND} radius={[4, 4, 0, 0]} maxBarSize={46} name="Count">
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Venture & Graduate Trends" subtitle="Graduates and ventures created by year" info="Year-on-year comparison of programme graduates and ventures created by alumni">
                 <ResponsiveContainer width="100%" height={250}>
@@ -867,12 +875,14 @@ export default function HEMPOverview() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={46} name="Placements">
                       <LabelList dataKey="value" position="top" fontSize={11} fill="#085041" fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#0F6E56" }} /> Placements</span>
+                </div>
               </Panel>
               <Panel title="Employment Conversion Rate" subtitle="Year-on-year internship to employment conversion" info="Percentage of interns who secured employment as a result of their internship each year">
                 <ResponsiveContainer width="100%" height={250}>
@@ -881,12 +891,14 @@ export default function HEMPOverview() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} label={{ value: "%", angle: -90, position: "insideLeft", style: { fontSize: 10, fill: "#9CA3AF" } }} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="Conversion Rate %" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={46} name="Conversion Rate">
                       <LabelList dataKey="Conversion Rate %" position="top" fontSize={11} fill="#14306B" fontWeight={700} formatter={(v: number) => `${v}%`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Conversion Rate</span>
+                </div>
               </Panel>
             </div>
           </section>

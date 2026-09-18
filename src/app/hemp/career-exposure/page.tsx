@@ -381,6 +381,9 @@ export default function HEMPCareerExposure() {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+                  <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
+                  </div>
                 </div>
               </Panel>
               <Panel title="Gender Breakdown" subtitle="Female and male participation" info="Percentage of female vs male participants">
@@ -393,26 +396,30 @@ export default function HEMPCareerExposure() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Count</span>
+                </div>
               </Panel>
               <Panel title="Sessions per Year" subtitle="Session delivery frequency" info="Number of Career Exposure sessions held each year">
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={years.map(y => ({ year: String(y), sessions: filteredSessions.filter(s => s.year === y).length }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
+                  <BarChart data={years.map(y => ({ year: String(y), sessions: filteredSessions.filter(s => s.year === y).length }))} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="sessions" fill="#7FA5D6" barSize={46} radius={[4, 4, 0, 0]} name="Sessions">
                       <LabelList dataKey="sessions" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Sessions</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -484,6 +491,9 @@ export default function HEMPCareerExposure() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /></span>
+                </div>
               </Panel>
               <Panel title="Confidence & Recommendation" subtitle="Participant confidence and likelihood to recommend" info="Confidence in applying skills (1-5) and recommendation score (0-10)">
                 <ResponsiveContainer width="100%" height={250}>
