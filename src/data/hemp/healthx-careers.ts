@@ -54,6 +54,18 @@ export interface HealthXSymposium {
   partnershipsRenewed: number;
   /** Student-rated usefulness of the symposium, out of 5 */
   usefulness: number;
+
+  /** Career Exposure Participant Feedback Metrics */
+  // Completion Status (% who completed all activities)
+  completionRate: number;
+  // Quality & Relevance (5-point scale: 1=Poor/Not relevant, 5=Excellent/Extremely relevant)
+  relevanceScore: number;
+  qualityScore: number;
+  usefulnessScore: number;
+  // Learning & Confidence (5-point scale: 1=Not confident, 5=Extremely confident)
+  confidenceScore: number;
+  // Recommendation Score (0-10 scale)
+  recommendationScore: number;
 }
 
 export const healthXSymposia: HealthXSymposium[] = [
@@ -71,6 +83,7 @@ export const healthXSymposia: HealthXSymposium[] = [
     conversions: { Internship: 21, Employment: 6, "Project-Based": 5 },
     partnershipsFormed: 5, partnershipsRenewed: 2,
     usefulness: 4.1,
+    completionRate: 85, relevanceScore: 4, qualityScore: 4, usefulnessScore: 4, confidenceScore: 4, recommendationScore: 8,
   },
   {
     id: "HX02", name: "HealthX 2024 — Explore What's Next", year: 2024,
@@ -86,6 +99,7 @@ export const healthXSymposia: HealthXSymposium[] = [
     conversions: { Internship: 35, Employment: 11, "Project-Based": 9 },
     partnershipsFormed: 7, partnershipsRenewed: 4,
     usefulness: 4.3,
+    completionRate: 89, relevanceScore: 4, qualityScore: 4, usefulnessScore: 4, confidenceScore: 4, recommendationScore: 8,
   },
   {
     id: "HX03", name: "HealthX 2025 — Explore What's Next", year: 2025,
@@ -101,6 +115,7 @@ export const healthXSymposia: HealthXSymposium[] = [
     conversions: { Internship: 49, Employment: 17, "Project-Based": 15 },
     partnershipsFormed: 9, partnershipsRenewed: 6,
     usefulness: 4.5,
+    completionRate: 92, relevanceScore: 5, qualityScore: 5, usefulnessScore: 5, confidenceScore: 5, recommendationScore: 9,
   },
   {
     id: "HX04", name: "HealthX 2026 — Explore What's Next", year: 2026,
@@ -116,6 +131,7 @@ export const healthXSymposia: HealthXSymposium[] = [
     conversions: { Internship: 64, Employment: 24, "Project-Based": 21 },
     partnershipsFormed: 11, partnershipsRenewed: 8,
     usefulness: 4.6,
+    completionRate: 94, relevanceScore: 5, qualityScore: 5, usefulnessScore: 5, confidenceScore: 5, recommendationScore: 9,
   },
 ];
 

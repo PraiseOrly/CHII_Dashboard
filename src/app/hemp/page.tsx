@@ -340,16 +340,13 @@ export default function HEMPOverview() {
     const reach: Record<string, number> = {};
     const female: Record<string, number> = {};
     const countries: Record<string, Set<string>> = {};
-    const excludedRegions = ["East Africa", "West Africa", "Southern Africa"];
     REACH_RECORDS
       .filter(r => filterRegionYear === "All Years" || String(r.year) === filterRegionYear)
       .forEach(r => {
         const reg = COUNTRY_REGION[r.country] || "Other";
-        if (!excludedRegions.includes(reg)) {
-          reach[reg] = (reach[reg] || 0) + r.reach;
-          female[reg] = (female[reg] || 0) + r.female;
-          (countries[reg] = countries[reg] || new Set()).add(r.country);
-        }
+        reach[reg] = (reach[reg] || 0) + r.reach;
+        female[reg] = (female[reg] || 0) + r.female;
+        (countries[reg] = countries[reg] || new Set()).add(r.country);
       });
     return Object.keys(reach)
       .map(reg => ({ name: reg, value: reach[reg], countries: countries[reg].size, female: female[reg] }))
