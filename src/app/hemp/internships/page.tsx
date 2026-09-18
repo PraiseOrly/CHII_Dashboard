@@ -766,6 +766,7 @@ export default function HEMPInternships() {
                 </ResponsiveContainer>
               </Panel>
             </div>
+            )}
           </section>
         )}
 
