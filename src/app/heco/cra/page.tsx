@@ -176,8 +176,8 @@ export default function CraPage() {
   const D = useMemo(() => derive(fl, hk, rp), [fl, hk, rp]);
   const activeCount = (fCohort !== "All Cohorts" ? 1 : 0) + (fCountry !== "All Countries" ? 1 : 0);
 
-  const [activeSection, setActiveSection] = useState<"all" | number>("all");
-  const show = (n: number) => activeSection === "all" || activeSection === n;
+  const [activeSection, setActiveSection] = useState<number>(1);
+  const show = (n: number) => activeSection === n;
 
   return (
     <PortalThemeProvider portal="heco">
@@ -228,10 +228,9 @@ export default function CraPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
           <SectionPills
             accent={BRAND}
-            value={activeSection === "all" ? "all" : String(activeSection)}
-            onChange={(v) => setActiveSection(v === "all" ? "all" : Number(v))}
+            value={String(activeSection)}
+            onChange={(v) => setActiveSection(Number(v))}
             options={[
-              { label: "All Sections", value: "all" },
               { label: "Public Sector Fellowship", value: "1" },
               { label: "Student Hackathons", value: "2" },
               { label: "Public Health Research", value: "3" },

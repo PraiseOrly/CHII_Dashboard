@@ -408,13 +408,6 @@ export default function HEMPOverview() {
               tip: `Female participants across HEMP (${TOTAL_FEM.toLocaleString()} people)`,
             },
             {
-              label: "Engagements",
-              num: ENGAGEMENT_COUNT,
-              icon: Activity,
-              sub: "Sessions delivered",
-              tip: "Total number of engagements and interventions",
-            },
-            {
               label: "Refugees & Disability",
               num: VULNERABLE_PCT,
               icon: Accessibility,
