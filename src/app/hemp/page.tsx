@@ -837,7 +837,8 @@ export default function HEMPOverview() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Bar dataKey="value" fill={BRAND} radius={[4, 4, 0, 0]} maxBarSize={46}>
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill={BRAND} radius={[4, 4, 0, 0]} maxBarSize={46} name="Count">
                       <LabelList dataKey="value" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -866,7 +867,8 @@ export default function HEMPOverview() {
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Bar dataKey="value" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="value" fill="#0F6E56" radius={[4, 4, 0, 0]} maxBarSize={46} name="Placements">
                       <LabelList dataKey="value" position="top" fontSize={11} fill="#085041" fontWeight={700} />
                     </Bar>
                   </BarChart>
@@ -879,7 +881,8 @@ export default function HEMPOverview() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} label={{ value: "%", angle: -90, position: "insideLeft", style: { fontSize: 10, fill: "#9CA3AF" } }} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Bar dataKey="Conversion Rate %" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={46}>
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="Conversion Rate %" fill="#479BD6" radius={[4, 4, 0, 0]} maxBarSize={46} name="Conversion Rate">
                       <LabelList dataKey="Conversion Rate %" position="top" fontSize={11} fill="#14306B" fontWeight={700} formatter={(v: number) => `${v}%`} />
                     </Bar>
                   </BarChart>
