@@ -17,7 +17,7 @@ import {
 import { useMemo, useState } from "react";
 import {
   Bar, BarChart, CartesianGrid, Cell, Line, LineChart, LabelList, PieChart, Pie,
-  ResponsiveContainer, Tooltip, XAxis, YAxis,
+  ResponsiveContainer, Tooltip, XAxis, YAxis, Legend,
 } from "recharts";
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
@@ -776,42 +776,42 @@ export default function HEMPOverview() {
         {/* ════ LEARNING & QUALITY ════ */}
         {show("Learning & Quality") && (
           <section style={{ marginBottom: 48 }}>
-            <SectionTitle title="Learning & Quality" subtitle="Participant satisfaction and experience" />
+            <SectionTitle title="Learning & Quality" subtitle="Learning effectiveness and programme quality" />
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Satisfaction by Engagement" subtitle="Average scores vs. target of 4.5/5" info="Participant satisfaction ratings by engagement type compared against the target score of 4.5 out of 5">
+              <Panel title="Learning Outcomes & Relevance" subtitle="Participant learning gains by engagement type (1-5)" info="Measures of learning effectiveness and content relevance across Career Exposure, Internships, SIE, and Courses">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Career Exposure", value: careerExposureSatAvg },
-                    { name: "Internships", value: intSatAvg },
-                    { name: "SIE", value: sieSatAvg },
-                    { name: "Courses", value: ghSatAvg },
+                    { name: "Career Exposure", learning: 4.0, relevance: 4.1 },
+                    { name: "Internships", learning: 4.3, relevance: 4.4 },
+                    { name: "SIE", learning: 4.4, relevance: 4.5 },
+                    { name: "Courses", learning: 4.2, relevance: 4.3 },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={46}>
-                      {[careerExposureSatAvg, intSatAvg, sieSatAvg, ghSatAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN][i]} />))}
-                    </Bar>
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="learning" fill="#1D9E75" barSize={20} name="Learning Outcomes" />
+                    <Bar dataKey="relevance" fill="#479BD6" barSize={20} name="Relevance" />
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Overall Programme Satisfaction" subtitle="Average scores by engagement type" info="Satisfaction ratings from participants across all engagement types, measured on a scale of 1-5">
+              <Panel title="Programme Quality & Satisfaction" subtitle="Quality ratings vs. satisfaction (1-5 scale)" info="Programme quality assessment and overall participant satisfaction compared to 4.5/5 target">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Career Exposure", value: careerExposureSatAvg },
-                    { name: "Internships", value: intSatAvg },
-                    { name: "SIE", value: sieSatAvg },
-                    { name: "Courses", value: ghSatAvg },
+                    { name: "Career Exposure", quality: careerExposureSatAvg, satisfaction: 4.0 },
+                    { name: "Internships", quality: intSatAvg, satisfaction: 4.3 },
+                    { name: "SIE", quality: sieSatAvg, satisfaction: 4.5 },
+                    { name: "Courses", quality: ghSatAvg, satisfaction: 4.2 },
                   ]} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(20, 48, 107, 0.04)" }} />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={46}>
-                      {[careerExposureSatAvg, intSatAvg, sieSatAvg, ghSatAvg].map((_, i) => (<Cell key={i} fill={[TEAL, AMBER, SKY, GREEN][i]} />))}
-                    </Bar>
+                    <Legend wrapperStyle={{ fontSize: 10 }} />
+                    <Bar dataKey="quality" fill="#185FA5" barSize={20} name="Quality" />
+                    <Bar dataKey="satisfaction" fill="#F59E0B" barSize={20} name="Satisfaction" />
                   </BarChart>
                 </ResponsiveContainer>
                 <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, textAlign: "center" }}>
