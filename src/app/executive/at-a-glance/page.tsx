@@ -87,7 +87,6 @@ function MapContainer({
 
       return () => {
         resizeObserver.disconnect();
-        observer.disconnect();
       };
     };
 

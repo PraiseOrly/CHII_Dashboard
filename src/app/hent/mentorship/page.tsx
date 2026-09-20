@@ -583,45 +583,47 @@ export default function MentorshipPage() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Rating Distribution by Criterion"
-                subtitle="Proportion of programmes per rating level">
-                <div className="flex gap-3 text-[10px] text-gray-500 mb-4 flex-wrap">
-                  {(["Very High","High","Moderate","Low"] as const).map(l => (
-                    <span key={l} className="flex items-center gap-1">
-                      <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: RATING_COLORS[l] }} />{l}
-                    </span>
-                  ))}
-                </div>
-                {MF_CRITERIA.map(c => <RatingBar key={c} label={c} programs={filtered} criterion={c} />)}
+              <Panel title="Criterion Ratings Distribution"
+                subtitle="Average score per criterion across programmes">
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart
+                    data={MF_CRITERIA.map(c => ({
+                      name: c,
+                      score: filtered.length ? (filtered.reduce((s, p) => s + p.scores[c], 0) / filtered.length) : 0,
+                    }))}
+                    margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+                    layout="vertical"
+                    barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#6B7280" }} domain={[0, 5]} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} width={130} />
+                    <Tooltip content={<ChartTip />} />
+                    <Bar dataKey="score" fill={PRIMARY} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </Panel>
 
-              <Panel title="Ratings by Gender of Participants"
-                subtitle="Avg score per criterion - female vs male programs">
-                <div className="flex gap-4 text-[10px] text-gray-500 mb-4">
-                  <span className="flex items-center gap-1"><span style={{ color: VIOLET }}>F</span> Female-majority programmes</span>
-                  <span className="flex items-center gap-1"><span style={{ color: SKY }}>M</span> Male-majority programmes</span>
-                </div>
-                {MF_CRITERIA.map(c => (
-                  <GenderRatingBar key={c} label={c} fPrograms={fProgs} mPrograms={mProgs} criterion={c} />
-                ))}
-                <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
-                  {(["Expose","Build","Scale"] as const).map((stage, si) => {
-                    const sp = filtered.filter(p =>
-                      stage === "Expose" ? p.byStage.Expose > p.byStage.Build + p.byStage.Scale
-                      : stage === "Build" ? p.byStage.Build >= p.byStage.Scale
-                      : p.byStage.Scale > p.byStage.Build
-                    );
-                    const avg = sp.length
-                      ? MF_CRITERIA.reduce((s, c) => s + sp.reduce((ss, p) => ss + p.scores[c], 0) / sp.length, 0) / MF_CRITERIA.length : 0;
-                    return (
-                      <div key={stage}>
-                        <p className="text-[10px] text-gray-400">{stage} Stage</p>
-                        <p className="text-sm font-bold" style={{ color: [SKY, PRIMARY, INDIGO][si] }}>{avg.toFixed(1)}</p>
-                        <p className="text-[9px] text-gray-400">avg score</p>
-                      </div>
-                    );
-                  })}
-                </div>
+              <Panel title="Gender Comparison by Criterion"
+                subtitle="Female-majority vs male-majority programme ratings">
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart
+                    data={MF_CRITERIA.map(c => ({
+                      name: c,
+                      Female: fProgs.length ? (fProgs.reduce((s, p) => s + p.scores[c], 0) / fProgs.length) : 0,
+                      Male: mProgs.length ? (mProgs.reduce((s, p) => s + p.scores[c], 0) / mProgs.length) : 0,
+                    }))}
+                    margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+                    layout="vertical"
+                    barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#6B7280" }} domain={[0, 10]} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} width={130} />
+                    <Tooltip content={<ChartTip />} />
+                    <Legend wrapperStyle={{ fontSize: 10, paddingTop: 8 }} />
+                    <Bar dataKey="Female" fill={VIOLET} radius={[0, 4, 4, 0]} stackId="a" />
+                    <Bar dataKey="Male" fill={SKY} radius={[0, 4, 4, 0]} stackId="a" />
+                  </BarChart>
+                </ResponsiveContainer>
               </Panel>
             </div>
           </section>
