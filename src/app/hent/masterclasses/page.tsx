@@ -4,7 +4,7 @@ import { ChartCard, SectionHeader, ChartTip, ChartLegend, BarList, useCountUp } 
 import { benchColor } from "@/theme/tokens";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
-  BarChart, Bar,
+  BarChart, Bar, Cell,
   AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -124,40 +124,14 @@ function RatingBar({ label, sessions, criterion }: {
   sessions: typeof masterclasses;
   criterion: typeof RATING_CRITERIA[number];
 }) {
-  const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const vh  = sessions.filter(s => s.scores[criterion] >= 4.5).length;
-  const hi  = sessions.filter(s => s.scores[criterion] >= 3.8 && s.scores[criterion] < 4.5).length;
-  const mo  = sessions.filter(s => s.scores[criterion] >= 3.0 && s.scores[criterion] < 3.8).length;
-  const lo  = sessions.filter(s => s.scores[criterion] < 3.0).length;
-  const tot = sessions.length || 1;
   const avg = sessions.length
     ? (sessions.reduce((s, m) => s + m.scores[criterion], 0) / sessions.length).toFixed(1) : " - ";
-  const segs = [
-    { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
-    { key: "High",      count: hi, color: RATING_COLORS["High"] },
-    { key: "Moderate",  count: mo, color: RATING_COLORS["Moderate"] },
-    { key: "Low",       count: lo, color: RATING_COLORS["Low"] },
-  ];
   return (
-    <div className="relative flex items-center gap-3 mb-3 last:mb-0"
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
-      onMouseLeave={() => setHovered(null)}>
-      <div className="w-40 text-[11px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
-      <div className="flex-1 h-5 bg-gray-100 rounded-sm overflow-hidden flex">
-        {segs.map(s => (
-          <div key={s.key} style={{ width: `${(s.count / tot) * 100}%`, backgroundColor: s.color, cursor: "pointer",
-              opacity: hovered && hovered.label !== s.key ? 0.4 : 1, transition: "opacity 0.15s" }}
-            onMouseEnter={() => setHovered({ label: s.key, count: s.count, color: s.color })} />
-        ))}
+    <div className="flex items-center gap-4 mb-3 last:mb-0">
+      <div className="w-40 text-[12px] font-bold text-gray-900 text-right flex-shrink-0">{label}</div>
+      <div className="flex-1 h-8 bg-gray-100 rounded overflow-hidden" style={{ backgroundColor: "#0E4633" }}>
       </div>
-      <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
-      {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
-          {hovered.label}: {hovered.count}
-        </div>
-      )}
+      <div className="w-10 text-[13px] font-black text-right flex-shrink-0 tabular-nums text-gray-900">{avg}/5</div>
     </div>
   );
 }
@@ -171,23 +145,22 @@ function GenderRatingBar({ label, fSessions, mSessions, criterion }: {
   const fAvg = fSessions.length ? fSessions.reduce((s, m) => s + m.scores[criterion], 0) / fSessions.length : 0;
   const mAvg = mSessions.length ? mSessions.reduce((s, m) => s + m.scores[criterion], 0) / mSessions.length : 0;
   return (
-    <div className="flex items-center gap-2 mb-2">
-      <div className="w-36 text-[11px] text-gray-600 text-right flex-shrink-0">{label}</div>
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET_MC }}>F</span>
-          <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET_MC + "20" }}>
-            <div className="h-full rounded-sm" style={{ width: `${(fAvg / 5) * 100}%`, backgroundColor: VIOLET_MC }} />
-          </div>
-          <span className="text-[10px] text-gray-500 w-6">{fAvg.toFixed(1)}</span>
+    <div className="space-y-2 mb-3 last:mb-0">
+      <div className="flex items-center gap-4">
+        <div className="w-40 text-[12px] font-bold text-gray-900 text-right flex-shrink-0">
+          {label} <span className="text-[11px] text-gray-500">(F)</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>M</span>
-          <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SKY + "20" }}>
-            <div className="h-full rounded-sm" style={{ width: `${(mAvg / 5) * 100}%`, backgroundColor: SKY }} />
-          </div>
-          <span className="text-[10px] text-gray-500 w-6">{mAvg.toFixed(1)}</span>
+        <div className="flex-1 h-8 rounded overflow-hidden" style={{ backgroundColor: VIOLET_MC }}>
         </div>
+        <span className="w-10 text-[13px] font-black text-right flex-shrink-0 text-gray-900">{fAvg.toFixed(1)}</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="w-40 text-[12px] font-bold text-gray-900 text-right flex-shrink-0">
+          <span className="text-[11px] text-gray-500">(M)</span>
+        </div>
+        <div className="flex-1 h-8 rounded overflow-hidden" style={{ backgroundColor: SKY }}>
+        </div>
+        <span className="w-10 text-[13px] font-black text-right flex-shrink-0 text-gray-900">{mAvg.toFixed(1)}</span>
       </div>
     </div>
   );
@@ -484,14 +457,6 @@ export default function MasterclassesPage() {
             <ChartCard title="Attendance by Gender per Year"
               sub="Female vs male participants  -  yearly comparison"
               accent={VIOLET_MC}>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET_MC }} />Female
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: SKY }} />Male
-                </span>
-              </div>
               <ResponsiveContainer width="100%" height={176}>
                 <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -527,11 +492,11 @@ export default function MasterclassesPage() {
             <ChartCard title="Completion Rate by Session"
               sub="Percentage of registered attendees who completed each masterclass"
               accent={TEAL}>
-              <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={completionData} barCategoryGap="30%">
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={completionData.slice(0, 12)} barCategoryGap="30%" margin={{ top: 0, right: 8, left: 0, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280", angle: -45, textAnchor: "end", height: 60 }}
-                    axisLine={false} tickLine={false} height={70} />
+                    axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />
@@ -604,41 +569,48 @@ export default function MasterclassesPage() {
             </ChartCard>
 
             <ChartCard title="Social Inclusion Groups" sub="MCF scholars, PWD, refugee-displaced" accent={AMBER_MC}>
-              <div style={{ marginBottom: 12 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, color: "#0E4633", margin: "0 0 12px 0" }}>
-                  Total: {tot.attendees} participants across social inclusion groups
-                </p>
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart
-                    data={socialData.map((s, i) => ({
-                      name: s.name,
-                      value: s.value,
-                      percentage: tot.attendees > 0 ? Math.round((s.value / tot.attendees) * 100) : 0,
-                      idx: i,
-                    }))}
-                    margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
-                    barCategoryGap="30%"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={40} />
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload?.[0]) {
-                          const data = payload[0].payload as typeof socialData[0] & { percentage: number };
-                          return (
-                            <div style={{ backgroundColor: "white", padding: "8px 10px", borderRadius: 4, border: "1px solid #E5E7EB" }}>
-                              <p style={{ fontSize: 10, fontWeight: 600, color: "#0E4633", margin: "0 0 4px 0" }}>{data.name}</p>
-                              <p style={{ fontSize: 10, color: "#6B7280", margin: 0 }}>{data.value} participants ({data.percentage}%)</p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Bar dataKey="value" fill="#F59E0B" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart
+                  data={socialData.map((s, i) => ({
+                    name: s.name,
+                    value: s.value,
+                    percentage: tot.attendees > 0 ? Math.round((s.value / tot.attendees) * 100) : 0,
+                    idx: i,
+                  }))}
+                  margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+                  barCategoryGap="30%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={40} />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload?.[0]) {
+                        const data = payload[0].payload as typeof socialData[0] & { percentage: number };
+                        return (
+                          <div style={{ backgroundColor: "white", padding: "8px 10px", borderRadius: 4, border: "1px solid #E5E7EB" }}>
+                            <p style={{ fontSize: 10, fontWeight: 600, color: "#0E4633", margin: "0 0 4px 0" }}>{data.name}</p>
+                            <p style={{ fontSize: 10, color: "#6B7280", margin: 0 }}>{data.value} participants ({data.percentage}%)</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {socialData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={SOCIAL_COLORS[index % SOCIAL_COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
+                {socialData.map((d, i) => (
+                  <div key={d.name}>
+                    <p className="text-sm font-black" style={{ color: SOCIAL_COLORS[i] }}>{d.value}</p>
+                    <p className="text-[9px] text-gray-400">{d.name}</p>
+                  </div>
+                ))}
               </div>
             </ChartCard>
           </div>
@@ -670,14 +642,6 @@ export default function MasterclassesPage() {
             <ChartCard title="Attendance by Gender per Year"
               sub="Female vs male participants  -  yearly comparison"
               accent={VIOLET_MC}>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-3">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: VIOLET_MC }} />Female
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: SKY }} />Male
-                </span>
-              </div>
               <ResponsiveContainer width="100%" height={176}>
                 <BarChart data={genderTrend} barCategoryGap="30%" barGap={2}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
@@ -719,11 +683,11 @@ export default function MasterclassesPage() {
             <ChartCard title="Completion Rate by Session"
               sub="Percentage of registered attendees who completed each masterclass"
               accent={TEAL}>
-              <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={completionData} barCategoryGap="30%">
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={completionData.slice(0, 12)} barCategoryGap="30%" margin={{ top: 0, right: 8, left: 0, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
                   <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280", angle: -45, textAnchor: "end", height: 60 }}
-                    axisLine={false} tickLine={false} height={70} />
+                    axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />

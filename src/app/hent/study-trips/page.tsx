@@ -96,40 +96,14 @@ function ProfileCard({ label, value, pct, total: tot, color }: {
 function RatingBar({ label, visits, criterion }: {
   label: string; visits: typeof studyTrips; criterion: typeof TRIP_CRITERIA[number];
 }) {
-  const [hovered, setHovered] = useState<{ label: string; count: number; color: string } | null>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const vh  = visits.filter(v => v.scores[criterion] >= 4.5).length;
-  const hi  = visits.filter(v => v.scores[criterion] >= 3.8 && v.scores[criterion] < 4.5).length;
-  const mo  = visits.filter(v => v.scores[criterion] >= 3.0 && v.scores[criterion] < 3.8).length;
-  const lo  = visits.filter(v => v.scores[criterion] < 3.0).length;
-  const tot = visits.length || 1;
   const avg = visits.length
     ? (visits.reduce((s, v) => s + v.scores[criterion], 0) / visits.length).toFixed(1) : " - ";
-  const segs = [
-    { key: "Very High", count: vh, color: RATING_COLORS["Very High"] },
-    { key: "High",      count: hi, color: RATING_COLORS.High },
-    { key: "Moderate",  count: mo, color: RATING_COLORS.Moderate },
-    { key: "Low",       count: lo, color: RATING_COLORS.Low },
-  ];
   return (
-    <div className="relative flex items-center gap-3 mb-2.5 last:mb-0"
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
-      onMouseLeave={() => setHovered(null)}>
-      <div className="w-44 text-[10px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
-      <div className="flex-1 h-4 bg-gray-100 rounded-sm overflow-hidden flex">
-        {segs.map(s => (
-          <div key={s.key} style={{ width: `${(s.count / tot) * 100}%`, backgroundColor: s.color, cursor: "pointer",
-              opacity: hovered && hovered.label !== s.key ? 0.4 : 1, transition: "opacity 0.15s" }}
-            onMouseEnter={() => setHovered({ label: s.key, count: s.count, color: s.color })} />
-        ))}
+    <div className="flex items-center gap-4 mb-3 last:mb-0">
+      <div className="w-40 text-[12px] font-bold text-gray-900 text-right flex-shrink-0">{label}</div>
+      <div className="flex-1 h-8 bg-gray-100 rounded overflow-hidden" style={{ backgroundColor: "#0E4633" }}>
       </div>
-      <div className="w-10 text-[11px] text-gray-500 text-right flex-shrink-0 font-medium">{avg}/5</div>
-      {hovered && (
-        <div className="absolute pointer-events-none z-20 rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundColor: hovered.color, left: pos.x, top: pos.y - 30, transform: "translateX(-50%)" }}>
-          {hovered.label}: {hovered.count}
-        </div>
-      )}
+      <div className="w-10 text-[13px] font-black text-right flex-shrink-0 tabular-nums text-gray-900">{avg}/5</div>
     </div>
   );
 }
@@ -141,23 +115,22 @@ function GenderRatingBar({ label, fVisits, mVisits, criterion }: {
   const fAvg = fVisits.length ? fVisits.reduce((s, v) => s + v.scores[criterion], 0) / fVisits.length : 0;
   const mAvg = mVisits.length ? mVisits.reduce((s, v) => s + v.scores[criterion], 0) / mVisits.length : 0;
   return (
-    <div className="flex items-center gap-2 mb-2">
-      <div className="w-40 text-[10px] text-gray-600 text-right flex-shrink-0 leading-tight">{label}</div>
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: VIOLET }}>F</span>
-          <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: VIOLET + "20" }}>
-            <div className="h-full rounded-sm" style={{ width: `${(fAvg / 5) * 100}%`, backgroundColor: VIOLET }} />
-          </div>
-          <span className="text-[10px] text-gray-500 w-6">{fAvg.toFixed(1)}</span>
+    <div className="space-y-2 mb-3 last:mb-0">
+      <div className="flex items-center gap-4">
+        <div className="w-40 text-[12px] font-bold text-gray-900 text-right flex-shrink-0">
+          {label} <span className="text-[11px] text-gray-500">(F)</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] w-5 font-bold flex-shrink-0" style={{ color: SKY }}>M</span>
-          <div className="flex-1 h-2.5 rounded-sm overflow-hidden" style={{ backgroundColor: SKY + "20" }}>
-            <div className="h-full rounded-sm" style={{ width: `${(mAvg / 5) * 100}%`, backgroundColor: SKY }} />
-          </div>
-          <span className="text-[10px] text-gray-500 w-6">{mAvg.toFixed(1)}</span>
+        <div className="flex-1 h-8 rounded overflow-hidden" style={{ backgroundColor: VIOLET }}>
         </div>
+        <span className="w-10 text-[13px] font-black text-right flex-shrink-0 text-gray-900">{fAvg.toFixed(1)}</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="w-40 text-[12px] font-bold text-gray-900 text-right flex-shrink-0">
+          <span className="text-[11px] text-gray-500">(M)</span>
+        </div>
+        <div className="flex-1 h-8 rounded overflow-hidden" style={{ backgroundColor: SKY }}>
+        </div>
+        <span className="w-10 text-[13px] font-black text-right flex-shrink-0 text-gray-900">{mAvg.toFixed(1)}</span>
       </div>
     </div>
   );
