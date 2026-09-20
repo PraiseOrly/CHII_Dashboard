@@ -619,11 +619,14 @@ export default function MentorshipPage() {
                     <XAxis type="number" tick={{ fontSize: 10, fill: "#6B7280" }} domain={[0, 10]} axisLine={false} tickLine={false} />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} width={130} />
                     <Tooltip content={<ChartTip />} />
-                    <Legend wrapperStyle={{ fontSize: 10, paddingTop: 8 }} />
                     <Bar dataKey="Female" fill={VIOLET} radius={[0, 4, 4, 0]} stackId="a" />
                     <Bar dataKey="Male" fill={SKY} radius={[0, 4, 4, 0]} stackId="a" />
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: VIOLET }} /> Female</span>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: SKY }} /> Male</span>
+                </div>
               </Panel>
             </div>
           </section>
@@ -739,11 +742,14 @@ export default function MentorshipPage() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: LIGHT_BORDER }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="Female" fill={VIOLET} radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Male"   fill={SKY}    radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: VIOLET }} /> Female</span>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: SKY }} /> Male</span>
+                </div>
               </Panel>
 
               <Panel title="Venture Stage Distribution"
@@ -759,6 +765,11 @@ export default function MentorshipPage() {
                     <Bar dataKey="Scale"  fill={INDIGO}  radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: SKY }} /> Expose</span>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: PRIMARY }} /> Build</span>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: INDIGO }} /> Scale</span>
+                </div>
               </Panel>
 
               <Panel title="Cumulative Fellow Growth"

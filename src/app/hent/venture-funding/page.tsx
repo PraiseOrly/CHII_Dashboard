@@ -641,7 +641,6 @@ export default function VentureFundingPage() {
                       interval={0}
                     />
                     <Tooltip cursor={{ fill: "rgba(0,33,71,0.04)" }} content={<ChartTip money />} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22} onClick={(data: any) => {
                       setSelectedSector(data.selected ? null : data.name);
                       setCapChartFilterOpen(false);
@@ -658,6 +657,11 @@ export default function VentureFundingPage() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  {bySectorByYear.map((entry, idx) => (
+                    <span key={entry.name} style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: GREEN_RAMP[idx % GREEN_RAMP.length] }} /> {entry.name}</span>
+                  ))}
+                </div>
               </div>
             </ChartCard>
           </div>
