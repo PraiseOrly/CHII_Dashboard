@@ -19,6 +19,7 @@ import type { Stage } from "@/types";
 const HERO    = "#2D6A4F";
 const BRAND   = "#2D6A4F";
 const BRAND_DK = "#0E4633";
+const LIGHT_BORDER = "rgba(14, 70, 51, 0.12)";
 const GREEN_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5"];
 const DISTINCT = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5"];
 
@@ -677,7 +678,7 @@ export default function VentureFundingPage() {
                   </thead>
                   <tbody>
                     {D.topFunded.map(v => (
-                      <tr key={v.name} className="border-t border-gray-100">
+                      <tr key={v.name} style={{ borderTop: `1px solid ${LIGHT_BORDER}` }}>
                         <td className="py-2.5 pr-6 whitespace-nowrap font-semibold text-gray-700">{v.name}</td>
                         <td className="py-2.5 px-2 whitespace-nowrap">
                           <span className="flex items-center gap-1.5 text-gray-600">

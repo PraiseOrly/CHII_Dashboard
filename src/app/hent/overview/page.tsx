@@ -924,13 +924,17 @@ export default function HENTOverview() {
                     <XAxis dataKey="range" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(14, 70, 51, 0.04)" }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="count" barSize={46} radius={[4, 4, 0, 0]}>
                       {npsData.map((entry, idx) => <Cell key={`cell-${idx}`} fill={entry.fill} />)}
                       <LabelList dataKey="count" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  {npsData.map((d) => (
+                    <span key={d.range} style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: d.fill }} /> {d.range}</span>
+                  ))}
+                </div>
               </Panel>
               <Panel title="Founder Satisfaction Breakdown" subtitle="NPS distribution" info="Breakdown of founder satisfaction scores (Promoters, Passives, Detractors)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
                 <ResponsiveContainer width="100%" height={250}>

@@ -22,6 +22,7 @@ import {
 const HERO     = "#2D6A4F";
 const BRAND    = "#2D6A4F";
 const BRAND_DK = "#0E4633";
+const LIGHT_BORDER = "rgba(14, 70, 51, 0.12)";
 const GREEN_RAMP = ["#1B4332","#1F9E9E","#A6C13C","#BBD59B","#2D6A4F","#4C8C8A","#6B8E5B","#8FA45A","#40916C","#C8DDB5"];
 const DISTINCT   = ["#2E7D5B","#E76F51","#2A6F97","#E9C46A","#6A4C93","#E63946","#43AA8B","#F4A261","#577590","#9B5DE5"];
 
@@ -245,7 +246,7 @@ export default function ExposureNetworkingPage() {
             <ChartCard title="Relationship Funnel" sub="Connections → follow-ups → deals opened → agreements signed"
               info="The core value chain of this intervention: an introduction is only worth something if it becomes a meeting, then a deal, then a signed agreement. The drop-off between steps shows where relationships stall.">
               <Funnel steps={D.funnel} />
-              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+              <p style={{ fontSize: 10, color: "#6B7280", marginTop: 16, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, textAlign: "center" }}>
                 {D.connections ? Math.round(D.mous / D.connections * 100) : 0}% of introductions convert into a formal agreement
               </p>
             </ChartCard>
@@ -276,10 +277,10 @@ export default function ExposureNetworkingPage() {
                   <Bar dataKey="Events"   fill="#A6C13C" radius={[4, 4, 0, 0]} maxBarSize={22} />
                 </BarChart>
               </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16, fontSize: 11, color: "#6B7280", marginTop: 16, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}` }}>
                 {([["Founders", "#1B4332"], ["Events", "#A6C13C"]] as const).map(([l, c]) => (
-                  <span key={l} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  <span key={l} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ display: "inline-block", width: 8, height: 6, borderRadius: 2, backgroundColor: c }} />{l}
                   </span>
                 ))}
               </div>
@@ -340,7 +341,7 @@ export default function ExposureNetworkingPage() {
                   </thead>
                   <tbody>
                     {D.byType.map(t => (
-                      <tr key={t.name} className="border-t border-gray-100">
+                      <tr key={t.name} style={{ borderTop: `1px solid ${LIGHT_BORDER}` }}>
                         <td className="py-2.5 pr-4 whitespace-nowrap">
                           <span className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: TYPE_HEX[t.name as ExposureType] }} />

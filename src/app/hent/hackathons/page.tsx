@@ -31,6 +31,9 @@ const INDIGO  = "#2D6A4F"; // forest
 // Project-category donut colours (green ramp, one per category)
 const CAT_COLORS = ["#1B4332", "#1F9E9E", "#A6C13C", "#6B8E5B", "#40916C"];
 
+// Border color for dividers
+const LIGHT_BORDER = "rgba(14, 70, 51, 0.12)";
+
 // â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmt(n: number) {
   return n >= 1_000 ? `${(n / 1_000).toFixed(1)}k` : String(n);
@@ -371,10 +374,6 @@ export default function HackathonsPage() {
                 label={`${total.participants}`}
                 valueFormatter={(v: number) => `${v} participants`}
               />
-              <div className="flex justify-center gap-5 mt-2 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SKY }}    /> Male</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: VIOLET }} /> Female</span>
-              </div>
             </ChartCard>
 
             <ChartCard title="Student vs Alumni Participation"
@@ -390,10 +389,6 @@ export default function HackathonsPage() {
                 label={`${total.participants}`}
                 valueFormatter={(v: number) => `${v} participants`}
               />
-              <div className="flex justify-center gap-5 mt-2 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SKY }}  /> Students</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: ROSE }} /> Alumni</span>
-              </div>
             </ChartCard>
 
           </div>
@@ -593,7 +588,7 @@ export default function HackathonsPage() {
                   });
                 })()}
               </div>
-              <p className="text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100 text-center">
+              <p style={{ fontSize: 10, color: "#6B7280", marginTop: 16, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, textAlign: "center" }}>
                 {total.projects ? Math.round(total.startups / total.projects * 100) : 0}% of hackathon projects go on to become startups
               </p>
             </ChartCard>
@@ -621,10 +616,10 @@ export default function HackathonsPage() {
                     dot={{ r: 4, fill: "#1F9E9E", strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </ComposedChart>
               </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center gap-4 text-[11px] text-gray-500 mt-4 pt-3 border-t border-gray-100">
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16, fontSize: 11, color: "#6B7280", marginTop: 16, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}` }}>
                 {([["Projects", "#1B4332"], ["Startups", "#A6C13C"], ["Conversion rate", "#1F9E9E"]] as const).map(([l, c]) => (
-                  <span key={l} className="flex items-center gap-1.5">
-                    <span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: c }} />{l}
+                  <span key={l} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ display: "inline-block", width: 8, height: 6, borderRadius: 2, backgroundColor: c }} />{l}
                   </span>
                 ))}
               </div>

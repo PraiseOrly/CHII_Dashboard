@@ -644,76 +644,44 @@ export default function MentorshipPage() {
               </div>
             </div>
             <div style={{ marginBottom: 24 }} />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              <ProfileCard label="Female Fellows"  value={tot.female}               pct={femalePct}        total={tot.fellows} color={VIOLET}  />
-              <ProfileCard label="Male Fellows"    value={tot.fellows - tot.female} pct={100 - femalePct}  total={tot.fellows} color={SKY}     />
-              <ProfileCard label="Student Fellows" value={studentSum}               pct={studentPct}       total={tot.fellows} color={EMERALD} />
-              <ProfileCard label="Alumni Fellows"  value={alumniTotal}              pct={100 - studentPct} total={tot.fellows} color={AMBER}   />
-            </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Age Group Distribution"
                 subtitle="Fellows by age bracket">
                 <CustomDonut data={ageData} className="h-36" />
-                <div className="mt-2 space-y-0.5">
-                  {ageData.map((d, i) => (
-                    <div key={d.name} className="flex items-center justify-between text-[10px]">
-                      <span className="flex items-center gap-1.5 text-gray-500">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />{d.name}
-                      </span>
-                      <span className="font-medium" style={{ color: GREEN_RAMP[i % GREEN_RAMP.length] }}>{d.value}</span>
-                    </div>
-                  ))}
-                </div>
               </Panel>
               <Panel title="Geographic Region"
                 subtitle="Fellows by region of origin">
                 <CustomDonut data={regionData} className="h-36" />
-                <div className="mt-2 space-y-0.5">
-                  {regionData.map((d, i) => (
-                    <div key={d.name} className="flex items-center justify-between text-[10px]">
-                      <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: GREEN_RAMP[i % GREEN_RAMP.length] }} />
-                        <span className="truncate">{d.name}</span>
-                      </span>
-                      <span className="font-medium ml-1 flex-shrink-0" style={{ color: GREEN_RAMP[i % GREEN_RAMP.length] }}>{d.value}</span>
-                    </div>
-                  ))}
-                </div>
               </Panel>
               <Panel title="Venture Stage Distribution"
                 subtitle="Fellows by development stage">
                 <CustomDonut data={stageData} className="h-36" />
-                <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
-                  {stageData.map((d, i) => (
-                    <div key={d.name}>
-                      <p className="text-sm font-black" style={{ color: GREEN_RAMP[i % GREEN_RAMP.length] }}>{d.value}</p>
-                      <p className="text-[9px] text-gray-400">{d.name}</p>
-                    </div>
-                  ))}
-                </div>
               </Panel>
               <Panel title="Social Inclusion Groups"
                 subtitle="MCF scholars, PWD, refugee-displaced">
-                <div className="space-y-3 mt-2">
-                  {socialData.map((d, i) => {
-                    const col = SOCIAL_COLORS[i % SOCIAL_COLORS.length];
-                    return (
-                      <div key={d.name}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-gray-600">{d.name}</span>
-                          <span className="font-medium" style={{ color: col }}>{d.value}</span>
-                        </div>
-                        <div className="h-2 rounded-sm overflow-hidden" style={{ backgroundColor: col + "1A" }}>
-                          <div className="h-full"
-                            style={{ width: `${tot.fellows > 0 ? (d.value / tot.fellows) * 100 : 0}%`, backgroundColor: col }} />
-                        </div>
-                        <p className="text-[10px] text-gray-400 mt-0.5">
-                          {tot.fellows > 0 ? Math.round((d.value / tot.fellows) * 100) : 0}% of fellows
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={socialData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }} barCategoryGap="30%">
+                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#6B7280" }} axisLine={false} tickLine={false} width={40} />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload?.[0]) {
+                          const data = payload[0].payload as typeof socialData[0];
+                          const pct = tot.fellows > 0 ? Math.round((data.value / tot.fellows) * 100) : 0;
+                          return (
+                            <div style={{ backgroundColor: "white", padding: "8px 10px", borderRadius: 4, border: "1px solid #E5E7EB" }}>
+                              <p style={{ fontSize: 10, fontWeight: 600, color: BRAND_DK, margin: "0 0 4px 0" }}>{data.name}</p>
+                              <p style={{ fontSize: 10, color: "#6B7280", margin: 0 }}>{data.value} fellows ({pct}%)</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Bar dataKey="value" fill={EMERALD} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </Panel>
             </div>
           </section>
@@ -751,14 +719,14 @@ export default function MentorshipPage() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-2 gap-3 text-center">
+                <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, textAlign: "center" }}>
                   <div>
                     <p className="text-lg font-bold" style={{ color: ACCENT }}>{avgHighSat}%</p>
-                    <p className="text-[10px] text-gray-400">Avg high satisfaction</p>
+                    <p style={{ fontSize: 10, color: "#6B7280" }}>Avg high satisfaction</p>
                   </div>
                   <div>
                     <p className="text-lg font-bold" style={{ color: EMERALD }}>{filtered.filter(p => p.highSatisfactionPct >= 85).length}</p>
-                    <p className="text-[10px] text-gray-400">Programmes ≥85%</p>
+                    <p style={{ fontSize: 10, color: "#6B7280" }}>Programmes ≥85%</p>
                   </div>
                 </div>
               </Panel>
@@ -786,7 +754,6 @@ export default function MentorshipPage() {
                     <XAxis dataKey="Year" tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={20} />
                     <Tooltip content={<ChartTip />} cursor={{ fill: LIGHT_BORDER }} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Bar dataKey="Expose" fill={SKY}    radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Build"  fill={PRIMARY} radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Scale"  fill={INDIGO}  radius={[4, 4, 0, 0]} />
