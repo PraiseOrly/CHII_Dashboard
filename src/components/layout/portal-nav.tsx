@@ -5,14 +5,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon, Download, LogOut, Menu, X } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
+import { Download, LogOut, Menu, X } from "lucide-react";
 import { getPortalTheme, type Portal } from "@/theme/portals";
 import { PORTAL_NAVS } from "@/config/navigation";
 
 export default function PortalNav({ portal }: { portal: Portal }) {
   const pathname = usePathname();
-  const [isDark, toggleTheme] = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const theme = getPortalTheme(portal);
@@ -78,15 +76,6 @@ export default function PortalNav({ portal }: { portal: Portal }) {
             style={{ borderColor: "var(--border-default)", color: accent, backgroundColor: "var(--bg-surface)" }}
           >
             {menuOpen ? <X size={16} /> : <Menu size={16} />}
-          </button>
-
-          <button
-            onClick={toggleTheme}
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md border transition-colors flex-shrink-0"
-            style={{ borderColor: "var(--border-default)", color: "var(--text-muted)", backgroundColor: "var(--bg-surface)" }}
-          >
-            {isDark ? <Sun size={12} /> : <Moon size={12} />}
           </button>
 
           <button

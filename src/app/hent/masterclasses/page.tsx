@@ -471,8 +471,8 @@ export default function MasterclassesPage() {
               <ResponsiveContainer width="100%" height={208}>
                 <BarChart data={attendanceTrend.slice(0, 12)} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
-                    axisLine={false} tickLine={false} />
+                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280", angle: -45, textAnchor: "end", height: 60 }}
+                    axisLine={false} tickLine={false} height={70} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[4, 4, 0, 0]} />
@@ -530,8 +530,8 @@ export default function MasterclassesPage() {
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={completionData} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
-                    axisLine={false} tickLine={false} />
+                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280", angle: -45, textAnchor: "end", height: 60 }}
+                    axisLine={false} tickLine={false} height={70} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />
@@ -657,8 +657,8 @@ export default function MasterclassesPage() {
               <ResponsiveContainer width="100%" height={208}>
                 <BarChart data={attendanceTrend.slice(0, 12)} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
-                    axisLine={false} tickLine={false} />
+                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280", angle: -45, textAnchor: "end", height: 60 }}
+                    axisLine={false} tickLine={false} height={70} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Attendees" fill={ORANGE_MC} radius={[4, 4, 0, 0]} />
@@ -722,8 +722,8 @@ export default function MasterclassesPage() {
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={completionData} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,33,71,0.06)" vertical={false} />
-                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280" }}
-                    axisLine={false} tickLine={false} />
+                  <XAxis dataKey="Session" tick={{ fontSize: 11, fill: "#6B7280", angle: -45, textAnchor: "end", height: 60 }}
+                    axisLine={false} tickLine={false} height={70} />
                   <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} axisLine={false} tickLine={false} width={25} domain={[0, 100]} />
                   <Tooltip cursor={CHART.tipCursor} content={<ChartTip />} />
                   <Bar dataKey="Completion %" fill={TEAL} radius={[4, 4, 0, 0]} />

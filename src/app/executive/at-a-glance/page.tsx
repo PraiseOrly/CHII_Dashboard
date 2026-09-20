@@ -59,41 +59,15 @@ function MapContainer({
       });
       resizeObserver.observe(mapContainer.current);
 
-      // Detect dark mode and use appropriate basemap
-      const isDark = () => {
-        const theme = document.documentElement.getAttribute('data-theme');
-        if (theme === 'dark') return true;
-        if (theme === 'light') return false;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
-      };
+      // Light mode only - always use OpenStreetMap light basemap
+      const isDark = () => false;
 
-      const tileUrl = isDark()
-        ? "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
-        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
       L.tileLayer(tileUrl, {
         maxZoom: 19,
         attribution: ""
       }).addTo(map.current);
-
-      // Listen for theme changes and update tile layer
-      const handleThemeChange = () => {
-        if (map.current) {
-          const newUrl = isDark()
-            ? "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
-            : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-          // Remove old layers and add new one
-          map.current.eachLayer((layer: any) => {
-            if (layer instanceof L.TileLayer) {
-              map.current.removeLayer(layer);
-            }
-          });
-          L.tileLayer(newUrl, { maxZoom: 19, attribution: "" }).addTo(map.current);
-        }
-      };
-
-      const observer = new MutationObserver(handleThemeChange);
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
       countryData.forEach((count, country) => {
         const lat = 3 + (Math.random() * 30 - 15);

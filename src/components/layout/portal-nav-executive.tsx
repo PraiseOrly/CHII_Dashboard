@@ -2,29 +2,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown, Sun, Moon, Download, LogOut, Menu, X } from "lucide-react";
+import { LayoutGrid, ChevronDown, Download, LogOut, Menu, X } from "lucide-react";
 
 const NAVY = "#042C53";
-
-function useTheme(): [boolean, () => void] {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const sys = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = stored ? stored === "dark" : sys;
-    setDark(isDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-  }, []);
-  const toggle = () => {
-    setDark(prev => {
-      const next = !prev;
-      document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
-      localStorage.setItem("theme", next ? "dark" : "light");
-      return next;
-    });
-  };
-  return [dark, toggle];
-}
 
 export const IMPACT_TABS = [
   { label: "At a Glance",                 href: "/executive/at-a-glance",      color: "#0891B2", bg: "#ECFEFF" },
@@ -62,7 +42,6 @@ export default function ImpactNav() {
   const activeLabel = getActiveTab(pathname);
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dark, toggleTheme] = useTheme();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -127,16 +106,6 @@ export default function ImpactNav() {
           style={{ borderColor: "#E5E7EB", color: NAVY, backgroundColor: "white" }}
         >
           {menuOpen ? <X size={16} /> : <Menu size={16} />}
-        </button>
-
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          title={dark ? "Switch to light mode" : "Switch to dark mode"}
-          className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md border transition-colors flex-shrink-0"
-          style={{ borderColor: "#E5E7EB", color: "#6B7280", backgroundColor: "white" }}
-        >
-          {dark ? <Sun size={12} /> : <Moon size={12} />}
         </button>
 
         {/* Export */}
