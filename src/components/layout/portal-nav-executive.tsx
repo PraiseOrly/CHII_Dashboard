@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown, Download, LogOut, Menu, X } from "lucide-react";
+import { LayoutGrid, ChevronDown, Download, LogOut, Menu, X, Sun, Moon } from "lucide-react";
 
 const NAVY = "#042C53";
 
@@ -42,7 +42,17 @@ export default function ImpactNav() {
   const activeLabel = getActiveTab(pathname);
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dark, setDark] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const toggleTheme = () => {
+    setDark(!dark);
+    if (!dark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  };
 
   useEffect(() => {
     function handle(e: MouseEvent) {
