@@ -529,9 +529,9 @@ export default function MasterclassesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ChartCard title="Age Group Distribution" sub="Participants by age bracket" accent={SKY}>
               <CustomDonut data={ageData} colors={AGE_COLORS} className="h-36" valueFormatter={v => `${v}`} />
-              <div className="mt-2 space-y-0.5">
+              <div className="mt-2 flex flex-wrap gap-4 justify-center">
                 {ageData.map((d, i) => (
-                  <div key={d.name} className="flex items-center justify-between text-[10px]">
+                  <div key={d.name} className="flex items-center gap-1.5 text-[10px]">
                     <span className="flex items-center gap-1.5 text-gray-500">
                       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: AGE_COLORS[i] }} />{d.name}
                     </span>
@@ -543,14 +543,14 @@ export default function MasterclassesPage() {
 
             <ChartCard title="Geographic Region" sub="Participants by region of origin" accent={EMERALD_MC}>
               <CustomDonut data={regionData} colors={REGION_COLORS} className="h-36" valueFormatter={v => `${v}`} />
-              <div className="mt-2 space-y-0.5">
+              <div className="mt-2 flex flex-wrap gap-4 justify-center">
                 {regionData.map((d, i) => (
-                  <div key={d.name} className="flex items-center justify-between text-[10px]">
-                    <span className="flex items-center gap-1.5 text-gray-500 truncate min-w-0">
+                  <div key={d.name} className="flex items-center gap-1.5 text-[10px]">
+                    <span className="flex items-center gap-1.5 text-gray-500">
                       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: REGION_COLORS[i] }} />
-                      <span className="truncate">{d.name}</span>
+                      <span>{d.name}</span>
                     </span>
-                    <span className="font-medium ml-1 flex-shrink-0" style={{ color: REGION_COLORS[i] }}>{d.value}</span>
+                    <span className="font-medium" style={{ color: REGION_COLORS[i] }}>{d.value}</span>
                   </div>
                 ))}
               </div>
@@ -604,12 +604,12 @@ export default function MasterclassesPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="mt-3 grid grid-cols-3 gap-1 pt-2 border-t border-gray-100 text-center">
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid rgba(0,33,71,0.06)`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
                 {socialData.map((d, i) => (
-                  <div key={d.name}>
-                    <p className="text-sm font-black" style={{ color: SOCIAL_COLORS[i] }}>{d.value}</p>
-                    <p className="text-[9px] text-gray-400">{d.name}</p>
-                  </div>
+                  <span key={d.name} style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: SOCIAL_COLORS[i] }} />
+                    {d.name}
+                  </span>
                 ))}
               </div>
             </ChartCard>

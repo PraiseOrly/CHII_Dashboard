@@ -601,6 +601,9 @@ export default function MentorshipPage() {
                     <Bar dataKey="score" fill={PRIMARY} radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: PRIMARY }} /> Average Score</span>
+                </div>
               </Panel>
 
               <Panel title="Gender Comparison by Criterion"
@@ -685,6 +688,9 @@ export default function MentorshipPage() {
                     <Bar dataKey="value" fill={EMERALD} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LIGHT_BORDER}`, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+                  <span style={{ fontSize: 11, color: "#6B7280", display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 6, borderRadius: 2, display: "inline-block", backgroundColor: EMERALD }} /> Inclusion Groups</span>
+                </div>
               </Panel>
             </div>
           </section>

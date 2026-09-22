@@ -190,6 +190,7 @@ export default function VentureFundingPage() {
   const [activeSection, setActiveSection] = useState<number>(1);
   const show = (n: number) => activeSection === n;
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [topFundedCount, setTopFundedCount] = useState(5);
 
   return (
     <PortalThemeProvider portal="hent">
@@ -349,7 +350,7 @@ export default function VentureFundingPage() {
         {/* ── SECTION 1: Catalytic Capital & Milestones ─── */}
         <section style={{ display: show(1) ? undefined : "none" }}>
           <SectionHeader title="Catalytic Capital & Milestones"
-            sub="How catalytic funding is deployed against venture milestones — from validation through early growth — and the funnel from portfolio to scaling ventures" />
+            sub="How catalytic funding is deployed against venture milestones from validation through early growth and the funnel from portfolio to scaling ventures" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <ChartCard title="Capital by Milestone" sub="Funding deployed against each milestone purpose"
@@ -614,9 +615,6 @@ export default function VentureFundingPage() {
 
               {/* Sector bars */}
               <div style={{ marginBottom: 12 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, color: BRAND_DK, margin: "0 0 12px 0" }}>
-                  Total: {fmt$(totalDeployedByYear)} across {bySectorByYear.filter(s => s.value > 0).length} sectors
-                </p>
                 <ResponsiveContainer width="100%" height={bySectorByYear.length * 32 + 40}>
                   <BarChart
                     data={bySectorByYear.map((s, i) => ({
@@ -681,7 +679,7 @@ export default function VentureFundingPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {D.topFunded.map(v => (
+                    {D.topFunded.slice(0, topFundedCount).map(v => (
                       <tr key={v.name} style={{ borderTop: `1px solid ${LIGHT_BORDER}` }}>
                         <td className="py-2.5 pr-6 whitespace-nowrap font-semibold text-gray-700">{v.name}</td>
                         <td className="py-2.5 px-2 whitespace-nowrap">
@@ -708,6 +706,32 @@ export default function VentureFundingPage() {
                   </tbody>
                 </table>
               </div>
+              {D.topFunded.length > topFundedCount && (
+                <div style={{ marginTop: 16, textAlign: "center" }}>
+                  <button
+                    onClick={() => setTopFundedCount(Math.min(topFundedCount + 5, D.topFunded.length))}
+                    style={{
+                      backgroundColor: "white",
+                      border: `1px solid ${LIGHT_BORDER}`,
+                      borderRadius: 6,
+                      padding: "8px 16px",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: BRAND_DK,
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#f0fdf4";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "white";
+                    }}
+                  >
+                    Show More ({topFundedCount} of {D.topFunded.length})
+                  </button>
+                </div>
+              )}
             </ChartCard>
           </div>
         </section>

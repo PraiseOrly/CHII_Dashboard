@@ -14,10 +14,19 @@ export interface FilterOption {
   currentValue: string | number;
 }
 
+export interface FilterGroup {
+  label: string;
+  options: (string | number)[];
+  value: string | number;
+  onChange: (value: string | number) => void;
+}
+
 export interface FilterDropdownProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   filters?: FilterOption[];
-  onResetFilters: () => void;
+  filterGroups?: FilterGroup[];
+  onResetFilters?: () => void;
+  onClose?: () => void;
   children?: React.ReactNode;
 }
 
@@ -40,7 +49,9 @@ export interface FilterDropdownProps {
 export function FilterDropdown({
   isOpen,
   filters,
+  filterGroups,
   onResetFilters,
+  onClose,
   children,
 }: FilterDropdownProps) {
   if (!isOpen) return null;
@@ -86,6 +97,42 @@ export function FilterDropdown({
       <div style={{ padding: "12px 14px" }}>
         {children ? (
           children
+        ) : filterGroups ? (
+          // Render filterGroups array
+          filterGroups.map(group => (
+            <div key={String(group.label)} style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: BRAND_DK, margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                {group.label}
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {group.options.map(opt => {
+                  const isSelected = group.value === opt;
+                  return (
+                    <button
+                      key={String(opt)}
+                      onClick={() => {
+                        group.onChange(opt);
+                        onClose?.();
+                      }}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: isSelected ? 700 : 500,
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        border: `1px solid ${isSelected ? BRAND : LIGHT_BORDER}`,
+                        backgroundColor: isSelected ? BRAND : "white",
+                        color: isSelected ? "white" : BRAND_DK,
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))
         ) : filters ? (
           // Default rendering of FilterOption array
           filters.map(filter => (

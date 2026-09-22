@@ -40,9 +40,11 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     wordmarkLines: ["HEALTH", "EMPLOYMENT", "PILLAR"],
     rootHref: "/hemp",
     items: [
+      { label: "At a Glance",                    href: "/hemp/at-a-glance" },
       { label: "Overview",                       href: "/hemp" },
       { label: "Mission Students",               href: "/hemp/mission-students" },
-      { label: "Career Exposure",                href: "/hemp/career-exposure" },
+      { label: "Career Workshops",               href: "/hemp/career-development" },
+      { label: "Exposure Events",                href: "/hemp/exposure-events" },
       { label: "Internships",                    href: "/hemp/internships" },
       { label: "SIE",                             href: "/hemp/sie" },
       { label: "Courses",                        href: "/hemp/course" },

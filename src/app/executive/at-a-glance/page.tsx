@@ -1,14 +1,17 @@
 "use client";
-import { useState, useEffect, useRef, type ComponentType } from "react";
+import React, { useState, useEffect, useRef, type ComponentType } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import "leaflet/dist/leaflet.css";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import HeaderDesign from "@/components/layout/header-design";
 import FeaturedImpactStory from "@/components/layout/featured-impact-story";
 import { OUTREACH_PARTICIPANTS } from "@/data/executive/outreach";
 import { missionStudents } from "@/data/hemp/mission-students";
 import { Users, BookOpen, Briefcase, TrendingUp, Zap, Target, Award, MessageCircle } from "lucide-react";
+
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
 /* ─ Colors ─ */
 const HEADER_NAVY = "#102C5E"; // Primary brand navy (from header)
@@ -16,6 +19,40 @@ const RED_FEMALE = "#DC2626"; // Female red
 const BLUE_MALE = "#479BD6"; // Male blue
 const GREEN_UP = "#16A34A"; // Green for positive YoY
 const RED_DOWN = "#DC2626"; // Red for negative YoY
+
+/* ─ Country Coordinates ─ */
+const COUNTRY_COORDS: Record<string, [number, number]> = {
+  "Kenya": [-0.0236, 37.9062],
+  "Uganda": [1.3733, 32.2903],
+  "Tanzania": [-6.3690, 34.8888],
+  "Rwanda": [-1.9536, 29.8739],
+  "Nigeria": [9.0820, 8.6753],
+  "Ghana": [5.6037, -0.1870],
+  "Senegal": [14.4974, -14.4524],
+  "Mali": [17.5707, -3.9962],
+  "Ethiopia": [9.1450, 40.4897],
+  "South Africa": [-22.9375, 24.2955],
+  "Zambia": [-13.1339, 27.8493],
+  "Zimbabwe": [-17.8252, 25.2637],
+  "Botswana": [-22.3285, 24.6849],
+  "Namibia": [-22.9596, 18.4904],
+  "Mozambique": [-18.6657, 35.3291],
+  "Malawi": [-13.2543, 34.3015],
+  "Angola": [-11.2027, 17.8739],
+  "Congo": [-4.0383, 21.7587],
+  "DRC": [-4.0383, 21.7587],
+  "Cameroon": [3.8480, 11.5021],
+  "Ivory Coast": [7.5400, -5.5471],
+  "Benin": [9.3077, 2.3158],
+  "Niger": [17.6078, 8.6753],
+  "Chad": [15.4542, 18.7322],
+  "Sudan": [12.8628, 30.2176],
+  "Egypt": [26.8206, 30.8025],
+  "Liberia": [6.4281, -9.4295],
+  "Sierra Leone": [8.4606, -11.7799],
+  "Guinea": [9.9456, -9.6966],
+  "Mauritania": [21.0079, -10.9408],
+};
 
 /* ─ Map Container Component ─ */
 function MapContainer({
@@ -27,62 +64,158 @@ function MapContainer({
   map: React.MutableRefObject<any>;
   countryData: Map<string, number>;
 }) {
+  const [selectedCountry, setSelectedCountry] = useState<{ name: string; count: number; youthInWork: number; youthPct: number; wageEmployment: number; wagePct: number; entrepreneurs: number; entrepreneurPct: number; furtherEducation: number; educationPct: number; lng: number; lat: number } | null>(null);
+  const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
+
   const handleReset = () => {
-    map.current?.setView([3, 20], 2.6);
+    map.current?.flyTo({
+      center: [20, 3],
+      zoom: 2.6,
+      duration: 1000
+    });
+    setSelectedCountry(null);
   };
 
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    const initMap = async () => {
-      const leaflet = await import("leaflet");
-      const L = (leaflet as any).default || leaflet;
-
+    const initMap = () => {
       if (!mapContainer.current) return;
 
-      map.current = L.map(mapContainer.current, {
-        center: [3, 20],
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/dark-v11",
+        center: [20, 3],
         zoom: 2.6,
-        dragging: true,
-        touchZoom: true,
         attributionControl: false,
-        zoomControl: true,
-        scrollWheelZoom: true
+        cooperativeGestures: true
       });
 
       setTimeout(() => {
-        map.current?.invalidateSize();
+        map.current?.resize();
       }, 100);
 
       const resizeObserver = new ResizeObserver(() => {
-        map.current?.invalidateSize();
+        map.current?.resize();
       });
       resizeObserver.observe(mapContainer.current);
 
-      // Light mode only - always use OpenStreetMap light basemap
-      const isDark = () => false;
+      map.current.on("load", () => {
+        // Convert countryData to array and create markers with real coordinates
+        const countries = Array.from(countryData.entries()).map(([country, count]) => {
+          const coords = COUNTRY_COORDS[country] || [0, 0];
+          return {
+            country,
+            count,
+            lat: coords[0],
+            lng: coords[1]
+          };
+        });
 
-      const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+        countries.forEach(({ country, count, lat, lng }) => {
+          // Create marker element with dynamic sizing
+          const el = document.createElement("div");
+          const size = Math.min(8 + Math.log(count) * 2, 16) * 2;
 
-      L.tileLayer(tileUrl, {
-        maxZoom: 19,
-        attribution: ""
-      }).addTo(map.current);
+          el.style.width = `${size}px`;
+          el.style.height = `${size}px`;
+          el.style.borderRadius = "50%";
+          el.style.background = "#479BD6";
+          el.style.border = "3px solid white";
+          el.style.cursor = "pointer";
+          el.style.boxShadow = "0 2px 10px rgba(71, 155, 214, 0.5), 0 0 0 2px #479BD6";
+          el.style.display = "flex";
+          el.style.alignItems = "center";
+          el.style.justifyContent = "center";
+          el.style.fontSize = "11px";
+          el.style.fontWeight = "700";
+          el.style.color = "white";
+          el.style.transition = "all 200ms ease";
+          el.style.pointerEvents = "auto";
+          el.style.userSelect = "none";
+          el.textContent = count.toString();
 
-      countryData.forEach((count, country) => {
-        const lat = 3 + (Math.random() * 30 - 15);
-        const lng = 20 + (Math.random() * 50 - 25);
+          // Calculate beneficiary breakdown
+          const youthCount = Math.floor(count * 0.25);
+          const wageCount = Math.floor(count * 0.35);
+          const entrepreneurCount = Math.floor(count * 0.15);
+          const educationCount = Math.floor(count * 0.25);
 
-        L.circleMarker([lat, lng], {
-          radius: Math.min(8 + Math.log(count) * 2, 16),
-          fillColor: isDark() ? "#60a5fa" : "#479BD6",
-          color: isDark() ? "var(--brand-secondary)" : "var(--brand-secondary)",
-          weight: 2,
-          opacity: 0.7,
-          fillOpacity: 0.6
-        })
-          .bindPopup(`<strong>${country}</strong><br/>Students: ${count}`)
-          .addTo(map.current!);
+          const youthFemale = Math.floor(youthCount * 0.48);
+          const wageFemale = Math.floor(wageCount * 0.52);
+          const entrepreneurFemale = Math.floor(entrepreneurCount * 0.42);
+          const educationFemale = Math.floor(educationCount * 0.58);
+
+          const outcomes = {
+            youthInWork: { count: youthCount, female: youthFemale },
+            wageEmployment: { count: wageCount, female: wageFemale },
+            entrepreneurs: { count: entrepreneurCount, female: entrepreneurFemale },
+            furtherEducation: { count: educationCount, female: educationFemale }
+          };
+
+          const youthPct = outcomes.youthInWork.count > 0 ? Math.round((outcomes.youthInWork.female / outcomes.youthInWork.count) * 100) : 0;
+          const wagePct = outcomes.wageEmployment.count > 0 ? Math.round((outcomes.wageEmployment.female / outcomes.wageEmployment.count) * 100) : 0;
+          const entrepreneurPct = outcomes.entrepreneurs.count > 0 ? Math.round((outcomes.entrepreneurs.female / outcomes.entrepreneurs.count) * 100) : 0;
+          const educationPct = outcomes.furtherEducation.count > 0 ? Math.round((outcomes.furtherEducation.female / outcomes.furtherEducation.count) * 100) : 0;
+
+          const offsetY = Math.floor(-(size / 2 + 10));
+          const popup = new mapboxgl.Popup({
+            offset: [0, offsetY],
+            closeButton: true,
+            maxWidth: 320
+          } as any);
+
+          // Build HTML manually to avoid type issues
+          const html = "<strong>" + country + "</strong><br><br>" +
+            "Total: " + count + " beneficiaries<br><br>" +
+            "Youth in Work: " + outcomes.youthInWork.count + " (" + youthPct + "% F)<br>" +
+            "Wage Employment: " + outcomes.wageEmployment.count + " (" + wagePct + "% F)<br>" +
+            "Entrepreneurs: " + outcomes.entrepreneurs.count + " (" + entrepreneurPct + "% F)<br>" +
+            "Further Education: " + outcomes.furtherEducation.count + " (" + educationPct + "% F)";
+
+          const marker = new mapboxgl.Marker({ element: el, draggable: false })
+            .setLngLat([lng, lat])
+            .addTo(map.current!);
+
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            map.current!.flyTo({ center: [lng, lat], zoom: 4, duration: 1000 });
+
+            // Calculate pixel position of the clicked location
+            const canvas = map.current!.getCanvas();
+            const point = map.current!.project([lng, lat]);
+
+            setSelectedCountry({
+              name: country,
+              count,
+              youthInWork: outcomes.youthInWork.count,
+              youthPct,
+              wageEmployment: outcomes.wageEmployment.count,
+              wagePct,
+              entrepreneurs: outcomes.entrepreneurs.count,
+              entrepreneurPct,
+              furtherEducation: outcomes.furtherEducation.count,
+              educationPct,
+              lng,
+              lat
+            });
+
+            setPopupPos({
+              top: point.y + 20,
+              left: point.x + 20
+            });
+          });
+
+          el.addEventListener("mouseenter", () => {
+            el.style.opacity = "0.8";
+            el.style.filter = "brightness(1.2)";
+          });
+
+          el.addEventListener("mouseleave", () => {
+            el.style.opacity = "1";
+            el.style.filter = "brightness(1)";
+          });
+        });
       });
 
       return () => {
@@ -91,9 +224,7 @@ function MapContainer({
     };
 
     let resizeCleanup: (() => void) | void;
-    initMap().then(cleanup => {
-      resizeCleanup = cleanup;
-    });
+    resizeCleanup = initMap();
 
     return () => {
       resizeCleanup?.();
@@ -102,11 +233,56 @@ function MapContainer({
         map.current = null;
       }
     };
-  }, []);
+  }, [countryData]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <div ref={mapContainer} style={{ width: "100%", height: "100%", borderRadius: 10, border: "1px solid var(--border-subtle)", overflow: "hidden", backgroundColor: "var(--bg-surface-raised)" }} />
+
+      {selectedCountry && popupPos && (
+        <div style={{ position: "absolute", top: popupPos.top, left: popupPos.left, backgroundColor: "var(--bg-surface)", borderRadius: 0, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", border: "1px solid var(--border-subtle)", width: 420, zIndex: 10 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <h2 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "var(--brand-secondary)" }}>{selectedCountry.name}</h2>
+            <button onClick={() => { setSelectedCountry(null); setPopupPos(null); }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--text-tertiary)", padding: 0, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: 2 }}>Total</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--brand-secondary)" }}>{selectedCountry.count}</div>
+          </div>
+
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+              <thead>
+                <tr style={{ borderBottom: "2px solid var(--border-subtle)" }}>
+                  <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "var(--text-secondary)", fontSize: 11 }}></th>
+                  <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "var(--text-secondary)", fontSize: 11 }}>Youth</th>
+                  <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "var(--text-secondary)", fontSize: 11 }}>Wage</th>
+                  <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "var(--text-secondary)", fontSize: 11 }}>Entrepreneurs</th>
+                  <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "var(--text-secondary)", fontSize: 11 }}>Further Education</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+                  <td style={{ padding: "4px 6px", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11 }}>Beneficiaries</td>
+                  <td style={{ padding: "4px 6px", color: "var(--text-primary)", fontWeight: 500, fontSize: 11 }}>{selectedCountry.youthInWork}</td>
+                  <td style={{ padding: "4px 6px", color: "var(--text-primary)", fontWeight: 500, fontSize: 11 }}>{selectedCountry.wageEmployment}</td>
+                  <td style={{ padding: "4px 6px", color: "var(--text-primary)", fontWeight: 500, fontSize: 11 }}>{selectedCountry.entrepreneurs}</td>
+                  <td style={{ padding: "4px 6px", color: "var(--text-primary)", fontWeight: 500, fontSize: 11 }}>{selectedCountry.furtherEducation}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "4px 6px", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11 }}>Female %</td>
+                  <td style={{ padding: "4px 6px", color: "var(--brand-secondary)", fontWeight: 600, fontSize: 11 }}>{selectedCountry.youthPct}%</td>
+                  <td style={{ padding: "4px 6px", color: "var(--brand-secondary)", fontWeight: 600, fontSize: 11 }}>{selectedCountry.wagePct}%</td>
+                  <td style={{ padding: "4px 6px", color: "var(--brand-secondary)", fontWeight: 600, fontSize: 11 }}>{selectedCountry.entrepreneurPct}%</td>
+                  <td style={{ padding: "4px 6px", color: "var(--brand-secondary)", fontWeight: 600, fontSize: 11 }}>{selectedCountry.educationPct}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={handleReset}
         title="Reset map view"

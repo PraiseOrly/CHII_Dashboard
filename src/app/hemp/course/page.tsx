@@ -3,6 +3,7 @@ import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/comp
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import { ghCohorts, GH_MODULES, GH_PROGRAMMES } from "@/data/hemp/global-health";
+import { targets2030 } from "@/data/hemp-participation";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -200,33 +201,33 @@ export default function HEMPCourses() {
               num: totalEnrolled,
               icon: Users,
               displayFmt: (n) => n.toLocaleString(),
-              sub: `Across ${filteredCohorts.length} cohorts`,
-              tip: "Total students enrolled in the course",
+              sub: `Goal: ${targets2030.courses.toLocaleString()} by 2030`,
+              tip: "Total students enrolled toward 2030 target",
               pace: true,
               paceA: totalEnrolled,
-              paceT: 150,
+              paceT: targets2030.courses,
             },
             {
               label: "Completion Rate",
               num: totalEnrolled ? Math.round((totalCompleted / totalEnrolled) * 100) : 0,
               icon: Target,
               displayFmt: (n) => n + "%",
-              sub: `${totalCompleted} completed the course`,
+              sub: `Goal: 85% | ${totalCompleted} completed the course`,
               tip: "Percentage of enrolled students who completed the course",
               pace: true,
               paceA: totalEnrolled ? Math.round((totalCompleted / totalEnrolled) * 100) : 0,
-              paceT: 100,
+              paceT: 85,
             },
             {
               label: "Certification Rate",
               num: totalCompleted ? Math.round((totalCertified / totalCompleted) * 100) : 0,
               icon: Briefcase,
               displayFmt: (n) => n + "%",
-              sub: `${totalCertified} passed assessment`,
+              sub: `Goal: 80% | ${totalCertified} passed assessment`,
               tip: "Percentage of completers who passed the assessment",
               pace: true,
               paceA: totalCompleted ? Math.round((totalCertified / totalCompleted) * 100) : 0,
-              paceT: 100,
+              paceT: 80,
             },
             {
               label: "Female Participation",

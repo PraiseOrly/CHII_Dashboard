@@ -3,6 +3,7 @@ import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/comp
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import { sieCohorts, SIE_DISCIPLINES, SIE_EXPOSURE_AREAS } from "@/data/hemp/sie";
+import { targets2030 } from "@/data/hemp-participation";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -257,29 +258,29 @@ export default function HEMPSie() {
               num: totalSelected,
               icon: Users,
               displayFmt: (n) => n.toLocaleString(),
-              sub: `Across ${filteredCohorts.length} cohorts`,
-              tip: "Total participants selected for the programme",
+              sub: `Goal: ${targets2030.sie.toLocaleString()} by 2030`,
+              tip: "Total participants selected toward 2030 target",
               pace: true,
               paceA: totalSelected,
-              paceT: 100,
+              paceT: targets2030.sie,
             },
             {
               label: "Completion Rate",
               num: totalSelected ? Math.round((totalCompleted / totalSelected) * 100) : 0,
               icon: Target,
               displayFmt: (n) => n + "%",
-              sub: `${totalCompleted} completed programme`,
+              sub: `Goal: 90% | ${totalCompleted} completed programme`,
               tip: "Percentage who completed the full SIE programme",
               pace: true,
               paceA: totalSelected ? Math.round((totalCompleted / totalSelected) * 100) : 0,
-              paceT: 100,
+              paceT: 90,
             },
             {
               label: "Female Participation",
               num: femalePct,
               icon: WomanIcon,
               displayFmt: (n) => n + "%",
-              sub: `${femaleParticipants} female participants`,
+              sub: `Goal: 50% | ${femaleParticipants} female participants`,
               tip: "Percentage of female participants",
               pace: true,
               paceA: femalePct,
@@ -290,11 +291,11 @@ export default function HEMPSie() {
               num: avgExposure,
               icon: Briefcase,
               displayFmt: (n) => n.toFixed(1),
-              sub: `Out of 5`,
+              sub: `Goal: 4.0+ | Out of 5`,
               tip: "Average self-reported exposure gain across areas",
               pace: true,
               paceA: avgExposure * 20,
-              paceT: 100,
+              paceT: 80,
             },
             {
               label: "Employment Leads",
