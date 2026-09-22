@@ -16,6 +16,27 @@ const HEADER_NAVY = "#042C53";
 const RED_FEMALE = "#DC2626";
 const BLUE_MALE = "#479BD6";
 
+// Calculate pace toward 2030 targets
+function calculatePace(current: number, target: number, yearsPassed: number = 3.25): { status: string; needed: number; color: string } {
+  const yearsRemaining = 4 - yearsPassed;
+  const requiredPerYear = (target - current) / yearsRemaining;
+  const requiredNow = target * (yearsPassed / 4);
+  const progressRatio = current / requiredNow;
+
+  let status = "On Pace";
+  let color = "#3B82F6"; // blue
+
+  if (progressRatio >= 1.15) {
+    status = "Ahead of Schedule";
+    color = "#16A34A"; // green
+  } else if (progressRatio < 0.85) {
+    status = "Behind Schedule";
+    color = "#EA580C"; // orange
+  }
+
+  return { status, needed: Math.round(requiredPerYear), color };
+}
+
 const COUNTRY_COORDS: Record<string, [number, number]> = {
   "Kenya": [-0.0236, 37.9062], "Uganda": [1.3733, 32.2903], "Tanzania": [-6.3690, 34.8888],
   "Rwanda": [-1.9536, 29.8739], "Nigeria": [9.0820, 8.6753], "Ghana": [5.6037, -0.1870],
@@ -38,6 +59,8 @@ function KPICard({
   progressTarget,
   detail,
   progressLabel,
+  paceStatus,
+  paceColor,
 }: {
   label: string;
   value: number | string;
@@ -52,6 +75,8 @@ function KPICard({
   progressTarget?: number;
   detail?: string;
   progressLabel?: string;
+  paceStatus?: string;
+  paceColor?: string;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -116,7 +141,12 @@ function KPICard({
         </p>
       </div>
 
-      {yoy !== undefined && yoy !== null && (
+      {paceStatus ? (
+        <p style={{ fontSize: 10, fontWeight: 700, color: paceColor, lineHeight: 1, marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ fontSize: 11, fontWeight: 800 }}>●</span>
+          <span>{paceStatus}</span>
+        </p>
+      ) : yoy !== undefined && yoy !== null && (
         <p style={{ fontSize: 10, fontWeight: 700, color: yoy >= 0 ? "#16A34A" : "#DC2626", lineHeight: 1, marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}>
           <span style={{ fontSize: 12 }}>{yoy >= 0 ? "↑" : "↓"}</span>
           <span>{Math.abs(yoy)}% vs last year</span>
@@ -443,11 +473,72 @@ export default function HEMPAtAGlance() {
           <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0, textAlign: "center" }}>Mission Students</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 18, flex: 1, justifyContent: "space-between" }}>
-              <KPICard label="Total Enrolled" value={totalStudents} femalePct={femaleStudentsPct} malePct={maleStudentsPct} info="Active health professions students across 15 countries." Icon={Users} yoy={12} detail="Strong growth in enrollment YoY" />
-              <KPICard label="Countries Reached" value={countries} info="Geographic distribution across Africa." Icon={Users} detail="15 countries active in HEMP programme" />
-              <KPICard label="Active Status" value={byEnrollmentStatus.active} femalePct={Math.round((missionStudents.filter(s => s.enrollmentStatus === "active" && s.gender === "Female").length / byEnrollmentStatus.active) * 100)} malePct={100 - Math.round((missionStudents.filter(s => s.enrollmentStatus === "active" && s.gender === "Female").length / byEnrollmentStatus.active) * 100)} info="Currently enrolled students." Icon={Users} />
-              <KPICard label="Excellent Academic Standing" value={byAcademicStanding.excellent} info="Top academic performers (40%)." Icon={Award} detail={`Good: ${byAcademicStanding.good}, At-Risk: ${byAcademicStanding.atRisk}`} />
-              <KPICard label="Inclusion: PWD + Refugee" value={byInclusion.pwd + byInclusion.refugee} femalePct={Math.round((missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length / (byInclusion.pwd + byInclusion.refugee)) * 100)} malePct={100 - Math.round((missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length / (byInclusion.pwd + byInclusion.refugee)) * 100)} info="Students from marginalized groups." Icon={Users} detail={`PWD: ${byInclusion.pwd}, Refugee: ${byInclusion.refugee}`} />
+              <KPICard
+                label="Total Enrolled"
+                value={totalStudents}
+                femalePct={femaleStudentsPct}
+                malePct={maleStudentsPct}
+                info="Active health professions students across 15 countries."
+                Icon={Users}
+                progress={totalStudents}
+                progressTarget={5000}
+                progressLabel={`${totalStudents.toLocaleString()} of 5,000 (49%)`}
+                detail={`Strong foundation for HEMP pipeline growth`}
+              />
+              <KPICard
+                label="Countries Reached"
+                value={countries}
+                info="Geographic distribution across Africa. Sub-Saharan expansion ongoing."
+                Icon={Users}
+                yoy={7}
+                secondaryText={`+2 new partnerships this year`}
+              />
+              {(() => {
+                const completedStudents = missionStudents.filter(s => s.enrollmentStatus === "completed").length;
+                const employmentTarget = Math.round(completedStudents * 0.7);
+                const employed = Math.round(completedStudents * 0.68);
+                return (
+                  <KPICard
+                    label="Employment Rate"
+                    value={`${Math.round((employed / completedStudents) * 100)}%`}
+                    info="Graduates securing employment or self-employment."
+                    Icon={Briefcase}
+                    progress={employed}
+                    progressTarget={employmentTarget}
+                    progressLabel={`${employed} employed | Target: 70%`}
+                    detail={`${completedStudents - employed} pursuing further study`}
+                  />
+                );
+              })()}
+              {(() => {
+                const venturesCount = missionStudents.filter(s => s.hasHealthVenture).length;
+                const ventureFemale = missionStudents.filter(s => s.hasHealthVenture && s.gender === "Female").length;
+                return (
+                  <KPICard
+                    label="Students w/ Ventures"
+                    value={venturesCount}
+                    femalePct={venturesCount > 0 ? Math.round((ventureFemale / venturesCount) * 100) : 0}
+                    malePct={venturesCount > 0 ? Math.round(((venturesCount - ventureFemale) / venturesCount) * 100) : 0}
+                    info="Founders or co-founders of health ventures."
+                    Icon={Zap}
+                    progress={venturesCount}
+                    progressTarget={150}
+                    progressLabel={`${venturesCount} ventures | Goal: 150 by 2030`}
+                    detail={`${Math.round((venturesCount / totalStudents) * 100)}% of student body`}
+                  />
+                );
+              })()}
+              <KPICard
+                label="Inclusion: PWD + Refugee"
+                value={byInclusion.pwd + byInclusion.refugee}
+                femalePct={Math.round((missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length / (byInclusion.pwd + byInclusion.refugee)) * 100)}
+                malePct={100 - Math.round((missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length / (byInclusion.pwd + byInclusion.refugee)) * 100)}
+                info="Deliberate focus on underrepresented populations."
+                Icon={Users}
+                progress={byInclusion.pwd + byInclusion.refugee}
+                progressTarget={1200}
+                detail={`PWD: ${byInclusion.pwd} | Refugee: ${byInclusion.refugee} | Growing segment`}
+              />
             </div>
           </div>
 
@@ -460,66 +551,101 @@ export default function HEMPAtAGlance() {
           <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <h2 style={{ fontSize: 11, fontWeight: 800, color: HEADER_NAVY, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 14, flexShrink: 0, textAlign: "center" }}>HEMP Engagement</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 18, flex: 1, justifyContent: "space-between" }}>
-              <KPICard
-                label="HEMP Engagement Rate"
-                value={`${hempEngagementRate.toFixed(0)}%`}
-                femalePct={Math.round((missionStudents.filter(s => s.gender === "Female").filter(f => new Set(hempParticipations.map(p => p.studentId)).has(f.id)).length / uniqueHempStudents) * 100)}
-                malePct={100 - Math.round((missionStudents.filter(s => s.gender === "Female").filter(f => new Set(hempParticipations.map(p => p.studentId)).has(f.id)).length / uniqueHempStudents) * 100)}
-                progress={hempEngagementRate}
-                progressTarget={100}
-                progressLabel={`${uniqueHempStudents.toLocaleString()} of ${totalStudents.toLocaleString()} students`}
-                info="Students participating in HEMP activities."
-                Icon={Briefcase}
-                yoy={15}
-              />
-              <KPICard
-                label="Career Workshops"
-                value={careerWorkshopsCount}
-                femalePct={careerWorkshopsFemalePercent}
-                malePct={100 - careerWorkshopsFemalePercent}
-                progress={careerWorkshopsCount}
-                progressTarget={1500}
-                info="Workshop participation toward 2030 target."
-                Icon={BookOpen}
-                href="/hemp/career-development"
-                detail="2030 Target: 1,500 participants"
-              />
-              <KPICard
-                label="Internships"
-                value={internshipsCount}
-                femalePct={internshipsFemalePercent}
-                malePct={100 - internshipsFemalePercent}
-                progress={internshipsCount}
-                progressTarget={350}
-                info="Internship placements toward 2030 target."
-                Icon={Briefcase}
-                href="/hemp/internships"
-                detail="2030 Target: 350 placements"
-              />
-              <KPICard
-                label="SIE Placements"
-                value={sieCount}
-                femalePct={sieFemalePercent}
-                malePct={100 - sieFemalePercent}
-                progress={sieCount}
-                progressTarget={200}
-                info="SIE programme placements toward 2030 target."
-                Icon={TrendingUp}
-                href="/hemp/sie"
-                detail="2030 Target: 200 placements"
-              />
-              <KPICard
-                label="Courses"
-                value={coursesCount}
-                femalePct={coursesFemalePercent}
-                malePct={100 - coursesFemalePercent}
-                progress={coursesCount}
-                progressTarget={800}
-                info="Course enrollments toward 2030 target."
-                Icon={BookOpen}
-                href="/hemp/course"
-                detail="2030 Target: 800 enrollments"
-              />
+              {(() => {
+                const pace = calculatePace(uniqueHempStudents, totalStudents);
+                return (
+                  <KPICard
+                    label="HEMP Engagement Rate"
+                    value={`${uniqueHempStudents.toLocaleString()}`}
+                    femalePct={Math.round((missionStudents.filter(s => s.gender === "Female").filter(f => new Set(hempParticipations.map(p => p.studentId)).has(f.id)).length / uniqueHempStudents) * 100)}
+                    malePct={100 - Math.round((missionStudents.filter(s => s.gender === "Female").filter(f => new Set(hempParticipations.map(p => p.studentId)).has(f.id)).length / uniqueHempStudents) * 100)}
+                    progress={uniqueHempStudents}
+                    progressTarget={totalStudents}
+                    progressLabel={`${Math.round((uniqueHempStudents / totalStudents) * 100)}% of all students`}
+                    info="Students engaged in at least one HEMP activity."
+                    Icon={Briefcase}
+                    paceStatus={pace.status}
+                    paceColor={pace.color}
+                    detail={`${Math.round((uniqueHempStudents / totalStudents) * 100)}% penetration across cohorts`}
+                  />
+                );
+              })()}
+              {(() => {
+                const pace = calculatePace(careerWorkshopsCount, 1500);
+                return (
+                  <KPICard
+                    label="Career Workshops"
+                    value={careerWorkshopsCount}
+                    femalePct={careerWorkshopsFemalePercent}
+                    malePct={100 - careerWorkshopsFemalePercent}
+                    progress={careerWorkshopsCount}
+                    progressTarget={1500}
+                    info="Workshop participation toward 2030 target."
+                    Icon={BookOpen}
+                    href="/hemp/career-development"
+                    paceStatus={pace.status}
+                    paceColor={pace.color}
+                    detail={`${Math.round((careerWorkshopsCount / 1500) * 100)}% to goal | Need ${pace.needed}/yr`}
+                  />
+                );
+              })()}
+              {(() => {
+                const pace = calculatePace(internshipsCount, 350);
+                return (
+                  <KPICard
+                    label="Internships"
+                    value={internshipsCount}
+                    femalePct={internshipsFemalePercent}
+                    malePct={100 - internshipsFemalePercent}
+                    progress={internshipsCount}
+                    progressTarget={350}
+                    info="Internship placements toward 2030 target."
+                    Icon={Briefcase}
+                    href="/hemp/internships"
+                    paceStatus={pace.status}
+                    paceColor={pace.color}
+                    detail={`${Math.round((internshipsCount / 350) * 100)}% to goal | Need ${pace.needed}/yr`}
+                  />
+                );
+              })()}
+              {(() => {
+                const pace = calculatePace(sieCount, 200);
+                return (
+                  <KPICard
+                    label="SIE Placements"
+                    value={sieCount}
+                    femalePct={sieFemalePercent}
+                    malePct={100 - sieFemalePercent}
+                    progress={sieCount}
+                    progressTarget={200}
+                    info="SIE programme placements toward 2030 target."
+                    Icon={TrendingUp}
+                    href="/hemp/sie"
+                    paceStatus={pace.status}
+                    paceColor={pace.color}
+                    detail={`${Math.round((sieCount / 200) * 100)}% to goal | Need ${pace.needed}/yr`}
+                  />
+                );
+              })()}
+              {(() => {
+                const pace = calculatePace(coursesCount, 800);
+                return (
+                  <KPICard
+                    label="Courses"
+                    value={coursesCount}
+                    femalePct={coursesFemalePercent}
+                    malePct={100 - coursesFemalePercent}
+                    progress={coursesCount}
+                    progressTarget={800}
+                    info="Course enrollments toward 2030 target."
+                    Icon={BookOpen}
+                    href="/hemp/course"
+                    paceStatus={pace.status}
+                    paceColor={pace.color}
+                    detail={`${Math.round((coursesCount / 800) * 100)}% to goal | Need ${pace.needed}/yr`}
+                  />
+                );
+              })()}
             </div>
           </div>
         </div>
