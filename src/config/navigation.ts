@@ -41,8 +41,6 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
     rootHref: "/hemp",
     items: [
       { label: "At a Glance",                    href: "/hemp" },
-      { label: "Overview",                       href: "/hemp/overview" },
-      { label: "Mission Students",               href: "/hemp/mission-students" },
       { label: "Career Workshops",               href: "/hemp/career-development" },
       { label: "Exposure Events",                href: "/hemp/exposure-events" },
       { label: "Internships",                    href: "/hemp/internships" },

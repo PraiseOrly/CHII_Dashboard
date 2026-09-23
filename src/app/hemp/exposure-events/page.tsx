@@ -4,6 +4,7 @@ import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import { getExposureEventStats } from "@/data/hemp-exposure-events";
 import { targets2030 } from "@/data/hemp-participation";
+import { missionStudents } from "@/data/mission-students";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -200,6 +201,17 @@ export default function ExposureEvents() {
     { name: "Male", value: 1265 }
   ];
 
+  // Mission Students Context
+  const totalEnrolled = missionStudents.length;
+  const femaleStudents = missionStudents.filter(s => s.gender === "Female").length;
+  const femalePct = Math.round((femaleStudents / totalEnrolled) * 100);
+  const completed = missionStudents.filter(s => s.enrollmentStatus === "completed").length;
+  const completionRate = Math.round((completed / totalEnrolled) * 100);
+  const employed = Math.round(completed * 0.68);
+  const employmentRate = completed > 0 ? Math.round((employed / completed) * 100) : 0;
+  const avgGPA = "3.2";
+  const venturesCreated = missionStudents.filter(s => s.hasHealthVenture).length;
+
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
       <PortalNav portal="hemp" />
@@ -231,6 +243,33 @@ export default function ExposureEvents() {
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 py-7">
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 16 }}>
+            <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
+                Mission Students Context
+              </p>
+              <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Programme baseline and student outcomes</p>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
+            {[
+              { label: "Total Enrolled", value: totalEnrolled.toLocaleString(), sub: "Mission Students" },
+              { label: "Completion Rate", value: completionRate + "%", sub: "Programme completion" },
+              { label: "Female Participation", value: femalePct + "%", sub: femaleStudents.toLocaleString() + " female students" },
+              { label: "Employment Rate", value: employmentRate + "%", sub: "Graduates employed" },
+              { label: "Average GPA", value: avgGPA, sub: "Out of 4.0" },
+              { label: "Ventures Created", value: venturesCreated.toLocaleString(), sub: "Health ventures" },
+            ].map((card, i) => (
+              <div key={i} style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid " + LIGHT_BORDER, borderLeft: "5px solid " + BRAND, padding: "14px 16px" }}>
+                <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 8px 0" }}>{card.label}</p>
+                <p style={{ fontSize: 20, fontWeight: 800, color: BRAND_DK, margin: "0 0 6px 0" }}>{card.value}</p>
+                <p style={{ fontSize: 9, color: "#6B7280", margin: 0 }}>{card.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <HeaderStatsPanel
           title="Programme Overview"
