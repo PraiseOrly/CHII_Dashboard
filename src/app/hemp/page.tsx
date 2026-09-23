@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { Users, BookOpen, Briefcase, TrendingUp, Target, Award, Zap, MessageCircle, Info, ChevronRight, type LucideIcon } from "lucide-react";
+import { Users, BookOpen, Briefcase, TrendingUp, Target, Award, Zap, MessageCircle, Info, ChevronRight, Accessibility, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -91,7 +91,8 @@ function KPICard({
         position: "relative",
         display: "flex",
         flexDirection: "column",
-        minHeight: 110,
+        flex: 1,
+        minHeight: 140,
         padding: "12px 14px",
         transition: "all 200ms ease",
         boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
@@ -530,7 +531,7 @@ export default function HEMPPage() {
                     femalePct={inclusionTotal > 0 ? Math.round((inclusionFemale / inclusionTotal) * 100) : 0}
                     malePct={inclusionTotal > 0 ? Math.round(((inclusionTotal - inclusionFemale) / inclusionTotal) * 100) : 0}
                     info="PWD and Refugee students. Deliberate focus on underrepresented populations."
-                    Icon={Users}
+                    Icon={Accessibility}
                     secondaryText={`${inclusionTotal} students | PWD: ${byInclusion.pwd}, Refugee: ${byInclusion.refugee}`}
                   />
                 );
