@@ -1,9 +1,9 @@
 import HEMPProviders from "./providers";
 
 export const metadata = {
-  title: "HEMP — Health Employment Pillar",
+  title: "CHII Health Missions and HEMP Programme Dashboard",
   description:
-    "Health Employment Pillar — student analytics, career development, internships, and mission outcomes across Africa.",
+    "Health Employment Pillar programme dashboard tracking student outcomes, career development, internships, and mission impact across 15 African countries.",
 };
 
 export default function HEMPLayout({ children }: { children: React.ReactNode }) {
