@@ -480,10 +480,7 @@ export default function HEMPPage() {
                 malePct={maleStudentsPct}
                 info="Active health professions students across 15 countries."
                 Icon={Users}
-                progress={totalStudents}
-                progressTarget={5000}
-                progressLabel={`${totalStudents.toLocaleString()} of 5,000 (49%)`}
-                detail={`Strong foundation for HEMP pipeline growth`}
+                secondaryText={`Strong foundation for HEMP pipeline growth`}
               />
               <KPICard
                 label="Countries Reached"
@@ -503,10 +500,7 @@ export default function HEMPPage() {
                     value={`${Math.round((employed / completedStudents) * 100)}%`}
                     info="Graduates securing employment or self-employment."
                     Icon={Briefcase}
-                    progress={employed}
-                    progressTarget={employmentTarget}
-                    progressLabel={`${employed} employed | Target: 70%`}
-                    detail={`${completedStudents - employed} pursuing further study`}
+                    secondaryText={`${employed} employed | ${completedStudents - employed} pursuing further study`}
                   />
                 );
               })()}
@@ -521,24 +515,26 @@ export default function HEMPPage() {
                     malePct={venturesCount > 0 ? Math.round(((venturesCount - ventureFemale) / venturesCount) * 100) : 0}
                     info="Founders or co-founders of health ventures."
                     Icon={Zap}
-                    progress={venturesCount}
-                    progressTarget={150}
-                    progressLabel={`${venturesCount} ventures | Goal: 150 by 2030`}
-                    detail={`${Math.round((venturesCount / totalStudents) * 100)}% of student body`}
+                    secondaryText={`${Math.round((venturesCount / totalStudents) * 100)}% of student body`}
                   />
                 );
               })()}
-              <KPICard
-                label="Inclusion: PWD + Refugee"
-                value={byInclusion.pwd + byInclusion.refugee}
-                femalePct={Math.round((missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length / (byInclusion.pwd + byInclusion.refugee)) * 100)}
-                malePct={100 - Math.round((missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length / (byInclusion.pwd + byInclusion.refugee)) * 100)}
-                info="Deliberate focus on underrepresented populations."
-                Icon={Users}
-                progress={byInclusion.pwd + byInclusion.refugee}
-                progressTarget={1200}
-                detail={`PWD: ${byInclusion.pwd} | Refugee: ${byInclusion.refugee} | Growing segment`}
-              />
+              {(() => {
+                const inclusionTotal = byInclusion.pwd + byInclusion.refugee;
+                const inclusionPct = Math.round((inclusionTotal / totalStudents) * 100);
+                const inclusionFemale = missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length;
+                return (
+                  <KPICard
+                    label="Inclusion"
+                    value={`${inclusionPct}%`}
+                    femalePct={inclusionTotal > 0 ? Math.round((inclusionFemale / inclusionTotal) * 100) : 0}
+                    malePct={inclusionTotal > 0 ? Math.round(((inclusionTotal - inclusionFemale) / inclusionTotal) * 100) : 0}
+                    info="PWD and Refugee students. Deliberate focus on underrepresented populations."
+                    Icon={Users}
+                    secondaryText={`${inclusionTotal} students | PWD: ${byInclusion.pwd}, Refugee: ${byInclusion.refugee}`}
+                  />
+                );
+              })()}
             </div>
           </div>
 
