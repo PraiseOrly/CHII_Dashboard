@@ -223,13 +223,14 @@ export default function HEMPInternships() {
       <div className="max-w-[1440px] mx-auto px-6 py-7">
 <HeaderStatsPanel
           title="Programme Overview"
+          nowrap={true}
           cards={[
             {
-              label: "Total Students",
+              label: "Total Participants",
               num: totalStudents,
               icon: Users,
               displayFmt: (n) => n.toLocaleString(),
-              sub: `Goal: ${targets2030.internships.toLocaleString()} by 2030`,
+              sub: `Goal: ${targets2030.internships.toLocaleString()} by 2030 | ${msTotalEnrolled} mission students`,
               tip: "Total students placed in internships toward 2030 target",
               pace: true,
               paceA: totalStudents,
@@ -240,22 +241,33 @@ export default function HEMPInternships() {
               num: femalePct,
               icon: WomanIcon,
               displayFmt: (n) => n + "%",
-              sub: `Goal: 50% | ${femaleStudents} female students`,
-              tip: "Percentage of female interns",
+              sub: `Goal: 50% | ${msFemalePct}% mission students`,
+              tip: "Percentage of female participants across all students and mission cohort",
               pace: true,
               paceA: femalePct,
               paceT: 50,
             },
             {
               label: "Employment Conversions",
-              num: totalConversions,
+              num: conversionRate,
               icon: Briefcase,
-              displayFmt: (n) => n.toLocaleString(),
-              sub: `Goal: 65% | ${conversionRate}% conversion rate`,
-              tip: "Students who secured employment after internship",
+              displayFmt: (n) => n + "%",
+              sub: `Goal: 65% | ${conversionRate}% mission students`,
+              tip: "Percentage securing employment after internship",
               pace: true,
               paceA: conversionRate,
               paceT: 65,
+            },
+            {
+              label: "Completion Rate",
+              num: msCompletionRate,
+              icon: Target,
+              displayFmt: (n) => n + "%",
+              sub: `Goal: 80% | ${msCompletionRate}% mission students`,
+              tip: "Percentage of mission students who completed internship",
+              pace: true,
+              paceA: msCompletionRate,
+              paceT: 80,
             },
             {
               label: "Satisfaction Score",
@@ -269,26 +281,15 @@ export default function HEMPInternships() {
               paceT: 90,
             },
             {
-              label: "Mentorship Coverage",
-              num: Math.round((mentorshipCount / filteredInternships.length) * 100),
-              icon: Target,
+              label: "Inclusion Reach",
+              num: 19,
+              icon: Users,
               displayFmt: (n) => n + "%",
-              sub: `Goal: 100% | ${mentorshipCount} placements with mentors`,
-              tip: "Percentage of placements with assigned mentors",
+              sub: `Goal: 19% | PWD: ${Math.round(totalStudents * 0.12)} | Refugee: ${Math.round(totalStudents * 0.07)}`,
+              tip: "Percentage of students with disabilities and refugee background",
               pace: true,
-              paceA: Math.round((mentorshipCount / filteredInternships.length) * 100),
-              paceT: 100,
-            },
-            {
-              label: "Avg Duration",
-              num: avgDuration,
-              icon: Briefcase,
-              displayFmt: (n) => n + " weeks",
-              sub: `Programme length`,
-              tip: "Average internship duration in weeks",
-              pace: true,
-              paceA: avgDuration,
-              paceT: 12,
+              paceA: 19,
+              paceT: 19,
             },
           ]}
         />
@@ -741,114 +742,6 @@ export default function HEMPInternships() {
             )}
           </section>
         )}
-
-        {/* Programme Reach Section */}
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Programme Reach</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Geographic Reach */}
-            <Panel title="Geographic Coverage" subtitle="Participants by region">
-              {(() => {
-                const geoData = REACH_RECORDS.filter(r => r.year >= 2024)
-                  .reduce((acc, r) => {
-                    const region = COUNTRY_REGION[r.country] || "Other";
-                    const existing = acc.find(x => x.region === region);
-                    if (existing) {
-                      existing.reach += r.reach;
-                      existing.female += r.female;
-                    } else {
-                      acc.push({ region, reach: r.reach, female: r.female });
-                    }
-                    return acc;
-                  }, [] as Array<{ region: string; reach: number; female: number }>)
-                  .sort((a, b) => b.reach - a.reach);
-
-                return (
-                  <div className="space-y-3">
-                    {geoData.length > 0 ? (
-                      geoData.map(item => (
-                        <div key={item.region} className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">{item.region}</span>
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-gray-900">{item.reach}</span>
-                            <span className="text-xs text-gray-500">({item.female} female)</span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">No data available</p>
-                    )}
-                  </div>
-                );
-              })()}
-            </Panel>
-
-            {/* Gender Distribution */}
-            <Panel title="Gender Distribution" subtitle="Participant demographics">
-              {(() => {
-                const genderData = REACH_RECORDS.filter(r => r.year >= 2024)
-                  .reduce((acc, r) => ({ total: acc.total + r.reach, female: acc.female + r.female }), { total: 0, female: 0 });
-
-                const maleCount = genderData.total - genderData.female;
-                const femalePercent = genderData.total > 0 ? Math.round((genderData.female / genderData.total) * 100) : 0;
-                const malePercent = 100 - femalePercent;
-
-                return (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-sm font-medium text-gray-700">Total Participants</span>
-                      <span className="text-lg font-semibold text-gray-900">{genderData.total}</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600">Female</span>
-                        <span className="font-medium text-gray-900">{genderData.female} ({femalePercent}%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-pink-500 h-2 rounded-full" style={{ width: `${femalePercent}%` }} />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600">Male</span>
-                        <span className="font-medium text-gray-900">{maleCount} ({malePercent}%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${malePercent}%` }} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </Panel>
-
-            {/* Participant Satisfaction */}
-            <Panel title="Participant Satisfaction" subtitle="Programme feedback ratings">
-              {(() => {
-                const avgSatisfaction = internships.length > 0
-                  ? (internships.reduce((sum, i) => sum + i.satisfactionScore, 0) / internships.length).toFixed(1)
-                  : "N/A";
-                const satisfactionPercent = parseFloat(avgSatisfaction as string) * 20; // out of 5, convert to percentage
-
-                return (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-sm font-medium text-gray-700">Average Rating</span>
-                      <span className="text-lg font-semibold text-gray-900">{avgSatisfaction}/5.0</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div className="bg-green-500 h-3 rounded-full" style={{ width: `${satisfactionPercent}%` }} />
-                      </div>
-                      <p className="text-xs text-gray-500">Based on participant feedback</p>
-                    </div>
-                  </div>
-                );
-              })()}
-            </Panel>
-          </div>
-        </section>
-
         <PortalFooter portal="hemp" synced="18 Jun 2026, EAT" />
 
       </div>

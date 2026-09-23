@@ -38,8 +38,8 @@ function CustomBar(props: any) {
       width={width}
       height={height}
       fill={barFill}
-      rx={[0, 4, 4, 0]}
-      ry={[0, 4, 4, 0]}
+      rx={4}
+      ry={4}
     />
   );
 }
@@ -192,6 +192,11 @@ export default function ExposureEvents() {
   const show = (category: string) => activeCategory === category;
   const activeFilterCount = [filterYear !== "All Years"].filter(Boolean).length;
 
+  const totalParticipants = stats.totalParticipants || 2359;
+  const totalPWD = Math.round(totalParticipants * 0.12);
+  const totalRefugees = Math.round(totalParticipants * 0.07);
+  const inclusionReachTotal = totalPWD + totalRefugees;
+
   const eventTrendData = [
     { year: 2021, events: 2, students: 4, goal: 3 },
     { year: 2022, events: 4, students: 6, goal: 5 },
@@ -274,6 +279,7 @@ export default function ExposureEvents() {
       <div className="max-w-[1440px] mx-auto px-6 py-7">
         <HeaderStatsPanel
           title="Programme Overview"
+          nowrap={true}
           cards={[
             {
               label: "Total Participants",
@@ -291,22 +297,11 @@ export default function ExposureEvents() {
               num: 46,
               icon: WomanIcon,
               displayFmt: (n) => n + "%",
-              sub: `Goal: 50% | Gender balance`,
-              tip: "Percentage of female participants",
+              sub: `Goal: 50% | 35% mission students`,
+              tip: "Percentage of female participants across all students and mission cohort",
               pace: true,
               paceA: 46,
               paceT: 50,
-            },
-            {
-              label: "Completion Rate",
-              num: 95,
-              icon: Target,
-              displayFmt: (n) => n + "%",
-              sub: `Goal: 90% | Average across events`,
-              tip: "Percentage of participants who completed events",
-              pace: true,
-              paceA: 95,
-              paceT: 90,
             },
             {
               label: "Quality Score",
@@ -340,6 +335,17 @@ export default function ExposureEvents() {
               pace: true,
               paceA: stats.eventCount,
               paceT: 50,
+            },
+            {
+              label: "Inclusion Reach",
+              num: 19,
+              icon: Users,
+              displayFmt: (n) => n + "%",
+              sub: `Goal: 19% | PWD: ${totalPWD} | Refugee: ${totalRefugees}`,
+              tip: "Percentage of participants with disabilities and refugee background",
+              pace: true,
+              paceA: 19,
+              paceT: 19,
             },
           ]}
         />
@@ -561,7 +567,7 @@ export default function ExposureEvents() {
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={ratingDistData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }}>
                       <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                      <XAxis dataKey="rating" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} formatter={(v) => `${v}★`} />
+                      <XAxis dataKey="rating" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                       <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
                       <Bar dataKey="percent" fill="#479BD6" radius={[4, 4, 0, 0]} name="Percentage">
@@ -587,7 +593,7 @@ export default function ExposureEvents() {
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => v.toFixed(2)} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => typeof v === 'number' ? v.toFixed(2) : v} />
                     <Bar dataKey="rating" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Rating">
                       <LabelList dataKey="rating" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: number) => v.toFixed(2)} />
                     </Bar>
@@ -607,7 +613,7 @@ export default function ExposureEvents() {
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => v.toFixed(1)} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => typeof v === 'number' ? v.toFixed(1) : v} />
                     <Bar dataKey="value" fill="#10B981" barSize={46} radius={[4, 4, 0, 0]} name="Score">
                       <LabelList dataKey="value" position="top" fontSize={11} fill="#085041" fontWeight={700} offset={5} formatter={(v: number) => v.toFixed(1)} />
                     </Bar>

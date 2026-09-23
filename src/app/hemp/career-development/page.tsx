@@ -3,6 +3,7 @@ import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
 import HeaderDesign from "@/components/layout/header-design";
 import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
+import { missionStudents } from "@/data/mission-students";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -170,8 +171,8 @@ function CustomBar(props: any) {
       width={width}
       height={height}
       fill={barFill}
-      rx={[0, 4, 4, 0]}
-      ry={[0, 4, 4, 0]}
+      rx={4}
+      ry={4}
     />
   );
 }
@@ -248,6 +249,11 @@ export default function CareerWorkshopsPage() {
     });
   }, [filterPartner, partnerSearch]);
 
+  const totalParticipants = 2359;
+  const totalPWD = Math.round(totalParticipants * 0.12);
+  const totalRefugees = Math.round(totalParticipants * 0.07);
+  const inclusionReachTotal = totalPWD + totalRefugees;
+
   return (
     <div style={{ backgroundColor: LIGHT_BG, minHeight: "100vh" }}>
       <PortalNav portal="hemp" />
@@ -276,9 +282,10 @@ export default function CareerWorkshopsPage() {
       <div className="max-w-[1440px] mx-auto px-6 py-7">
         <HeaderStatsPanel
           title="Programme Overview"
+          nowrap={true}
           cards={[
             {
-              label: "Participants",
+              label: "Total Participants",
               num: 2359,
               icon: Users,
               displayFmt: (n) => n.toLocaleString(),
@@ -304,8 +311,8 @@ export default function CareerWorkshopsPage() {
               num: 46,
               icon: WomanIcon,
               displayFmt: (n) => n + "%",
-              sub: `Goal: 50% | 1,094 female participants`,
-              tip: "Percentage of female participants",
+              sub: `Goal: 50% | 35% mission students`,
+              tip: "Percentage of female participants across all students and mission cohort",
               pace: true,
               paceA: 46,
               paceT: 50,
@@ -323,14 +330,14 @@ export default function CareerWorkshopsPage() {
             },
             {
               label: "Inclusion Reach",
-              num: 95,
-              icon: Target,
+              num: 19,
+              icon: Users,
               displayFmt: (n) => n + "%",
-              sub: `Goal: 90% | Above target`,
-              tip: "Session completion rate",
+              sub: `Goal: 19% | PWD: ${totalPWD} | Refugee: ${totalRefugees}`,
+              tip: "Percentage of participants with disabilities and refugee background",
               pace: true,
-              paceA: 95,
-              paceT: 90,
+              paceA: 19,
+              paceT: 19,
             },
             {
               label: "Quality Score",
@@ -527,7 +534,7 @@ export default function CareerWorkshopsPage() {
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={RATING_DIST} margin={{ top: 6, right: 10, bottom: 0, left: -16 }}>
                       <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                      <XAxis dataKey="rating" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} formatter={(v) => `${v}★`} />
+                      <XAxis dataKey="rating" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
                       <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => `${v}%`} />
                       <Bar dataKey="percent" fill="#479BD6" radius={[4, 4, 0, 0]} name="Percentage">
@@ -553,7 +560,7 @@ export default function CareerWorkshopsPage() {
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => v.toFixed(2)} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => typeof v === 'number' ? v.toFixed(2) : v} />
                     <Bar dataKey="rating" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Rating">
                       <LabelList dataKey="rating" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} offset={5} formatter={(v: number) => v.toFixed(2)} />
                     </Bar>
@@ -573,7 +580,7 @@ export default function CareerWorkshopsPage() {
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => v.toFixed(1)} />
+                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} formatter={(v) => typeof v === 'number' ? v.toFixed(1) : v} />
                     <Bar dataKey="value" fill="#10B981" barSize={46} radius={[4, 4, 0, 0]} name="Score">
                       <LabelList dataKey="value" position="top" fontSize={11} fill="#085041" fontWeight={700} offset={5} formatter={(v: number) => v.toFixed(1)} />
                     </Bar>

@@ -23,6 +23,7 @@ export interface HeaderStatsPanelProps {
   title: string;
   description?: string;
   cards: HeaderStatCard[];
+  nowrap?: boolean;
 }
 
 const PACE = 5 / 12;
@@ -54,9 +55,10 @@ function paceColor(a: number, t: number): string {
 export function HeaderStatsPanel({
   title,
   description,
-  cards
+  cards,
+  nowrap
 }: HeaderStatsPanelProps) {
-  const [hoveredCardIdx, setHoveredCardIdx] = useState<number | null>(null);
+  const [hoveredIconIdx, setHoveredIconIdx] = useState<number | null>(null);
 
   return (
     <div>
@@ -77,8 +79,9 @@ export function HeaderStatsPanel({
       <div style={{
         display: "flex",
         gap: 12,
-        flexWrap: "wrap",
+        flexWrap: nowrap ? "nowrap" : "wrap",
         marginBottom: 24,
+        overflowX: nowrap ? "auto" : "visible",
       }}>
         {cards.map((card, idx) => (
           <div key={idx} style={{
@@ -97,10 +100,7 @@ export function HeaderStatsPanel({
                 position: "relative",
                 overflow: "visible",
                 transition: "all 0.2s ease",
-                boxShadow: hoveredCardIdx === idx ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
               }}
-              onMouseEnter={() => setHoveredCardIdx(idx)}
-              onMouseLeave={() => setHoveredCardIdx(null)}
             >
               {/* Label with optional tooltip */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 8 }}>
@@ -108,9 +108,13 @@ export function HeaderStatsPanel({
                   {card.label}
                 </p>
                 {card.tip && (
-                  <span style={{ position: "relative", display: "flex", cursor: "pointer" }}>
+                  <span
+                    style={{ position: "relative", display: "flex", cursor: "pointer" }}
+                    onMouseEnter={() => setHoveredIconIdx(idx)}
+                    onMouseLeave={() => setHoveredIconIdx(null)}
+                  >
                     <Info size={12} color={BRAND_DK} opacity={0.5} />
-                    {hoveredCardIdx === idx && (
+                    {hoveredIconIdx === idx && (
                       <span style={{
                         position: "absolute",
                         top: "calc(100% + 6px)",

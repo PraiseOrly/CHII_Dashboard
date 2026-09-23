@@ -32,19 +32,19 @@ export default function PortalNav({ portal }: { portal: Portal }) {
         {/* Wordmark */}
         <Link href={config.rootHref} className="flex items-center gap-2.5 flex-shrink-0 group">
           {portal === "hemp" ? (
-            <span className="flex items-center gap-4" style={{ color: accent }}>
-              <span className="flex items-center gap-1.5">
-                <span className="text-[30px] font-semibold tracking-tight leading-none">HM</span>
+            <span className="flex flex-col gap-0.5" style={{ color: accent }}>
+              <span className="flex items-center gap-1">
+                <span className="text-[22px] font-semibold tracking-tight leading-none">HM</span>
                 <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
-                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">HEALTH</span>
-                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">MISSIONS</span>
+                  <span className="text-[7px] font-medium tracking-tight whitespace-nowrap">HEALTH</span>
+                  <span className="text-[7px] font-medium tracking-tight whitespace-nowrap">MISSIONS</span>
                 </span>
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-[30px] font-semibold tracking-tight leading-none">HEMP</span>
+              <span className="flex items-center gap-1">
+                <span className="text-[22px] font-semibold tracking-tight leading-none">HEMP</span>
                 <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
-                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">HEALTH</span>
-                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">EMPLOYMENT</span>
+                  <span className="text-[7px] font-medium tracking-tight whitespace-nowrap">HEALTH</span>
+                  <span className="text-[7px] font-medium tracking-tight whitespace-nowrap">EMPLOYMENT</span>
                 </span>
               </span>
             </span>
