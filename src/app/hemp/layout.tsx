@@ -1,9 +1,9 @@
 import HEMPProviders from "./providers";
 
 export const metadata = {
-  title: "HEMP — Programme Management Dashboard",
+  title: "HEMP — Health Employment Pillar",
   description:
-    "Health Management Programme — student analytics, HealthX experiences, internships, and mission outcomes.",
+    "Health Employment Pillar — student analytics, career development, internships, and mission outcomes across Africa.",
 };
 
 export default function HEMPLayout({ children }: { children: React.ReactNode }) {
