@@ -10,6 +10,9 @@ const nextConfig = {
       // "Intro to Global Health" is its own Course page again.
       { source: "/hemp/global-health", destination: "/hemp/course", permanent: true },
 
+      // HEMP landing page is now "At a Glance"
+      { source: "/hemp", destination: "/hemp/at-a-glance", permanent: true },
+
       // The "Impact" portal is now called "Executive". The three per-pillar
       // sub-pages under it were unreachable and have been removed, so they land
       // on the executive overview instead.
