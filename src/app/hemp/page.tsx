@@ -528,7 +528,7 @@ export default function HEMPPage() {
                 const inclusionFemale = missionStudents.filter(s => (s.disability === "Yes" || s.humanitarianStatus === "Refugee") && s.gender === "Female").length;
                 return (
                   <KPICard
-                    label="Inclusion"
+                    label="Inclusion Reach"
                     value={`${inclusionPct}%`}
                     femalePct={inclusionTotal > 0 ? Math.round((inclusionFemale / inclusionTotal) * 100) : 0}
                     malePct={inclusionTotal > 0 ? Math.round(((inclusionTotal - inclusionFemale) / inclusionTotal) * 100) : 0}
