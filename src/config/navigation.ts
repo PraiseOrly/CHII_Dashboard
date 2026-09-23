@@ -38,7 +38,7 @@ export const PORTAL_NAVS: Record<Portal, PortalNavConfig> = {
   hemp: {
     wordmark: "HEMP",
     wordmarkLines: ["HEALTH", "EMPLOYMENT", "PILLAR"],
-    rootHref: "/hemp",
+    rootHref: "/hemp/at-a-glance",
     items: [
       { label: "At a Glance",                    href: "/hemp/at-a-glance" },
       { label: "Overview",                       href: "/hemp" },
