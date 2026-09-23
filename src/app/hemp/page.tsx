@@ -61,6 +61,7 @@ function KPICard({
   progressLabel,
   paceStatus,
   paceColor,
+  secondaryTextColor,
 }: {
   label: string;
   value: number | string;
@@ -77,6 +78,7 @@ function KPICard({
   progressLabel?: string;
   paceStatus?: string;
   paceColor?: string;
+  secondaryTextColor?: string;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -190,7 +192,7 @@ function KPICard({
             )}
           </div>
         ) : (
-          <p style={{ fontSize: 9, fontWeight: 500, color: "#9CA3AF", lineHeight: 1, margin: 0 }}>
+          <p style={{ fontSize: 9, fontWeight: 600, color: secondaryTextColor || "#6B7280", lineHeight: 1.2, margin: 0, textAlign: "center" }}>
             {secondaryText || "—"}
           </p>
         )}
@@ -554,16 +556,13 @@ export default function HEMPPage() {
                   <KPICard
                     label="HEMP Engagement Rate"
                     value={`${uniqueHempStudents.toLocaleString()}`}
-                    femalePct={Math.round((missionStudents.filter(s => s.gender === "Female").filter(f => new Set(hempParticipations.map(p => p.studentId)).has(f.id)).length / uniqueHempStudents) * 100)}
-                    malePct={100 - Math.round((missionStudents.filter(s => s.gender === "Female").filter(f => new Set(hempParticipations.map(p => p.studentId)).has(f.id)).length / uniqueHempStudents) * 100)}
                     progress={uniqueHempStudents}
                     progressTarget={totalStudents}
                     progressLabel={`${Math.round((uniqueHempStudents / totalStudents) * 100)}% of all students`}
                     info="Students engaged in at least one HEMP activity."
                     Icon={Briefcase}
-                    paceStatus={pace.status}
+                    secondaryText={pace.status}
                     paceColor={pace.color}
-                    detail={`${Math.round((uniqueHempStudents / totalStudents) * 100)}% penetration across cohorts`}
                   />
                 );
               })()}
@@ -573,16 +572,14 @@ export default function HEMPPage() {
                   <KPICard
                     label="Career Workshops"
                     value={careerWorkshopsCount}
-                    femalePct={careerWorkshopsFemalePercent}
-                    malePct={100 - careerWorkshopsFemalePercent}
                     progress={careerWorkshopsCount}
                     progressTarget={1500}
+                    progressLabel={`${Math.round((careerWorkshopsCount / 1500) * 100)}%`}
                     info="Workshop participation toward 2030 target."
                     Icon={BookOpen}
                     href="/hemp/career-development"
-                    paceStatus={pace.status}
-                    paceColor={pace.color}
-                    detail={`${Math.round((careerWorkshopsCount / 1500) * 100)}% to goal | Need ${pace.needed}/yr`}
+                    secondaryText={pace.status}
+                    secondaryTextColor={pace.color}
                   />
                 );
               })()}
@@ -592,16 +589,14 @@ export default function HEMPPage() {
                   <KPICard
                     label="Internships"
                     value={internshipsCount}
-                    femalePct={internshipsFemalePercent}
-                    malePct={100 - internshipsFemalePercent}
                     progress={internshipsCount}
                     progressTarget={350}
+                    progressLabel={`${Math.round((internshipsCount / 350) * 100)}%`}
                     info="Internship placements toward 2030 target."
                     Icon={Briefcase}
                     href="/hemp/internships"
-                    paceStatus={pace.status}
-                    paceColor={pace.color}
-                    detail={`${Math.round((internshipsCount / 350) * 100)}% to goal | Need ${pace.needed}/yr`}
+                    secondaryText={pace.status}
+                    secondaryTextColor={pace.color}
                   />
                 );
               })()}
@@ -611,16 +606,14 @@ export default function HEMPPage() {
                   <KPICard
                     label="SIE Placements"
                     value={sieCount}
-                    femalePct={sieFemalePercent}
-                    malePct={100 - sieFemalePercent}
                     progress={sieCount}
                     progressTarget={200}
+                    progressLabel={`${Math.round((sieCount / 200) * 100)}%`}
                     info="SIE programme placements toward 2030 target."
                     Icon={TrendingUp}
                     href="/hemp/sie"
-                    paceStatus={pace.status}
-                    paceColor={pace.color}
-                    detail={`${Math.round((sieCount / 200) * 100)}% to goal | Need ${pace.needed}/yr`}
+                    secondaryText={pace.status}
+                    secondaryTextColor={pace.color}
                   />
                 );
               })()}
@@ -630,16 +623,14 @@ export default function HEMPPage() {
                   <KPICard
                     label="Courses"
                     value={coursesCount}
-                    femalePct={coursesFemalePercent}
-                    malePct={100 - coursesFemalePercent}
                     progress={coursesCount}
                     progressTarget={800}
+                    progressLabel={`${Math.round((coursesCount / 800) * 100)}%`}
                     info="Course enrollments toward 2030 target."
                     Icon={BookOpen}
                     href="/hemp/course"
-                    paceStatus={pace.status}
-                    paceColor={pace.color}
-                    detail={`${Math.round((coursesCount / 800) * 100)}% to goal | Need ${pace.needed}/yr`}
+                    secondaryText={pace.status}
+                    secondaryTextColor={pace.color}
                   />
                 );
               })()}
