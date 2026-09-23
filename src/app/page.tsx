@@ -24,7 +24,7 @@ const TEXT      = "#172B4D";
 const SECONDARY = "#5E6C84"; // 5.3:1 on white — passes WCAG AA
 
 const PORTALS = [
-  { id: "HEMP",      label: "HEMP",      href: "/hemp" },
+  { id: "HEMP",      label: "HM&HEMP",      href: "/hemp" },
   { id: "HENT",      label: "HENT",      href: "/hent" },
   { id: "HECO",      label: "HECO",      href: "/heco" },
   { id: "EXECUTIVE", label: "EXECUTIVE", href: "/executive" },

@@ -31,14 +31,33 @@ export default function PortalNav({ portal }: { portal: Portal }) {
 
         {/* Wordmark */}
         <Link href={config.rootHref} className="flex items-center gap-2.5 flex-shrink-0 group">
-          <span className="flex items-center gap-1.5" style={{ color: accent }}>
-            <span className="text-[30px] font-semibold tracking-tight leading-none">{config.wordmark}</span>
-            <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
-              {config.wordmarkLines.map(line => (
-                <span key={line} className="text-[9px] font-medium tracking-tight whitespace-nowrap">{line}</span>
-              ))}
+          {portal === "hemp" ? (
+            <span className="flex items-center gap-4" style={{ color: accent }}>
+              <span className="flex items-center gap-1.5">
+                <span className="text-[30px] font-semibold tracking-tight leading-none">HM</span>
+                <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
+                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">HEALTH</span>
+                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">MISSIONS</span>
+                </span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-[30px] font-semibold tracking-tight leading-none">HEMP</span>
+                <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
+                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">HEALTH</span>
+                  <span className="text-[9px] font-medium tracking-tight whitespace-nowrap">EMPLOYMENT</span>
+                </span>
+              </span>
             </span>
-          </span>
+          ) : (
+            <span className="flex items-center gap-1.5" style={{ color: accent }}>
+              <span className="text-[30px] font-semibold tracking-tight leading-none">{config.wordmark}</span>
+              <span className="flex flex-col" style={{ lineHeight: 1.05 }}>
+                {config.wordmarkLines.map(line => (
+                  <span key={line} className="text-[9px] font-medium tracking-tight whitespace-nowrap">{line}</span>
+                ))}
+              </span>
+            </span>
+          )}
         </Link>
 
         <div className="h-6 w-px bg-gray-200 flex-shrink-0" />

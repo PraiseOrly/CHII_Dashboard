@@ -2,9 +2,11 @@
 import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
+import HeaderDesign from "@/components/layout/header-design";
 import { internships, INTERNSHIP_ORGANIZATIONS, INTERNSHIP_DEPARTMENTS } from "@/data/hemp/internships";
 import { targets2030 } from "@/data/hemp-participation";
 import { missionStudents } from "@/data/mission-students";
+import { REACH_RECORDS, COUNTRY_REGION, GEO_REGIONS } from "@/data/hemp/geo-reach";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -199,24 +201,19 @@ export default function HEMPInternships() {
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
         <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true"
-            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true"
-            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+          <HeaderDesign />
           <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
             <div style={{ textAlign: "center" }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internship Programme</h1>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>Internships</h1>
               <p className="text-[13px] mt-2 font-medium" style={{ color: "rgba(215,225,245,0.8)" }}>
                 Placements, student outcomes and employment partnerships
               </p>
               <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px]" style={{ color: "rgba(215,225,245,0.5)" }}>
-                <span><span style={{ color: "rgba(215,225,245,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(215,225,245,0.8)", fontWeight: 600 }}>Period:</span> 2021–2025</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(215,225,245,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
               </div>
             </div>
           </div>
@@ -224,35 +221,7 @@ export default function HEMPInternships() {
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 py-7">
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 16 }}>
-            <span style={{ width: 3, height: 16, borderRadius: 999, backgroundColor: BRAND, flexShrink: 0 }} />
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: BRAND_DK, lineHeight: 1.2, margin: 0 }}>
-                Mission Students Context
-              </p>
-              <p style={{ fontSize: 11, color: "#6B7280", marginTop: 3, margin: 0 }}>Programme baseline and student outcomes</p>
-            </div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
-            {[
-              { label: "Total Enrolled", value: msTotalEnrolled.toLocaleString(), sub: "Mission Students" },
-              { label: "Completion Rate", value: msCompletionRate + "%", sub: "Programme completion" },
-              { label: "Female Participation", value: msFemalePct + "%", sub: msFemaleStudents.toLocaleString() + " female students" },
-              { label: "Employment Rate", value: msEmploymentRate + "%", sub: "Graduates employed" },
-              { label: "Average GPA", value: msAvgGPA, sub: "Out of 4.0" },
-              { label: "Ventures Created", value: msVenturesCreated.toLocaleString(), sub: "Health ventures" },
-            ].map((card, i) => (
-              <div key={i} style={{ backgroundColor: "white", borderRadius: 10, border: "1px solid " + LIGHT_BORDER, borderLeft: "5px solid " + BRAND, padding: "14px 16px" }}>
-                <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: BRAND_DK, margin: "0 0 8px 0" }}>{card.label}</p>
-                <p style={{ fontSize: 20, fontWeight: 800, color: BRAND_DK, margin: "0 0 6px 0" }}>{card.value}</p>
-                <p style={{ fontSize: 9, color: "#6B7280", margin: 0 }}>{card.sub}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <HeaderStatsPanel
+<HeaderStatsPanel
           title="Programme Overview"
           cards={[
             {
@@ -772,6 +741,113 @@ export default function HEMPInternships() {
             )}
           </section>
         )}
+
+        {/* Programme Reach Section */}
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Programme Reach</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Geographic Reach */}
+            <Panel title="Geographic Coverage" subtitle="Participants by region">
+              {(() => {
+                const geoData = REACH_RECORDS.filter(r => r.year >= 2024)
+                  .reduce((acc, r) => {
+                    const region = COUNTRY_REGION[r.country] || "Other";
+                    const existing = acc.find(x => x.region === region);
+                    if (existing) {
+                      existing.reach += r.reach;
+                      existing.female += r.female;
+                    } else {
+                      acc.push({ region, reach: r.reach, female: r.female });
+                    }
+                    return acc;
+                  }, [] as Array<{ region: string; reach: number; female: number }>)
+                  .sort((a, b) => b.reach - a.reach);
+
+                return (
+                  <div className="space-y-3">
+                    {geoData.length > 0 ? (
+                      geoData.map(item => (
+                        <div key={item.region} className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">{item.region}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-gray-900">{item.reach}</span>
+                            <span className="text-xs text-gray-500">({item.female} female)</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">No data available</p>
+                    )}
+                  </div>
+                );
+              })()}
+            </Panel>
+
+            {/* Gender Distribution */}
+            <Panel title="Gender Distribution" subtitle="Participant demographics">
+              {(() => {
+                const genderData = REACH_RECORDS.filter(r => r.year >= 2024)
+                  .reduce((acc, r) => ({ total: acc.total + r.reach, female: acc.female + r.female }), { total: 0, female: 0 });
+
+                const maleCount = genderData.total - genderData.female;
+                const femalePercent = genderData.total > 0 ? Math.round((genderData.female / genderData.total) * 100) : 0;
+                const malePercent = 100 - femalePercent;
+
+                return (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-sm font-medium text-gray-700">Total Participants</span>
+                      <span className="text-lg font-semibold text-gray-900">{genderData.total}</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Female</span>
+                        <span className="font-medium text-gray-900">{genderData.female} ({femalePercent}%)</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-pink-500 h-2 rounded-full" style={{ width: `${femalePercent}%` }} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Male</span>
+                        <span className="font-medium text-gray-900">{maleCount} ({malePercent}%)</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${malePercent}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </Panel>
+
+            {/* Participant Satisfaction */}
+            <Panel title="Participant Satisfaction" subtitle="Programme feedback ratings">
+              {(() => {
+                const avgSatisfaction = internships.length > 0
+                  ? (internships.reduce((sum, i) => sum + i.satisfactionScore, 0) / internships.length).toFixed(1)
+                  : "N/A";
+                const satisfactionPercent = parseFloat(avgSatisfaction as string) * 20; // out of 5, convert to percentage
+
+                return (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-sm font-medium text-gray-700">Average Rating</span>
+                      <span className="text-lg font-semibold text-gray-900">{avgSatisfaction}/5.0</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="bg-green-500 h-3 rounded-full" style={{ width: `${satisfactionPercent}%` }} />
+                      </div>
+                      <p className="text-xs text-gray-500">Based on participant feedback</p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </Panel>
+          </div>
+        </section>
 
         <PortalFooter portal="hemp" synced="18 Jun 2026, EAT" />
 

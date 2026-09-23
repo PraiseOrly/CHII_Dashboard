@@ -2,9 +2,11 @@
 import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import PortalNav from "@/components/layout/portal-nav";
 import PortalFooter from "@/components/layout/portal-footer";
+import HeaderDesign from "@/components/layout/header-design";
 import { sieCohorts, SIE_DISCIPLINES, SIE_EXPOSURE_AREAS } from "@/data/hemp/sie";
 import { targets2030 } from "@/data/hemp-participation";
 import { missionStudents } from "@/data/mission-students";
+import { REACH_RECORDS, COUNTRY_REGION, GEO_REGIONS } from "@/data/hemp/geo-reach";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -236,24 +238,19 @@ export default function HEMPSie() {
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-2">
         <header style={{ position: "relative", overflow: "hidden", backgroundColor: HERO, borderRadius: 12, minHeight: 120, display: "flex", alignItems: "center" }}>
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "url('/images/Pat.png')", backgroundSize: "auto 100%", backgroundRepeat: "repeat", backgroundPosition: "center", opacity: 0.05 }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true"
-            style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <img src="/images/design1.png" alt="" aria-hidden="true"
-            style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%) scaleX(-1)", height: "100%", width: "auto", zIndex: 1, pointerEvents: "none", userSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(90deg, rgba(16,44,94,0) 0%, #102C5E 34%, #102C5E 66%, rgba(16,44,94,0) 100%)" }} />
+          <HeaderDesign />
           <div className="px-4 sm:px-6 py-6" style={{ position: "relative", zIndex: 10, width: "100%" }}>
             <div style={{ textAlign: "center" }}>
-              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>SIE Programme</h1>
+              <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>SIE</h1>
               <p className="text-[13px] mt-2 font-medium" style={{ color: "rgba(215,225,245,0.8)" }}>
                 Signature Immersive Experience — student outcomes and healthcare exposure
               </p>
               <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px]" style={{ color: "rgba(215,225,245,0.5)" }}>
-                <span><span style={{ color: "rgba(215,225,245,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Period:</span> 2024–2026</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Period:</span> 2021–2026</span>
                 <span aria-hidden="true">·</span>
-                <span><span style={{ color: "rgba(120,180,240,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
+                <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Last updated:</span> 18 June 2026, 16:30 CAT</span>
               </div>
             </div>
           </div>
@@ -978,6 +975,113 @@ export default function HEMPSie() {
             </div>
           </section>
         )}
+
+        {/* Programme Reach Section */}
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Programme Reach</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Geographic Reach */}
+            <Panel title="Geographic Coverage" subtitle="Participants by region">
+              {(() => {
+                const geoData = REACH_RECORDS.filter(r => r.year >= 2024)
+                  .reduce((acc, r) => {
+                    const region = COUNTRY_REGION[r.country] || "Other";
+                    const existing = acc.find(x => x.region === region);
+                    if (existing) {
+                      existing.reach += r.reach;
+                      existing.female += r.female;
+                    } else {
+                      acc.push({ region, reach: r.reach, female: r.female });
+                    }
+                    return acc;
+                  }, [] as Array<{ region: string; reach: number; female: number }>)
+                  .sort((a, b) => b.reach - a.reach);
+
+                return (
+                  <div className="space-y-3">
+                    {geoData.length > 0 ? (
+                      geoData.map(item => (
+                        <div key={item.region} className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">{item.region}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-gray-900">{item.reach}</span>
+                            <span className="text-xs text-gray-500">({item.female} female)</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">No data available</p>
+                    )}
+                  </div>
+                );
+              })()}
+            </Panel>
+
+            {/* Gender Distribution */}
+            <Panel title="Gender Distribution" subtitle="Participant demographics">
+              {(() => {
+                const genderData = REACH_RECORDS.filter(r => r.year >= 2024)
+                  .reduce((acc, r) => ({ total: acc.total + r.reach, female: acc.female + r.female }), { total: 0, female: 0 });
+
+                const maleCount = genderData.total - genderData.female;
+                const femalePercent = genderData.total > 0 ? Math.round((genderData.female / genderData.total) * 100) : 0;
+                const malePercent = 100 - femalePercent;
+
+                return (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-sm font-medium text-gray-700">Total Participants</span>
+                      <span className="text-lg font-semibold text-gray-900">{genderData.total}</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Female</span>
+                        <span className="font-medium text-gray-900">{genderData.female} ({femalePercent}%)</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-pink-500 h-2 rounded-full" style={{ width: `${femalePercent}%` }} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Male</span>
+                        <span className="font-medium text-gray-900">{maleCount} ({malePercent}%)</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${malePercent}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </Panel>
+
+            {/* Participant Satisfaction */}
+            <Panel title="Participant Satisfaction" subtitle="Programme feedback ratings">
+              {(() => {
+                const avgSatisfaction = sieCohorts.length > 0
+                  ? (sieCohorts.reduce((sum, c) => sum + c.satisfaction, 0) / sieCohorts.length).toFixed(1)
+                  : "N/A";
+                const satisfactionPercent = parseFloat(avgSatisfaction as string) * 20; // out of 5, convert to percentage
+
+                return (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-sm font-medium text-gray-700">Average Rating</span>
+                      <span className="text-lg font-semibold text-gray-900">{avgSatisfaction}/5.0</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="bg-green-500 h-3 rounded-full" style={{ width: `${satisfactionPercent}%` }} />
+                      </div>
+                      <p className="text-xs text-gray-500">Based on participant feedback</p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </Panel>
+          </div>
+        </section>
 
         <PortalFooter portal="hemp" synced="18 Jun 2026, EAT" />
 
