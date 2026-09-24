@@ -578,27 +578,17 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Completed</span>
                 </div>
               </Panel>
-              <Panel title="Selection Rate Trend" subtitle="Percentage of applicants selected over time" info="Selection rate as a percentage of total applicants per cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
+              <Panel title="Selection & Participation Trend" subtitle="Selection rate, participant growth, and satisfaction over time" info="Selection rate percentage, participant count, and satisfaction ratings by cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), rate: Math.round((c.selected / c.applied) * 100) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
+                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), rate: Math.round((c.selected / c.applied) * 100), selected: c.selected, satisfaction: c.satisfaction }))} margin={{ top: 6, right: 40, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
                     <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
                     <Tooltip content={<ChartTip />} />
                     <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="rate" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selection Rate %" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="Participation Trend" subtitle="Growth in total selected participants over time" info="Annual trend in participant selection" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), selected: c.selected }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="selected" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selected" />
+                    <Line yAxisId="right" type="monotone" dataKey="selected" stroke="#479BD6" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Selected Participants" />
+                    <Line yAxisId="right" type="monotone" dataKey="satisfaction" stroke="#D17A86" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>

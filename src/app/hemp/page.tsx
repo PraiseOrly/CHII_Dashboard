@@ -112,7 +112,7 @@ function KPICard({
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 3, marginBottom: 6 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2, flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em", color: HEADER_NAVY, lineHeight: 1.1, margin: 0 }}>{label}</p>
+          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em", color: HEADER_NAVY, lineHeight: 1.1, margin: 0 }}>{label}</p>
           {info && (
             <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
               <button
@@ -141,7 +141,7 @@ function KPICard({
 
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, flex: 1 }}>
         {Icon && <Icon size={16} color={HEADER_NAVY} style={{ flexShrink: 0, strokeWidth: 2 }} />}
-        <p style={{ fontSize: 24, fontWeight: 800, color: HEADER_NAVY, lineHeight: 1, margin: 0 }}>
+        <p style={{ fontSize: 28, fontWeight: 800, color: HEADER_NAVY, lineHeight: 1, margin: 0 }}>
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
@@ -180,7 +180,7 @@ function KPICard({
                 <circle cx="12" cy="8" r="4" />
                 <path d="M12 14v8M8 18h8" />
               </svg>
-              <span style={{ fontSize: 9, fontWeight: 600, color: "#6B7280" }}>{femalePct}%</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#6B7280" }}>{femalePct}%</span>
             </div>
             {malePct !== undefined && (
               <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -189,13 +189,13 @@ function KPICard({
                   <path d="M12 14v8" />
                   <path d="M8 18h8" />
                 </svg>
-                <span style={{ fontSize: 9, fontWeight: 600, color: "#6B7280" }}>{malePct}%</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: "#6B7280" }}>{malePct}%</span>
               </div>
             )}
             {programmeText && (
               <>
                 <span style={{ fontSize: 8, fontWeight: 500, color: "#D1D5DB" }}>·</span>
-                <span style={{ fontSize: 8, fontWeight: 600, color: "#6B7280", whiteSpace: "nowrap" }}>{programmeText}</span>
+                <span style={{ fontSize: 9, fontWeight: 600, color: "#6B7280", whiteSpace: "nowrap" }}>{programmeText}</span>
               </>
             )}
           </>
@@ -481,7 +481,7 @@ export default function HEMPPage() {
 
       {/* Stats Cards Section */}
       <div className="max-w-[1600px] mx-auto px-10 py-7">
-        <div style={{ display: "grid", gridTemplateColumns: "210px minmax(0, 1fr) 210px", gap: 24, alignItems: "end", overflowX: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "270px minmax(0, 1fr) 270px", gap: 24, alignItems: "end", overflowX: "hidden" }}>
 
           {/* Left Column: Mission Students */}
           <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
