@@ -289,7 +289,7 @@ export default function CareerWorkshopsPage() {
               num: 2359,
               icon: Users,
               displayFmt: (n) => n.toLocaleString(),
-              sub: `Goal: 1,500 by 2030 | 157% of goal`,
+              sub: `Goal: 1,500 by 2030 | 20% of goal`,
               tip: "Total participants in career workshops",
               pace: true,
               paceA: 2359,
