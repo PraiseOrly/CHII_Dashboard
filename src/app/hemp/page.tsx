@@ -317,6 +317,7 @@ function MapContainer() {
                 <tr style={{ borderBottom: "2px solid #E5E7EB" }}>
                   <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "#6B7280", fontSize: 11 }}></th>
                   <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "#6B7280", fontSize: 11 }}>Career Workshops</th>
+                  <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "#6B7280", fontSize: 11 }}>Exposure Events</th>
                   <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "#6B7280", fontSize: 11 }}>Internships</th>
                   <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "#6B7280", fontSize: 11 }}>SIE</th>
                   <th style={{ textAlign: "left", padding: "5px 6px", fontWeight: 600, color: "#6B7280", fontSize: 11 }}>Courses</th>
@@ -326,6 +327,7 @@ function MapContainer() {
                 <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
                   <td style={{ padding: "4px 6px", color: "#6B7280", fontWeight: 600, fontSize: 11 }}>Participants</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 500, fontSize: 11 }}>{selectedCountry.careerWorkshops || 0}</td>
+                  <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 500, fontSize: 11 }}>{selectedCountry.exposureEvents || 0}</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 500, fontSize: 11 }}>{selectedCountry.internships || 0}</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 500, fontSize: 11 }}>{selectedCountry.sie || 0}</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 500, fontSize: 11 }}>{selectedCountry.courses || 0}</td>
@@ -333,6 +335,7 @@ function MapContainer() {
                 <tr>
                   <td style={{ padding: "4px 6px", color: "#6B7280", fontWeight: 600, fontSize: 11 }}>% of Total</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 600, fontSize: 11 }}>{selectedCountry.students > 0 ? Math.round((selectedCountry.careerWorkshops || 0) / selectedCountry.students * 100) : 0}%</td>
+                  <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 600, fontSize: 11 }}>{selectedCountry.students > 0 ? Math.round((selectedCountry.exposureEvents || 0) / selectedCountry.students * 100) : 0}%</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 600, fontSize: 11 }}>{selectedCountry.students > 0 ? Math.round((selectedCountry.internships || 0) / selectedCountry.students * 100) : 0}%</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 600, fontSize: 11 }}>{selectedCountry.students > 0 ? Math.round((selectedCountry.sie || 0) / selectedCountry.students * 100) : 0}%</td>
                   <td style={{ padding: "4px 6px", color: HEADER_NAVY, fontWeight: 600, fontSize: 11 }}>{selectedCountry.students > 0 ? Math.round((selectedCountry.courses || 0) / selectedCountry.students * 100) : 0}%</td>
@@ -579,12 +582,12 @@ export default function HEMPPage() {
                 const pace = calculatePace(careerWorkshopsCount, 1500);
                 return (
                   <KPICard
-                    label="Career Workshops"
+                    label="Exposure Events"
                     value={careerWorkshopsCount}
                     progress={careerWorkshopsCount}
                     progressTarget={1500}
                     progressLabel={`${Math.round((careerWorkshopsCount / 1500) * 100)}%`}
-                    info="Workshop participation toward 2030 target."
+                    info="Exposure events and workshop participation toward 2030 target."
                     Icon={BookOpen}
                     href="/hemp/career-development"
                     secondaryText={pace.status}
@@ -685,7 +688,7 @@ export default function HEMPPage() {
               title: "HEMP Engagement",
               figure: `${hempEngagementRate.toFixed(0)}%`,
               detail: "Students in HEMP programmes",
-              copy: "Consistent engagement across Career Workshops, Internships, SIE, and Courses. Strong pipeline building.",
+              copy: "Consistent engagement across Exposure Events, Internships, SIE, and Courses. Strong pipeline building.",
               accentColor: "#3B82F6"
             },
             {
