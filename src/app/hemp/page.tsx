@@ -172,7 +172,7 @@ function KPICard({
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 6, paddingTop: 4, borderTop: "1px solid #E5E7EB", justifyContent: "flex-start", alignItems: "center", minHeight: 14, flexWrap: "nowrap", overflow: "visible" }}>
+      <div style={{ display: "flex", gap: 3, paddingTop: 4, borderTop: "1px solid #E5E7EB", justifyContent: "flex-start", alignItems: "center", minHeight: 14, flexWrap: "nowrap", overflow: "visible" }}>
         {femalePct !== undefined ? (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
