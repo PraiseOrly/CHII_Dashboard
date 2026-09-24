@@ -203,6 +203,106 @@ export default function HEMPSie() {
   const [filterGeoYear, setFilterGeoYear] = useState("All Years");
   const [filterFunnelYear, setFilterFunnelYear] = useState("All Years");
   const [filterFunnelCohort, setFilterFunnelCohort] = useState("All Cohorts");
+  const [filterPlacementYear, setFilterPlacementYear] = useState("All Years");
+  const [filterPartnerYear, setFilterPartnerYear] = useState("All Years");
+  const [filterQualityYear, setFilterQualityYear] = useState("All Years");
+  const [filterConfidenceYear, setFilterConfidenceYear] = useState("All Years");
+  const [filterCompletionYear, setFilterCompletionYear] = useState("All Years");
+  const [filterClarityYear, setFilterClarityYear] = useState("All Years");
+  const [filterNPSDistYear, setFilterNPSDistYear] = useState("All Years");
+  const [filterPerfScoreYear, setFilterPerfScoreYear] = useState("All Years");
+  const [filterPerfTrendYear, setFilterPerfTrendYear] = useState("All Years");
+  const [filterHealthInterestYear, setFilterHealthInterestYear] = useState("All Years");
+
+  const filteredCohortsForPlacement = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterPlacementYear !== "All Years" && c.year !== parseInt(filterPlacementYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterPlacementYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForPartner = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterPartnerYear !== "All Years" && c.year !== parseInt(filterPartnerYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterPartnerYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForQuality = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterQualityYear !== "All Years" && c.year !== parseInt(filterQualityYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterQualityYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForConfidence = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterConfidenceYear !== "All Years" && c.year !== parseInt(filterConfidenceYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterConfidenceYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForCompletion = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterCompletionYear !== "All Years" && c.year !== parseInt(filterCompletionYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterCompletionYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForClarity = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterClarityYear !== "All Years" && c.year !== parseInt(filterClarityYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterClarityYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForNPSDist = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterNPSDistYear !== "All Years" && c.year !== parseInt(filterNPSDistYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterNPSDistYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForPerfScore = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterPerfScoreYear !== "All Years" && c.year !== parseInt(filterPerfScoreYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterPerfScoreYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForPerfTrend = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterPerfTrendYear !== "All Years" && c.year !== parseInt(filterPerfTrendYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterPerfTrendYear, filterCountry, filterRegion]);
+
+  const filteredCohortsForHealthInterest = useMemo(() => {
+    return sieCohorts.filter(c => {
+      if (filterHealthInterestYear !== "All Years" && c.year !== parseInt(filterHealthInterestYear)) return false;
+      if (filterCountry !== "All Countries" && c.country !== filterCountry) return false;
+      if (filterRegion !== "All Regions" && c.region !== filterRegion) return false;
+      return true;
+    });
+  }, [filterHealthInterestYear, filterCountry, filterRegion]);
 
   const avgRelevance = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.relevance, 0) / filteredCohorts.length).toFixed(1)) : 0;
   const avgQuality = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.quality, 0) / filteredCohorts.length).toFixed(1)) : 0;
@@ -210,6 +310,13 @@ export default function HEMPSie() {
   const avgConfidence = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.confidence, 0) / filteredCohorts.length).toFixed(1)) : 0;
   const avgNPS = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.nps, 0) / filteredCohorts.length).toFixed(1)) : 0;
   const avgCompletion = filteredCohorts.length ? parseFloat((filteredCohorts.reduce((s, c) => s + c.completionFullProgramme, 0) / filteredCohorts.length).toFixed(1)) : 0;
+
+  const avgRelevanceFiltered = filteredCohortsForQuality.length ? parseFloat((filteredCohortsForQuality.reduce((s, c) => s + c.relevance, 0) / filteredCohortsForQuality.length).toFixed(1)) : 0;
+  const avgQualityFiltered = filteredCohortsForQuality.length ? parseFloat((filteredCohortsForQuality.reduce((s, c) => s + c.quality, 0) / filteredCohortsForQuality.length).toFixed(1)) : 0;
+  const avgUsefulnessFiltered = filteredCohortsForQuality.length ? parseFloat((filteredCohortsForQuality.reduce((s, c) => s + c.usefulness, 0) / filteredCohortsForQuality.length).toFixed(1)) : 0;
+
+  const avgConfidenceFiltered = filteredCohortsForConfidence.length ? parseFloat((filteredCohortsForConfidence.reduce((s, c) => s + c.confidence, 0) / filteredCohortsForConfidence.length).toFixed(1)) : 0;
+  const avgNPSFiltered = filteredCohortsForConfidence.length ? parseFloat((filteredCohortsForConfidence.reduce((s, c) => s + c.nps, 0) / filteredCohortsForConfidence.length).toFixed(1)) : 0;
 
   const totalPWD = filteredCohorts.reduce((s, c) => s + c.pwd, 0);
   const totalRefugees = filteredCohorts.reduce((s, c) => s + c.idpRefugees, 0);
@@ -422,7 +529,33 @@ export default function HEMPSie() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Recruitment Funnel" subtitle="Application to completion journey" info="The progression from applications through to programme completion">
+              <Panel title="Participants by Health Interest Area" subtitle="Distribution across health specializations" info="Areas of health interest reported by SIE participants" filterOptions={["All Years", ...years.map(String)]} filterValue={filterHealthInterestYear} onFilterChange={setFilterHealthInterestYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={filteredCohortsForHealthInterest.length ? Object.entries(filteredCohortsForHealthInterest.reduce((acc: Record<string, number>, c) => {
+                      Object.entries(c.healthInterests).forEach(([area, count]) => {
+                        acc[area] = (acc[area] || 0) + count;
+                      });
+                      return acc;
+                    }, {})).map(([area, count]) => ({ area, count })).sort((a, b) => b.count - a.count) : []} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="area" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={130} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="count" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 12, height: 12, backgroundColor: "#479BD6", borderRadius: 2 }} />
+                      <span style={{ fontSize: 10, color: "#6B7280" }}>Participant Count</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+              <Panel title="Recruitment Funnel" subtitle="Application to completion journey" info="The progression from applications through to programme completion" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={filteredCohorts.map((c, i) => ({
                     name: c.name.substring(0, 12),
@@ -457,7 +590,7 @@ export default function HEMPSie() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Participation Trend" subtitle="Growth in total selected participants over time" info="Annual trend in participant selection">
+              <Panel title="Participation Trend" subtitle="Growth in total selected participants over time" info="Annual trend in participant selection" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), selected: c.selected }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -469,7 +602,7 @@ export default function HEMPSie() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Participants by Discipline" subtitle="Academic background distribution" info="Number of participants from each academic discipline">
+              <Panel title="Participants by Discipline" subtitle="Academic background distribution" info="Number of participants from each academic discipline" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={SIE_DISCIPLINES.map(disc => ({
@@ -488,7 +621,7 @@ export default function HEMPSie() {
                   </ResponsiveContainer>
                 </div>
               </Panel>
-              <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort">
+              <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), satisfaction: c.satisfaction }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
@@ -500,7 +633,7 @@ export default function HEMPSie() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Diversity Metrics" subtitle="Gender, disability, and refugee representation" info="Participants identifying as female, PWD, or IDP/Refugees across cohorts">
+              <Panel title="Diversity Metrics" subtitle="Gender, disability, and refugee representation" info="Participants identifying as female, PWD, or IDP/Refugees across cohorts" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={filteredCohorts.map(c => ({
                     name: c.name.substring(0, 18),
@@ -567,7 +700,7 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Exposure Score</span>
                 </div>
               </Panel>
-              <Panel title="Employment & Project Outcomes" subtitle="Career opportunities and innovation adoption" info="Employment leads and partner projects adopted by host organisations">
+              <Panel title="Employment & Project Outcomes" subtitle="Career opportunities and innovation adoption" info="Employment leads and partner projects adopted by host organisations" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Employment Leads", value: totalEmploymentLeads },
@@ -586,9 +719,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
                 </div>
               </Panel>
-              <Panel title="Employment & Internship Placements" subtitle="Post-SIE employment and internship outcomes" info="Number of participants securing employment or internship positions after SIE completion">
+              <Panel title="Employment & Internship Placements" subtitle="Post-SIE employment and internship outcomes" info="Number of participants securing employment or internship positions after SIE completion" filterOptions={["All Years", ...years.map(String)]} filterValue={filterPlacementYear} onFilterChange={setFilterPlacementYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForPlacement.map(c => ({
                     name: c.name.substring(0, 18),
                     employment: c.employmentPlacements,
                     internship: c.internshipPlacements,
@@ -606,9 +739,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Internship</span>
                 </div>
               </Panel>
-              <Panel title="Placement Conversion Rate" subtitle="% of participants securing placements" info="Percentage of SIE participants who secured employment or internship placements post-programme">
+              <Panel title="Placement Conversion Rate" subtitle="% of participants securing placements" info="Percentage of SIE participants who secured employment or internship placements post-programme" filterOptions={["All Years", ...years.map(String)]} filterValue={filterPlacementYear} onFilterChange={setFilterPlacementYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForPlacement.map(c => ({
                     name: c.name.substring(0, 18),
                     rate: c.placementConversionRate,
                   }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
@@ -663,9 +796,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Participants</span>
                 </div>
               </Panel>
-              <Panel title="Partner Engagement" subtitle="Number of partner organizations per cohort" info="Host organizations and site visits across cohorts">
+              <Panel title="Partner Engagement" subtitle="Number of partner organizations per cohort" info="Host organizations and site visits across cohorts" filterOptions={["All Years", ...years.map(String)]} filterValue={filterPartnerYear} onFilterChange={setFilterPartnerYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForPartner.map(c => ({
                     name: c.name.substring(0, 12),
                     orgs: c.partnerOrgs,
                     visits: c.siteVisits,
@@ -792,12 +925,12 @@ export default function HEMPSie() {
                   </ResponsiveContainer>
                 </div>
               </Panel>
-              <Panel title="Quality Ratings" subtitle="Programme content assessment (1-5 scale)" info="Average ratings for relevance, quality, and usefulness">
+              <Panel title="Quality Ratings" subtitle="Programme content assessment (1-5 scale)" info="Average ratings for relevance, quality, and usefulness" filterOptions={["All Years", ...years.map(String)]} filterValue={filterQualityYear} onFilterChange={setFilterQualityYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { metric: "Relevance", rating: avgRelevance },
-                    { metric: "Quality", rating: avgQuality },
-                    { metric: "Usefulness", rating: avgUsefulness },
+                    { metric: "Relevance", rating: avgRelevanceFiltered },
+                    { metric: "Quality", rating: avgQualityFiltered },
+                    { metric: "Usefulness", rating: avgUsefulnessFiltered },
                   ]} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="metric" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -812,11 +945,11 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Rating</span>
                 </div>
               </Panel>
-              <Panel title="Skill Confidence & NPS" subtitle="Learning confidence and recommendation likelihood" info="5-point confidence scale and 0-10 Net Promoter Score">
+              <Panel title="Skill Confidence & NPS" subtitle="Learning confidence and recommendation likelihood" info="5-point confidence scale and 0-10 Net Promoter Score" filterOptions={["All Years", ...years.map(String)]} filterValue={filterConfidenceYear} onFilterChange={setFilterConfidenceYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
-                    { name: "Confidence", value: avgConfidence, metric: "confidence" },
-                    { name: "NPS (÷2)", value: avgNPS / 2, metric: "nps" },
+                    { name: "Confidence", value: avgConfidenceFiltered, metric: "confidence" },
+                    { name: "NPS (÷2)", value: avgNPSFiltered / 2, metric: "nps" },
                   ]} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
                     <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -831,9 +964,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Score</span>
                 </div>
               </Panel>
-              <Panel title="Full Programme Completion Rate" subtitle="% who completed both virtual and in-person phases" info="Participants who successfully completed the full immersion experience">
+              <Panel title="Full Programme Completion Rate" subtitle="% who completed both virtual and in-person phases" info="Participants who successfully completed the full immersion experience" filterOptions={["All Years", ...years.map(String)]} filterValue={filterCompletionYear} onFilterChange={setFilterCompletionYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForCompletion.map(c => ({
                     name: c.name.substring(0, 18),
                     completion: c.completionFullProgramme,
                   }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
@@ -850,9 +983,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#A8BFD6" }} /> Completion %</span>
                 </div>
               </Panel>
-              <Panel title="Career Direction Clarity" subtitle="% who gained clarity on career direction" info="Percentage of participants who reported having clear direction for next career steps">
+              <Panel title="Career Direction Clarity" subtitle="% who gained clarity on career direction" info="Percentage of participants who reported having clear direction for next career steps" filterOptions={["All Years", ...years.map(String)]} filterValue={filterClarityYear} onFilterChange={setFilterClarityYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForClarity.map(c => ({
                     name: c.name.substring(0, 18),
                     clarity: c.careerClarityPct,
                   }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
@@ -869,9 +1002,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Clarity %</span>
                 </div>
               </Panel>
-              <Panel title="NPS Distribution" subtitle="Promoters, Passives, Detractors breakdown" info="Net Promoter Score distribution across participant response categories (Promoters: 9-10, Passives: 7-8, Detractors: 0-6)">
+              <Panel title="NPS Distribution" subtitle="Promoters, Passives, Detractors breakdown" info="Net Promoter Score distribution across participant response categories (Promoters: 9-10, Passives: 7-8, Detractors: 0-6)" filterOptions={["All Years", ...years.map(String)]} filterValue={filterNPSDistYear} onFilterChange={setFilterNPSDistYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForNPSDist.map(c => ({
                     name: c.name.substring(0, 18),
                     Promoters: c.npsPromoters,
                     Passives: c.npsPassives,
@@ -911,9 +1044,9 @@ export default function HEMPSie() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Overall Performance Score" subtitle="Aggregate programme performance by cohort (0-100)" info="Combined performance metric reflecting overall SIE programme quality and delivery">
+              <Panel title="Overall Performance Score" subtitle="Aggregate programme performance by cohort (0-100)" info="Combined performance metric reflecting overall SIE programme quality and delivery" filterOptions={["All Years", ...years.map(String)]} filterValue={filterPerfScoreYear} onFilterChange={setFilterPerfScoreYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
+                  <BarChart data={filteredCohortsForPerfScore.map(c => ({
                     name: c.name.substring(0, 18),
                     score: c.overallPerformanceScore,
                   }))} margin={{ top: 24, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
@@ -930,9 +1063,9 @@ export default function HEMPSie() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> Performance Score</span>
                 </div>
               </Panel>
-              <Panel title="Performance Trend" subtitle="Programme performance progression over time" info="Trend showing how SIE programme performance has evolved across all cohorts">
+              <Panel title="Performance Trend" subtitle="Programme performance progression over time" info="Trend showing how SIE programme performance has evolved across all cohorts" filterOptions={["All Years", ...years.map(String)]} filterValue={filterPerfTrendYear} onFilterChange={setFilterPerfTrendYear}>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={filteredCohorts.map(c => ({
+                  <LineChart data={filteredCohortsForPerfTrend.map(c => ({
                     name: String(c.year),
                     overall: c.overallPerformanceScore,
                     learning: c.learningOutcomesScore,

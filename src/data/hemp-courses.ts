@@ -11,6 +11,7 @@ export interface CourseRecord {
   enrollments: number;
   completions: number;
   satisfaction: number;
+  healthInterests: Record<string, number>;
 }
 
 const COURSE_CATEGORIES = ['Clinical', 'Business', 'Soft Skills', 'Health Systems', 'Digital', 'Research'];
@@ -21,12 +22,18 @@ const COURSES = [
   'Pharmacy Practice', 'Health Technology', 'Quality Management', 'Strategic Planning',
   'Grant Writing', 'Clinical Ethics', 'Team Leadership', 'Project Management', 'Health Economics', 'Telemedicine'
 ];
+const HEALTH_INTERESTS = ['Digital Health', 'Mental Health', 'Health Equity, Advocacy and Leadership', 'Nutrition', 'Disease Prevention and Control', 'Maternal and Child Health', 'Sexual and Reproductive Health', 'One Health', 'Public Health', 'Dental Health'];
 
 export const courseRecords: CourseRecord[] = [];
 
 for (let i = 0; i < 24; i++) {
   const enrollments = Math.floor(seededRandom(i * 1) * 25) + 10;
   const completions = Math.floor(enrollments * (seededRandom(i * 2) * 0.2 + 0.82));
+
+  const healthInterestsMap: Record<string, number> = {};
+  HEALTH_INTERESTS.forEach(interest => {
+    healthInterestsMap[interest] = Math.floor(seededRandom(i * 5 + HEALTH_INTERESTS.indexOf(interest)) * (enrollments * 0.6));
+  });
 
   courseRecords.push({
     id: `COURSE-${String(i + 1).padStart(2, '0')}`,
@@ -35,7 +42,8 @@ for (let i = 0; i < 24; i++) {
     year: 2024,
     enrollments,
     completions,
-    satisfaction: Math.round((seededRandom(i * 4) * 0.5 + 4) * 10) / 10
+    satisfaction: Math.round((seededRandom(i * 4) * 0.5 + 4) * 10) / 10,
+    healthInterests: healthInterestsMap
   });
 }
 

@@ -4,6 +4,7 @@ import PortalFooter from "@/components/layout/portal-footer";
 import HeaderDesign from "@/components/layout/header-design";
 import { ChartTip, HeaderStatsPanel, FilterButton, FilterDropdown } from "@/components/ui/hemp";
 import { missionStudents } from "@/data/mission-students";
+import { careerExposureSessions } from "@/data/hemp-career-exposure";
 import { useState, useMemo } from "react";
 import {
   BarChart, Bar, LineChart, Line,
@@ -236,10 +237,18 @@ export default function CareerWorkshopsPage() {
   const [filterYear, setFilterYear] = useState("All Years");
   const [filterSessionType, setFilterSessionType] = useState("All Types");
   const [filterPartner, setFilterPartner] = useState("All 63 Partners");
+  const [filterHealthInterestYear, setFilterHealthInterestYear] = useState("All Years");
   const [partnerSearch, setPartnerSearch] = useState("");
 
   const show = (category: string) => activeCategory === category;
   const activeFilterCount = [filterYear !== "All Years", filterSessionType !== "All Types", filterPartner !== "All 63 Partners"].filter(Boolean).length;
+
+  const filteredSessionsForHealthInterest = useMemo(() => {
+    return careerExposureSessions.filter(s => {
+      if (filterHealthInterestYear !== "All Years" && s.year !== parseInt(filterHealthInterestYear)) return false;
+      return true;
+    });
+  }, [filterHealthInterestYear]);
 
   const filteredPartners = useMemo(() => {
     return PARTNERS.filter(p => {
@@ -440,7 +449,65 @@ export default function CareerWorkshopsPage() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Cumulative Growth" subtitle="Participants vs 2030 goal & Session trends" info="Total participants growth trajectory and session count over time">
+              <Panel title="Participants by Health Interest Area" subtitle="Distribution across health specializations" info="Career workshop participants by health interest" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterHealthInterestYear} onFilterChange={setFilterHealthInterestYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={filteredSessionsForHealthInterest.length ? Object.entries(filteredSessionsForHealthInterest.reduce((acc: Record<string, number>, s) => {
+                      Object.entries(s.healthInterests).forEach(([area, count]) => {
+                        acc[area] = (acc[area] || 0) + count;
+                      });
+                      return acc;
+                    }, {})).map(([area, count]) => ({ area, count })).sort((a, b) => b.count - a.count) : []} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="area" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={130} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="count" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 12, height: 12, backgroundColor: "#479BD6", borderRadius: 2 }} />
+                      <span style={{ fontSize: 10, color: "#6B7280" }}>Participant Count</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+              <Panel title="Participants by Academic Programmes" subtitle="Participant distribution across programmes" info="Career Workshop participants by primary academic programme" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { programme: "BSc (Hons) Software Engineering", count: 142 },
+                      { programme: "BSc (Hons) Entrepreneurial Leadership", count: 138 },
+                      { programme: "ALURW - International Business and Trade", count: 58 },
+                      { programme: "Teach-out - ALURW - Global Challenges", count: 12 },
+                      { programme: "ALCHE - Entrepreneurial Leadership", count: 8 },
+                      { programme: "ALCHE - Software Engineering", count: 2 },
+                      { programme: "Teach out - ALURW - Computer Science", count: 1 },
+                    ]} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="programme" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={210} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="count" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 12, height: 12, backgroundColor: "#479BD6", borderRadius: 2 }} />
+                      <span style={{ fontSize: 10, color: "#6B7280" }}>Participant Count</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Cumulative Growth" subtitle="Participants vs 2030 goal & Session trends" info="Total participants growth trajectory and session count over time" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={SESSIONS_DATA} margin={{ top: 6, right: 60, bottom: 0, left: -12 }}>
@@ -471,12 +538,10 @@ export default function CareerWorkshopsPage() {
                 </div>
               </Panel>
 
-              <Panel title="Inclusion Reach" subtitle="Participant demographics" info="Breakdown across gender, disability and refugee status">
+              <Panel title="Inclusion Reach" subtitle="Participant diversity" info="Breakdown across disability and refugee status" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={[
-                      { category: "Female", value: 1094, percentage: 46, fill: "#EC4899" },
-                      { category: "Male", value: 1265, percentage: 54, fill: "#0EA5E9" },
                       { category: "PWD", value: 118, percentage: 5, fill: "#F97316" },
                       { category: "Refugee", value: 71, percentage: 3, fill: "#8B5CF6" },
                     ]} layout="vertical" margin={{ top: 6, right: 14, bottom: 0, left: 80 }}>
@@ -490,14 +555,6 @@ export default function CareerWorkshopsPage() {
                     </BarChart>
                   </ResponsiveContainer>
                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div style={{ width: 12, height: 12, backgroundColor: "#EC4899", borderRadius: 2 }} />
-                      <span style={{ fontSize: 10, color: "#6B7280" }}>Female</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div style={{ width: 12, height: 12, backgroundColor: "#0EA5E9", borderRadius: 2 }} />
-                      <span style={{ fontSize: 10, color: "#6B7280" }}>Male</span>
-                    </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <div style={{ width: 12, height: 12, backgroundColor: "#F97316", borderRadius: 2 }} />
                       <span style={{ fontSize: 10, color: "#6B7280" }}>PWD</span>
@@ -529,7 +586,7 @@ export default function CareerWorkshopsPage() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Rating Distribution" subtitle="Participant satisfaction scores" info="Average rating 4.0/5">
+              <Panel title="Rating Distribution" subtitle="Participant satisfaction scores" info="Average rating 4.0/5" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={RATING_DIST} margin={{ top: 6, right: 10, bottom: 0, left: -16 }}>
@@ -550,7 +607,7 @@ export default function CareerWorkshopsPage() {
                   </div>
                 </div>
               </Panel>
-              <Panel title="Quality Dimensions" subtitle="Multi-dimensional participant feedback ratings" info="Ratings across relevance, quality and usefulness (0-5 scale)">
+              <Panel title="Quality Dimensions" subtitle="Multi-dimensional participant feedback ratings" info="Ratings across relevance, quality and usefulness (0-5 scale)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { metric: "Relevance", rating: 4.25, color: "#EC4899" },
@@ -571,7 +628,7 @@ export default function CareerWorkshopsPage() {
                 </div>
               </Panel>
 
-              <Panel title="Recommendation & Confidence" subtitle="NPS and skill confidence assessment" info="Net Promoter Score (0-10) and confidence level (0-5)">
+              <Panel title="Recommendation & Confidence" subtitle="NPS and skill confidence assessment" info="Net Promoter Score (0-10) and confidence level (0-5)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Confidence", value: 4.2, metric: "confidence" },
@@ -591,7 +648,7 @@ export default function CareerWorkshopsPage() {
                 </div>
               </Panel>
 
-              <Panel title="Satisfaction Trend" subtitle="Quality metrics progression by session type" info="Average satisfaction ratings tracked across different session formats">
+              <Panel title="Satisfaction Trend" subtitle="Quality metrics progression by session type" info="Average satisfaction ratings tracked across different session formats" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={[
@@ -644,7 +701,7 @@ export default function CareerWorkshopsPage() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Panel title="Partner Breakdown" subtitle="By organisation type" info="Distribution across partner types">
+              <Panel title="Partner Breakdown" subtitle="By organisation type" info="Distribution across partner types" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={PARTNERS_BY_TYPE} layout="vertical" margin={{ top: 6, right: 14, bottom: 0, left: 130 }}>

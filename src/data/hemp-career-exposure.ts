@@ -11,6 +11,7 @@ export interface CareerExposureSession {
   avgRating: number;
   completionRate: number;
   sector: string;
+  healthInterests: Record<string, number>;
 }
 
 export interface CareerOutcome {
@@ -28,6 +29,7 @@ function seededRandom(seed: number): number {
 const COUNTRIES = ['Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Nigeria', 'Ghana', 'Senegal', 'Mali', 'Ethiopia', 'South Africa', 'Zambia', 'Zimbabwe', 'Botswana', 'Namibia', 'Mozambique'];
 const SECTORS = ['Healthcare', 'Technology', 'Finance', 'NGO/Non-profit', 'Government', 'Education', 'Research', 'Consulting'];
 const WORKSHOP_TITLES = ['Career Pathways in Medicine', 'Health Tech Innovation', 'Leadership Essentials', 'Entrepreneurship 101', 'Networking Skills', 'Resume Building', 'Interview Prep'];
+const HEALTH_INTERESTS = ['Digital Health', 'Mental Health', 'Health Equity, Advocacy and Leadership', 'Nutrition', 'Disease Prevention and Control', 'Maternal and Child Health', 'Sexual and Reproductive Health', 'One Health', 'Public Health', 'Dental Health'];
 
 export const careerExposureSessions: CareerExposureSession[] = [];
 
@@ -36,6 +38,11 @@ for (let i = 0; i < 48; i++) {
   const country = COUNTRIES[Math.floor(seededRandom(i * 2) * COUNTRIES.length)];
   const participants = Math.floor(seededRandom(i * 3) * 80) + 10;
   const femaleParticipants = Math.floor(participants * (seededRandom(i * 4) > 0.5 ? 0.6 : 0.4));
+
+  const healthInterestsMap: Record<string, number> = {};
+  HEALTH_INTERESTS.forEach(interest => {
+    healthInterestsMap[interest] = Math.floor(seededRandom(i * 10 + HEALTH_INTERESTS.indexOf(interest)) * (participants * 0.6));
+  });
 
   careerExposureSessions.push({
     id: `CES-${String(i + 1).padStart(3, '0')}`,
@@ -49,7 +56,8 @@ for (let i = 0; i < 48; i++) {
     facilitators: [`Facilitator ${i % 10}`],
     avgRating: Math.round((seededRandom(i * 7) * 1 + 3.5) * 10) / 10,
     completionRate: Math.round((seededRandom(i * 8) * 0.2 + 0.85) * 100),
-    sector: SECTORS[Math.floor(seededRandom(i * 9) * SECTORS.length)]
+    sector: SECTORS[Math.floor(seededRandom(i * 9) * SECTORS.length)],
+    healthInterests: healthInterestsMap
   });
 }
 

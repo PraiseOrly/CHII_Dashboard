@@ -7,6 +7,7 @@ export interface InternshipRecord {
   satisfaction: number;
   outcome?: 'Employed' | 'Venture' | 'Education' | 'Exploring';
   durationMonths: number;
+  healthInterest: string;
 }
 
 function seededRandom(seed: number): number {
@@ -17,6 +18,7 @@ function seededRandom(seed: number): number {
 const COUNTRIES = ['Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Nigeria', 'Ghana', 'Senegal', 'Mali', 'Ethiopia', 'South Africa', 'Zambia', 'Zimbabwe', 'Botswana', 'Namibia', 'Mozambique'];
 const SECTORS = ['Healthcare', 'Technology', 'Finance', 'NGO', 'Government', 'Education', 'Research', 'Consulting'];
 const DROPOUT_REASONS = ['Academic Conflict', 'Financial', 'Personal', 'Other'];
+const HEALTH_INTERESTS = ['Digital Health', 'Mental Health', 'Health Equity, Advocacy and Leadership', 'Nutrition', 'Disease Prevention and Control', 'Maternal and Child Health', 'Sexual and Reproductive Health', 'One Health', 'Public Health', 'Dental Health'];
 
 export const internshipRecords: InternshipRecord[] = [];
 
@@ -35,6 +37,8 @@ for (let i = 1; i <= 420; i++) {
     else outcome = 'Exploring';
   }
 
+  const healthInterest = HEALTH_INTERESTS[Math.floor(seededRandom(i * 6) * HEALTH_INTERESTS.length)];
+
   internshipRecords.push({
     id: `INT-${String(i).padStart(4, '0')}`,
     studentId: `MS-${String(i).padStart(4, '0')}`,
@@ -43,7 +47,8 @@ for (let i = 1; i <= 420; i++) {
     completed: isCompleted,
     satisfaction: isCompleted ? Math.round((seededRandom(i * 5) * 1.5 + 3.5) * 10) / 10 : 0,
     outcome,
-    durationMonths: 4
+    durationMonths: 4,
+    healthInterest
   });
 }
 

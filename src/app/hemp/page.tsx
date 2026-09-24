@@ -62,6 +62,7 @@ function KPICard({
   paceStatus,
   paceColor,
   secondaryTextColor,
+  programmeText,
 }: {
   label: string;
   value: number | string;
@@ -79,6 +80,7 @@ function KPICard({
   paceStatus?: string;
   paceColor?: string;
   secondaryTextColor?: string;
+  programmeText?: string;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -170,9 +172,9 @@ function KPICard({
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 8, paddingTop: 4, borderTop: "1px solid #E5E7EB", justifyContent: "center", alignItems: "center", minHeight: 14 }}>
+      <div style={{ display: "flex", gap: 6, paddingTop: 4, borderTop: "1px solid #E5E7EB", justifyContent: "flex-start", alignItems: "center", minHeight: 14, flexWrap: "nowrap", overflow: "visible" }}>
         {femalePct !== undefined ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 5, flex: 1 }}>
+          <>
             <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={RED_FEMALE} strokeWidth="2.2">
                 <circle cx="12" cy="8" r="4" />
@@ -190,7 +192,13 @@ function KPICard({
                 <span style={{ fontSize: 9, fontWeight: 600, color: "#6B7280" }}>{malePct}%</span>
               </div>
             )}
-          </div>
+            {programmeText && (
+              <>
+                <span style={{ fontSize: 8, fontWeight: 500, color: "#D1D5DB" }}>·</span>
+                <span style={{ fontSize: 8, fontWeight: 600, color: "#6B7280", whiteSpace: "nowrap" }}>{programmeText}</span>
+              </>
+            )}
+          </>
         ) : (
           <p style={{ fontSize: 9, fontWeight: 600, color: secondaryTextColor || "#6B7280", lineHeight: 1.2, margin: 0, textAlign: "center" }}>
             {secondaryText || "—"}
@@ -484,6 +492,7 @@ export default function HEMPPage() {
                 info="Active health professions students across 15 countries."
                 Icon={Users}
                 secondaryText={`Strong foundation for HEMP pipeline growth`}
+                programmeText="BSE: 500  BEL: 300  IBT: 40"
               />
               <KPICard
                 label="Countries Reached"

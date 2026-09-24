@@ -226,10 +226,21 @@ export default function ExposureEvents() {
   ];
 
   const inclusionReachData = [
-    { category: "Female", value: 1094, percentage: 46, fill: "#EC4899" },
-    { category: "Male", value: 1265, percentage: 54, fill: "#0EA5E9" },
     { category: "PWD", value: 287, percentage: 12, fill: "#F97316" },
     { category: "Refugee", value: 156, percentage: 7, fill: "#8B5CF6" }
+  ];
+
+  const healthInterestData = [
+    { area: "Digital Health", count: 285 },
+    { area: "Mental Health", count: 245 },
+    { area: "Health Equity, Advocacy and Leadership", count: 198 },
+    { area: "Disease Prevention and Control", count: 167 },
+    { area: "Maternal and Child Health", count: 142 },
+    { area: "One Health", count: 128 },
+    { area: "Public Health", count: 115 },
+    { area: "Nutrition", count: 92 },
+    { area: "Sexual and Reproductive Health", count: 78 },
+    { area: "Dental Health", count: 65 }
   ];
 
   const ratingDistData = [
@@ -286,7 +297,7 @@ export default function ExposureEvents() {
               num: stats.totalParticipants,
               icon: Users,
               displayFmt: (n) => n.toLocaleString(),
-              sub: `Goal: ${targets2030.exposureEvents.toLocaleString()} by 2030`,
+              sub: `Goal: ${targets2030.exposureEvents.toLocaleString()} by 2030 | 20% of goal`,
               tip: "Total participants across all events toward 2030 target",
               pace: true,
               paceA: stats.totalParticipants,
@@ -409,6 +420,61 @@ export default function ExposureEvents() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Participants by Health Interest Area" subtitle="Distribution across health specializations" info="Exposure event participants by health interest" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={healthInterestData.sort((a, b) => b.count - a.count)} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="area" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={130} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="count" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 12, height: 12, backgroundColor: "#479BD6", borderRadius: 2 }} />
+                      <span style={{ fontSize: 10, color: "#6B7280" }}>Participant Count</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+
+              <Panel title="Participants by Academic Programmes" subtitle="Participant distribution across programmes" info="Exposure Events participants by primary academic programme" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { programme: "BSc (Hons) Software Engineering", count: 142 },
+                      { programme: "BSc (Hons) Entrepreneurial Leadership", count: 138 },
+                      { programme: "ALURW - International Business and Trade", count: 58 },
+                      { programme: "Teach-out - ALURW - Global Challenges", count: 12 },
+                      { programme: "ALCHE - Entrepreneurial Leadership", count: 8 },
+                      { programme: "ALCHE - Software Engineering", count: 2 },
+                      { programme: "Teach out - ALURW - Computer Science", count: 1 },
+                    ]} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="programme" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={210} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="count" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 12, height: 12, backgroundColor: "#479BD6", borderRadius: 2 }} />
+                    <span style={{ fontSize: 10, color: "#6B7280" }}>Participant Count</span>
+                  </div>
+                </div>
+              </div>
+            </Panel>
+            </div>
+
+            <div style={{ marginBottom: 24 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               <Panel title="Event Trend" subtitle="Annual event delivery" info="Annual trend of events delivered" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
@@ -439,7 +505,7 @@ export default function ExposureEvents() {
                 </div>
               </Panel>
 
-<Panel title="Inclusion Reach" subtitle="Participant diversity breakdown" info="Breakdown across gender, disability and refugee status">
+              <Panel title="Inclusion Reach" subtitle="Participant diversity" info="Breakdown across disability and refugee status" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={inclusionReachData} layout="vertical" margin={{ top: 6, right: 14, bottom: 0, left: 80 }}>
@@ -481,7 +547,7 @@ export default function ExposureEvents() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Panel title="Partners by Type" subtitle="Distribution across organisation types" info="Partner count by organisation category">
+              <Panel title="Partners by Type" subtitle="Distribution across organisation types" info="Partner count by organisation category" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={[
@@ -562,7 +628,7 @@ export default function ExposureEvents() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Rating Distribution" subtitle="Participant satisfaction scores" info="Average rating 4.0/5">
+              <Panel title="Rating Distribution" subtitle="Participant satisfaction scores" info="Average rating 4.0/5" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={ratingDistData} margin={{ top: 6, right: 10, bottom: 0, left: -16 }}>
@@ -583,7 +649,7 @@ export default function ExposureEvents() {
                   </div>
                 </div>
               </Panel>
-              <Panel title="Quality Dimensions" subtitle="Multi-dimensional participant feedback ratings" info="Ratings across relevance, quality and usefulness (0-5 scale)">
+              <Panel title="Quality Dimensions" subtitle="Multi-dimensional participant feedback ratings" info="Ratings across relevance, quality and usefulness (0-5 scale)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { metric: "Relevance", rating: 4.25, color: "#EC4899" },
@@ -604,7 +670,7 @@ export default function ExposureEvents() {
                 </div>
               </Panel>
 
-              <Panel title="Recommendation & Confidence" subtitle="NPS and skill confidence assessment" info="Net Promoter Score (0-10) and confidence level (0-5)">
+              <Panel title="Recommendation & Confidence" subtitle="NPS and skill confidence assessment" info="Net Promoter Score (0-10) and confidence level (0-5)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Confidence", value: 4.2, metric: "confidence" },
@@ -624,7 +690,7 @@ export default function ExposureEvents() {
                 </div>
               </Panel>
 
-              <Panel title="Satisfaction Trend" subtitle="Quality metrics progression by event type" info="Average satisfaction ratings tracked across different event formats">
+              <Panel title="Satisfaction Trend" subtitle="Quality metrics progression by event type" info="Average satisfaction ratings tracked across different event formats" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterYear} onFilterChange={setFilterYear}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={[

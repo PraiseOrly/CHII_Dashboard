@@ -31,6 +31,8 @@ export const SIE_DISCIPLINES = [
 ] as const;
 export type SieDiscipline = typeof SIE_DISCIPLINES[number];
 
+import { HEALTH_INTEREST_AREAS, generateHealthInterests, getHealthInterestDistribution } from "../hemp-health-interests";
+
 export interface SieCohort {
   id: string;
   name: string;
@@ -84,6 +86,8 @@ export interface SieCohort {
   learningOutcomesScore: number;   // Average learning outcomes achievement (0-100)
   participantEngagement: number;   // Engagement level (0-100)
   targetAchievementRate: number;   // % of programme targets achieved
+  /** Health Interest Areas */
+  healthInterests: Record<string, number>; // Distribution of participants by health interest area
 }
 
 export const sieCohorts: SieCohort[] = [
@@ -104,6 +108,7 @@ export const sieCohorts: SieCohort[] = [
     pwd: 2, idpRefugees: 1,
     employmentPlacements: 5, internshipPlacements: 8, placementConversionRate: 68,
     overallPerformanceScore: 78, learningOutcomesScore: 82, participantEngagement: 75, targetAchievementRate: 85,
+    healthInterests: { "Digital Health": 5, "Mental Health": 4, "Health Equity, Advocacy and Leadership": 3, "Nutrition": 3, "Disease Prevention and Control": 2, "Maternal and Child Health": 2, "One Health": 1 },
   },
   {
     id: "SIE02", name: "SIE Cohort II", year: 2025, country: "Rwanda", region: "East Africa",
@@ -122,6 +127,7 @@ export const sieCohorts: SieCohort[] = [
     pwd: 3, idpRefugees: 2,
     employmentPlacements: 9, internshipPlacements: 14, placementConversionRate: 76,
     overallPerformanceScore: 86, learningOutcomesScore: 89, participantEngagement: 84, targetAchievementRate: 92,
+    healthInterests: { "Mental Health": 6, "Digital Health": 5, "Health Equity, Advocacy and Leadership": 4, "Nutrition": 4, "Disease Prevention and Control": 3, "Maternal and Child Health": 2, "Sexual and Reproductive Health": 2, "One Health": 1 },
   },
   {
     id: "SIE03", name: "SIE Cohort III - Kenya", year: 2024, country: "Kenya", region: "East Africa",
@@ -140,6 +146,7 @@ export const sieCohorts: SieCohort[] = [
     pwd: 2, idpRefugees: 1,
     employmentPlacements: 6, internshipPlacements: 10, placementConversionRate: 72,
     overallPerformanceScore: 82, learningOutcomesScore: 85, participantEngagement: 80, targetAchievementRate: 88,
+    healthInterests: { "Digital Health": 4, "Health Equity, Advocacy and Leadership": 3, "Mental Health": 3, "Nutrition": 3, "Disease Prevention and Control": 2, "Maternal and Child Health": 2, "One Health": 2 },
   },
   {
     id: "SIE04", name: "SIE Cohort IV - Ghana", year: 2025, country: "Ghana", region: "West Africa",
@@ -158,6 +165,7 @@ export const sieCohorts: SieCohort[] = [
     pwd: 2, idpRefugees: 2,
     employmentPlacements: 7, internshipPlacements: 11, placementConversionRate: 75,
     overallPerformanceScore: 84, learningOutcomesScore: 87, participantEngagement: 82, targetAchievementRate: 90,
+    healthInterests: { "Mental Health": 5, "Digital Health": 4, "Health Equity, Advocacy and Leadership": 4, "Nutrition": 3, "Disease Prevention and Control": 3, "Maternal and Child Health": 2, "Sexual and Reproductive Health": 2 },
   },
 ];
 

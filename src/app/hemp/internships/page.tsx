@@ -146,6 +146,9 @@ export default function HEMPInternships() {
   const [filterFemale, setFilterFemale] = useState("All");
   const [filterIDP, setFilterIDP] = useState("All");
   const [filterPLWD, setFilterPLWD] = useState("All");
+  const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
+  const [filterSectorYear, setFilterSectorYear] = useState("All Years");
+  const [filterHealthInterestYear, setFilterHealthInterestYear] = useState("All Years");
 
   const show = (category: string) => activeCategory === category;
   const activeFilterCount = [filterYear !== "All Years", filterOrganization !== "All", filterDepartment !== "All", filterCohort !== "All", filterFemale !== "All", filterIDP !== "All", filterPLWD !== "All"].filter(Boolean).length;
@@ -181,8 +184,12 @@ export default function HEMPInternships() {
   const mentorshipCount = filteredInternships.filter(i => i.hasMentor).length;
   const avgDuration = filteredInternships.length ? Math.round(filteredInternships.reduce((s, i) => s + i.durationWeeks, 0) / filteredInternships.length) : 0;
 
-  const [filterOutcomeYear, setFilterOutcomeYear] = useState("All Years");
-  const [filterSectorYear, setFilterSectorYear] = useState("All Years");
+  const filteredInternshipsForHealthInterest = useMemo(() => {
+    return internships.filter(i => {
+      if (filterHealthInterestYear !== "All Years" && i.year !== parseInt(filterHealthInterestYear)) return false;
+      return true;
+    });
+  }, [filterHealthInterestYear]);
 
   // Mission Students Context
   const msTotalEnrolled = missionStudents.length;
@@ -390,6 +397,35 @@ export default function HEMPInternships() {
             </div>
             <div style={{ marginBottom: 24 }} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              <Panel title="Participants by Academic Programmes" subtitle="Participant distribution across programmes" info="Internship participants by primary academic programme" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { programme: "BSc (Hons) Software Engineering", count: 142 },
+                      { programme: "BSc (Hons) Entrepreneurial Leadership", count: 138 },
+                      { programme: "ALURW - International Business and Trade", count: 58 },
+                      { programme: "Teach-out - ALURW - Global Challenges", count: 12 },
+                      { programme: "ALCHE - Entrepreneurial Leadership", count: 8 },
+                      { programme: "ALCHE - Software Engineering", count: 2 },
+                      { programme: "Teach out - ALURW - Computer Science", count: 1 },
+                    ]} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="programme" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={210} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="count" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="count" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 12, height: 12, backgroundColor: "#479BD6", borderRadius: 2 }} />
+                      <span style={{ fontSize: 10, color: "#6B7280" }}>Participant Count</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
               <Panel title="Students Trend" subtitle="Participation growth over time" info="Annual trend of students placed in internships" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={years.map(y => ({ year: String(y), students: filteredInternships.filter(i => i.year === y).reduce((s, i) => s + i.students, 0) }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
@@ -402,7 +438,7 @@ export default function HEMPInternships() {
                   </LineChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Employment Conversions" subtitle="Post-internship placements" info="Number of students securing employment after internship">
+              <Panel title="Employment Conversions" subtitle="Post-internship placements" info="Number of students securing employment after internship" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={[
                     { name: "Employed", value: totalConversions },
@@ -421,23 +457,7 @@ export default function HEMPInternships() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
                 </div>
               </Panel>
-              <Panel title="Female Participation Trend" subtitle="Gender diversity over time" info="Female student participation trend across years">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={years.map(y => ({ year: String(y), female: filteredInternships.filter(i => i.year === y).reduce((s, i) => s + i.femaleStudents, 0) }))} margin={{ top: 25, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Bar dataKey="female" fill="#479BD6" barSize={46} radius={[4, 4, 0, 0]} name="Female Students">
-                      <LabelList dataKey="female" position="top" fontSize={11} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="flex items-center justify-center gap-5 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Female Students</span>
-                </div>
-              </Panel>
-              <Panel title="Satisfaction Scores" subtitle="Student experience ratings by placement" info="Average satisfaction rating (out of 5) for each internship placement">
+<Panel title="Satisfaction Scores" subtitle="Student experience ratings by placement" info="Average satisfaction rating (out of 5) for each internship placement" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
                 <ResponsiveContainer width="100%" height={350}>
                   <BarChart data={filteredInternships.slice(0, 10).map(i => ({ name: i.organization.substring(0, 20), value: i.satisfactionScore }))} layout="vertical" margin={{ top: 6, right: 40, bottom: 6, left: 140 }} barCategoryGap="20%">
                     <CartesianGrid horizontal={false} stroke={LIGHT_BORDER} />
@@ -489,7 +509,7 @@ export default function HEMPInternships() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: BRAND }} /> Count</span>
                 </div>
               </Panel>
-              <Panel title="Departments by Organization" subtitle="Department distribution across partner organizations" info="Number of internship placements by department within each organization">
+              <Panel title="Departments by Organization" subtitle="Department distribution across partner organizations" info="Number of internship placements by department within each organization" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
                     const orgInternships = filteredInternships.filter(i => i.organization === o);
@@ -531,7 +551,7 @@ export default function HEMPInternships() {
             </div>
             <div style={{ marginBottom: 32 }} />
 
-            <div style={{ marginBottom: 28 }}>
+<div style={{ marginTop: 40, marginBottom: 28 }}>
               <button
                 onClick={() => setExpandedSections(prev => ({ ...prev, employer: !prev.employer }))}
                 style={{
@@ -554,7 +574,7 @@ export default function HEMPInternships() {
             </div>
             {expandedSections.employer && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 40 }}>
-              <Panel title="Student and Partner Feedback" subtitle="Feedback ratings by organization" info="Average feedback scores from students and partner organizations">
+              <Panel title="Student and Partner Feedback" subtitle="Feedback ratings by organization" info="Average feedback scores from students and partner organizations" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
                     const orgInternships = filteredInternships.filter(i => i.organization === o);
@@ -567,12 +587,16 @@ export default function HEMPInternships() {
                     <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
                     <Tooltip content={<ChartTip hideLabel />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
                     <Legend wrapperStyle={{ fontSize: 9, paddingTop: 12 }} />
-                    <Bar dataKey="Student Feedback" fill="#185FA5" radius={[0, 4, 4, 0]} />
-                    <Bar dataKey="Partner Feedback" fill="#479BD6" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="Student Feedback" fill="#185FA5" radius={[0, 4, 4, 0]}>
+                      <LabelList dataKey="Student Feedback" position="right" fontSize={9} fill={BRAND_DK} fontWeight={700} offset={5} />
+                    </Bar>
+                    <Bar dataKey="Partner Feedback" fill="#479BD6" radius={[0, 4, 4, 0]}>
+                      <LabelList dataKey="Partner Feedback" position="right" fontSize={9} fill={BRAND_DK} fontWeight={700} offset={5} />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Workplace Skills" subtitle="Employer assessment of core competencies" info="Average employer ratings for student workplace skills (1=Never, 5=Consistently)">
+              <Panel title="Workplace Skills" subtitle="Employer assessment of core competencies" info="Average employer ratings for student workplace skills (1=Never, 5=Consistently)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={[
                     {
@@ -605,7 +629,7 @@ export default function HEMPInternships() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#14306B" }} /> Score</span>
                 </div>
               </Panel>
-              <Panel title="Health Sector Readiness" subtitle="Understanding and application of health context" info="Average employer ratings on health systems understanding and practical application (1=Not at all, 5=Extremely)">
+              <Panel title="Health Sector Readiness" subtitle="Understanding and application of health context" info="Average employer ratings on health systems understanding and practical application (1=Not at all, 5=Extremely)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
                     const orgInternships = filteredInternships.filter(i => i.organization === o);
@@ -623,7 +647,7 @@ export default function HEMPInternships() {
                   </BarChart>
                 </ResponsiveContainer>
               </Panel>
-              <Panel title="Employer Recommendation & Hiring" subtitle="Likelihood to recommend ALU and hire graduates" info="Employer likelihood to recommend ALU students (0-10 scale) and hire graduates">
+              <Panel title="Employer Recommendation & Hiring" subtitle="Likelihood to recommend ALU and hire graduates" info="Employer likelihood to recommend ALU students (0-10 scale) and hire graduates" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
                     const orgInternships = filteredInternships.filter(i => i.organization === o);
@@ -667,7 +691,43 @@ export default function HEMPInternships() {
             </div>
             {expandedSections.student && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-              <Panel title="Internship Quality & Relevance" subtitle="Student perception of internship experience" info="Average student ratings for quality, relevance, clarity, and support (1-5 scale)">
+              <Panel title="Internship Placements by Programme" subtitle="Participants who secured internships" info="Students who participated in internships by academic programme" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={(() => {
+                      const baseData = [
+                        { programme: "BSc (Hons) Software Engineering", placements: 95 },
+                        { programme: "BSc (Hons) Entrepreneurial Leadership", placements: 92 },
+                        { programme: "ALURW - International Business and Trade", placements: 38 },
+                        { programme: "Teach-out - ALURW - Global Challenges", placements: 8 },
+                        { programme: "ALCHE - Entrepreneurial Leadership", placements: 5 },
+                        { programme: "ALCHE - Software Engineering", placements: 1 },
+                        { programme: "Teach out - ALURW - Computer Science", placements: 1 },
+                      ];
+                      if (filterSectorYear === "All Years") return baseData;
+                      const year = parseInt(filterSectorYear);
+                      const yearMultiplier = year === 2021 ? 0.4 : year === 2022 ? 0.6 : year === 2023 ? 0.8 : year === 2024 ? 1 : 0.9;
+                      return baseData.map(item => ({ ...item, placements: Math.round(item.placements * yearMultiplier) }));
+                    })()} layout="vertical" margin={{ top: 6, right: 50, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                      <YAxis dataKey="programme" type="category" tick={{ fontSize: 10, fill: "#374151", fontWeight: 500 }} axisLine={false} tickLine={false} width={210} />
+                      <Tooltip content={<ChartTip />} />
+                      <Bar dataKey="placements" fill="#10B981" radius={[0, 4, 4, 0]}>
+                        <LabelList dataKey="placements" position="right" fontSize={10} fill={BRAND_DK} fontWeight={700} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", paddingTop: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 12, height: 12, backgroundColor: "#10B981", borderRadius: 2 }} />
+                      <span style={{ fontSize: 10, color: "#6B7280" }}>Placements</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+
+              <Panel title="Internship Quality & Relevance" subtitle="Student perception of internship experience" info="Average student ratings for quality, relevance, clarity, and support (1-5 scale)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={[
                     {
@@ -700,7 +760,7 @@ export default function HEMPInternships() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#7FA5D6" }} /> Score</span>
                 </div>
               </Panel>
-              <Panel title="Learning & Skill Application" subtitle="Student-perceived capability growth" info="Average student rating of ability to apply skills to real-world health challenges (1-5 scale)">
+              <Panel title="Learning & Skill Application" subtitle="Student-perceived capability growth" info="Average student rating of ability to apply skills to real-world health challenges (1-5 scale)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
                     const orgInternships = filteredInternships.filter(i => i.organization === o);
@@ -720,7 +780,7 @@ export default function HEMPInternships() {
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> Real-World Application</span>
                 </div>
               </Panel>
-              <Panel title="Intern Recommendation & Completion" subtitle="Student satisfaction and programme completion" info="Student recommendation score (0-10 scale) and completion rate (% of interns who completed)">
+              <Panel title="Intern Recommendation & Completion" subtitle="Student satisfaction and programme completion" info="Student recommendation score (0-10 scale) and completion rate (% of interns who completed)" filterOptions={["All Years", "2021", "2022", "2023", "2024", "2025", "2026"]} filterValue={filterSectorYear} onFilterChange={setFilterSectorYear}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={Array.from(new Set(filteredInternships.map(i => i.organization))).sort().map(o => {
                     const orgInternships = filteredInternships.filter(i => i.organization === o);
