@@ -247,7 +247,7 @@ export default function HEMPSie() {
             <div style={{ textAlign: "center" }}>
               <h1 className="text-lg font-black leading-tight" style={{ color: "white", letterSpacing: "0.01em" }}>SIE</h1>
               <p className="text-[13px] mt-2 font-medium" style={{ color: "rgba(215,225,245,0.8)" }}>
-                Signature Immersive Experience — student outcomes and healthcare exposure
+                Signature Immersive Experience: Student Outcomes and Healthcare Exposure
               </p>
               <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[12px]" style={{ color: "rgba(215,225,245,0.5)" }}>
                 <span><span style={{ color: "rgba(181,212,244,0.8)", fontWeight: 600 }}>Data source:</span> HEMP Consolidated Database</span>
