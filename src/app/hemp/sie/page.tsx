@@ -611,47 +611,6 @@ export default function HEMPSie() {
                   </ResponsiveContainer>
                 </div>
               </Panel>
-              <Panel title="Satisfaction Trend" subtitle="Programme satisfaction over time" info="Average satisfaction rating (1-5) by cohort" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={filteredCohorts.map(c => ({ year: String(c.year), satisfaction: c.satisfaction }))} margin={{ top: 6, right: 14, bottom: 0, left: -12 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} domain={[0, 5]} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} />
-                    <Legend wrapperStyle={{ fontSize: 10 }} iconType="plainline" />
-                    <Line type="monotone" dataKey="satisfaction" stroke={BRAND} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Satisfaction" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Panel>
-              <Panel title="Diversity Metrics" subtitle="Gender, disability, and refugee representation" info="Participants identifying as female, PWD, or IDP/Refugees across cohorts" filterOptions={["All Years", ...years.map(String)]} filterValue={filterOutcomeYear} onFilterChange={setFilterOutcomeYear}>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={filteredCohorts.map(c => ({
-                    name: c.name.substring(0, 18),
-                    female: c.female,
-                    pwd: c.pwd,
-                    idp: c.idpRefugees,
-                  }))} margin={{ top: 6, right: 10, bottom: 0, left: -16 }} barCategoryGap="28%" barGap={1}>
-                    <CartesianGrid vertical={false} stroke={LIGHT_BORDER} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#374151", fontWeight: 600 }} angle={-15} height={80} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "#9CA3AF" }} allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTip />} cursor={{ fill: "rgba(16, 44, 94, 0.04)" }} />
-                    <Bar dataKey="female" fill="#479BD6" barSize={20} radius={[4, 4, 0, 0]} name="Female">
-                      <LabelList dataKey="female" position="top" fontSize={9} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                    <Bar dataKey="pwd" fill="#1D9E75" barSize={20} radius={[4, 4, 0, 0]} name="PWD">
-                      <LabelList dataKey="pwd" position="top" fontSize={9} fill="#085041" fontWeight={700} />
-                    </Bar>
-                    <Bar dataKey="idp" fill="#185FA5" barSize={20} radius={[4, 4, 0, 0]} name="IDP/Refugees">
-                      <LabelList dataKey="idp" position="top" fontSize={9} fill={BRAND_DK} fontWeight={700} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="flex flex-wrap justify-center gap-4 text-[10px] text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#479BD6" }} /> Female</span>
-                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#1D9E75" }} /> PWD</span>
-                  <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-sm inline-block" style={{ backgroundColor: "#185FA5" }} /> IDP/Refugees</span>
-                </div>
-              </Panel>
             </div>
           </section>
         )}

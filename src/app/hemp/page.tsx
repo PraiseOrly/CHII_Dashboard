@@ -582,7 +582,7 @@ export default function HEMPPage() {
                 const pace = calculatePace(careerWorkshopsCount, 1500);
                 return (
                   <KPICard
-                    label="Exposure Events"
+                    label="Career Exposure"
                     value={careerWorkshopsCount}
                     progress={careerWorkshopsCount}
                     progressTarget={1500}
